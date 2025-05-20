@@ -13,8 +13,6 @@ CREATE TABLE users (
     FOREIGN KEY (role_id) REFERENCES roles(role_id)                -- Ràng buộc vai trò người dùng
 );
 
-
-
 -- Bảng lưu vai trò
 CREATE TABLE roles (
     role_id INT AUTO_INCREMENT PRIMARY KEY,                   -- Khóa chính
@@ -267,9 +265,9 @@ CREATE TABLE prescriptions (
     FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id),
 );
 
--- Bảng doctor_notes: Ghi chú khám của bác sĩ
-CREATE TABLE doctor_notes (
-    note_id INT AUTO_INCREMENT PRIMARY KEY,             -- Khóa chính
+-- Bảng medical_records: Ghi chú khám của bác sĩ
+CREATE TABLE medical_records (
+    med_rec_id INT AUTO_INCREMENT PRIMARY KEY,             -- Khóa chính
     appointment_id INT NOT NULL,                        -- Liên kết đến cuộc hẹn
     note_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Thời điểm ghi chú
     diagnosis TEXT,                                     -- Chẩn đoán
