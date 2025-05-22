@@ -53,6 +53,28 @@ $2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC
 CALL login_user('admin', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC');
 
 
+-------------------------------------------------------Gọi lấy thông tin user--------------------------------------------------------------------------------------------------------------
+
+-- Gọi proc này sẽ chuyền toàn bộ những info cần thiết để vận hành 
+-- Nếu thông tin đăng nhập email,username,phone sai thì sẽ ko thể lấy được bất kỳ thông tin gì
+-- Nếu đúng thì sẽ gửi những thông tin của tài khoản đó và cả password đã được hash 
+-- Sau đó thì backend sẽ kiểm tra pass được gửi từ database với với pass người dùng vừa nhập
+
+DELIMITER $$
+
+CREATE PROCEDURE get_user_info (
+    IN input_login VARCHAR(100)
+)
+BEGIN
+    SELECT u.user_id, u.username, u.email, u.password_hash, r.role_name
+    FROM users u
+    JOIN roles r ON u.role_id = r.role_id
+    WHERE u.username = input_login OR u.email = input_login OR u.phone_number = input_login
+    LIMIT 1;
+END$$
+
+DELIMITER ;
+
 
 -------------------------------------------------------Kiểm tra triệu chứng bệnh nhân--------------------------------------------------------------------------------------------------------------
 
