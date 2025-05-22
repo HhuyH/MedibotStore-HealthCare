@@ -83,7 +83,7 @@ CREATE TABLE notifications (
     is_global BOOLEAN DEFAULT FALSE,                          -- Nếu là TRUE, thông báo sẽ gửi đến toàn bộ người dùng
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,            -- Thời gian tạo thông báo
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
-        ON UPDATE CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
 
     FOREIGN KEY (target_role_id) REFERENCES roles(role_id)   -- Ràng buộc tới bảng roles
 );
@@ -153,7 +153,7 @@ CREATE TABLE symptoms (
     description TEXT,                                 -- Mô tả triệu chứng
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
-        ON UPDATE CURRENT_TIMESTAMP,
+        ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Bảng disease_symptoms: Bảng nối giữa bệnh và triệu chứng
@@ -189,7 +189,7 @@ CREATE TABLE clinics (
     description TEXT,                                   -- Mô tả chi tiết
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
-        ON UPDATE CURRENT_TIMESTAMP,
+        ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Bảng specialties: Chuyên ngành y tế
@@ -199,7 +199,7 @@ CREATE TABLE specialties (
     description TEXT,                                   -- Mô tả chuyên ngành
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
-        ON UPDATE CURRENT_TIMESTAMP,
+        ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Bảng doctors: Thông tin bác sĩ
@@ -262,7 +262,7 @@ CREATE TABLE prescriptions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id),
+    FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id)
 );
 
 -- Bảng medical_records: Ghi chú khám của bác sĩ
@@ -273,7 +273,7 @@ CREATE TABLE medical_records (
     diagnosis TEXT,                                     -- Chẩn đoán
     recommendations TEXT,                               -- Hướng dẫn/chỉ định
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id),
+    FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id)
 );
 
 ----------------------------------------------------------------3. Chatbot AI-------------------------------------------------------------------------------
@@ -296,18 +296,20 @@ CREATE TABLE health_records (
 CREATE TABLE chat_logs (
     chat_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,									     -- người dùng chat (có thể null nếu là khách)
-    guest_id int,					            -- phiên chat của khách (nếu user_id null)
+    guest_id INT,					                     -- phiên chat của khách (nếu user_id null)
 	intent VARCHAR(100),                                 -- ý định
     message TEXT NOT NULL,                               -- nội dung tin nhắn
     sender ENUM('user', 'bot') NOT NULL,                 -- người gửi tin nhắn
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP          -- thời gian nhắn tin
-    FOREIGN KEY (guest_id) REFERENCES guest_users(guest_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    CHECK (
-        (user_id IS NOT NULL AND guest_session_id IS NULL) OR
-        (user_id IS NULL AND guest_session_id IS NOT NULL)
-    )
+    CONSTRAINT chk_user_or_guest
+        CHECK (
+            (user_id IS NOT NULL AND guest_id IS NULL) OR
+            (user_id IS NULL AND guest_id IS NOT NULL)
+        ),
+
+    FOREIGN KEY (guest_id) REFERENCES guest_users(guest_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- Bảng lưu kết quả dự đoán bệnh từ AI cho từng lần dự đoán
@@ -320,7 +322,7 @@ CREATE TABLE health_predictions (
     confidence_score FLOAT,                              -- độ tin cậy dự đoán (0-1)
     details TEXT,                                        -- chi tiết thêm về dự đoán (json hoặc text)
     
-    CHECK (confidence_score BETWEEN 0 AND 1)
+    CHECK (confidence_score BETWEEN 0 AND 1),
     
     FOREIGN KEY (user_id) REFERENCES users(user_id),
 	FOREIGN KEY (record_id) REFERENCES health_records(record_id),
@@ -344,7 +346,7 @@ CREATE TABLE chatbot_knowledge_base (
     category VARCHAR(100),                               -- phân loại câu hỏi (tùy chọn)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
-        ON UPDATE CURRENT_TIMESTAMP,
+        ON UPDATE CURRENT_TIMESTAMP
 );
 ----------------------------------------------------------------4. Thương mại điện tử-------------------------------------------------------------------------------
 -- Bảng product_categories: Danh mục sản phẩm
@@ -354,7 +356,7 @@ CREATE TABLE product_categories (
     description TEXT,                                    -- Mô tả danh mục
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
-        ON UPDATE CURRENT_TIMESTAMP,
+        ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Bảng products: Danh sách sản phẩm
@@ -366,6 +368,7 @@ CREATE TABLE products (
     price DECIMAL(16, 0) NOT NULL,                       -- Giá
     stock INT DEFAULT 0,                                 -- Tồn kho
     image_url TEXT,                                      -- Ảnh sản phẩm (nếu có)
+    is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP,
@@ -447,12 +450,14 @@ CREATE TABLE order_items (
 -- Bảng payments: Thông tin thanh toán đơn hàng
 CREATE TABLE payments (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,             -- Khóa chính
+    user_id INT,
     order_id INT NOT NULL,                                 -- Liên kết đến đơn hàng
     payment_method VARCHAR(50) NOT NULL,                   -- Phương thức (VNPay, Momo, COD...)
     payment_status VARCHAR(50) DEFAULT 'pending',          -- pending, completed, failed
     amount DECIMAL(16, 0) NOT NULL,                        -- Số tiền thanh toán
     payment_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Thời gian thanh toán
-    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- phan payments nay co le can xem xet theo cach lam cua backend
@@ -460,10 +465,12 @@ CREATE TABLE payments (
 -- Bảng invoices: Thông tin hóa đơn
 CREATE TABLE invoices (
     invoice_id INT AUTO_INCREMENT PRIMARY KEY,             -- Khóa chính
+    COLUMN user_id INT
     order_id INT NOT NULL,                                 -- Liên kết đến đơn hàng
     invoice_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Ngày tạo hóa đơn
     total_amount DECIMAL(16, 0) NOT NULL,                  -- Tổng tiền
-    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- Bảng invoice_details: Chi tiết sản phẩm trong hóa đơn
