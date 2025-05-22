@@ -46,6 +46,9 @@ CREATE TABLE users_info (
 -- hoặc kiêu người dùng tự nhập và sau đó thì hỏi nhưng câu hỏi cần thiết cần để đặt lịch khám
 -- như ngày khám bác sĩ mong muốn nếu ko bik thì random phù hợp với bệnh muốn khám
 
+-- sẽ được tạo khi người dùng chưa có tài khoản và có nhu cầu đặt lịch khám thì 
+-- AI sẽ hỏi nhưng thông tin này và thực hiện đặt lịch khám khi đầy đủ thông tin cần thiết
+-- và xác nhận đặt
 CREATE TABLE guest_users (
     guest_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(255),
