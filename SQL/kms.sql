@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 22, 2025 at 09:56 AM
+-- Generation Time: May 22, 2025 at 11:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -25,6 +25,59 @@ DELIMITER $$
 --
 -- Procedures
 --
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_addresses` (IN `in_user_id` INT)   BEGIN
+    SELECT 
+        a.id AS `Địa chỉ ID`,
+        a.address_line AS `Địa chỉ`,
+        a.ward AS `Phường/Xã`,
+        a.district AS `Quận/Huyện`,
+        a.city AS `Thành phố`,
+        a.postal_code AS `Mã bưu chính`,
+        a.country AS `Quốc gia`,
+        a.is_default AS `Là mặc định`,
+        a.created_at AS `Ngày tạo`,
+        a.updated_at AS `Ngày cập nhật`
+    FROM user_addresses a
+    WHERE a.user_id = in_user_id
+    ORDER BY a.is_default DESC, a.updated_at DESC;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_details` (IN `in_user_id` INT)   BEGIN
+    SELECT 
+        u.user_id AS `User ID`,
+        u.username AS `Username`,
+        u.email AS `Email`,
+        u.phone_number AS `Số điện thoại`,
+        r.role_name AS `Vai trò`,
+        ui.full_name AS `Họ tên`,
+        ui.gender AS `Giới tính`,
+        ui.date_of_birth AS `Ngày sinh`,
+        ui.profile_picture AS `Ảnh đại diện`,
+        a.address_line AS `Địa chỉ`,
+        a.ward AS `Phường/Xã`,
+        a.district AS `Quận/Huyện`,
+        a.city AS `Thành phố`,
+        a.country AS `Quốc gia`,
+        a.is_default AS `Là địa chỉ mặc định`
+    FROM users u
+    LEFT JOIN users_info ui ON u.user_id = ui.user_id
+    LEFT JOIN roles r ON u.role_id = r.role_id
+    LEFT JOIN user_addresses a ON u.user_id = a.user_id AND a.is_default = TRUE
+    WHERE u.user_id = in_user_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_symptom_history` (IN `in_user_id` INT)   BEGIN
+    SELECT 
+        u.full_name AS `Họ tên`,
+        h.notes AS `Ghi chú`,
+        s.name AS `Triệu chứng`
+    FROM user_symptom_history h
+    JOIN symptoms s ON h.symptom_id = s.symptom_id
+    JOIN users_info u ON u.user_id = h.user_id
+    WHERE h.user_id = in_user_id
+    ORDER BY h.record_date;
+END$$
+
 CREATE DEFINER=`root`@`localhost` PROCEDURE `login_user` (IN `input_username_or_email` VARCHAR(100), IN `input_password_hash` VARCHAR(255))   BEGIN
     DECLARE user_id_result INT;
     DECLARE role_name_result VARCHAR(50);
@@ -145,6 +198,22 @@ CREATE TABLE `diseases` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `diseases`
+--
+
+INSERT INTO `diseases` (`disease_id`, `name`, `description`, `treatment_guidelines`, `category_id`, `created_at`, `updated_at`) VALUES
+(1, 'Tăng huyết áp', 'Huyết áp cao mãn tính', 'Theo dõi huyết áp thường xuyên, dùng thuốc hạ áp', 1, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(2, 'Đột quỵ', 'Rối loạn tuần hoàn não nghiêm trọng', 'Can thiệp y tế khẩn cấp, phục hồi chức năng', 1, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(3, 'Hen suyễn', 'Bệnh mãn tính ảnh hưởng đến đường thở', 'Sử dụng thuốc giãn phế quản và kiểm soát dị ứng', 2, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(4, 'Viêm phổi', 'Nhiễm trùng phổi do vi khuẩn hoặc virus', 'Kháng sinh, nghỉ ngơi và điều trị hỗ trợ', 2, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(5, 'Viêm dạ dày', 'Viêm lớp niêm mạc dạ dày', 'Tránh thức ăn cay, dùng thuốc kháng acid', 3, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(6, 'Xơ gan', 'Tổn thương gan mạn tính', 'Kiểm soát nguyên nhân, chế độ ăn và theo dõi y tế', 3, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(7, 'Động kinh', 'Rối loạn thần kinh gây co giật lặp lại', 'Dùng thuốc chống động kinh, theo dõi điện não đồ', 4, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(8, 'Trầm cảm', 'Rối loạn tâm trạng kéo dài', 'Liệu pháp tâm lý và thuốc chống trầm cảm', 4, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(9, 'Viêm da cơ địa', 'Bệnh da mãn tính gây ngứa và phát ban', 'Dưỡng ẩm, thuốc bôi chống viêm', 5, '2025-05-22 08:31:54', '2025-05-22 15:31:54'),
+(10, 'Nấm da', 'Nhiễm trùng da do nấm', 'Thuốc kháng nấm dạng bôi hoặc uống', 5, '2025-05-22 08:31:54', '2025-05-22 15:31:54');
+
 -- --------------------------------------------------------
 
 --
@@ -155,6 +224,37 @@ CREATE TABLE `disease_symptoms` (
   `disease_id` int(11) NOT NULL,
   `symptom_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `disease_symptoms`
+--
+
+INSERT INTO `disease_symptoms` (`disease_id`, `symptom_id`) VALUES
+(1, 1),
+(1, 5),
+(1, 6),
+(2, 1),
+(2, 6),
+(2, 7),
+(3, 2),
+(3, 5),
+(3, 6),
+(4, 2),
+(4, 4),
+(4, 6),
+(5, 3),
+(5, 4),
+(5, 10),
+(6, 6),
+(6, 10),
+(7, 1),
+(7, 7),
+(8, 6),
+(8, 10),
+(9, 8),
+(9, 9),
+(10, 8),
+(10, 9);
 
 -- --------------------------------------------------------
 
@@ -279,6 +379,17 @@ CREATE TABLE `medical_categories` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `medical_categories`
+--
+
+INSERT INTO `medical_categories` (`category_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'Tim mạch', 'Chuyên khoa liên quan đến tim và mạch máu', '2025-05-22 08:31:42', '2025-05-22 15:31:42'),
+(2, 'Hô hấp', 'Chuyên khoa về phổi và hệ hô hấp', '2025-05-22 08:31:42', '2025-05-22 15:31:42'),
+(3, 'Tiêu hóa', 'Chuyên khoa về dạ dày, ruột, gan...', '2025-05-22 08:31:42', '2025-05-22 15:31:42'),
+(4, 'Thần kinh', 'Chuyên khoa về não và hệ thần kinh', '2025-05-22 08:31:42', '2025-05-22 15:31:42'),
+(5, 'Da liễu', 'Chuyên khoa về da, tóc và móng', '2025-05-22 08:31:42', '2025-05-22 15:31:42');
 
 -- --------------------------------------------------------
 
@@ -516,6 +627,22 @@ CREATE TABLE `symptoms` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `symptoms`
+--
+
+INSERT INTO `symptoms` (`symptom_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'Đau đầu', 'Cảm giác đau ở vùng đầu hoặc cổ', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(2, 'Khó thở', 'Khó khăn trong việc hít thở bình thường', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(3, 'Buồn nôn', 'Cảm giác muốn nôn mửa', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(4, 'Sốt', 'Nhiệt độ cơ thể cao hơn bình thường', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(5, 'Tức ngực', 'Cảm giác đau hoặc áp lực ở ngực', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(6, 'Mệt mỏi', 'Cảm giác kiệt sức, thiếu năng lượng', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(7, 'Co giật', 'Chuyển động không kiểm soát của cơ', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(8, 'Ngứa da', 'Cảm giác châm chích khiến muốn gãi', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(9, 'Phát ban', 'Vùng da bị nổi mẩn đỏ hoặc sưng', '2025-05-22 08:32:05', '2025-05-22 15:32:05'),
+(10, 'Chán ăn', 'Mất cảm giác thèm ăn', '2025-05-22 08:32:05', '2025-05-22 15:32:05');
+
 -- --------------------------------------------------------
 
 --
@@ -540,7 +667,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `email`, `phone_number`, `password_hash`, `role_id`, `created_at`, `updated_at`) VALUES
 (1, 'admin', 'admin@gmail.com', '0123456789', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 1, '2025-05-22 06:49:02', '2025-05-22 06:49:02'),
 (2, 'huy', 'hoanhuy12@gmail.com', '0901647655', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 1, '2025-05-22 06:49:02', '2025-05-22 06:49:02'),
-(3, 'dr.hanh', 'doctor@example.com', '0999999999', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-05-22 06:49:02', '2025-05-22 06:49:02');
+(3, 'dr.hanh', 'doctor@example.com', '0999999999', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-05-22 06:49:02', '2025-05-22 06:49:02'),
+(4, 'nguyenvana', 'vana@example.com', '0901234567', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 3, '2025-05-22 08:38:06', '2025-05-22 08:38:06');
 
 -- --------------------------------------------------------
 
@@ -566,7 +694,8 @@ CREATE TABLE `users_info` (
 INSERT INTO `users_info` (`id`, `user_id`, `full_name`, `gender`, `date_of_birth`, `profile_picture`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Quản trị viên', 'Nam', '1990-01-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55'),
 (2, 2, 'Hòa Huy', 'Nam', '1999-09-09', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55'),
-(3, 3, 'John Doe', 'Nam', '2000-12-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55');
+(3, 3, 'John Doe', 'Nam', '2000-12-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55'),
+(4, 4, 'Nguyễn Văn A', 'Nam', '1995-08-15', NULL, '2025-05-22 08:39:27', '2025-05-22 08:39:27');
 
 -- --------------------------------------------------------
 
@@ -587,6 +716,17 @@ CREATE TABLE `user_addresses` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_addresses`
+--
+
+INSERT INTO `user_addresses` (`id`, `user_id`, `address_line`, `ward`, `district`, `city`, `postal_code`, `country`, `is_default`, `created_at`, `updated_at`) VALUES
+(1, 1, '123 Đường Trần Hưng Đạo', 'Phường Nguyễn Cư Trinh', 'Quận 1', 'TP.HCM', '700000', 'Vietnam', 1, '2025-05-22 15:12:26', '2025-05-22 15:12:26'),
+(2, 2, '456 Đường Lê Lợi', 'Phường Bến Nghé', 'Quận 1', 'TP.HCM', '700000', 'Vietnam', 1, '2025-05-22 15:12:26', '2025-05-22 15:12:26'),
+(3, 2, '111 Đường long', 'Phường 11', 'Quận 11', 'TP.HCM', '110000', 'Vietnam', 0, '2025-05-22 15:12:26', '2025-05-22 16:02:32'),
+(4, 3, '789 Đường Lý Thường Kiệt', 'Phường 7', 'Quận 10', 'TP.HCM', '700000', 'Vietnam', 1, '2025-05-22 15:12:26', '2025-05-22 15:12:26'),
+(5, 4, '123 Đường Lý Thường Kiệt', 'Phường 7', 'Quận 10', 'TP.HCM', '70000', 'Vietnam', 1, '2025-05-22 15:40:10', '2025-05-22 15:40:10');
 
 -- --------------------------------------------------------
 
@@ -615,6 +755,22 @@ CREATE TABLE `user_symptom_history` (
   `record_date` date NOT NULL,
   `notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_symptom_history`
+--
+
+INSERT INTO `user_symptom_history` (`id`, `user_id`, `symptom_id`, `record_date`, `notes`) VALUES
+(1, 4, 1, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày'),
+(2, 4, 2, '2025-05-18', 'Ho khan, không có đờm'),
+(3, 4, 3, '2025-05-19', 'Cổ họng đau rát, nuốt đau'),
+(4, 4, 5, '2025-05-20', 'Đau đầu nhẹ, chủ yếu vào buổi sáng'),
+(5, 4, 4, '2025-05-21', 'Cảm giác khó thở nhẹ khi vận động'),
+(6, 4, 4, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày'),
+(7, 4, 1, '2025-05-18', 'Đau đầu âm ỉ vùng trán và sau gáy'),
+(8, 4, 2, '2025-05-19', 'Khó thở nhẹ, đặc biệt khi leo cầu thang'),
+(9, 4, 6, '2025-05-20', 'Cảm thấy mệt mỏi suốt cả ngày'),
+(10, 4, 5, '2025-05-21', 'Cảm giác tức ngực nhẹ khi hít sâu');
 
 --
 -- Indexes for dumped tables
@@ -915,7 +1071,7 @@ ALTER TABLE `clinics`
 -- AUTO_INCREMENT for table `diseases`
 --
 ALTER TABLE `diseases`
-  MODIFY `disease_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `disease_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `doctors`
@@ -963,7 +1119,7 @@ ALTER TABLE `invoice_details`
 -- AUTO_INCREMENT for table `medical_categories`
 --
 ALTER TABLE `medical_categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `medical_records`
@@ -1041,25 +1197,25 @@ ALTER TABLE `specialties`
 -- AUTO_INCREMENT for table `symptoms`
 --
 ALTER TABLE `symptoms`
-  MODIFY `symptom_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `symptom_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users_info`
 --
 ALTER TABLE `users_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `user_notifications`
@@ -1071,7 +1227,7 @@ ALTER TABLE `user_notifications`
 -- AUTO_INCREMENT for table `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables

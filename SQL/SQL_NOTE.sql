@@ -79,7 +79,7 @@ CREATE TABLE user_addresses (
 
 CREATE TABLE notifications (
     notification_id INT AUTO_INCREMENT PRIMARY KEY,           -- Mã thông báo, tự tăng, dùng làm khóa chính
-    target_role_id INT,                                       -- ID của vai trò được gửi thông báo
+    target_role_id INT,                                       -- ID của vai trò được gửi thông báo nếu chỉ muốn gửi tới 1 nhốm đối tưởng nhất định
     title VARCHAR(255) NOT NULL,                              -- Tiêu đề của thông báo (ngắn gọn)
     message TEXT NOT NULL,                                    -- Nội dung chi tiết của thông báo
     type VARCHAR(50),                                         -- Loại thông báo: ví dụ 'system', 'AI alert', 'reminder'...
