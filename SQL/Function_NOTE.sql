@@ -1,3 +1,5 @@
+-------------------------------------------------------Xác minh tài khoản--------------------------------------------------------------------------------------------------------------
+
 -- Giải thích
 -- chức năng này yêu cầu nhập vào
 -- usename or email
@@ -50,3 +52,89 @@ $2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC
 -- test proc login_user
 CALL login_user('admin', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC');
 
+
+
+-------------------------------------------------------Kiểm tra triệu chứng bệnh nhân--------------------------------------------------------------------------------------------------------------
+
+DELIMITER $$
+
+CREATE PROCEDURE get_user_symptom_history(IN in_user_id INT)
+BEGIN
+    SELECT 
+        u.full_name AS `Họ tên`,
+        h.notes AS `Ghi chú`,
+        s.name AS `Triệu chứng`
+    FROM user_symptom_history h
+    JOIN symptoms s ON h.symptom_id = s.symptom_id
+    JOIN users_info u ON u.user_id = h.user_id
+    WHERE h.user_id = in_user_id
+    ORDER BY h.record_date;
+END $$
+
+DELIMITER ;
+
+
+CALL get_user_symptom_history(4);
+
+
+-------------------------------------------------------Lấy thông tin chi tiết của 1 người dựa trên user_id--------------------------------------------------------------------------------------------------------------
+
+
+DELIMITER $$
+
+CREATE PROCEDURE get_user_details(IN in_user_id INT)
+BEGIN
+    SELECT 
+        u.user_id AS `User ID`,
+        u.username AS `Username`,
+        u.email AS `Email`,
+        u.phone_number AS `Số điện thoại`,
+        r.role_name AS `Vai trò`,
+        ui.full_name AS `Họ tên`,
+        ui.gender AS `Giới tính`,
+        ui.date_of_birth AS `Ngày sinh`,
+        ui.profile_picture AS `Ảnh đại diện`,
+        a.address_line AS `Địa chỉ`,
+        a.ward AS `Phường/Xã`,
+        a.district AS `Quận/Huyện`,
+        a.city AS `Thành phố`,
+        a.country AS `Quốc gia`,
+        a.is_default AS `Là địa chỉ mặc định`
+    FROM users u
+    LEFT JOIN users_info ui ON u.user_id = ui.user_id
+    LEFT JOIN roles r ON u.role_id = r.role_id
+    LEFT JOIN user_addresses a ON u.user_id = a.user_id AND a.is_default = TRUE
+    WHERE u.user_id = in_user_id;
+END $$
+
+DELIMITER ;
+
+
+CALL get_user_details(2);
+
+
+-------------------------------------------------------Lấy tất cả địa chỉ của 1 người dựa trên user_id--------------------------------------------------------------------------------------------------------------
+
+DELIMITER $$
+
+CREATE PROCEDURE get_user_addresses(IN in_user_id INT)
+BEGIN
+    SELECT 
+        a.id AS `Địa chỉ ID`,
+        a.address_line AS `Địa chỉ`,
+        a.ward AS `Phường/Xã`,
+        a.district AS `Quận/Huyện`,
+        a.city AS `Thành phố`,
+        a.postal_code AS `Mã bưu chính`,
+        a.country AS `Quốc gia`,
+        a.is_default AS `Là mặc định`,
+        a.created_at AS `Ngày tạo`,
+        a.updated_at AS `Ngày cập nhật`
+    FROM user_addresses a
+    WHERE a.user_id = in_user_id
+    ORDER BY a.is_default DESC, a.updated_at DESC;
+END $$
+DELIMITER ;
+
+
+CALL get_user_addresses(2);
