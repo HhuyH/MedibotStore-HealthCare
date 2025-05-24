@@ -160,3 +160,41 @@ DELIMITER ;
 
 
 CALL get_user_addresses(2);
+
+-------------------------------------------------------Lấy tất cả người dùng bằng role_id-------------------------------------------------------------------------------------------------------------
+
+-- nếu nhập vào role tương ứng thì sẽ gọi role tương ứng
+-- nếu call 
+-- role_id = 0 lấy tất cả người dùng
+-- role_id = 1 lấy tất cả Admin
+-- role_id = 2 lấy tất cả Doctor
+-- role_id = 3 lấy tất cả Patient
+DELIMITER $$
+
+CREATE PROCEDURE get_all_users_by_role(IN input_role_id INT)
+BEGIN
+    SELECT 
+        u.user_id,
+        u.username,
+        u.email,
+        u.phone_number,
+        r.role_name,
+        ui.full_name,
+        ui.gender,
+        ui.date_of_birth,
+        ua.address_line,
+        ua.ward,
+        ua.district,
+        ua.city,
+        ua.country,
+        u.created_at
+    FROM users u
+    LEFT JOIN users_info ui ON u.user_id = ui.user_id
+    LEFT JOIN roles r ON u.role_id = r.role_id
+    LEFT JOIN user_addresses ua ON u.user_id = ua.user_id AND ua.is_default = TRUE
+    WHERE (input_role_id = 0 OR u.role_id = input_role_id)
+    ORDER BY u.user_id DESC;
+END $$
+
+DELIMITER ;
+
