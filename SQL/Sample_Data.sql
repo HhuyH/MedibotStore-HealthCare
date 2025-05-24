@@ -1,22 +1,32 @@
 ----------------------------------------------USERS----------------------------------------------------------------------------------------------------------------
-INSERT INTO users (user_id, username, email, phone_number, password_hash, role_id, created_at)
+INSERT INTO users (username, email, phone_number, password_hash, role_id, created_at)
 VALUES
-(1, 'admin', 'admin@gmail.com', '0123456789',
- '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--password 123
+('admin', 'admin@gmail.com', '0123456789',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 1
  1, NOW()),
 
-(2, 'huy', 'hoanhuy12@gmail.com', '0999999999',
- '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',
+('huy', 'hoanhuy12@gmail.com', '0999999999',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 2
  1, NOW()),
 
-(3, 'dr.hanh', 'docter@example.com', '0888888888',
- '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',
+('dr.hanh', 'docter@example.com', '0888888888',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 3
  2, NOW());
 
 ('nguyenvana', 'vana@example.com', '0901234567',
- '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 4
  3, NOW());
 
+('linh', 'linh@gmail.com', '0123466789',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 6
+ 2, NOW()), 
+
+----------------------------------------------GUEST_USERS----------------------------------------------------------------------------------------------------------------
+INSERT INTO guest_users (full_name, phone, email)
+VALUES
+('Nguyễn Văn A', '0909123456', 'nva@example.com'),
+('Trần Thị B', '0911234567', 'ttb@example.com'),
+('Lê Văn C', '0922345678', 'lvc@example.com');
 
 ----------------------------------------------USERS_info----------------------------------------------------------------------------------------------------------------
 INSERT INTO users_info (user_id, full_name, gender, date_of_birth)
@@ -25,6 +35,7 @@ VALUES
 (2, 'Huy', 'Nam', '1985-06-15'),
 (3, 'Dr.Hand', 'nữ', '2000-12-01');
 (4, 'Nguyễn Văn A', 'Nam', '1995-08-15');
+(6, 'Dr.Linh', 'Nữ', '1995-08-15');
 
 ----------------------------------------------USERS_ADDRESSES----------------------------------------------------------------------------------------------------------------
 INSERT INTO user_addresses (
@@ -146,4 +157,99 @@ INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes) VALUE
 (4, 6, '2025-05-20', 'Cảm thấy mệt mỏi suốt cả ngày'),
 (4, 5, '2025-05-21', 'Cảm giác tức ngực nhẹ khi hít sâu');
 
+-------------------------------------------------------Phòng khám--------------------------------------------------------------------------------------------------------------
+INSERT INTO clinics (name, address, phone, email, description) VALUES
+('Phòng khám Đa khoa Hòa Hảo', '254 Hòa Hảo, Quận 10, TP.HCM', '02838553085', 'hoahao@example.com', 'Phòng khám tư nhân uy tín với nhiều chuyên khoa.'),
+('Bệnh viện Chợ Rẫy', '201B Nguyễn Chí Thanh, Quận 5, TP.HCM', '02838554137', 'choray@hospital.vn', 'Bệnh viện tuyến trung ương chuyên điều trị các ca nặng.'),
+('Phòng khám Quốc tế Victoria Healthcare', '79 Điện Biên Phủ, Quận 1, TP.HCM', '02839101717', 'info@victoriavn.com', 'Dịch vụ khám chữa bệnh theo tiêu chuẩn quốc tế.'),
+('Bệnh viện Đại học Y Dược', '215 Hồng Bàng, Quận 5, TP.HCM', '02838552307', 'contact@umc.edu.vn', 'Bệnh viện trực thuộc Đại học Y Dược TP.HCM.'),
+('Phòng khám đa khoa Pasteur', '27 Nguyễn Thị Minh Khai, Quận 1, TP.HCM', '02838232299', 'pasteurclinic@vnmail.com', 'Chuyên nội tổng quát, tim mạch, tiêu hóa.');
 
+---------------------------------------------------------------------------------Khoa--------------------------------------------------------------------------------------------------------------
+INSERT INTO specialties (name, description) VALUES
+('Nội khoa', 'Chẩn đoán và điều trị không phẫu thuật các bệnh lý nội tạng.'),
+('Ngoại khoa', 'Chẩn đoán và điều trị bệnh thông qua phẫu thuật.'),
+('Tai - Mũi - Họng', 'Khám và điều trị các bệnh lý về tai, mũi và họng.'),
+('Tim mạch', 'Chuyên điều trị bệnh về tim và hệ tuần hoàn.'),
+('Nhi khoa', 'Chăm sóc và điều trị cho trẻ em từ sơ sinh đến 15 tuổi.'),
+('Da liễu', 'Chẩn đoán và điều trị các bệnh về da, tóc và móng.'),
+('Tiêu hóa', 'Chuyên về hệ tiêu hóa như dạ dày, gan, ruột.'),
+('Thần kinh', 'Khám và điều trị các bệnh về hệ thần kinh trung ương và ngoại biên.');
+
+---------------------------------------------------------------------------------Bác sĩ---------------------------------------------------------------------------------------------------------------------
+-- user_id = 3 là bác sĩ Nội khoa tại Phòng khám Đa khoa Hòa Hảo
+-- user_id = 6 là bác sĩ Tim mạch tại Bệnh viện Chợ Rẫy
+
+INSERT INTO doctors (user_id, specialty_id, clinic_id, biography)
+VALUES
+(3, 1, 1, 'Bác sĩ Nội khoa với hơn 10 năm kinh nghiệm trong điều trị tiểu đường, huyết áp. Tốt nghiệp Đại học Y Dược TP.HCM.'),
+(6, 4, 2, 'Bác sĩ Tim mạch từng công tác tại Viện Tim TP.HCM. Có bằng Thạc sĩ Y khoa từ Đại học Paris, Pháp.');
+
+---------------------------------------------------------------------------------Lịch làm việc bác sĩ---------------------------------------------------------------------------------------------------------------------
+-- Lịch bác sĩ Nội khoa (doctor_id = 1) tại phòng khám 1
+INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
+VALUES
+(1, 1, 'Monday', '08:00:00', '12:00:00'),
+(1, 1, 'Wednesday', '08:00:00', '12:00:00'),
+(1, 1, 'Friday', '13:30:00', '17:30:00');
+
+-- Lịch bác sĩ Tim mạch (doctor_id = 2) tại phòng khám 2
+INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
+VALUES
+(2, 2, 'Tuesday', '09:00:00', '12:00:00'),
+(2, 2, 'Thursday', '14:00:00', '18:00:00'),
+(2, 2, 'Saturday', '08:30:00', '11:30:00');
+
+---------------------------------------------------------------------------------Đặt lịch khám---------------------------------------------------------------------------------------------------------------------
+
+-- user_id = 4 đặt khám bác sĩ Nội khoa (user_id = 3, doctor_id = 1) tại Phòng khám Đa khoa Hòa Hảo
+INSERT INTO appointments (user_id, doctor_id, clinic_id, appointment_time, reason, status)
+VALUES 
+(4, 1, 1, '2025-05-28 09:00:00', 'Khám huyết áp và mệt mỏi kéo dài', 'confirmed'),
+(4, 1, 1, '2025-06-01 14:30:00', 'Theo dõi tiểu đường định kỳ', 'pending');
+
+-- guest_id = 1 khám Nội khoa (doctor_id = 1) tại Phòng khám Đa khoa Hòa Hảo
+-- guest_id = 2 khám Tim mạch (doctor_id = 2) tại Bệnh viện Chợ Rẫy
+-- guest_id = 3 khám Tim mạch (doctor_id = 2) tại Bệnh viện Chợ Rẫy
+
+INSERT INTO appointments (guest_id, doctor_id, clinic_id, appointment_time, reason, status)
+VALUES
+(1, 1, 1, '2025-05-25 10:00:00', 'Đau đầu và cao huyết áp gần đây', 'confirmed'),
+(2, 2, 2, '2025-05-27 08:00:00', 'Khó thở, nghi ngờ bệnh tim', 'pending'),
+(3, 2, 2, '2025-05-29 15:00:00', 'Đặt lịch kiểm tra tim định kỳ', 'canceled');
+
+---------------------------------------------------------------------------------Đơn thuốc---------------------------------------------------------------------------------------------------------------------
+
+-- Đơn thuốc cho lịch hẹn của user_id = 4 (appointment_id = 1 và 2)
+INSERT INTO prescriptions (appointment_id, prescribed_date, medications, notes)
+VALUES
+(1, '2025-05-28', '[
+  {"name": "Thuốc hạ áp Amlodipine", "dosage": "5mg", "frequency": "1 viên/ngày"},
+  {"name": "Paracetamol", "dosage": "500mg", "frequency": "2 viên/ngày khi đau đầu"}
+]', 'Uống vào buổi sáng sau ăn. Tránh dùng với rượu bia.'),
+
+(2, '2025-06-01', '[
+  {"name": "Metformin", "dosage": "500mg", "frequency": "2 lần/ngày"},
+  {"name": "Glimepiride", "dosage": "2mg", "frequency": "1 lần/ngày trước ăn sáng"}
+]', 'Kiểm tra đường huyết trước mỗi lần dùng thuốc.');
+
+-- Đơn thuốc cho khách vãng lai guest_id = 1 (appointment_id = 3)
+INSERT INTO prescriptions (appointment_id, prescribed_date, medications, notes)
+VALUES
+(3, '2025-05-25', '[
+  {"name": "Losartan", "dosage": "50mg", "frequency": "1 viên mỗi sáng"},
+  {"name": "Vitamin B1", "dosage": "100mg", "frequency": "1 viên/ngày"}
+]', 'Tái khám sau 1 tuần nếu triệu chứng không giảm.');
+
+---------------------------------------------------------------------------------Ghi chú của bác sĩ---------------------------------------------------------------------------------------------------------------------
+
+-- Ghi chú khám của bác sĩ cho các lịch hẹn của user_id = 4
+INSERT INTO medical_records (appointment_id, diagnosis, recommendations)
+VALUES
+(1, 'Tăng huyết áp giai đoạn 1', 'Cần điều chỉnh chế độ ăn và tập thể dục. Uống thuốc đều đặn.'),
+(2, 'Tiểu đường tuýp 2', 'Kiểm tra HbA1c 3 tháng/lần. Hạn chế đường và tinh bột.');
+
+-- Ghi chú khám cho khách guest_id = 1
+INSERT INTO medical_records (appointment_id, diagnosis, recommendations)
+VALUES
+(3, 'Cao huyết áp do căng thẳng', 'Nghỉ ngơi hợp lý, tránh thức khuya. Theo dõi huyết áp hàng ngày.');
