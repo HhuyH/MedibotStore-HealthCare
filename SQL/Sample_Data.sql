@@ -253,3 +253,63 @@ VALUES
 INSERT INTO medical_records (appointment_id, diagnosis, recommendations)
 VALUES
 (3, 'Cao huyết áp do căng thẳng', 'Nghỉ ngơi hợp lý, tránh thức khuya. Theo dõi huyết áp hàng ngày.');
+
+----------------------------------------------------------------4. Thương mại điện tử-------------------------------------------------------------------------------
+
+--🗂️ product_categories: Danh mục sản phẩm
+INSERT INTO product_categories (name, description) VALUES
+('Thuốc điều trị', 'Các loại thuốc dùng để điều trị bệnh lý.'),
+('Thực phẩm chức năng', 'Sản phẩm hỗ trợ tăng cường sức khỏe.'),
+('Thiết bị y tế', 'Các thiết bị và dụng cụ y tế sử dụng trong chẩn đoán và điều trị.'),
+('Vật tư tiêu hao', 'Găng tay, khẩu trang, bông băng,... sử dụng một lần.');
+
+--📦 products: Danh sách sản phẩm
+INSERT INTO products (category_id, name, description, price, stock, image_url)
+VALUES
+(1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 'https://example.com/images/paracetamol.jpg'),
+(1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 'https://example.com/images/amoxicillin.jpg'),
+(2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 'https://example.com/images/vitaminC.jpg'),
+(3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 'https://example.com/images/blood_pressure_monitor.jpg'),
+(4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 'https://example.com/images/face_mask.jpg');
+
+------------------------------------------------------------💊 medicines: Thông tin chi tiết thuốc (chỉ áp dụng với sản phẩm là thuốc)------------------------------------------------------------------------------------
+INSERT INTO medicines (medicine_id, active_ingredient, dosage_form, unit, usage_instructions)
+VALUES
+(1, 'Paracetamol', 'Viên nén', 'viên', 'Uống 1–2 viên mỗi 4–6 giờ nếu cần. Không dùng quá 8 viên/ngày.'),
+(2, 'Amoxicillin', 'Viên nang', 'viên', 'Uống 1 viên mỗi 8 giờ, duy trì trong 5–7 ngày.');
+
+--------------------------------------------------- prescription_products: Sản phẩm thực tế được kê trong đơn thuốc------------------------------------------------------------------------------------
+-- Đơn thuốc 1 (của user_id = 4, appointment_id = 1)
+INSERT INTO prescription_products (prescription_id, product_id, quantity, dosage, usage_time)
+VALUES
+(1, 1, 10, '500mg', '2 viên/ngày khi đau đầu'),    -- Paracetamol
+(1, NULL, 7, '5mg', '1 viên/ngày');                -- Amlodipine chưa có trong products, có thể là thuốc ngoài danh mục
+
+-- Đơn thuốc 2 (của user_id = 4, appointment_id = 2)
+INSERT INTO prescription_products (prescription_id, product_id, quantity, dosage, usage_time)
+VALUES
+(2, NULL, 14, '500mg', '2 lần/ngày'),              -- Metformin, không có trong bảng `products`
+(2, NULL, 7, '2mg', '1 lần/ngày trước ăn sáng');   -- Glimepiride, cũng không có trong bảng `products`
+
+-- Đơn thuốc 3 (của guest_id = 1, appointment_id = 3)
+INSERT INTO prescription_products (prescription_id, product_id, quantity, dosage, usage_time)
+VALUES
+(3, NULL, 7, '50mg', '1 viên mỗi sáng'),           -- Losartan
+(3, NULL, 7, '100mg', '1 viên/ngày');              -- Vitamin B1
+
+
+-------------------------------------------------------------------------------------- product_reviews------------------------------------------------------------------------------------
+-- Huy (user_id = 2) đánh giá Paracetamol (product_id = 1)
+INSERT INTO product_reviews (product_id, user_id, rating, comment)
+VALUES
+(1, 2, 5, 'Thuốc giảm đau hiệu quả, ít tác dụng phụ.'),
+
+-- Huy (user_id = 2) đánh giá Amoxicillin (product_id = 2)
+(2, 2, 4, 'Tốt nhưng gây buồn nôn nhẹ.'),
+
+-- Admin (user_id = 1) đánh giá máy đo huyết áp (product_id = 4)
+(4, 1, 5, 'Dễ sử dụng và rất chính xác.'),
+
+-- Người dùng "dr.hanh" (user_id = 3) đánh giá Vitamin C (product_id = 3)
+(3, 3, 4, 'Khá ổn để tăng sức đề kháng. Đóng gói đẹp.');
+
