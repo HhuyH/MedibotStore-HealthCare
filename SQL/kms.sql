@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 24, 2025 at 09:31 AM
+-- Generation Time: May 28, 2025 at 09:21 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -521,6 +521,14 @@ CREATE TABLE `medicines` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `medicines`
+--
+
+INSERT INTO `medicines` (`medicine_id`, `active_ingredient`, `dosage_form`, `unit`, `usage_instructions`, `created_at`, `updated_at`) VALUES
+(1, 'Paracetamol', 'Viên nén', 'viên', 'Uống 1–2 viên mỗi 4–6 giờ nếu cần. Không dùng quá 8 viên/ngày.', '2025-05-28 07:02:02', '2025-05-28 14:02:02'),
+(2, 'Amoxicillin', 'Viên nang', 'viên', 'Uống 1 viên mỗi 8 giờ, duy trì trong 5–7 ngày.', '2025-05-28 07:02:02', '2025-05-28 14:02:02');
+
 -- --------------------------------------------------------
 
 --
@@ -629,12 +637,27 @@ INSERT INTO `prescriptions` (`prescription_id`, `appointment_id`, `prescribed_da
 --
 
 CREATE TABLE `prescription_products` (
+  `id` int(11) NOT NULL,
   `prescription_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
+  `product_id` int(11) DEFAULT NULL,
   `quantity` int(11) NOT NULL,
   `dosage` text DEFAULT NULL,
-  `usage_time` text DEFAULT NULL
+  `usage_time` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `prescription_products`
+--
+
+INSERT INTO `prescription_products` (`id`, `prescription_id`, `product_id`, `quantity`, `dosage`, `usage_time`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 10, '500mg', '2 viên/ngày khi đau đầu', '2025-05-28 07:16:52', '2025-05-28 14:16:52'),
+(2, 1, NULL, 7, '5mg', '1 viên/ngày', '2025-05-28 07:16:52', '2025-05-28 14:16:52'),
+(3, 2, NULL, 14, '500mg', '2 lần/ngày', '2025-05-28 07:16:52', '2025-05-28 14:16:52'),
+(4, 2, NULL, 7, '2mg', '1 lần/ngày trước ăn sáng', '2025-05-28 07:16:52', '2025-05-28 14:16:52'),
+(5, 3, NULL, 7, '50mg', '1 viên mỗi sáng', '2025-05-28 07:16:52', '2025-05-28 14:16:52'),
+(6, 3, NULL, 7, '100mg', '1 viên/ngày', '2025-05-28 07:16:52', '2025-05-28 14:16:52');
 
 -- --------------------------------------------------------
 
@@ -655,6 +678,17 @@ CREATE TABLE `products` (
   `is_active` tinyint(1) DEFAULT 1 COMMENT 'Ẩn/hiện sản phẩm (TRUE = hiển thị, FALSE = ẩn)'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `category_id`, `name`, `description`, `price`, `stock`, `image_url`, `created_at`, `updated_at`, `is_active`) VALUES
+(1, 1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 'https://example.com/images/paracetamol.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1),
+(2, 1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 'https://example.com/images/amoxicillin.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1),
+(3, 2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 'https://example.com/images/vitaminC.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1),
+(4, 3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 'https://example.com/images/blood_pressure_monitor.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1),
+(5, 4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 'https://example.com/images/face_mask.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -668,6 +702,16 @@ CREATE TABLE `product_categories` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_categories`
+--
+
+INSERT INTO `product_categories` (`category_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'Thuốc điều trị', 'Các loại thuốc dùng để điều trị bệnh lý.', '2025-05-28 07:02:01', '2025-05-28 14:02:01'),
+(2, 'Thực phẩm chức năng', 'Sản phẩm hỗ trợ tăng cường sức khỏe.', '2025-05-28 07:02:01', '2025-05-28 14:02:01'),
+(3, 'Thiết bị y tế', 'Các thiết bị và dụng cụ y tế sử dụng trong chẩn đoán và điều trị.', '2025-05-28 07:02:01', '2025-05-28 14:02:01'),
+(4, 'Vật tư tiêu hao', 'Găng tay, khẩu trang, bông băng,... sử dụng một lần.', '2025-05-28 07:02:01', '2025-05-28 14:02:01');
 
 -- --------------------------------------------------------
 
@@ -684,6 +728,16 @@ CREATE TABLE `product_reviews` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_reviews`
+--
+
+INSERT INTO `product_reviews` (`review_id`, `product_id`, `user_id`, `rating`, `comment`, `created_at`, `updated_at`) VALUES
+(1, 1, 2, 5, 'Thuốc giảm đau hiệu quả, ít tác dụng phụ.', '2025-05-28 07:17:08', '2025-05-28 14:17:08'),
+(2, 2, 2, 4, 'Tốt nhưng gây buồn nôn nhẹ.', '2025-05-28 07:17:08', '2025-05-28 14:17:08'),
+(3, 4, 1, 5, 'Dễ sử dụng và rất chính xác.', '2025-05-28 07:17:08', '2025-05-28 14:17:08'),
+(4, 3, 3, 4, 'Khá ổn để tăng sức đề kháng. Đóng gói đẹp.', '2025-05-28 07:17:08', '2025-05-28 14:17:08');
 
 -- --------------------------------------------------------
 
@@ -1074,7 +1128,8 @@ ALTER TABLE `prescriptions`
 -- Indexes for table `prescription_products`
 --
 ALTER TABLE `prescription_products`
-  ADD PRIMARY KEY (`prescription_id`,`product_id`),
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `prescription_id` (`prescription_id`),
   ADD KEY `product_id` (`product_id`);
 
 --
@@ -1288,22 +1343,28 @@ ALTER TABLE `prescriptions`
   MODIFY `prescription_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `prescription_products`
+--
+ALTER TABLE `prescription_products`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `product_categories`
 --
 ALTER TABLE `product_categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `product_reviews`
 --
 ALTER TABLE `product_reviews`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `roles`
