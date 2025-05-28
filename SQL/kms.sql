@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 28, 2025 at 09:21 AM
+-- Generation Time: May 28, 2025 at 12:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -169,19 +169,6 @@ INSERT INTO `appointments` (`appointment_id`, `user_id`, `guest_id`, `doctor_id`
 (3, NULL, 1, 1, 1, '2025-05-25 10:00:00', 'Đau đầu và cao huyết áp gần đây', 'confirmed', '2025-05-24 07:15:05', '2025-05-24 14:15:05'),
 (4, NULL, 2, 2, 2, '2025-05-27 08:00:00', 'Khó thở, nghi ngờ bệnh tim', 'pending', '2025-05-24 07:15:05', '2025-05-24 14:15:05'),
 (5, NULL, 3, 2, 2, '2025-05-29 15:00:00', 'Đặt lịch kiểm tra tim định kỳ', 'canceled', '2025-05-24 07:15:05', '2025-05-24 14:15:05');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `carts`
---
-
-CREATE TABLE `carts` (
-  `cart_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -431,34 +418,6 @@ CREATE TABLE `health_records` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `invoices`
---
-
-CREATE TABLE `invoices` (
-  `invoice_id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `order_id` int(11) NOT NULL,
-  `invoice_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `total_amount` decimal(16,0) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `invoice_details`
---
-
-CREATE TABLE `invoice_details` (
-  `detail_id` int(11) NOT NULL,
-  `invoice_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `unit_price` decimal(16,0) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `medical_categories`
 --
 
@@ -555,11 +514,15 @@ CREATE TABLE `notifications` (
 CREATE TABLE `orders` (
   `order_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `address_id` int(11) NOT NULL,
+  `address_id` int(11) DEFAULT NULL,
+  `shipping_address` text DEFAULT NULL,
+  `total` decimal(16,0) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `payment_status` varchar(50) DEFAULT 'pending',
+  `status` enum('cart','pending','processing','shipped','completed','cancelled') DEFAULT 'cart',
+  `order_note` text DEFAULT NULL,
   `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `total` decimal(16,0) NOT NULL,
-  `status` varchar(50) DEFAULT 'pending',
-  `shipping_address` text NOT NULL
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -882,7 +845,7 @@ INSERT INTO `users_info` (`id`, `user_id`, `full_name`, `gender`, `date_of_birth
 --
 
 CREATE TABLE `user_addresses` (
-  `id` int(11) NOT NULL,
+  `address_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `address_line` varchar(255) NOT NULL,
   `ward` varchar(100) DEFAULT NULL,
@@ -899,7 +862,7 @@ CREATE TABLE `user_addresses` (
 -- Dumping data for table `user_addresses`
 --
 
-INSERT INTO `user_addresses` (`id`, `user_id`, `address_line`, `ward`, `district`, `city`, `postal_code`, `country`, `is_default`, `created_at`, `updated_at`) VALUES
+INSERT INTO `user_addresses` (`address_id`, `user_id`, `address_line`, `ward`, `district`, `city`, `postal_code`, `country`, `is_default`, `created_at`, `updated_at`) VALUES
 (1, 1, '123 Đường Trần Hưng Đạo', 'Phường Nguyễn Cư Trinh', 'Quận 1', 'TP.HCM', '700000', 'Vietnam', 1, '2025-05-22 15:12:26', '2025-05-22 15:12:26'),
 (2, 2, '456 Đường Lê Lợi', 'Phường Bến Nghé', 'Quận 1', 'TP.HCM', '700000', 'Vietnam', 1, '2025-05-22 15:12:26', '2025-05-22 15:12:26'),
 (3, 2, '111 Đường long', 'Phường 11', 'Quận 11', 'TP.HCM', '110000', 'Vietnam', 0, '2025-05-22 15:12:26', '2025-05-22 16:02:32'),
@@ -963,13 +926,6 @@ ALTER TABLE `appointments`
   ADD KEY `guest_id` (`guest_id`),
   ADD KEY `doctor_id` (`doctor_id`),
   ADD KEY `clinic_id` (`clinic_id`);
-
---
--- Indexes for table `carts`
---
-ALTER TABLE `carts`
-  ADD PRIMARY KEY (`cart_id`),
-  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `chatbot_knowledge_base`
@@ -1043,22 +999,6 @@ ALTER TABLE `health_predictions`
 ALTER TABLE `health_records`
   ADD PRIMARY KEY (`record_id`),
   ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `invoices`
---
-ALTER TABLE `invoices`
-  ADD PRIMARY KEY (`invoice_id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `invoice_details`
---
-ALTER TABLE `invoice_details`
-  ADD PRIMARY KEY (`detail_id`),
-  ADD KEY `invoice_id` (`invoice_id`),
-  ADD KEY `product_id` (`product_id`);
 
 --
 -- Indexes for table `medical_categories`
@@ -1193,7 +1133,7 @@ ALTER TABLE `users_info`
 -- Indexes for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`address_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
@@ -1221,12 +1161,6 @@ ALTER TABLE `user_symptom_history`
 --
 ALTER TABLE `appointments`
   MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `carts`
---
-ALTER TABLE `carts`
-  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `chatbot_knowledge_base`
@@ -1281,18 +1215,6 @@ ALTER TABLE `health_predictions`
 --
 ALTER TABLE `health_records`
   MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `invoices`
---
-ALTER TABLE `invoices`
-  MODIFY `invoice_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `invoice_details`
---
-ALTER TABLE `invoice_details`
-  MODIFY `detail_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `medical_categories`
@@ -1400,7 +1322,7 @@ ALTER TABLE `users_info`
 -- AUTO_INCREMENT for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `user_notifications`
@@ -1426,12 +1348,6 @@ ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`guest_id`) REFERENCES `guest_users` (`guest_id`),
   ADD CONSTRAINT `appointments_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`),
   ADD CONSTRAINT `appointments_ibfk_4` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`);
-
---
--- Constraints for table `carts`
---
-ALTER TABLE `carts`
-  ADD CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `chat_logs`
@@ -1483,20 +1399,6 @@ ALTER TABLE `health_records`
   ADD CONSTRAINT `health_records_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Constraints for table `invoices`
---
-ALTER TABLE `invoices`
-  ADD CONSTRAINT `invoices_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
-  ADD CONSTRAINT `invoices_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
-
---
--- Constraints for table `invoice_details`
---
-ALTER TABLE `invoice_details`
-  ADD CONSTRAINT `invoice_details_ibfk_1` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`invoice_id`),
-  ADD CONSTRAINT `invoice_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
-
---
 -- Constraints for table `medical_records`
 --
 ALTER TABLE `medical_records`
@@ -1519,7 +1421,7 @@ ALTER TABLE `notifications`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `user_addresses` (`id`);
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `user_addresses` (`address_id`);
 
 --
 -- Constraints for table `order_items`

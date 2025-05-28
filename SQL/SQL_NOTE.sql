@@ -51,16 +51,16 @@ CREATE TABLE users_info (
 -- và xác nhận đặt
 CREATE TABLE guest_users (
     guest_id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(255),
-    phone VARCHAR(20),
-    email VARCHAR(255),
+    full_name VARCHAR(255),                                 -- Tên đầy đủ mục này của guest chỉ được nhập vào do chatbot làm khi người trả lời cung cấp đầy đủ
+    phone VARCHAR(20),                                      -- số điện mục này của guest chỉ được nhập vào do chatbot làm khi người trả lời cung cấp đầy đủ
+    email VARCHAR(255),                                     -- Email không bắt buộc nếu ko có mục này của guest chỉ được nhập vào do chatbot làm khi người trả lời cung cấp đầy đủ
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 );
 
 -- Bảng lưu địa chỉ người dùng 
 CREATE TABLE user_addresses (
-    id INT AUTO_INCREMENT PRIMARY KEY,                -- Khóa chính, tự động tăng
+    address_id  INT AUTO_INCREMENT PRIMARY KEY,                -- Khóa chính, tự động tăng
     user_id INT NOT NULL,                             -- ID người dùng liên kết với bảng users
     address_line VARCHAR(255) NOT NULL,               -- Địa chỉ chi tiết: số nhà, tên đường, căn hộ...
     ward VARCHAR(100),                                -- Phường/xã
@@ -305,7 +305,7 @@ CREATE TABLE chat_logs (
     sender ENUM('user', 'bot') NOT NULL,                 -- người gửi tin nhắn
     sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT chk_user_or_guest
+    CONSTRAINT chk_user_or_guest                             --kiểm tra xem và bắt buộc là phải có 1 trong 2 giá trị này và ko thể để null hoàn toàn
         CHECK (
             (user_id IS NOT NULL AND guest_id IS NULL) OR
             (user_id IS NULL AND guest_id IS NOT NULL)
@@ -319,8 +319,8 @@ CREATE TABLE chat_logs (
 CREATE TABLE health_predictions (
     prediction_id INT AUTO_INCREMENT PRIMARY KEY,		 -- Khóa chính, tự động tăng
     user_id INT NOT NULL,								 -- liên kết đến người dùng
-	record_id INT NOT NULL,                                       -- liên kết đến dữ liệu sức khỏe cụ thể
-	chat_id INT,
+	record_id INT NOT NULL,                              -- liên kết đến dữ liệu sức khỏe cụ thể
+	chat_id INT,                                         -- khóa ngoại liên kết đến chat_logs
     prediction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- thời gian dự đoán
     confidence_score FLOAT,                              -- độ tin cậy dự đoán (0-1)
     details TEXT,                                        -- chi tiết thêm về dự đoán (json hoặc text)
@@ -334,8 +334,8 @@ CREATE TABLE health_predictions (
 
 CREATE TABLE prediction_diseases (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    prediction_id INT NOT NULL,
-    disease_name VARCHAR(255) NOT NULL,
+    prediction_id INT NOT NULL,                         -- khóa ngoại liên kết đến health_predictions
+    disease_name VARCHAR(255) NOT NULL,                 -- tên loại bệnh
     confidence FLOAT,
     FOREIGN KEY (prediction_id) REFERENCES health_predictions(prediction_id)
 );
@@ -420,28 +420,25 @@ CREATE TABLE product_reviews (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- Bảng carts: Giỏ hàng tạm thời
-CREATE TABLE carts (
-    cart_id INT AUTO_INCREMENT PRIMARY KEY,              -- Khóa chính
-    user_id INT NOT NULL,                                -- Người dùng
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
-        ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
 -- Bảng orders: Đơn hàng của người dùng
 CREATE TABLE orders (
-    order_id INT AUTO_INCREMENT PRIMARY KEY,             -- Khóa chính
-    user_id INT NOT NULL,                                -- Người đặt hàng
-    address_id INT NOT NULL,                             -- Liên kết đến bảng user_addresses
-    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Thời gian đặt
-    total DECIMAL(16, 0) NOT NULL,                       -- Tổng tiền
-    status VARCHAR(50) DEFAULT 'pending',                -- Trạng thái đơn hàng
-    shipping_address TEXT NOT NULL,                      -- Địa chỉ giao hàng
+    order_id INT AUTO_INCREMENT PRIMARY KEY,                 -- Mã đơn hàng hoặc giỏ hàng
+    user_id INT NOT NULL,                                    -- Người sở hữu
+    address_id INT,                                          -- Liên kết đến bảng user_addresses, để biết người dùng chọn địa chỉ nào lúc đặt
+    shipping_address TEXT,                                   -- Lưu snapshot địa chỉ thật tại thời điểm đặt hàng, phòng khi người dùng đổi địa chỉ sau đó
+    total DECIMAL(16, 0),                                    -- Tổng tiền (null nếu chưa xác nhận)
+    payment_method VARCHAR(50),                              -- COD / Momo / VNPay...
+    payment_status VARCHAR(50) DEFAULT 'pending',            -- Trạng thái thanh toán
+    status ENUM('cart', 'pending', 'processing', 'shipped', 'completed', 'cancelled') DEFAULT 'cart',  -- Trạng thái đơn hàng
+    order_note TEXT,                                         -- Ghi chú của khách (tuỳ chọn)
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,          -- Thời điểm tạo đơn / giỏ
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP 
+        ON UPDATE CURRENT_TIMESTAMP,                         -- Cập nhật cuối
+
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (address_id) REFERENCES user_addresses(id)  -- Liên kết địa chỉ giao hàng
+    FOREIGN KEY (address_id) REFERENCES user_addresses(address_id)
 );
+
 
 -- Bảng order_items: Chi tiết từng sản phẩm trong đơn hàng
 CREATE TABLE order_items (
@@ -467,26 +464,3 @@ CREATE TABLE payments (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- phan payments nay co le can xem xet theo cach lam cua backend
-
--- Bảng invoices: Thông tin hóa đơn
-CREATE TABLE invoices (
-    invoice_id INT AUTO_INCREMENT PRIMARY KEY,             -- Khóa chính
-    COLUMN user_id INT
-    order_id INT NOT NULL,                                 -- Liên kết đến đơn hàng
-    invoice_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Ngày tạo hóa đơn
-    total_amount DECIMAL(16, 0) NOT NULL,                  -- Tổng tiền
-    FOREIGN KEY (order_id) REFERENCES orders(order_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
--- Bảng invoice_details: Chi tiết sản phẩm trong hóa đơn
-CREATE TABLE invoice_details (
-    detail_id INT AUTO_INCREMENT PRIMARY KEY,              -- Khóa chính
-    invoice_id INT NOT NULL,                               -- Liên kết đến hóa đơn
-    product_id INT NOT NULL,                               -- Sản phẩm cụ thể
-    quantity INT NOT NULL,                                 -- Số lượng
-    unit_price DECIMAL(16, 0) NOT NULL,                    -- Giá đơn vị
-    FOREIGN KEY (invoice_id) REFERENCES invoices(invoice_id),
-    FOREIGN KEY (product_id) REFERENCES products(product_id)
-);
