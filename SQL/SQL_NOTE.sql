@@ -391,15 +391,19 @@ CREATE TABLE medicines (
 );
 
 CREATE TABLE prescription_products (
-    prescription_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL,
-    dosage TEXT,                                         -- Liều dùng
-    usage_time TEXT,                                     -- Uống sáng/tối...
-    PRIMARY KEY (prescription_id, product_id),
+    id INT AUTO_INCREMENT PRIMARY KEY,                    -- Khóa chính
+    prescription_id INT NOT NULL,                         -- Liên kết đơn thuốc
+    product_id INT NULL,                                  -- Có thể NULL nếu không rõ mã sản phẩm
+    quantity INT NOT NULL,                                -- Số lượng
+    dosage TEXT,                                           -- Liều dùng
+    usage_time TEXT,                                       -- Thời gian sử dụng
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
+
 
 
 -- Bảng product_reviews: Người dùng đánh giá sản phẩm
