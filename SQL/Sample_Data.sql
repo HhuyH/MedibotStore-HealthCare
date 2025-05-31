@@ -1,23 +1,23 @@
 ----------------------------------------------USERS----------------------------------------------------------------------------------------------------------------
-INSERT INTO users (username, email, phone_number, password_hash, role_id, created_at)
+INSERT INTO users (username, email, password_hash, role_id, created_at)
 VALUES
-('admin', 'admin@gmail.com', '0123456789',
+('admin', 'admin@gmail.com',
  '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 1
  1, NOW()),
 
-('huy', 'hoanhuy12@gmail.com', '0999999999',
+('huy', 'hoanhuy12@gmail.com',
  '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 2
  1, NOW()),
 
-('dr.hanh', 'docter@example.com', '0888888888',
+('dr.hanh', 'docter@example.com',
  '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 3
  2, NOW());
 
-('nguyenvana', 'vana@example.com', '0901234567',
+('nguyenvana', 'vana@example.com',
  '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 4
  3, NOW());
 
-('linh', 'linh@gmail.com', '0123466789',
+('linh', 'linh@gmail.com',
  '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 6
  2, NOW()), 
 
@@ -29,13 +29,13 @@ VALUES
 ('Lê Văn C', '0922345678', 'lvc@example.com');
 
 ----------------------------------------------USERS_info----------------------------------------------------------------------------------------------------------------
-INSERT INTO users_info (user_id, full_name, gender, date_of_birth)
+INSERT INTO users_info (user_id, full_name, gender, date_of_birth, phone)
 VALUES
-(1, 'Quản trị viên', 'Nam', '1990-01-01'),
-(2, 'Huy', 'Nam', '1985-06-15'),
-(3, 'Dr.Hand', 'nữ', '2000-12-01');
-(4, 'Nguyễn Văn A', 'Nam', '1995-08-15');
-(6, 'Dr.Linh', 'Nữ', '1995-08-15');
+(1, 'Quản trị viên', 'Nam', '1990-01-01', '0123456789'),
+(2, 'Huy', 'Nam', '1985-06-15','0999999999'),
+(3, 'Dr.Hand', 'nữ', '2000-12-01', '0888888888');
+(4, 'Nguyễn Văn A', 'Nam', '1995-08-15', '0901234567');
+(6, 'Dr.Linh', 'Nữ', '1995-08-15', '0123466789');
 
 ----------------------------------------------USERS_ADDRESSES----------------------------------------------------------------------------------------------------------------
 INSERT INTO user_addresses (

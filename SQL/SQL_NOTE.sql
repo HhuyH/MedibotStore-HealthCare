@@ -4,9 +4,9 @@ CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,                   -- Khóa chính, định danh người dùng
     username VARCHAR(50) UNIQUE NOT NULL,                     -- Tên đăng nhập, không được trùng
     email VARCHAR(100) UNIQUE NOT NULL,                       -- Email đăng ký, duy nhất
-    phone_number VARCHAR(15) UNIQUE,                          -- Số điện thoại (nếu có), cũng duy nhất
     password_hash VARCHAR(255) NOT NULL,                      -- Mật khẩu đã mã hóa
     role_id INT NOT NULL,                                     -- Liên kết đến bảng roles
+    status ENUM('active', 'inactive', 'suspended') DEFAULT 'active'; -- Trang thai thai khoan
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,           -- Thời gian tạo tài khoản
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -32,6 +32,7 @@ CREATE TABLE users_info (
     user_id INT NOT NULL,                                     -- Khóa ngoại liên kết với bảng users
     full_name VARCHAR(100),                                   -- Họ tên đầy đủ
     gender ENUM('Nam', 'Nữ', 'Khác'),                         -- Giới tính
+    phone VARCHAR(15) UNIQUE,                                 -- Số điện thoại (nếu có), cũng duy nhất
     date_of_birth DATE,                                       -- Ngày sinh
     profile_picture VARCHAR(255),                             -- URL ảnh đại diện (nếu có)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -332,12 +333,18 @@ CREATE TABLE health_predictions (
 	FOREIGN KEY (chat_id) REFERENCES chat_logs(chat_id)
 );
 
+-- Bảng liên kết bênh với dự đoán 
 CREATE TABLE prediction_diseases (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    prediction_id INT NOT NULL,                         -- khóa ngoại liên kết đến health_predictions
-    disease_name VARCHAR(255) NOT NULL,                 -- tên loại bệnh
-    confidence FLOAT,
+    prediction_id INT NOT NULL,                         -- Khóa ngoại đến health_predictions
+    disease_id INT NOT NULL,                            -- Khóa ngoại đến diseases
+    confidence FLOAT CHECK (confidence BETWEEN 0 AND 1),-- Độ tin cậy (0–1) 0 nghĩa là rất không chắc chắn.
+                                                        -- 1 nghĩa là rất chắc chắn. --Tôi nghĩ bệnh này là A (90%), bệnh B (70%), còn lại là C (30%)
+                                                        -- sẽ không có bất ký lệnh nào chac chan se la bệnh đó 
     FOREIGN KEY (prediction_id) REFERENCES health_predictions(prediction_id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (disease_id) REFERENCES diseases(disease_id)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Bảng lưu câu hỏi và câu trả lời để huấn luyện hoặc phục vụ chatbot
@@ -348,7 +355,7 @@ CREATE TABLE chatbot_knowledge_base (
     answer TEXT NOT NULL,                                -- câu trả lời tương ứng
     category VARCHAR(100),                               -- phân loại câu hỏi (tùy chọn)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP        -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP
 );
 ----------------------------------------------------------------4. Thương mại điện tử-------------------------------------------------------------------------------

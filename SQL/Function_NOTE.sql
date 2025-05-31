@@ -69,7 +69,7 @@ BEGIN
     SELECT u.user_id, u.username, u.email, u.password_hash, r.role_name
     FROM users u
     JOIN roles r ON u.role_id = r.role_id
-    WHERE u.username = input_login OR u.email = input_login OR u.phone_number = input_login
+    WHERE u.username = input_login OR u.email = input_login
     LIMIT 1;
 END$$
 
@@ -110,7 +110,7 @@ BEGIN
         u.user_id AS `User ID`,
         u.username AS `Username`,
         u.email AS `Email`,
-        u.phone_number AS `Số điện thoại`,
+        ui.phone AS `Số điện thoại`,
         r.role_name AS `Vai trò`,
         ui.full_name AS `Họ tên`,
         ui.gender AS `Giới tính`,
