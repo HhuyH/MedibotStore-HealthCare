@@ -9,7 +9,7 @@ import asyncio
 import random
 from typing import List, Dict
 
-load_dotenv(override=True)
+# load_dotenv(override=True)
 
 openai_api_key = os.getenv('OPENAI_API_KEY')
 if openai_api_key:
@@ -93,19 +93,26 @@ async def chat_stream_endpoint(msg: Message):
 
     messages = [{"role": "system", "content": system_message}] + msg.history + [{"role": "user", "content": msg.message}]
 
-    # Gọi openai với stream=True
-    stream = openai.chat.completions.create(
-        model=MODEL,
-        messages=messages,
-        stream=True
-    )
+    try:
+        stream = openai.chat.completions.create(
+            model=MODEL,
+            messages=messages,
+            stream=True
+        )
+    except Exception as e:
+        return StreamingResponse(
+            iter([f"data: {json.dumps({'error': str(e)})}\n\n"])
+        )
 
     async def event_generator():
-        for chunk in stream:
-            content = chunk.choices[0].delta.get("content")
-            if content:
-                # Dữ liệu SSE phải bắt đầu bằng "data: "
-                yield f"data: {json.dumps(content)}\n\n"
-            await asyncio.sleep(0)  # Để không block event loop
+        try:
+            for chunk in stream:
+                content = chunk.choices[0].delta.get("content")
+                if content:
+                    # Dữ liệu SSE phải bắt đầu bằng "data: "
+                    yield f"data: {json.dumps(content)}\n\n"
+                await asyncio.sleep(0)  # Để không block event loop
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

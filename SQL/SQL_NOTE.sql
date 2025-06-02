@@ -6,7 +6,7 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE NOT NULL,                       -- Email đăng ký, duy nhất
     password_hash VARCHAR(255) NOT NULL,                      -- Mật khẩu đã mã hóa
     role_id INT NOT NULL,                                     -- Liên kết đến bảng roles
-    status ENUM('active', 'inactive', 'suspended') DEFAULT 'active'; -- Trang thai thai khoan
+    status ENUM('active', 'inactive', 'suspended') DEFAULT 'active', -- Trang thái tài khoản
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,           -- Thời gian tạo tài khoản
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -61,7 +61,7 @@ CREATE TABLE guest_users (
 
 -- Bảng lưu địa chỉ người dùng 
 CREATE TABLE user_addresses (
-    address_id  INT AUTO_INCREMENT PRIMARY KEY,                -- Khóa chính, tự động tăng
+    address_id  INT AUTO_INCREMENT PRIMARY KEY,       -- Khóa chính, tự động tăng
     user_id INT NOT NULL,                             -- ID người dùng liên kết với bảng users
     address_line VARCHAR(255) NOT NULL,               -- Địa chỉ chi tiết: số nhà, tên đường, căn hộ...
     ward VARCHAR(100),                                -- Phường/xã
