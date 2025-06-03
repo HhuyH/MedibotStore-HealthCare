@@ -2,41 +2,150 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <title>Chat SSE với FastAPI streaming</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f0f0f0; padding: 30px; }
-        #chat-box {
-            width: 100%; max-width: 600px; height: 400px;
-            background: #fff; border: 1px solid #ccc;
-            overflow-y: auto; padding: 10px; margin-bottom: 10px;
-            white-space: pre-wrap; /* giữ xuống dòng */
-        }
-        #chat-box div { margin: 5px 0; padding: 6px 10px; background: #e6e6e6; border-radius: 5px; }
-        form { display: flex; max-width: 600px; }
-        input[type="text"] { flex: 1; padding: 10px; font-size: 16px; }
-        button { padding: 10px 20px; cursor: pointer; }
-    </style>
+  <meta charset="UTF-8" />
+  <title>✨ Trò Chuyện Sức Khỏe AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    #chat-box {
+      width: 100%;
+      max-width: 1000px;
+      height: 450px;
+      background: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow-y: auto;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      white-space: pre-wrap;
+    }
+
+    #chat-box div {
+      margin: 6px 0;
+      padding: 10px 12px;
+      background: #e9f1fb;
+      border-radius: 6px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      justify-content: center;
+      max-width: 700px;
+      width: 100%;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .reset-form button {
+      background: #dc3545;
+      margin-top: 10px;
+    }
+
+    .reset-form button:hover {
+      background: #a71d2a;
+    }
+
+    #chat-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chat-box .user-msg {
+      align-self: flex-end;
+      background-color: #dcf8c6;
+      border-radius: 12px 12px 0 12px;
+      max-width: 70%;
+      display: inline-block;       /* Không chiếm hết chiều ngang */
+      padding: 8px 12px;
+      font-size: 15px;
+      line-height: 1.3;
+      word-break: break-word;
+      box-sizing: border-box;
+    }
+
+    #chat-box .bot-msg {
+      align-self: flex-start; /* Bot bên trái */
+      background-color: #f1f0f0;
+      border-radius: 12px 12px 12px 0;
+      max-width: 70%;
+    }
+
+    #chat-box table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    #chat-box th, #chat-box td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    #chat-box th {
+      background-color: #f2f2f2;
+    }
+
+
+  </style>
 </head>
 <body>
 
-<h2>🧠 Chat Box</h2>
+  <h2>🧠 Trò Chuyện Sức Khỏe AI</h2>
 
-<!-- Form nhập tin nhắn -->
-<div id="chat-box"></div>
+  <div id="chat-box"></div>
 
-<form id="chat-form">
-  <input type="text" id="userInput" placeholder="Nhập tin nhắn..." autocomplete="off" required />
-  <button type="submit">Gửi</button>
-</form>
+  <!-- Biểu mẫu nhập tin nhắn -->
+  <form id="chat-form">
+    <input type="text" id="userInput" placeholder="Nhập tin nhắn..." autocomplete="off" required />
+    <button type="submit">Gửi</button>
+  </form>
 
+  <!-- Reset chat -->
+  <form method="POST" action="reset.php" class="reset-form">
+    <button type="submit">🔁 Reset cuộc trò chuyện</button>
+  </form>
 
-<script src="assets/chat.js"></script>
-
-<!-- Nút Reset để xóa lịch sử chat -->
-<form method="POST" action="reset.php">
-  <button type="submit" style="background: red; color: white;">🔁 Reset cuộc trò chuyện</button>
-</form>
+  <!-- Gắn file JS -->
+  <script src="assets/chat.js"></script>
 
 </body>
 </html>
