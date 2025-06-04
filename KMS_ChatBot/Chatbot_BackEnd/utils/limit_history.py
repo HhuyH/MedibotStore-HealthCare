@@ -1,27 +1,18 @@
 import tiktoken
+from config import MODEL
 
-def count_tokens(text: str, model_name: str = "gpt-3.5-turbo") -> int:
-    # Lấy encoder phù hợp với model
+def count_message_tokens(message: dict, model_name: str = MODEL) -> int:
     encoding = tiktoken.encoding_for_model(model_name)
-    # Mã hóa đoạn text ra tokens (mã số)
-    tokens = encoding.encode(text)
-    # Trả về số lượng token
-    return len(tokens)
+    # Tính token cho role + content + 4 token overhead (theo docs)
+    tokens = len(encoding.encode(message.get("role", "") + message.get("content", ""))) + 4
+    return tokens
 
-
-MAX_TOKENS = 1000
-
-def limit_history_by_tokens(system_message: dict, history: list, max_tokens=MAX_TOKENS):
-    """
-    Giữ nguyên system_message (1 phần), và cắt bớt history để tổng token <= max_tokens.
-    """
-    # Đếm token của system_message (lấy content từ dict)
-    total_tokens = count_tokens(system_message['content'])
+def limit_history_by_tokens(system_message: dict, history: list, max_tokens=1000):
+    total_tokens = count_message_tokens(system_message)
     limited_history = []
 
-    # Duyệt lịch sử từ mới nhất đến cũ nhất để giữ context mới nhất
     for msg in reversed(history):
-        tokens = count_tokens(msg['content'])
+        tokens = count_message_tokens(msg)
         if total_tokens + tokens > max_tokens:
             break
         limited_history.insert(0, msg)

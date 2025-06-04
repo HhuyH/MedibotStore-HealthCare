@@ -471,3 +471,80 @@ CREATE TABLE payments (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
+----------------------------------------------------------------5. Medical services-------------------------------------------------------------------------------
+
+-- Bảng danh mục dịch vụ
+CREATE TABLE service_categories (
+    id INT PRIMARY KEY AUTO_INCREMENT, -- Khóa chính, tự tăng
+    name VARCHAR(100) NOT NULL, -- Tên danh mục dịch vụ
+    slug VARCHAR(100) NOT NULL UNIQUE, -- Đường dẫn URL thân thiện, duy nhất
+    icon VARCHAR(50) NOT NULL, -- Tên hoặc mã icon đại diện (vd: font-awesome)
+    description TEXT, -- Mô tả chi tiết về danh mục
+    display_order INT DEFAULT 0, -- Thứ tự hiển thị ưu tiên
+    is_active BOOLEAN DEFAULT TRUE, -- Trạng thái hoạt động của danh mục
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Thời gian tạo
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Thời gian cập nhật
+);
+
+
+-- Bảng dịch vụ chính
+CREATE TABLE services (
+    id INT PRIMARY KEY AUTO_INCREMENT, -- Khóa chính
+    category_id INT, -- Khóa ngoại liên kết đến bảng service_categories
+    name VARCHAR(200) NOT NULL, -- Tên dịch vụ
+    slug VARCHAR(200) NOT NULL UNIQUE, -- Slug duy nhất cho dịch vụ (URL)
+    short_description VARCHAR(500), -- Mô tả ngắn (hiển thị sơ lược)
+    full_description TEXT, -- Mô tả đầy đủ chi tiết
+    icon VARCHAR(50), -- Biểu tượng đại diện cho dịch vụ
+    image VARCHAR(255), -- Đường dẫn ảnh minh họa
+    price_from DECIMAL(12,2), -- Giá khởi điểm
+    price_to DECIMAL(12,2), -- Giá kết thúc (giá tối đa)
+    is_featured BOOLEAN DEFAULT FALSE, -- Có phải dịch vụ nổi bật không
+    is_emergency BOOLEAN DEFAULT FALSE, -- Có phải dịch vụ khẩn cấp không
+    is_active BOOLEAN DEFAULT TRUE, -- Trạng thái kích hoạt
+    display_order INT DEFAULT 0, -- Thứ tự hiển thị
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày tạo
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Ngày cập nhật
+    FOREIGN KEY (category_id) REFERENCES service_categories(id) -- Khóa ngoại đến danh mục
+);
+
+
+-- Bảng tính năng của dịch vụ
+CREATE TABLE service_features (
+    id INT PRIMARY KEY AUTO_INCREMENT, -- Khóa chính
+    service_id INT, -- Khóa ngoại liên kết đến bảng services
+    feature_name VARCHAR(200) NOT NULL, -- Tên tính năng
+    description TEXT, -- Mô tả chi tiết tính năng
+    icon VARCHAR(50), -- Biểu tượng của tính năng (tuỳ chọn)
+    display_order INT DEFAULT 0, -- Thứ tự hiển thị của tính năng
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày tạo
+    FOREIGN KEY (service_id) REFERENCES services(id) -- Khóa ngoại đến bảng dịch vụ
+);
+
+
+-- Bảng gói dịch vụ
+CREATE TABLE service_packages (
+    id INT PRIMARY KEY AUTO_INCREMENT, -- Khóa chính
+    name VARCHAR(200) NOT NULL, -- Tên gói dịch vụ
+    slug VARCHAR(200) NOT NULL UNIQUE, -- Slug duy nhất cho URL gói
+    description TEXT, -- Mô tả chi tiết gói
+    price DECIMAL(12,2), -- Giá của gói
+    duration VARCHAR(50), -- Thời hạn của gói (vd: "1 lần", "1 tháng")
+    is_featured BOOLEAN DEFAULT FALSE, -- Gói nổi bật hay không
+    is_active BOOLEAN DEFAULT TRUE, -- Gói có đang hoạt động hay không
+    display_order INT DEFAULT 0, -- Thứ tự hiển thị
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày tạo
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Ngày cập nhật
+);
+
+
+-- Bảng chi tiết tính năng của gói dịch vụ
+CREATE TABLE package_features (
+    id INT PRIMARY KEY AUTO_INCREMENT, -- Khóa chính
+    package_id INT, -- Khóa ngoại liên kết đến bảng service_packages
+    feature_name VARCHAR(200) NOT NULL, -- Tên tính năng trong gói
+    description TEXT, -- Mô tả chi tiết tính năng
+    display_order INT DEFAULT 0, -- Thứ tự hiển thị
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày tạo
+    FOREIGN KEY (package_id) REFERENCES service_packages(id) -- Khóa ngoại đến gói dịch vụ
+);

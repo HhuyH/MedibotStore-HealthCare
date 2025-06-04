@@ -1,14 +1,19 @@
-function appendMessage(message) {
+function appendMessage(message, sender = "user") {
     const div = document.createElement("div");
-    div.textContent = message;
+    div.innerHTML = marked.parse(message);
+    div.className = sender === "user" ? "user-msg" : "bot-msg";
     document.getElementById("chat-box").appendChild(div);
     scrollToBottom();
 }
 
+
 function scrollToBottom() {
     const chatBox = document.getElementById("chat-box");
-    chatBox.scrollTop = chatBox.scrollHeight;
+    setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 50);
 }
+
 
 // Gọi API chat không stream, trả về reply đầy đủ 1 lần
 async function sendChatMessage(message, history) {
@@ -22,7 +27,7 @@ async function sendChatMessage(message, history) {
     return data.reply;
 }
 
-// Gọi API chat stream trả về từng phần nhỏ, gọi callback onUpdate mỗi lần nhận text mới
+// Gọi API chat stream, xử lý JSON hoặc text
 async function sendChatStream(message, history, onUpdate) {
     const response = await fetch("http://127.0.0.1:8000/chat/stream", {
         method: "POST",
@@ -64,7 +69,6 @@ async function sendChatStream(message, history, onUpdate) {
     }
 }
 
-
 document.getElementById("chat-form").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -72,17 +76,14 @@ document.getElementById("chat-form").addEventListener("submit", async function (
     const message = input.value.trim();
     if (!message) return;
 
-    appendMessage("👤 Bạn: " + message);
+    appendMessage(message + " 👤", "user");
     input.value = "";
     input.disabled = true;
 
-    // Lấy history từ PHP session
     const history = await fetch("get_history.php", {
-    credentials: "include"
+        credentials: "include"
     }).then(res => res.json());
 
-
-    // Cập nhật history user
     await fetch("update_history.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -94,11 +95,9 @@ document.getElementById("chat-form").addEventListener("submit", async function (
     const useStreaming = true; // true để dùng stream, false để gọi API bình thường
 
     if (!useStreaming) {
-        // Gọi API bình thường (không stream)
         try {
             const reply = await sendChatMessage(message, history);
-            appendMessage("🤖 Bot: " + reply);
-            // Cập nhật history assistant
+            appendMessage("🤖 " + reply, "bot");
             await fetch("update_history.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -113,26 +112,50 @@ document.getElementById("chat-form").addEventListener("submit", async function (
             input.focus();
         }
     } else {
-        // Gọi API stream
-        const botMessageDiv = document.createElement("div");
-        botMessageDiv.textContent = "🤖 Bot: ";
-        document.getElementById("chat-box").appendChild(botMessageDiv);
+            const botMessageDiv = document.createElement("div");
+            botMessageDiv.className = "bot-msg";
+            botMessageDiv.innerHTML = "<strong>🤖</strong> ";
+            document.getElementById("chat-box").appendChild(botMessageDiv);
 
-        let fullBotReply = "";
-        try {
+            let fullBotReply = "";
+
+            try {
             await sendChatStream(message, history, (text) => {
-                botMessageDiv.textContent += text;
+                let parsed;
+                try {
+                parsed = JSON.parse(text);
+                } catch (e) {
+                parsed = null;
+                }
+
+                if (parsed && parsed.natural_text) {
+                fullBotReply += parsed.natural_text;
+                botMessageDiv.innerHTML = "<strong>🤖</strong> " + marked.parse(fullBotReply);
+
+                if (parsed.sql_query) {
+                    const sqlDiv = document.createElement("pre");
+                    sqlDiv.textContent = "[SQL nội bộ]\n" + parsed.sql_query;
+                    sqlDiv.style.color = "gray";
+                    sqlDiv.style.fontSize = "0.9em";
+                    sqlDiv.style.marginTop = "5px";
+                    document.getElementById("chat-box").appendChild(sqlDiv);
+                }
+                } else {
                 fullBotReply += text;
+                botMessageDiv.innerHTML = "<strong>🤖</strong> " + marked.parse(fullBotReply);
+                }
+
                 scrollToBottom();
             });
 
-            // Cập nhật history assistant
+
             await fetch("update_history.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ role: "assistant", content: fullBotReply }),
                 credentials: "include"
             });
+
         } catch (err) {
             botMessageDiv.textContent += "\n[Error xảy ra khi nhận dữ liệu]";
             console.error(err);

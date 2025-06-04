@@ -12,3 +12,4 @@ def chat(message, history, system_message=system_message):
 def stream_chat(message, history, system_message=system_message):
     messages = [{"role": "system", "content": system_message}] + history + [{"role": "user", "content": message}]
     return openai.chat.completions.create(model=MODEL, messages=messages, stream=True)
+

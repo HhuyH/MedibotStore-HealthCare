@@ -1,0 +1,339 @@
+1. Bảng: users
+- user_id (INT, PK): định danh duy nhất cho mỗi người dùng.
+- username (VARCHAR): tên đăng nhập, duy nhất.
+- email (VARCHAR): địa chỉ email, duy nhất.
+- password_hash (VARCHAR): mật khẩu đã mã hóa.
+- role_id (INT, FK → roles.role_id): vai trò người dùng (bệnh nhân, bác sĩ, quản trị...).
+- status (ENUM): trạng thái tài khoản ('active', 'inactive', 'suspended').
+- created_at (TIMESTAMP): thời điểm tạo tài khoản.
+- updated_at (TIMESTAMP): thời điểm cập nhật tài khoản.
+
+2. Bảng: roles
+- role_id (INT, PK): định danh vai trò.
+- role_name (VARCHAR): tên vai trò ('admin', 'doctor', 'patient'...).
+- description (TEXT): mô tả vai trò (nếu có).
+
+3. Bảng: users_info
+- id (INT, PK): định danh thông tin người dùng.
+- user_id (INT, FK → users.user_id): người dùng tương ứng.
+- full_name (VARCHAR): họ tên người dùng.
+- gender (ENUM): giới tính ('Nam', 'Nữ', 'Khác').
+- phone (VARCHAR): số điện thoại, duy nhất.
+- date_of_birth (DATE): ngày sinh.
+- profile_picture (VARCHAR): URL ảnh đại diện.
+- created_at, updated_at (TIMESTAMP): thời điểm tạo và cập nhật bản ghi.
+
+4. Bảng: guest_users
+- guest_id (INT, PK): định danh khách vãng lai.
+- full_name (VARCHAR): họ tên khách (nhập qua chatbot).
+- phone (VARCHAR): số điện thoại khách (qua chatbot).
+- email (VARCHAR): email khách (không bắt buộc).
+- created_at, updated_at (TIMESTAMP): thời gian tạo/cập nhật.
+
+5. Bảng: user_addresses
+- address_id (INT, PK): định danh địa chỉ.
+- user_id (INT, FK → users.user_id): liên kết người dùng.
+- address_line (VARCHAR): chi tiết địa chỉ (số nhà, đường...).
+- ward, district, city (VARCHAR): đơn vị hành chính.
+- postal_code (VARCHAR): mã bưu điện.
+- country (VARCHAR): quốc gia (mặc định: Việt Nam).
+- is_default (BOOLEAN): có phải địa chỉ mặc định không.
+- created_at, updated_at (DATETIME): thời điểm tạo và cập nhật.
+
+6. Bảng: notifications
+- notification_id (INT, PK): định danh thông báo.
+- target_role_id (INT, FK → roles.role_id): gửi cho vai trò cụ thể.
+- title (VARCHAR): tiêu đề ngắn.
+- message (TEXT): nội dung thông báo.
+- type (VARCHAR): loại thông báo ('system', 'AI alert'...).
+- is_global (BOOLEAN): true nếu là thông báo toàn hệ thống.
+- created_at, updated_at (DATETIME): thời gian tạo/cập nhật.
+
+7. Bảng: user_notifications
+- id (INT, PK): định danh bản ghi ánh xạ.
+- notification_id (INT, FK → notifications.notification_id): thông báo tương ứng.
+- user_id (INT, FK → users.user_id): người dùng nhận.
+- is_read (BOOLEAN): đã đọc hay chưa.
+- received_at (DATETIME): thời điểm nhận.
+
+8. medical_categories
+- category_id (INT, PK): định danh phân loại bệnh/chuyên khoa.
+- name (VARCHAR): tên chuyên khoa.
+- description (TEXT): mô tả chi tiết.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+9. diseases
+- disease_id (INT, PK): định danh bệnh.
+- name (VARCHAR): tên bệnh.
+- description (TEXT): mô tả về bệnh.
+- treatment_guidelines (TEXT): hướng dẫn điều trị.
+- category_id (INT, FK → medical_categories.category_id): liên kết đến chuyên khoa.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+10. symptoms
+- symptom_id (INT, PK): định danh triệu chứng.
+- name (VARCHAR): tên triệu chứng.
+- description (TEXT): mô tả triệu chứng.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+11. disease_symptoms
+- disease_id (INT, PK, FK → diseases.disease_id): ID bệnh.
+- symptom_id (INT, PK, FK → symptoms.symptom_id): ID triệu chứng.
+
+12. user_symptom_history
+- id (INT, PK): định danh bản ghi.
+- user_id (INT, FK → users.user_id): liên kết người dùng.
+- symptom_id (INT, FK → symptoms.symptom_id): triệu chứng ghi nhận.
+- record_date (DATE): ngày lưu triệu chứng.
+- notes (TEXT): ghi chú chi tiết.
+
+13. clinics
+- clinic_id (INT, PK): định danh phòng khám.
+- name (VARCHAR): tên phòng khám.
+- address (TEXT): địa chỉ.
+- phone (VARCHAR): số điện thoại liên hệ.
+- email (VARCHAR): email liên hệ.
+- description (TEXT): mô tả chi tiết.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+14. specialties
+- specialty_id (INT, PK): định danh chuyên ngành y tế.
+- name (VARCHAR): tên chuyên ngành.
+- description (TEXT): mô tả chuyên ngành.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+15. doctors
+- doctor_id (INT, PK): định danh bác sĩ.
+- user_id (INT, UNIQUE, FK → users.user_id): liên kết người dùng.
+- specialty_id (INT, FK → specialties.specialty_id): chuyên ngành.
+- clinic_id (INT, FK → clinics.clinic_id): phòng khám.
+- biography (TEXT): tiểu sử.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+16. doctor_schedules
+- schedule_id (INT, PK): định danh lịch làm việc.
+- doctor_id (INT, FK → doctors.doctor_id): bác sĩ.
+- clinic_id (INT, FK → clinics.clinic_id): phòng khám.
+- day_of_week (VARCHAR): thứ trong tuần.
+- start_time (TIME): giờ bắt đầu.
+- end_time (TIME): giờ kết thúc.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+17. appointments
+- appointment_id (INT, PK): định danh lịch hẹn.
+- user_id (INT, FK → users.user_id): người dùng.
+- guest_id (INT, FK → guest_users.guest_id): người dùng khách.
+- doctor_id (INT, FK → doctors.doctor_id): bác sĩ khám.
+- clinic_id (INT, FK → clinics.clinic_id): phòng khám.
+- appointment_time (DATETIME): thời gian hẹn.
+- reason (TEXT): lý do khám.
+- status (VARCHAR): trạng thái lịch hẹn.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+18. prescriptions
+- prescription_id (INT, PK): định danh đơn thuốc.
+- appointment_id (INT, FK → appointments.appointment_id): liên kết lịch hẹn.
+- prescribed_date (DATE): ngày kê đơn.
+- medications (TEXT): danh sách thuốc.
+- notes (TEXT): ghi chú dùng thuốc.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+19. medical_records
+- med_rec_id (INT, PK): định danh ghi chú khám.
+- appointment_id (INT, FK → appointments.appointment_id): cuộc hẹn liên quan.
+- note_date (TIMESTAMP): thời điểm ghi chú.
+- diagnosis (TEXT): chẩn đoán.
+- recommendations (TEXT): hướng dẫn/chỉ định.
+- created_at (TIMESTAMP): thời điểm tạo.
+
+20. health_records
+- record_id (INT, PK): mã bản ghi dữ liệu sức khỏe định kỳ.
+- user_id (INT, FK → users.user_id): người dùng liên quan.
+- record_date (DATE): ngày ghi nhận dữ liệu.
+- weight (FLOAT): cân nặng (kg).
+- blood_pressure (VARCHAR): huyết áp (vd: 120/80).
+- sleep_hours (FLOAT): số giờ ngủ.
+- notes (TEXT): ghi chú thêm.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+21. chat_logs
+- chat_id (INT, PK): mã hội thoại.
+- user_id (INT, FK → users.user_id, nullable): người dùng.
+- guest_id (INT, FK → guest_users.guest_id, nullable): khách vãng lai.
+- intent (VARCHAR): ý định của người dùng.
+- message (TEXT): nội dung tin nhắn.
+- sender (ENUM): người gửi ('user' hoặc 'bot').
+- sent_at (TIMESTAMP): thời điểm gửi.
+- CHECK: bắt buộc phải có user_id hoặc guest_id, không được null cả hai.
+
+22. health_predictions
+- prediction_id (INT, PK): mã dự đoán.
+- user_id (INT, FK → users.user_id): người dùng.
+- record_id (INT, FK → health_records.record_id): bản ghi dữ liệu liên quan.
+- chat_id (INT, FK → chat_logs.chat_id): cuộc hội thoại liên quan (nếu có).
+- prediction_date (TIMESTAMP): thời gian dự đoán.
+- confidence_score (FLOAT): độ tin cậy (0–1).
+- details (TEXT): chi tiết dự đoán.
+
+23. prediction_diseases
+- id (INT, PK): mã liên kết.
+- prediction_id (INT, FK → health_predictions.prediction_id): dự đoán liên quan.
+- disease_id (INT, FK → diseases.disease_id): bệnh được dự đoán.
+- confidence (FLOAT): độ tin cậy (0–1) cho mỗi bệnh.
+
+24. chatbot_knowledge_base
+- kb_id (INT, PK): mã mục kiến thức.
+- intent (VARCHAR): ý định.
+- question (TEXT): câu hỏi mẫu.
+- answer (TEXT): câu trả lời mẫu.
+- category (VARCHAR): phân loại câu hỏi.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+25. product_categories  
+- category_id (INT, PK): primary key  
+- name (VARCHAR): category name  
+- description (TEXT): category description  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+26. products  
+- product_id (INT, PK): primary key  
+- category_id (INT): foreign key to product_categories  
+- name (VARCHAR): product name  
+- description (TEXT): product description  
+- price (DECIMAL): price of product  
+- stock (INT): stock quantity  
+- image_url (TEXT): product image URL  
+- is_active (BOOLEAN): product active status  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+27. medicines  
+- medicine_id (INT, PK): primary key, foreign key to products.product_id  
+- active_ingredient (VARCHAR): main active ingredient  
+- dosage_form (VARCHAR): dosage form (tablet, vial, pack...)  
+- unit (VARCHAR): measurement unit (tablet, ml, etc.)  
+- usage_instructions (TEXT): instructions for use  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+28. prescription_products  
+- id (INT, PK): primary key  
+- prescription_id (INT): foreign key to prescriptions.prescription_id  
+- product_id (INT, nullable): foreign key to products.product_id  
+- quantity (INT): quantity prescribed  
+- dosage (TEXT): dosage details  
+- usage_time (TEXT): duration or timing of use  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+29. product_reviews  
+- review_id (INT, PK): primary key  
+- product_id (INT): foreign key to products.product_id  
+- user_id (INT): foreign key to users.user_id  
+- rating (INT): rating from 1 to 5  
+- comment (TEXT): user comment  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+30. orders  
+- order_id (INT, PK): primary key  
+- user_id (INT): foreign key to users.user_id  
+- address_id (INT, nullable): foreign key to user_addresses.address_id  
+- shipping_address (TEXT): snapshot of shipping address at order time  
+- total (DECIMAL): total price (nullable if not confirmed)  
+- payment_method (VARCHAR): method used (COD, Momo, VNPay, etc.)  
+- payment_status (VARCHAR): payment status, default 'pending'  
+- status (ENUM): order status ('cart', 'pending', 'processing', 'shipped', 'completed', 'cancelled'), default 'cart'  
+- order_note (TEXT): optional customer note  
+- order_date (TIMESTAMP): order creation time  
+- updated_at (DATETIME): last update timestamp  
+
+31. order_items  
+- item_id (INT, PK): primary key  
+- order_id (INT): foreign key to orders.order_id  
+- product_id (INT): foreign key to products.product_id  
+- quantity (INT): quantity purchased  
+- unit_price (DECIMAL): price per product at purchase time  
+
+32. payments  
+- payment_id (INT, PK): primary key  
+- user_id (INT, nullable): foreign key to users.user_id  
+- order_id (INT): foreign key to orders.order_id  
+- payment_method (VARCHAR): payment method used  
+- payment_status (VARCHAR): payment status ('pending', 'completed', 'failed'), default 'pending'  
+- amount (DECIMAL): amount paid  
+- payment_time (TIMESTAMP): time of payment 
+
+33. service_categories  
+- id (INT, PK): primary key, auto-increment  
+- name (VARCHAR): service category name  
+- slug (VARCHAR, unique): unique friendly URL  
+- icon (VARCHAR): representative icon  
+- description (TEXT): detailed description  
+- display_order (INT, default 0): display priority order  
+- is_active (BOOLEAN, default TRUE): active status  
+- created_at (TIMESTAMP): creation time  
+- updated_at (TIMESTAMP): last updated time  
+
+34. services  
+- id (INT, PK): primary key, auto-increment  
+- category_id (INT): foreign key to service_categories.id  
+- name (VARCHAR): service name  
+- slug (VARCHAR, unique): unique slug for URL  
+- short_description (VARCHAR): short description  
+- full_description (TEXT): full detailed description  
+- icon (VARCHAR): representative icon  
+- image (VARCHAR): image path  
+- price_from (DECIMAL): starting price  
+- price_to (DECIMAL): maximum price  
+- is_featured (BOOLEAN, default FALSE): featured flag  
+- is_emergency (BOOLEAN, default FALSE): emergency service flag  
+- is_active (BOOLEAN, default TRUE): activation status  
+- display_order (INT, default 0): display priority  
+- created_at (TIMESTAMP): creation time  
+- updated_at (TIMESTAMP): last updated time  
+- FOREIGN KEY (category_id): references service_categories(id)  
+
+35. service_features  
+- id (INT, PK): primary key, auto-increment  
+- service_id (INT): foreign key to services.id  
+- feature_name (VARCHAR): name of the feature  
+- description (TEXT): detailed description  
+- icon (VARCHAR): optional icon  
+- display_order (INT, default 0): display order  
+- created_at (TIMESTAMP): creation time  
+- FOREIGN KEY (service_id): references services(id)  
+
+36. service_packages  
+- id (INT, PK): primary key, auto-increment  
+- name (VARCHAR): service package name  
+- slug (VARCHAR, unique): unique slug for URL  
+- description (TEXT): detailed description  
+- price (DECIMAL): package price  
+- duration (VARCHAR): package duration (e.g., "one-time", "monthly")  
+- is_featured (BOOLEAN, default FALSE): featured flag  
+- is_active (BOOLEAN, default TRUE): active status  
+- display_order (INT, default 0): display priority  
+- created_at (TIMESTAMP): creation time  
+- updated_at (TIMESTAMP): last updated time  
+
+37. package_features  
+- id (INT, PK): primary key, auto-increment  
+- package_id (INT): foreign key to service_packages.id  
+- feature_name (VARCHAR): package feature name  
+- description (TEXT): detailed description  
+- display_order (INT, default 0): display order  
+- created_at (TIMESTAMP): creation time  
+- FOREIGN KEY (package_id): references service_packages(id)
