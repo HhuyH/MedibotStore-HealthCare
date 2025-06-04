@@ -275,3 +275,65 @@
 - payment_status (VARCHAR): payment status ('pending', 'completed', 'failed'), default 'pending'  
 - amount (DECIMAL): amount paid  
 - payment_time (TIMESTAMP): time of payment 
+
+33. service_categories  
+- id (INT, PK): primary key, auto-increment  
+- name (VARCHAR): service category name  
+- slug (VARCHAR, unique): unique friendly URL  
+- icon (VARCHAR): representative icon  
+- description (TEXT): detailed description  
+- display_order (INT, default 0): display priority order  
+- is_active (BOOLEAN, default TRUE): active status  
+- created_at (TIMESTAMP): creation time  
+- updated_at (TIMESTAMP): last updated time  
+
+34. services  
+- id (INT, PK): primary key, auto-increment  
+- category_id (INT): foreign key to service_categories.id  
+- name (VARCHAR): service name  
+- slug (VARCHAR, unique): unique slug for URL  
+- short_description (VARCHAR): short description  
+- full_description (TEXT): full detailed description  
+- icon (VARCHAR): representative icon  
+- image (VARCHAR): image path  
+- price_from (DECIMAL): starting price  
+- price_to (DECIMAL): maximum price  
+- is_featured (BOOLEAN, default FALSE): featured flag  
+- is_emergency (BOOLEAN, default FALSE): emergency service flag  
+- is_active (BOOLEAN, default TRUE): activation status  
+- display_order (INT, default 0): display priority  
+- created_at (TIMESTAMP): creation time  
+- updated_at (TIMESTAMP): last updated time  
+- FOREIGN KEY (category_id): references service_categories(id)  
+
+35. service_features  
+- id (INT, PK): primary key, auto-increment  
+- service_id (INT): foreign key to services.id  
+- feature_name (VARCHAR): name of the feature  
+- description (TEXT): detailed description  
+- icon (VARCHAR): optional icon  
+- display_order (INT, default 0): display order  
+- created_at (TIMESTAMP): creation time  
+- FOREIGN KEY (service_id): references services(id)  
+
+36. service_packages  
+- id (INT, PK): primary key, auto-increment  
+- name (VARCHAR): service package name  
+- slug (VARCHAR, unique): unique slug for URL  
+- description (TEXT): detailed description  
+- price (DECIMAL): package price  
+- duration (VARCHAR): package duration (e.g., "one-time", "monthly")  
+- is_featured (BOOLEAN, default FALSE): featured flag  
+- is_active (BOOLEAN, default TRUE): active status  
+- display_order (INT, default 0): display priority  
+- created_at (TIMESTAMP): creation time  
+- updated_at (TIMESTAMP): last updated time  
+
+37. package_features  
+- id (INT, PK): primary key, auto-increment  
+- package_id (INT): foreign key to service_packages.id  
+- feature_name (VARCHAR): package feature name  
+- description (TEXT): detailed description  
+- display_order (INT, default 0): display order  
+- created_at (TIMESTAMP): creation time  
+- FOREIGN KEY (package_id): references service_packages(id)

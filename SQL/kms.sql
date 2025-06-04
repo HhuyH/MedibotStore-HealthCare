@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 28, 2025 at 12:06 PM
+-- Generation Time: Jun 04, 2025 at 09:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -66,12 +66,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_addresses` (IN `in_user_id
     ORDER BY a.is_default DESC, a.updated_at DESC;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_details` (IN `in_user_id` INT)  COMMENT '--CALL get_user_details(2);' BEGIN
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_details` (IN `in_user_id` INT)   BEGIN
     SELECT 
         u.user_id AS `User ID`,
         u.username AS `Username`,
         u.email AS `Email`,
-        u.phone_number AS `Số điện thoại`,
+        ui.phone AS `Số điện thoại`,
         r.role_name AS `Vai trò`,
         ui.full_name AS `Họ tên`,
         ui.gender AS `Giới tính`,
@@ -88,6 +88,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_details` (IN `in_user_id` 
     LEFT JOIN roles r ON u.role_id = r.role_id
     LEFT JOIN user_addresses a ON u.user_id = a.user_id AND a.is_default = TRUE
     WHERE u.user_id = in_user_id;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_info` (IN `input_login` VARCHAR(100))   BEGIN
+    SELECT u.user_id, u.username, u.email, u.password_hash, r.role_name
+    FROM users u
+    JOIN roles r ON u.role_id = r.role_id
+    WHERE u.username = input_login OR u.email = input_login
+    LIMIT 1;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user_symptom_history` (IN `in_user_id` INT)   BEGIN
@@ -121,21 +129,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `login_user` (IN `input_username_or_
     ELSE
         SELECT FALSE AS success, NULL AS user_id, NULL AS role;
     END IF;
-END$$
-
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_patient_history` (IN `p_user_id` INT)   BEGIN
-    SELECT a.appointment_id, a.appointment_time, a.reason, 
-           mr.diagnosis, mr.recommendations,
-           p.medications, p.notes
-    FROM appointments a
-    LEFT JOIN medical_records mr ON a.appointment_id = mr.appointment_id
-    LEFT JOIN prescriptions p ON a.appointment_id = p.appointment_id
-    WHERE a.user_id = p_user_id OR a.guest_id IN (
-        SELECT guest_id FROM guest_users WHERE phone = (
-            SELECT phone FROM users WHERE user_id = p_user_id
-        )
-    )
-    ORDER BY a.appointment_time DESC;
 END$$
 
 DELIMITER ;
@@ -542,6 +535,36 @@ CREATE TABLE `order_items` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `package_features`
+--
+
+CREATE TABLE `package_features` (
+  `id` int(11) NOT NULL,
+  `package_id` int(11) DEFAULT NULL,
+  `feature_name` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `display_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `package_features`
+--
+
+INSERT INTO `package_features` (`id`, `package_id`, `feature_name`, `description`, `display_order`, `created_at`) VALUES
+(1, 1, 'Khám lâm sàng tổng quát', NULL, 0, '2025-06-04 06:33:57'),
+(2, 1, 'Xét nghiệm máu cơ bản', NULL, 0, '2025-06-04 06:33:57'),
+(3, 1, 'Xét nghiệm nước tiểu', NULL, 0, '2025-06-04 06:33:57'),
+(4, 1, 'X-quang phổi', NULL, 0, '2025-06-04 06:33:57'),
+(5, 1, 'Điện tim', NULL, 0, '2025-06-04 06:33:57'),
+(6, 1, 'Tư vấn kết quả', NULL, 0, '2025-06-04 06:33:57'),
+(7, 2, 'Tất cả gói cơ bản', NULL, 0, '2025-06-04 06:33:57'),
+(8, 2, 'Siêu âm bụng tổng quát', NULL, 0, '2025-06-04 06:33:57'),
+(9, 2, 'Siêu âm tim', NULL, 0, '2025-06-04 06:33:57');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `payments`
 --
 
@@ -564,8 +587,8 @@ CREATE TABLE `payments` (
 CREATE TABLE `prediction_diseases` (
   `id` int(11) NOT NULL,
   `prediction_id` int(11) NOT NULL,
-  `disease_name` varchar(255) NOT NULL,
-  `confidence` float DEFAULT NULL
+  `disease_id` int(11) NOT NULL,
+  `confidence` float DEFAULT NULL CHECK (`confidence` between 0 and 1)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -727,6 +750,130 @@ INSERT INTO `roles` (`role_id`, `role_name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `services`
+--
+
+CREATE TABLE `services` (
+  `id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `name` varchar(200) NOT NULL,
+  `slug` varchar(200) NOT NULL,
+  `short_description` varchar(500) DEFAULT NULL,
+  `full_description` text DEFAULT NULL,
+  `icon` varchar(50) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `price_from` decimal(16,0) DEFAULT NULL,
+  `price_to` decimal(16,0) DEFAULT NULL,
+  `is_featured` tinyint(1) DEFAULT 0,
+  `is_emergency` tinyint(1) DEFAULT 0,
+  `is_active` tinyint(1) DEFAULT 1,
+  `display_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `services`
+--
+
+INSERT INTO `services` (`id`, `category_id`, `name`, `slug`, `short_description`, `full_description`, `icon`, `image`, `price_from`, `price_to`, `is_featured`, `is_emergency`, `is_active`, `display_order`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Khám Tổng Quát', 'kham-tong-quat', 'Khám sức khỏe định kỳ và tầm soát các bệnh lý thường gặp', NULL, NULL, NULL, 200000, 500000, 0, 0, 1, 0, '2025-06-04 06:33:33', '2025-06-04 06:33:33'),
+(2, 2, 'Khám Tim Mạch', 'kham-tim-mach', 'Chẩn đoán và điều trị các bệnh lý tim mạch với trang thiết bị hiện đại', NULL, NULL, NULL, 300000, 2000000, 1, 0, 1, 0, '2025-06-04 06:33:33', '2025-06-04 06:33:33'),
+(3, 3, 'Khám Tiêu Hóa', 'kham-tieu-hoa', 'Chẩn đoán và điều trị các bệnh lý về đường tiêu hóa, gan mật', NULL, NULL, NULL, 250000, 1500000, 0, 0, 1, 0, '2025-06-04 06:33:33', '2025-06-04 06:33:33'),
+(4, 6, 'Dịch Vụ Cấp Cứu', 'dich-vu-cap-cuu', 'Dịch vụ cấp cứu 24/7 với đội ngũ y bác sĩ luôn sẵn sàng', NULL, NULL, NULL, NULL, NULL, 0, 1, 1, 0, '2025-06-04 06:33:33', '2025-06-04 06:33:33');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `service_categories`
+--
+
+CREATE TABLE `service_categories` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `icon` varchar(50) NOT NULL,
+  `description` text DEFAULT NULL,
+  `display_order` int(11) DEFAULT 0,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_categories`
+--
+
+INSERT INTO `service_categories` (`id`, `name`, `slug`, `icon`, `description`, `display_order`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'Khám Tổng Quát', 'kham-tong-quat', 'fas fa-stethoscope', 'Dịch vụ khám sức khỏe tổng quát và tầm soát bệnh', 0, 1, '2025-06-04 06:33:25', '2025-06-04 06:33:25'),
+(2, 'Tim Mạch', 'tim-mach', 'fas fa-heartbeat', 'Chẩn đoán và điều trị các bệnh lý tim mạch', 0, 1, '2025-06-04 06:33:25', '2025-06-04 06:33:25'),
+(3, 'Tiêu Hóa', 'tieu-hoa', 'fas fa-prescription-bottle-alt', 'Điều trị các bệnh về đường tiêu hóa', 0, 1, '2025-06-04 06:33:25', '2025-06-04 06:33:25'),
+(4, 'Thần Kinh', 'than-kinh', 'fas fa-brain', 'Điều trị các bệnh lý thần kinh', 0, 1, '2025-06-04 06:33:25', '2025-06-04 06:33:25'),
+(5, 'Chấn Thương Chỉnh Hình', 'chan-thuong-chinh-hinh', 'fas fa-bone', 'Điều trị chấn thương và bệnh lý xương khớp', 0, 1, '2025-06-04 06:33:25', '2025-06-04 06:33:25'),
+(6, 'Cấp Cứu', 'cap-cuu', 'fas fa-ambulance', 'Dịch vụ cấp cứu 24/7', 0, 1, '2025-06-04 06:33:25', '2025-06-04 06:33:25');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `service_features`
+--
+
+CREATE TABLE `service_features` (
+  `id` int(11) NOT NULL,
+  `service_id` int(11) DEFAULT NULL,
+  `feature_name` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `icon` varchar(50) DEFAULT NULL,
+  `display_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_features`
+--
+
+INSERT INTO `service_features` (`id`, `service_id`, `feature_name`, `description`, `icon`, `display_order`, `created_at`) VALUES
+(1, 1, 'Khám lâm sàng toàn diện', NULL, NULL, 0, '2025-06-04 06:33:41'),
+(2, 1, 'Xét nghiệm máu cơ bản', NULL, NULL, 0, '2025-06-04 06:33:41'),
+(3, 1, 'Đo huyết áp, nhịp tim', NULL, NULL, 0, '2025-06-04 06:33:41'),
+(4, 1, 'Tư vấn dinh dưỡng', NULL, NULL, 0, '2025-06-04 06:33:41'),
+(5, 2, 'Siêu âm tim', NULL, NULL, 0, '2025-06-04 06:33:41'),
+(6, 2, 'Điện tim', NULL, NULL, 0, '2025-06-04 06:33:41'),
+(7, 2, 'Holter 24h', NULL, NULL, 0, '2025-06-04 06:33:41'),
+(8, 2, 'Thăm dò chức năng tim', NULL, NULL, 0, '2025-06-04 06:33:41');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `service_packages`
+--
+
+CREATE TABLE `service_packages` (
+  `id` int(11) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  `slug` varchar(200) NOT NULL,
+  `description` text DEFAULT NULL,
+  `price` decimal(16,0) DEFAULT NULL,
+  `duration` varchar(50) DEFAULT NULL,
+  `is_featured` tinyint(1) DEFAULT 0,
+  `is_active` tinyint(1) DEFAULT 1,
+  `display_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_packages`
+--
+
+INSERT INTO `service_packages` (`id`, `name`, `slug`, `description`, `price`, `duration`, `is_featured`, `is_active`, `display_order`, `created_at`, `updated_at`) VALUES
+(1, 'Gói Cơ Bản', 'goi-co-ban', 'Gói khám sức khỏe cơ bản', 1500000, '/lần', 0, 1, 0, '2025-06-04 06:33:50', '2025-06-04 06:33:50'),
+(2, 'Gói Nâng Cao', 'goi-nang-cao', 'Gói khám sức khỏe nâng cao', 3500000, '/lần', 1, 1, 0, '2025-06-04 06:33:50', '2025-06-04 06:33:50'),
+(3, 'Gói Cao Cấp', 'goi-cao-cap', 'Gói khám sức khỏe cao cấp', 6500000, '/lần', 0, 1, 0, '2025-06-04 06:33:50', '2025-06-04 06:33:50');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `specialties`
 --
 
@@ -792,23 +939,23 @@ CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `phone_number` varchar(15) DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
   `role_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` enum('active','inactive','suspended') DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `phone_number`, `password_hash`, `role_id`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin@gmail.com', '0123456789', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 1, '2025-05-22 06:49:02', '2025-05-22 06:49:02'),
-(2, 'huy', 'hoanhuy12@gmail.com', '0901647655', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 1, '2025-05-22 06:49:02', '2025-05-22 06:49:02'),
-(3, 'dr.hanh', 'doctor@example.com', '0999999999', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-05-22 06:49:02', '2025-05-22 06:49:02'),
-(4, 'nguyenvana', 'vana@example.com', '0901234567', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 3, '2025-05-22 08:38:06', '2025-05-22 08:38:06'),
-(6, 'linh', 'linh@gmail.com', '0123466789', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-05-24 06:15:12', '2025-05-24 06:15:12');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `role_id`, `created_at`, `updated_at`, `status`) VALUES
+(1, 'admin', 'admin@gmail.com', '123', 1, '2025-05-22 06:49:02', '2025-06-03 07:25:19', 'active'),
+(2, 'huy', 'hoanhuy12@gmail.com', '123', 1, '2025-05-22 06:49:02', '2025-06-03 07:37:09', 'active'),
+(3, 'dr.hanh', 'doctor@example.com', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-05-22 06:49:02', '2025-05-22 06:49:02', 'active'),
+(4, 'nguyenvana', 'vana@example.com', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 3, '2025-05-22 08:38:06', '2025-05-22 08:38:06', 'active'),
+(6, 'linh', 'linh@gmail.com', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-05-24 06:15:12', '2025-05-24 06:15:12', 'active');
 
 -- --------------------------------------------------------
 
@@ -824,19 +971,20 @@ CREATE TABLE `users_info` (
   `date_of_birth` date DEFAULT NULL,
   `profile_picture` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `phone` varchar(15) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users_info`
 --
 
-INSERT INTO `users_info` (`id`, `user_id`, `full_name`, `gender`, `date_of_birth`, `profile_picture`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Quản trị viên', 'Nam', '1990-01-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55'),
-(2, 2, 'Hoàn Huy', 'Nam', '1999-09-09', NULL, '2025-05-22 06:49:55', '2025-05-24 07:07:40'),
-(3, 3, 'John Doe', 'Nam', '2000-12-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55'),
-(4, 4, 'Nguyễn Văn A', 'Nam', '1995-08-15', NULL, '2025-05-22 08:39:27', '2025-05-22 08:39:27'),
-(5, 6, 'Dr.Linh', 'Nữ', '1995-08-15', NULL, '2025-05-24 06:17:47', '2025-05-24 06:17:47');
+INSERT INTO `users_info` (`id`, `user_id`, `full_name`, `gender`, `date_of_birth`, `profile_picture`, `created_at`, `updated_at`, `phone`) VALUES
+(1, 1, 'Quản trị viên', 'Nam', '1990-01-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55', NULL),
+(2, 2, 'Hoàn Huy', 'Nam', '1999-09-09', NULL, '2025-05-22 06:49:55', '2025-05-24 07:07:40', NULL),
+(3, 3, 'John Doe', 'Nam', '2000-12-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55', NULL),
+(4, 4, 'Nguyễn Văn A', 'Nam', '1995-08-15', NULL, '2025-05-22 08:39:27', '2025-05-22 08:39:27', NULL),
+(5, 6, 'Dr.Linh', 'Nữ', '1995-08-15', NULL, '2025-05-24 06:17:47', '2025-05-24 06:17:47', NULL);
 
 -- --------------------------------------------------------
 
@@ -1043,6 +1191,13 @@ ALTER TABLE `order_items`
   ADD KEY `product_id` (`product_id`);
 
 --
+-- Indexes for table `package_features`
+--
+ALTER TABLE `package_features`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `package_id` (`package_id`);
+
+--
 -- Indexes for table `payments`
 --
 ALTER TABLE `payments`
@@ -1055,7 +1210,8 @@ ALTER TABLE `payments`
 --
 ALTER TABLE `prediction_diseases`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `prediction_id` (`prediction_id`);
+  ADD KEY `prediction_id` (`prediction_id`),
+  ADD KEY `disease_id` (`disease_id`);
 
 --
 -- Indexes for table `prescriptions`
@@ -1101,6 +1257,35 @@ ALTER TABLE `roles`
   ADD UNIQUE KEY `role_name` (`role_name`);
 
 --
+-- Indexes for table `services`
+--
+ALTER TABLE `services`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `slug` (`slug`),
+  ADD KEY `category_id` (`category_id`);
+
+--
+-- Indexes for table `service_categories`
+--
+ALTER TABLE `service_categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `slug` (`slug`);
+
+--
+-- Indexes for table `service_features`
+--
+ALTER TABLE `service_features`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `service_id` (`service_id`);
+
+--
+-- Indexes for table `service_packages`
+--
+ALTER TABLE `service_packages`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `slug` (`slug`);
+
+--
 -- Indexes for table `specialties`
 --
 ALTER TABLE `specialties`
@@ -1119,7 +1304,6 @@ ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `username` (`username`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `phone_number` (`phone_number`),
   ADD KEY `role_id` (`role_id`);
 
 --
@@ -1247,6 +1431,12 @@ ALTER TABLE `order_items`
   MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `package_features`
+--
+ALTER TABLE `package_features`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
@@ -1293,6 +1483,30 @@ ALTER TABLE `product_reviews`
 --
 ALTER TABLE `roles`
   MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `services`
+--
+ALTER TABLE `services`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `service_categories`
+--
+ALTER TABLE `service_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `service_features`
+--
+ALTER TABLE `service_features`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `service_packages`
+--
+ALTER TABLE `service_packages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `specialties`
@@ -1431,6 +1645,12 @@ ALTER TABLE `order_items`
   ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 
 --
+-- Constraints for table `package_features`
+--
+ALTER TABLE `package_features`
+  ADD CONSTRAINT `package_features_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `service_packages` (`id`);
+
+--
 -- Constraints for table `payments`
 --
 ALTER TABLE `payments`
@@ -1441,7 +1661,8 @@ ALTER TABLE `payments`
 -- Constraints for table `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
-  ADD CONSTRAINT `prediction_diseases_ibfk_1` FOREIGN KEY (`prediction_id`) REFERENCES `health_predictions` (`prediction_id`);
+  ADD CONSTRAINT `prediction_diseases_ibfk_1` FOREIGN KEY (`prediction_id`) REFERENCES `health_predictions` (`prediction_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `prediction_diseases_ibfk_2` FOREIGN KEY (`disease_id`) REFERENCES `diseases` (`disease_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `prescriptions`
@@ -1468,6 +1689,18 @@ ALTER TABLE `products`
 ALTER TABLE `product_reviews`
   ADD CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
   ADD CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `services`
+--
+ALTER TABLE `services`
+  ADD CONSTRAINT `services_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `service_categories` (`id`);
+
+--
+-- Constraints for table `service_features`
+--
+ALTER TABLE `service_features`
+  ADD CONSTRAINT `service_features_ibfk_1` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`);
 
 --
 -- Constraints for table `users`
