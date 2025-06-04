@@ -67,6 +67,17 @@ INSERT INTO medical_categories (name, description) VALUES
 -------------------------------------------------------diseases--------------------------------------------------------------------------------------------------------------
 
 INSERT INTO diseases (name, description, treatment_guidelines, category_id) VALUES
+('Cảm lạnh thông thường', 'Nhiễm virus nhẹ gây hắt hơi, sổ mũi', 'Nghỉ ngơi, uống nhiều nước, dùng thuốc giảm triệu chứng', 2),
+('Đau đầu căng thẳng', 'Đau đầu do căng thẳng, stress hoặc sai tư thế', 'Nghỉ ngơi, thư giãn, thuốc giảm đau nếu cần', 4),
+('Viêm họng cấp', 'Viêm vùng họng do virus hoặc vi khuẩn', 'Súc họng, uống nước ấm, thuốc kháng sinh nếu cần', 2),
+('Nổi mề đay', 'Phản ứng dị ứng gây ngứa, nổi ban đỏ', 'Thuốc kháng histamin, tránh tác nhân gây dị ứng', 5),
+('Táo bón chức năng', 'Khó đi tiêu do rối loạn tiêu hoá nhẹ', 'Ăn nhiều chất xơ, uống đủ nước, luyện tập thể dục', 3),
+('Đau bụng kinh', 'Đau bụng khi hành kinh', 'Thuốc giảm đau, nghỉ ngơi, chườm ấm', 3),
+('Lupus ban đỏ hệ thống', 'Bệnh tự miễn tấn công nhiều cơ quan', 'Dùng thuốc ức chế miễn dịch và theo dõi định kỳ', 4),
+('Bạch cầu cấp', 'Ung thư máu tiến triển nhanh', 'Hóa trị, ghép tủy, chăm sóc đặc biệt', 4),
+('Xơ cứng bì', 'Bệnh tự miễn hiếm gây dày cứng da và tổn thương nội tạng', 'Điều trị triệu chứng và ức chế miễn dịch', 5),
+('Xơ nang', 'Rối loạn di truyền ảnh hưởng phổi và tiêu hóa', 'Điều trị hỗ trợ hô hấp, enzyme tiêu hóa', 2),
+('U não ác tính', 'Khối u trong não gây triệu chứng thần kinh nghiêm trọng', 'Phẫu thuật, xạ trị, hóa trị', 4);
 ('Tăng huyết áp', 'Huyết áp cao mãn tính', 'Theo dõi huyết áp thường xuyên, dùng thuốc hạ áp', 1),
 ('Đột quỵ', 'Rối loạn tuần hoàn não nghiêm trọng', 'Can thiệp y tế khẩn cấp, phục hồi chức năng', 1),
 ('Hen suyễn', 'Bệnh mãn tính ảnh hưởng đến đường thở', 'Sử dụng thuốc giãn phế quản và kiểm soát dị ứng', 2),
@@ -81,6 +92,21 @@ INSERT INTO diseases (name, description, treatment_guidelines, category_id) VALU
 
 -------------------------------------------------------symptoms--------------------------------------------------------------------------------------------------------------
 INSERT INTO symptoms (name, description) VALUES
+('Ho', 'Phản xạ đẩy không khí ra khỏi phổi để làm sạch đường hô hấp'),
+('Hắt hơi', 'Phản xạ mạnh của mũi để đẩy chất gây kích ứng ra ngoài'),
+('Chảy nước mũi', 'Dịch nhầy chảy ra từ mũi do viêm hoặc dị ứng'),
+('Đau họng', 'Cảm giác đau hoặc rát ở vùng họng'),
+('Khó nuốt', 'Cảm giác vướng hoặc đau khi nuốt thức ăn hoặc nước'),
+('Đau bụng', 'Cảm giác khó chịu hoặc đau ở vùng bụng'),
+('Tiêu chảy', 'Đi ngoài phân lỏng, thường xuyên'),
+('Táo bón', 'Đi đại tiện khó khăn hoặc không thường xuyên'),
+('Hoa mắt chóng mặt', 'Cảm giác quay cuồng hoặc mất thăng bằng'),
+('Đổ mồ hôi nhiều', 'Ra mồ hôi quá mức, không do vận động'),
+('Run tay chân', 'Chuyển động không tự chủ ở tay hoặc chân'),
+('Khó ngủ', 'Gặp vấn đề khi ngủ hoặc ngủ không ngon giấc'),
+('Thở gấp', 'Hơi thở nhanh, ngắn do thiếu oxy'),
+('Tim đập nhanh', 'Nhịp tim tăng bất thường, có thể do lo âu hoặc bệnh'),
+('Tê tay chân', 'Mất cảm giác hoặc cảm giác châm chích ở tay hoặc chân');
 ('Đau đầu', 'Cảm giác đau ở vùng đầu hoặc cổ'),
 ('Khó thở', 'Khó khăn trong việc hít thở bình thường'),
 ('Buồn nôn', 'Cảm giác muốn nôn mửa'),
@@ -90,72 +116,152 @@ INSERT INTO symptoms (name, description) VALUES
 ('Co giật', 'Chuyển động không kiểm soát của cơ'),
 ('Ngứa da', 'Cảm giác châm chích khiến muốn gãi'),
 ('Phát ban', 'Vùng da bị nổi mẩn đỏ hoặc sưng'),
-('Chán ăn', 'Mất cảm giác thèm ăn');
+('Đau lưng', 'Cảm giác đau hoặc khó chịu ở vùng lưng'),
+('Chán ăn', 'Mất cảm giác thèm ăn, không muốn ăn uống'),
+('Buồn nôn', 'Cảm giác muốn nôn mửa'),
+('Đau cơ', 'Cảm giác đau hoặc căng cứng cơ bắp'),
+('Mất ngủ', 'Không thể ngủ hoặc ngủ không sâu giấc'),
+('Hơi thở hôi', 'Có mùi khó chịu khi thở ra'),
+('Nấc cụt', 'Hiện tượng thở ra đột ngột gây tiếng nấc'),
+('Đau họng', 'Cảm giác đau hoặc rát ở vùng họng'),
+('Chóng mặt', 'Cảm giác quay cuồng hoặc mất thăng bằng'),
+('Mờ mắt', 'Giảm khả năng nhìn rõ hoặc bị mờ mắt'),
+('Phù nề', 'Sưng lên do tích tụ dịch ở các mô'),
+('Khó thở khi nằm', 'Cảm giác khó thở tăng lên khi nằm xuống'),
 
 
 -------------------------------------------------------liên kết diseases với symptoms--------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE disease_symptom (
+    disease_id INT,
+    symptom_id INT,
+    PRIMARY KEY (disease_id, symptom_id),
+    FOREIGN KEY (disease_id) REFERENCES diseases(id),
+    FOREIGN KEY (symptom_id) REFERENCES symptoms(id)
+);
+
+-- Cảm lạnh thông thường
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(1, 1),  -- Ho
+(1, 2),  -- Hắt hơi
+(1, 3),  -- Chảy nước mũi
+(1, 19), -- Sốt
+(1, 21); -- Mệt mỏi
+
+-- Viêm họng cấp
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(3, 1),   -- Ho
+(3, 4),   -- Đau họng
+(3, 5),   -- Khó nuốt
+(3, 19);  -- Sốt
+
+-- Nổi mề đay
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(4, 22),  -- Ngứa da
+(4, 23);  -- Phát ban
+
+-- Táo bón chức năng
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(5, 8),   -- Táo bón
+(5, 6),   -- Đau bụng
+(5, 24);  -- Chán ăn
+
+-- Đau bụng kinh
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(6, 6),   -- Đau bụng
+(6, 21);  -- Mệt mỏi
+
+-- Lupus ban đỏ hệ thống
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(7, 23),  -- Phát ban
+(7, 21);  -- Mệt mỏi
+
+-- Bạch cầu cấp
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(8, 21),  -- Mệt mỏi
+(8, 19),  -- Sốt
+(8, 24);  -- Chán ăn
+
+-- Xơ cứng bì
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(9, 22),  -- Ngứa da
+(9, 21);  -- Mệt mỏi
+
+-- Xơ nang
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(10, 1),  -- Ho
+(10, 17), -- Khó thở
+(10, 6);  -- Đau bụng
+
+-- U não ác tính
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(11, 16), -- Đau đầu
+(11, 12), -- Khó ngủ
+(11, 14); -- Tim đập nhanh
+
 -- Tăng huyết áp
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(1, 1), -- Đau đầu
-(1, 5), -- Tức ngực
-(1, 6); -- Mệt mỏi
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(12, 14), -- Tim đập nhanh
+(12, 9);  -- Hoa mắt chóng mặt
 
 -- Đột quỵ
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(2, 1),
-(2, 6),
-(2, 7); -- Co giật
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(13, 14), -- Tim đập nhanh
+(13, 15); -- Tê tay chân
 
 -- Hen suyễn
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(3, 2),
-(3, 5),
-(3, 6);
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(14, 17), -- Khó thở
+(14, 1),  -- Ho
+(14, 13); -- Thở gấp
 
 -- Viêm phổi
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(4, 2),
-(4, 4),
-(4, 6);
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(15, 1),   -- Ho
+(15, 19),  -- Sốt
+(15, 17);  -- Khó thở
 
 -- Viêm dạ dày
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(5, 3),
-(5, 4),
-(5, 10); -- Chán ăn
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(16, 6),   -- Đau bụng
+(16, 18),  -- Buồn nôn
+(16, 24);  -- Chán ăn
 
 -- Xơ gan
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(6, 6),
-(6, 10);
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(17, 6),   -- Đau bụng
+(17, 21);  -- Mệt mỏi
 
 -- Động kinh
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(7, 1),
-(7, 7);
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(18, 7),   -- Co giật
+(18, 15);  -- Tê tay chân
 
 -- Trầm cảm
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(8, 6),
-(8, 10);
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(19, 12), -- Khó ngủ
+(19, 21); -- Mệt mỏi
 
 -- Viêm da cơ địa
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(9, 8),
-(9, 9);
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(20, 22), -- Ngứa da
+(20, 23); -- Phát ban
 
 -- Nấm da
-INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
-(10, 8),
-(10, 9);
+INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
+(21, 22), -- Ngứa da
+(21, 23); -- Phát ban
+
+
+
 
 -------------------------------------------------------Lịch sử chiệu chứng của bênh nhân Nguyễn Văn A user_id = 4--------------------------------------------------------------------------------------------------------------
 INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes) VALUES
-(4, 4, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày'),
-(4, 1, '2025-05-18', 'Đau đầu âm ỉ vùng trán và sau gáy'),
-(4, 2, '2025-05-19', 'Khó thở nhẹ, đặc biệt khi leo cầu thang'),
-(4, 6, '2025-05-20', 'Cảm thấy mệt mỏi suốt cả ngày'),
-(4, 5, '2025-05-21', 'Cảm giác tức ngực nhẹ khi hít sâu');
+(4, 19, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày'),
+(4, 16, '2025-05-18', 'Đau đầu âm ỉ vùng trán và sau gáy'),
+(4, 17, '2025-05-19', 'Khó thở nhẹ, đặc biệt khi leo cầu thang'),
+(4, 21, '2025-05-20', 'Cảm thấy mệt mỏi suốt cả ngày'),
+(4, 20, '2025-05-21', 'Cảm giác tức ngực nhẹ khi hít sâu');
 
 -------------------------------------------------------Phòng khám--------------------------------------------------------------------------------------------------------------
 INSERT INTO clinics (name, address, phone, email, description) VALUES
@@ -313,3 +419,47 @@ VALUES
 -- Người dùng "dr.hanh" (user_id = 3) đánh giá Vitamin C (product_id = 3)
 (3, 3, 4, 'Khá ổn để tăng sức đề kháng. Đóng gói đẹp.');
 
+INSERT INTO chatbot_knowledge_base (intent, question, answer, category)
+VALUES
+-- Hành chính
+('ask_working_hours', 'Bệnh viện làm việc vào thời gian nào?', 'Bệnh viện làm việc từ 7h00 đến 17h00 từ thứ 2 đến thứ 7.', 'Thông tin chung'),
+('ask_contact_info', 'Tôi có thể liên hệ bệnh viện qua số điện thoại nào?', 'Bạn có thể gọi đến số 1900-1234 để được hỗ trợ.', 'Thông tin chung'),
+('ask_location', 'Địa chỉ bệnh viện là gì?', 'Bệnh viện nằm tại số 123 Đường Sức Khỏe, Quận 10, TP.HCM.', 'Thông tin chung'),
+('ask_services', 'Bệnh viện có những dịch vụ gì?', 'Chúng tôi cung cấp các dịch vụ khám bệnh, xét nghiệm, chẩn đoán hình ảnh và điều trị nội trú.', 'Thông tin chung'),
+-- Đặt lịch hẹn
+('booking_procedure', 'Làm sao để đặt lịch khám?', 'Bạn có thể đặt lịch khám trực tuyến qua website hoặc gọi đến số tổng đài 1900-1234.', 'Đặt lịch'),
+('booking_available_slots', 'Tôi muốn biết lịch khám của bác sĩ A vào tuần tới?', 'Bạn có thể kiểm tra lịch khám của bác sĩ A trên trang web hoặc ứng dụng của bệnh viện.', 'Đặt lịch'),
+('booking_cancellation', 'Tôi muốn huỷ lịch hẹn đã đặt thì làm sao?', 'Bạn có thể huỷ lịch hẹn qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
+('booking_confirmation', 'Tôi đã đặt lịch khám nhưng chưa nhận được xác nhận, phải làm sao?', 'Bạn có thể kiểm tra lại trong mục "Lịch sử đặt lịch" trên tài khoản của mình hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
+('reschedule_booking', 'Tôi muốn thay đổi lịch hẹn đã đặt thì làm sao?', 'Bạn có thể thay đổi lịch hẹn qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
+('cancel_booking', 'Tôi muốn huỷ lịch hẹn thì làm sao?', 'Bạn có thể huỷ lịch qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
+
+-- Y tế / chuyên môn
+('symptom_analysis', 'Tôi bị sốt, mệt mỏi và ho, có thể là bệnh gì?', 
+ 'Triệu chứng như vậy có thể do cảm lạnh, viêm họng, hoặc dị ứng thời tiết gây ra. Bạn nên nghỉ ngơi, uống nhiều nước và theo dõi kỹ. Nếu không đỡ thì đi khám nha.', 
+ 'Triệu chứng chung'),
+
+('symptom_analysis', 'Tôi bị đau đầu và chóng mặt, có thể là bệnh gì?', 
+ 'Đau đầu và chóng mặt có thể do căng thẳng, thiếu ngủ, hoặc các vấn đề về huyết áp. Nếu cảm thấy nghiêm trọng, bạn nên đi khám để được kiểm tra kỹ hơn.', 
+ 'Triệu chứng chung'),
+
+('symptom_analysis', 'Tôi bị khó thở và tức ngực, có thể là bệnh gì?', 
+ 'Khó thở và tức ngực có thể liên quan đến nhiều bệnh như hen suyễn, viêm phổi hoặc các bệnh tim mạch. Bạn nên đi khám để được chẩn đoán chính xác.', 
+ 'Triệu chứng chung'),
+
+('symptom_analysis', 'Tôi bị ngứa da và phát ban, có thể là do bệnh gì?', 
+ 'Ngứa da và phát ban có thể do dị ứng, viêm da cơ địa hoặc nhiễm nấm da. Nên tránh tiếp xúc với các chất gây kích ứng và đi khám nếu triệu chứng kéo dài.', 
+ 'Triệu chứng chung'),
+
+('symptom_analysis', 'Tôi bị buồn nôn và chán ăn, có thể do bệnh gì?', 
+ 'Buồn nôn và chán ăn có thể là dấu hiệu của nhiều vấn đề như rối loạn tiêu hóa, stress hoặc nhiễm trùng nhẹ. Nếu triệu chứng kéo dài, bạn nên đến bác sĩ để kiểm tra.', 
+ 'Triệu chứng chung');
+('disease_info', 'Bệnh tiểu đường có những triệu chứng gì?', 'Các triệu chứng bao gồm khát nước nhiều, đi tiểu thường xuyên, mệt mỏi và giảm cân không rõ nguyên nhân.', 'Thông tin bệnh'),
+('medicine_usage', 'Tôi nên uống thuốc hạ sốt như thế nào?', 'Bạn nên uống thuốc theo chỉ định bác sĩ. Thông thường, thuốc hạ sốt được dùng khi nhiệt độ trên 38.5°C.', 'Hướng dẫn dùng thuốc'),
+('disease_info', 'Bệnh tiểu đường có những triệu chứng gì?', 'Các triệu chứng bao gồm khát nước nhiều, đi tiểu thường xuyên, mệt mỏi và giảm cân không rõ nguyên nhân.', 'Thông tin bệnh'),
+('medicine_usage', 'Tôi nên uống thuốc hạ sốt như thế nào?', 'Bạn nên uống thuốc theo chỉ định bác sĩ. Thông thường, thuốc hạ sốt được dùng khi nhiệt độ trên 38.5°C.', 'Hướng dẫn dùng thuốc'),
+
+-- Hỗ trợ kỹ thuật
+('account_help', 'Tôi quên mật khẩu đăng nhập thì phải làm sao?', 'Bạn có thể sử dụng chức năng "Quên mật khẩu" trên trang đăng nhập để đặt lại mật khẩu.', 'Hỗ trợ tài khoản'),
+('app_issue', 'Ứng dụng bị lỗi khi tôi mở lên, phải làm sao?', 'Bạn hãy thử khởi động lại ứng dụng hoặc cập nhật lên phiên bản mới nhất. Nếu vẫn gặp lỗi, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ kỹ thuật'),
+('payment_issue', 'Tôi không thể thanh toán đơn thuốc, phải làm sao?', 'Bạn hãy kiểm tra lại thông tin thẻ hoặc tài khoản ngân hàng. Nếu vẫn không thanh toán được, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ thanh toán');
