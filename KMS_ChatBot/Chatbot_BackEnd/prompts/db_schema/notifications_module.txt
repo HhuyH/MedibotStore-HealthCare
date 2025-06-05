@@ -1,0 +1,15 @@
+6. Bảng: notifications
+- notification_id (INT, PK): định danh thông báo.
+- target_role_id (INT, FK → roles.role_id): gửi cho vai trò cụ thể.
+- title (VARCHAR): tiêu đề ngắn.
+- message (TEXT): nội dung thông báo.
+- type (VARCHAR): loại thông báo ('system', 'AI alert'...).
+- is_global (BOOLEAN): true nếu là thông báo toàn hệ thống.
+- created_at, updated_at (DATETIME): thời gian tạo/cập nhật.
+
+7. Bảng: user_notifications
+- id (INT, PK): định danh bản ghi ánh xạ.
+- notification_id (INT, FK → notifications.notification_id): thông báo tương ứng.
+- user_id (INT, FK → users.user_id): người dùng nhận.
+- is_read (BOOLEAN): đã đọc hay chưa.
+- received_at (DATETIME): thời điểm nhận.

@@ -1,0 +1,28 @@
+17. appointments
+- appointment_id (INT, PK): định danh lịch hẹn.
+- user_id (INT, FK → users.user_id): người dùng.
+- guest_id (INT, FK → guest_users.guest_id): người dùng khách.
+- doctor_id (INT, FK → doctors.doctor_id): bác sĩ khám.
+- clinic_id (INT, FK → clinics.clinic_id): phòng khám.
+- appointment_time (DATETIME): thời gian hẹn.
+- reason (TEXT): lý do khám.
+- status (VARCHAR): trạng thái lịch hẹn.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+18. prescriptions
+- prescription_id (INT, PK): định danh đơn thuốc.
+- appointment_id (INT, FK → appointments.appointment_id): liên kết lịch hẹn.
+- prescribed_date (DATE): ngày kê đơn.
+- medications (TEXT): danh sách thuốc.
+- notes (TEXT): ghi chú dùng thuốc.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+19. medical_records
+- med_rec_id (INT, PK): định danh ghi chú khám.
+- appointment_id (INT, FK → appointments.appointment_id): cuộc hẹn liên quan.
+- note_date (TIMESTAMP): thời điểm ghi chú.
+- diagnosis (TEXT): chẩn đoán.
+- recommendations (TEXT): hướng dẫn/chỉ định.
+- created_at (TIMESTAMP): thời điểm tạo.

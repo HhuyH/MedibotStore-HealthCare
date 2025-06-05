@@ -1,0 +1,33 @@
+8. medical_categories
+- category_id (INT, PK): định danh phân loại bệnh/chuyên khoa.
+- name (VARCHAR): tên chuyên khoa.
+- description (TEXT): mô tả chi tiết.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+9. diseases
+- disease_id (INT, PK): định danh bệnh.
+- name (VARCHAR): tên bệnh.
+- description (TEXT): mô tả về bệnh.
+- treatment_guidelines (TEXT): hướng dẫn điều trị.
+- category_id (INT, FK → medical_categories.category_id): liên kết đến chuyên khoa.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+10. symptoms
+- symptom_id (INT, PK): định danh triệu chứng.
+- name (VARCHAR): tên triệu chứng.
+- description (TEXT): mô tả triệu chứng.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+11. disease_symptoms
+- disease_id (INT, PK, FK → diseases.disease_id): ID bệnh.
+- symptom_id (INT, PK, FK → symptoms.symptom_id): ID triệu chứng.
+
+12. user_symptom_history
+- id (INT, PK): định danh bản ghi.
+- user_id (INT, FK → users.user_id): liên kết người dùng.
+- symptom_id (INT, FK → symptoms.symptom_id): triệu chứng ghi nhận.
+- record_date (DATE): ngày lưu triệu chứng.
+- notes (TEXT): ghi chú chi tiết.

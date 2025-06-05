@@ -499,6 +499,51 @@ INSERT INTO service_packages (name, slug, description, price, duration, is_featu
 ('Gói Nâng Cao', 'goi-nang-cao', 'Gói khám sức khỏe nâng cao', 3500000, '/lần', TRUE),
 ('Gói Cao Cấp', 'goi-cao-cap', 'Gói khám sức khỏe cao cấp', 6500000, '/lần', FALSE);
 
+INSERT INTO chatbot_knowledge_base (intent, question, answer, category)
+VALUES
+-- Hành chính
+('ask_working_hours', 'Bệnh viện làm việc vào thời gian nào?', 'Bệnh viện làm việc từ 7h00 đến 17h00 từ thứ 2 đến thứ 7.', 'Thông tin chung'),
+('ask_contact_info', 'Tôi có thể liên hệ bệnh viện qua số điện thoại nào?', 'Bạn có thể gọi đến số 1900-1234 để được hỗ trợ.', 'Thông tin chung'),
+('ask_location', 'Địa chỉ bệnh viện là gì?', 'Bệnh viện nằm tại số 123 Đường Sức Khỏe, Quận 10, TP.HCM.', 'Thông tin chung'),
+('ask_services', 'Bệnh viện có những dịch vụ gì?', 'Chúng tôi cung cấp các dịch vụ khám bệnh, xét nghiệm, chẩn đoán hình ảnh và điều trị nội trú.', 'Thông tin chung'),
+
+-- Y tế / chuyên môn
+('symptom_analysis', 'Tôi bị sốt, mệt mỏi và ho, có thể là bệnh gì?', 
+ 'Triệu chứng như vậy có thể do cảm lạnh, viêm họng, hoặc dị ứng thời tiết gây ra. Bạn nên nghỉ ngơi, uống nhiều nước và theo dõi kỹ. Nếu không đỡ thì đi khám nha.', 
+ 'Triệu chứng chung'),
+
+('symptom_analysis', 'Tôi bị đau đầu và chóng mặt, có thể là bệnh gì?', 
+ 'Đau đầu và chóng mặt có thể do căng thẳng, thiếu ngủ, hoặc các vấn đề về huyết áp. Nếu cảm thấy nghiêm trọng, bạn nên đi khám để được kiểm tra kỹ hơn.', 
+ 'Triệu chứng chung'),
+
+('symptom_analysis', 'Tôi bị khó thở và tức ngực, có thể là bệnh gì?', 
+ 'Khó thở và tức ngực có thể liên quan đến nhiều bệnh như hen suyễn, viêm phổi hoặc các bệnh tim mạch. Bạn nên đi khám để được chẩn đoán chính xác.', 
+ 'Triệu chứng chung'),
+
+('symptom_analysis', 'Tôi bị ngứa da và phát ban, có thể là do bệnh gì?', 
+ 'Ngứa da và phát ban có thể do dị ứng, viêm da cơ địa hoặc nhiễm nấm da. Nên tránh tiếp xúc với các chất gây kích ứng và đi khám nếu triệu chứng kéo dài.', 
+ 'Triệu chứng chung'),
+
+('symptom_analysis', 'Tôi bị buồn nôn và chán ăn, có thể do bệnh gì?', 
+ 'Buồn nôn và chán ăn có thể là dấu hiệu của nhiều vấn đề như rối loạn tiêu hóa, stress hoặc nhiễm trùng nhẹ. Nếu triệu chứng kéo dài, bạn nên đến bác sĩ để kiểm tra.', 
+ 'Triệu chứng chung');
+('disease_info', 'Bệnh tiểu đường có những triệu chứng gì?', 'Các triệu chứng bao gồm khát nước nhiều, đi tiểu thường xuyên, mệt mỏi và giảm cân không rõ nguyên nhân.', 'Thông tin bệnh'),
+('medicine_usage', 'Tôi nên uống thuốc hạ sốt như thế nào?', 'Bạn nên uống thuốc theo chỉ định bác sĩ. Thông thường, thuốc hạ sốt được dùng khi nhiệt độ trên 38.5°C.', 'Hướng dẫn dùng thuốc'),
+('disease_info', 'Bệnh tiểu đường có những triệu chứng gì?', 'Các triệu chứng bao gồm khát nước nhiều, đi tiểu thường xuyên, mệt mỏi và giảm cân không rõ nguyên nhân.', 'Thông tin bệnh'),
+('medicine_usage', 'Tôi nên uống thuốc hạ sốt như thế nào?', 'Bạn nên uống thuốc theo chỉ định bác sĩ. Thông thường, thuốc hạ sốt được dùng khi nhiệt độ trên 38.5°C.', 'Hướng dẫn dùng thuốc'),
+
+-- Hỗ trợ kỹ thuật
+('account_help', 'Tôi quên mật khẩu đăng nhập thì phải làm sao?', 'Bạn có thể sử dụng chức năng "Quên mật khẩu" trên trang đăng nhập để đặt lại mật khẩu.', 'Hỗ trợ tài khoản'),
+('app_issue', 'Ứng dụng bị lỗi khi tôi mở lên, phải làm sao?', 'Bạn hãy thử khởi động lại ứng dụng hoặc cập nhật lên phiên bản mới nhất. Nếu vẫn gặp lỗi, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ kỹ thuật'),
+('payment_issue', 'Tôi không thể thanh toán đơn thuốc, phải làm sao?', 'Bạn hãy kiểm tra lại thông tin thẻ hoặc tài khoản ngân hàng. Nếu vẫn không thanh toán được, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ thanh toán');
+-- Có thể sẽ có thây đổi nên chưa dùng
+-- Đặt lịch hẹn
+-- ('booking_procedure', 'Làm sao để đặt lịch khám?', 'Bạn có thể đặt lịch khám trực tuyến qua website hoặc gọi tổng đài 1900-1234.', 'Đặt lịch'),
+-- ('booking_available_slots', 'Tôi muốn biết lịch khám của bác sĩ A vào tuần tới?', 'Bạn có thể kiểm tra lịch khám trên trang web hoặc ứng dụng của bệnh viện.', 'Đặt lịch'),
+-- ('booking_cancellation', 'Tôi muốn huỷ lịch hẹn đã đặt thì làm sao?', 'Bạn có thể huỷ lịch hẹn trong tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
+-- ('booking_confirmation', 'Tôi đã đặt lịch khám nhưng chưa nhận được xác nhận, phải làm sao?', 'Bạn có thể kiểm tra trong mục "Lịch sử đặt lịch" hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
+-- ('reschedule_booking', 'Tôi muốn thay đổi lịch hẹn đã đặt thì làm sao?', 'Bạn có thể thay đổi lịch hẹn qua tài khoản cá nhân hoặc gọi đến tổng đài.', 'Đặt lịch'),
+-- ('cancel_booking', 'Tôi muốn huỷ lịch hẹn thì làm sao?', 'Bạn có thể huỷ lịch qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
 ----------------------------------------------------------------Dữ liệu mẫu cho --------------------------------------------------------------------------------------------------------------------------------
 INSERT INTO package_features (package_id, feature_name) VALUES
 (1, 'Khám lâm sàng tổng quát'),

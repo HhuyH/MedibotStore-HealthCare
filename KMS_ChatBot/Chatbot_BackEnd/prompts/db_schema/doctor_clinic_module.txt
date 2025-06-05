@@ -1,0 +1,35 @@
+13. clinics
+- clinic_id (INT, PK): định danh phòng khám.
+- name (VARCHAR): tên phòng khám.
+- address (TEXT): địa chỉ.
+- phone (VARCHAR): số điện thoại liên hệ.
+- email (VARCHAR): email liên hệ.
+- description (TEXT): mô tả chi tiết.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+14. specialties
+- specialty_id (INT, PK): định danh chuyên ngành y tế.
+- name (VARCHAR): tên chuyên ngành.
+- description (TEXT): mô tả chuyên ngành.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+15. doctors
+- doctor_id (INT, PK): định danh bác sĩ.
+- user_id (INT, UNIQUE, FK → users.user_id): liên kết người dùng.
+- specialty_id (INT, FK → specialties.specialty_id): chuyên ngành.
+- clinic_id (INT, FK → clinics.clinic_id): phòng khám.
+- biography (TEXT): tiểu sử.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+16. doctor_schedules
+- schedule_id (INT, PK): định danh lịch làm việc.
+- doctor_id (INT, FK → doctors.doctor_id): bác sĩ.
+- clinic_id (INT, FK → clinics.clinic_id): phòng khám.
+- day_of_week (VARCHAR): thứ trong tuần.
+- start_time (TIME): giờ bắt đầu.
+- end_time (TIME): giờ kết thúc.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.

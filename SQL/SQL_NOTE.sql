@@ -1,4 +1,4 @@
-﻿----------------------------------------------------------------1. Người dùng & hệ thống------------------------------------------------------------------------
+----------------------------------------------------------------1. Người dùng & hệ thống------------------------------------------------------------------------
 -- Bảng lưu thông tin tài khoản
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,                   -- Khóa chính, định danh người dùng
@@ -385,6 +385,7 @@ CREATE TABLE products (
     FOREIGN KEY (category_id) REFERENCES product_categories(category_id)
 );
 
+-- Bảng thông tin đơn thuốc
 CREATE TABLE medicines (
     medicine_id INT PRIMARY KEY,                         -- Khóa chính, trùng với product_id
     active_ingredient VARCHAR(255),                      -- Hoạt chất chính
@@ -397,6 +398,7 @@ CREATE TABLE medicines (
     FOREIGN KEY (medicine_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
 
+-- Bảng đơn thuốc liên kết với sản phẩm
 CREATE TABLE prescription_products (
     id INT AUTO_INCREMENT PRIMARY KEY,                    -- Khóa chính
     prescription_id INT NOT NULL,                         -- Liên kết đơn thuốc
@@ -497,8 +499,8 @@ CREATE TABLE services (
     full_description TEXT, -- Mô tả đầy đủ chi tiết
     icon VARCHAR(50), -- Biểu tượng đại diện cho dịch vụ
     image VARCHAR(255), -- Đường dẫn ảnh minh họa
-    price_from DECIMAL(12,2), -- Giá khởi điểm
-    price_to DECIMAL(12,2), -- Giá kết thúc (giá tối đa)
+    price_from DECIMAL(16,0), -- Giá khởi điểm
+    price_to DECIMAL(16,0), -- Giá kết thúc (giá tối đa)
     is_featured BOOLEAN DEFAULT FALSE, -- Có phải dịch vụ nổi bật không
     is_emergency BOOLEAN DEFAULT FALSE, -- Có phải dịch vụ khẩn cấp không
     is_active BOOLEAN DEFAULT TRUE, -- Trạng thái kích hoạt
@@ -528,7 +530,7 @@ CREATE TABLE service_packages (
     name VARCHAR(200) NOT NULL, -- Tên gói dịch vụ
     slug VARCHAR(200) NOT NULL UNIQUE, -- Slug duy nhất cho URL gói
     description TEXT, -- Mô tả chi tiết gói
-    price DECIMAL(12,2), -- Giá của gói
+    price DECIMAL(16,0), -- Giá của gói
     duration VARCHAR(50), -- Thời hạn của gói (vd: "1 lần", "1 tháng")
     is_featured BOOLEAN DEFAULT FALSE, -- Gói nổi bật hay không
     is_active BOOLEAN DEFAULT TRUE, -- Gói có đang hoạt động hay không

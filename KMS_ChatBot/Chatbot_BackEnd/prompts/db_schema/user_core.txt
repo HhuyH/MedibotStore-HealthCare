@@ -1,0 +1,14 @@
+1. Bảng: users
+- user_id (INT, PK): định danh duy nhất cho mỗi người dùng.
+- username (VARCHAR): tên đăng nhập, duy nhất.
+- email (VARCHAR): địa chỉ email, duy nhất.
+- password_hash (VARCHAR): mật khẩu đã mã hóa.
+- role_id (INT, FK → roles.role_id): vai trò người dùng (bệnh nhân, bác sĩ, quản trị...).
+- status (ENUM): trạng thái tài khoản ('active', 'inactive', 'suspended').
+- created_at (TIMESTAMP): thời điểm tạo tài khoản.
+- updated_at (TIMESTAMP): thời điểm cập nhật tài khoản.
+
+2. Bảng: roles
+- role_id (INT, PK): định danh vai trò.
+- role_name (VARCHAR): tên vai trò ('admin', 'doctor', 'patient'...).
+- description (TEXT): mô tả vai trò (nếu có).

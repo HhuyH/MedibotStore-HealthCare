@@ -1,0 +1,44 @@
+20. health_records
+- record_id (INT, PK): mã bản ghi dữ liệu sức khỏe định kỳ.
+- user_id (INT, FK → users.user_id): người dùng liên quan.
+- record_date (DATE): ngày ghi nhận dữ liệu.
+- weight (FLOAT): cân nặng (kg).
+- blood_pressure (VARCHAR): huyết áp (vd: 120/80).
+- sleep_hours (FLOAT): số giờ ngủ.
+- notes (TEXT): ghi chú thêm.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.
+
+21. chat_logs
+- chat_id (INT, PK): mã hội thoại.
+- user_id (INT, FK → users.user_id, nullable): người dùng.
+- guest_id (INT, FK → guest_users.guest_id, nullable): khách vãng lai.
+- intent (VARCHAR): ý định của người dùng.
+- message (TEXT): nội dung tin nhắn.
+- sender (ENUM): người gửi ('user' hoặc 'bot').
+- sent_at (TIMESTAMP): thời điểm gửi.
+- CHECK: bắt buộc phải có user_id hoặc guest_id, không được null cả hai.
+
+22. health_predictions
+- prediction_id (INT, PK): mã dự đoán.
+- user_id (INT, FK → users.user_id): người dùng.
+- record_id (INT, FK → health_records.record_id): bản ghi dữ liệu liên quan.
+- chat_id (INT, FK → chat_logs.chat_id): cuộc hội thoại liên quan (nếu có).
+- prediction_date (TIMESTAMP): thời gian dự đoán.
+- confidence_score (FLOAT): độ tin cậy (0–1).
+- details (TEXT): chi tiết dự đoán.
+
+23. prediction_diseases
+- id (INT, PK): mã liên kết.
+- prediction_id (INT, FK → health_predictions.prediction_id): dự đoán liên quan.
+- disease_id (INT, FK → diseases.disease_id): bệnh được dự đoán.
+- confidence (FLOAT): độ tin cậy (0–1) cho mỗi bệnh.
+
+24. chatbot_knowledge_base
+- kb_id (INT, PK): mã mục kiến thức.
+- intent (VARCHAR): ý định.
+- question (TEXT): câu hỏi mẫu.
+- answer (TEXT): câu trả lời mẫu.
+- category (VARCHAR): phân loại câu hỏi.
+- created_at (TIMESTAMP): thời điểm tạo.
+- updated_at (DATETIME): thời điểm cập nhật.

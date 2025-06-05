@@ -1,0 +1,26 @@
+3. Bảng: users_info
+- id (INT, PK): định danh thông tin người dùng.
+- user_id (INT, FK → users.user_id): người dùng tương ứng.
+- full_name (VARCHAR): họ tên người dùng.
+- gender (ENUM): giới tính ('Nam', 'Nữ', 'Khác').
+- phone (VARCHAR): số điện thoại, duy nhất.
+- date_of_birth (DATE): ngày sinh.
+- profile_picture (VARCHAR): URL ảnh đại diện.
+- created_at, updated_at (TIMESTAMP): thời điểm tạo và cập nhật bản ghi.
+
+4. Bảng: guest_users
+- guest_id (INT, PK): định danh khách vãng lai.
+- full_name (VARCHAR): họ tên khách (nhập qua chatbot).
+- phone (VARCHAR): số điện thoại khách (qua chatbot).
+- email (VARCHAR): email khách (không bắt buộc).
+- created_at, updated_at (TIMESTAMP): thời gian tạo/cập nhật.
+
+5. Bảng: user_addresses
+- address_id (INT, PK): định danh địa chỉ.
+- user_id (INT, FK → users.user_id): liên kết người dùng.
+- address_line (VARCHAR): chi tiết địa chỉ (số nhà, đường...).
+- ward, district, city (VARCHAR): đơn vị hành chính.
+- postal_code (VARCHAR): mã bưu điện.
+- country (VARCHAR): quốc gia (mặc định: Việt Nam).
+- is_default (BOOLEAN): có phải địa chỉ mặc định không.
+- created_at, updated_at (DATETIME): thời điểm tạo và cập nhật.
