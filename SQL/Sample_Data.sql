@@ -67,17 +67,6 @@ INSERT INTO medical_categories (name, description) VALUES
 -------------------------------------------------------diseases--------------------------------------------------------------------------------------------------------------
 
 INSERT INTO diseases (name, description, treatment_guidelines, category_id) VALUES
-('Cảm lạnh thông thường', 'Nhiễm virus nhẹ gây hắt hơi, sổ mũi', 'Nghỉ ngơi, uống nhiều nước, dùng thuốc giảm triệu chứng', 2),
-('Đau đầu căng thẳng', 'Đau đầu do căng thẳng, stress hoặc sai tư thế', 'Nghỉ ngơi, thư giãn, thuốc giảm đau nếu cần', 4),
-('Viêm họng cấp', 'Viêm vùng họng do virus hoặc vi khuẩn', 'Súc họng, uống nước ấm, thuốc kháng sinh nếu cần', 2),
-('Nổi mề đay', 'Phản ứng dị ứng gây ngứa, nổi ban đỏ', 'Thuốc kháng histamin, tránh tác nhân gây dị ứng', 5),
-('Táo bón chức năng', 'Khó đi tiêu do rối loạn tiêu hoá nhẹ', 'Ăn nhiều chất xơ, uống đủ nước, luyện tập thể dục', 3),
-('Đau bụng kinh', 'Đau bụng khi hành kinh', 'Thuốc giảm đau, nghỉ ngơi, chườm ấm', 3),
-('Lupus ban đỏ hệ thống', 'Bệnh tự miễn tấn công nhiều cơ quan', 'Dùng thuốc ức chế miễn dịch và theo dõi định kỳ', 4),
-('Bạch cầu cấp', 'Ung thư máu tiến triển nhanh', 'Hóa trị, ghép tủy, chăm sóc đặc biệt', 4),
-('Xơ cứng bì', 'Bệnh tự miễn hiếm gây dày cứng da và tổn thương nội tạng', 'Điều trị triệu chứng và ức chế miễn dịch', 5),
-('Xơ nang', 'Rối loạn di truyền ảnh hưởng phổi và tiêu hóa', 'Điều trị hỗ trợ hô hấp, enzyme tiêu hóa', 2),
-('U não ác tính', 'Khối u trong não gây triệu chứng thần kinh nghiêm trọng', 'Phẫu thuật, xạ trị, hóa trị', 4);
 ('Tăng huyết áp', 'Huyết áp cao mãn tính', 'Theo dõi huyết áp thường xuyên, dùng thuốc hạ áp', 1),
 ('Đột quỵ', 'Rối loạn tuần hoàn não nghiêm trọng', 'Can thiệp y tế khẩn cấp, phục hồi chức năng', 1),
 ('Hen suyễn', 'Bệnh mãn tính ảnh hưởng đến đường thở', 'Sử dụng thuốc giãn phế quản và kiểm soát dị ứng', 2),
@@ -92,21 +81,6 @@ INSERT INTO diseases (name, description, treatment_guidelines, category_id) VALU
 
 -------------------------------------------------------symptoms--------------------------------------------------------------------------------------------------------------
 INSERT INTO symptoms (name, description) VALUES
-('Ho', 'Phản xạ đẩy không khí ra khỏi phổi để làm sạch đường hô hấp'),
-('Hắt hơi', 'Phản xạ mạnh của mũi để đẩy chất gây kích ứng ra ngoài'),
-('Chảy nước mũi', 'Dịch nhầy chảy ra từ mũi do viêm hoặc dị ứng'),
-('Đau họng', 'Cảm giác đau hoặc rát ở vùng họng'),
-('Khó nuốt', 'Cảm giác vướng hoặc đau khi nuốt thức ăn hoặc nước'),
-('Đau bụng', 'Cảm giác khó chịu hoặc đau ở vùng bụng'),
-('Tiêu chảy', 'Đi ngoài phân lỏng, thường xuyên'),
-('Táo bón', 'Đi đại tiện khó khăn hoặc không thường xuyên'),
-('Hoa mắt chóng mặt', 'Cảm giác quay cuồng hoặc mất thăng bằng'),
-('Đổ mồ hôi nhiều', 'Ra mồ hôi quá mức, không do vận động'),
-('Run tay chân', 'Chuyển động không tự chủ ở tay hoặc chân'),
-('Khó ngủ', 'Gặp vấn đề khi ngủ hoặc ngủ không ngon giấc'),
-('Thở gấp', 'Hơi thở nhanh, ngắn do thiếu oxy'),
-('Tim đập nhanh', 'Nhịp tim tăng bất thường, có thể do lo âu hoặc bệnh'),
-('Tê tay chân', 'Mất cảm giác hoặc cảm giác châm chích ở tay hoặc chân');
 ('Đau đầu', 'Cảm giác đau ở vùng đầu hoặc cổ'),
 ('Khó thở', 'Khó khăn trong việc hít thở bình thường'),
 ('Buồn nôn', 'Cảm giác muốn nôn mửa'),
@@ -257,11 +231,16 @@ INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
 
 -------------------------------------------------------Lịch sử chiệu chứng của bênh nhân Nguyễn Văn A user_id = 4--------------------------------------------------------------------------------------------------------------
 INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes) VALUES
-(4, 19, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày'),
-(4, 16, '2025-05-18', 'Đau đầu âm ỉ vùng trán và sau gáy'),
-(4, 17, '2025-05-19', 'Khó thở nhẹ, đặc biệt khi leo cầu thang'),
-(4, 21, '2025-05-20', 'Cảm thấy mệt mỏi suốt cả ngày'),
-(4, 20, '2025-05-21', 'Cảm giác tức ngực nhẹ khi hít sâu');
+(4, 1, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày'),
+(4, 2, '2025-05-18', 'Ho khan, không có đờm'),
+(4, 3, '2025-05-19', 'Cổ họng đau rát, nuốt đau'),
+(4, 5, '2025-05-20', 'Đau đầu nhẹ, chủ yếu vào buổi sáng'),
+(4, 4, '2025-05-21', 'Cảm giác khó thở nhẹ khi vận động'),
+(4, 4, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày');
+(4, 1, '2025-05-18', 'Đau đầu âm ỉ vùng trán và sau gáy'),
+(4, 2, '2025-05-19', 'Khó thở nhẹ, đặc biệt khi leo cầu thang'),
+(4, 6, '2025-05-20', 'Cảm thấy mệt mỏi suốt cả ngày'),
+(4, 5, '2025-05-21', 'Cảm giác tức ngực nhẹ khi hít sâu');
 
 -------------------------------------------------------Phòng khám--------------------------------------------------------------------------------------------------------------
 INSERT INTO clinics (name, address, phone, email, description) VALUES
@@ -419,6 +398,8 @@ VALUES
 -- Người dùng "dr.hanh" (user_id = 3) đánh giá Vitamin C (product_id = 3)
 (3, 3, 4, 'Khá ổn để tăng sức đề kháng. Đóng gói đẹp.');
 
+----------------------------------------------------------------3. Chatbot AI-------------------------------------------------------------------------------
+
 INSERT INTO chatbot_knowledge_base (intent, question, answer, category)
 VALUES
 -- Hành chính
@@ -426,13 +407,6 @@ VALUES
 ('ask_contact_info', 'Tôi có thể liên hệ bệnh viện qua số điện thoại nào?', 'Bạn có thể gọi đến số 1900-1234 để được hỗ trợ.', 'Thông tin chung'),
 ('ask_location', 'Địa chỉ bệnh viện là gì?', 'Bệnh viện nằm tại số 123 Đường Sức Khỏe, Quận 10, TP.HCM.', 'Thông tin chung'),
 ('ask_services', 'Bệnh viện có những dịch vụ gì?', 'Chúng tôi cung cấp các dịch vụ khám bệnh, xét nghiệm, chẩn đoán hình ảnh và điều trị nội trú.', 'Thông tin chung'),
--- Đặt lịch hẹn
-('booking_procedure', 'Làm sao để đặt lịch khám?', 'Bạn có thể đặt lịch khám trực tuyến qua website hoặc gọi đến số tổng đài 1900-1234.', 'Đặt lịch'),
-('booking_available_slots', 'Tôi muốn biết lịch khám của bác sĩ A vào tuần tới?', 'Bạn có thể kiểm tra lịch khám của bác sĩ A trên trang web hoặc ứng dụng của bệnh viện.', 'Đặt lịch'),
-('booking_cancellation', 'Tôi muốn huỷ lịch hẹn đã đặt thì làm sao?', 'Bạn có thể huỷ lịch hẹn qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
-('booking_confirmation', 'Tôi đã đặt lịch khám nhưng chưa nhận được xác nhận, phải làm sao?', 'Bạn có thể kiểm tra lại trong mục "Lịch sử đặt lịch" trên tài khoản của mình hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
-('reschedule_booking', 'Tôi muốn thay đổi lịch hẹn đã đặt thì làm sao?', 'Bạn có thể thay đổi lịch hẹn qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
-('cancel_booking', 'Tôi muốn huỷ lịch hẹn thì làm sao?', 'Bạn có thể huỷ lịch qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
 
 -- Y tế / chuyên môn
 ('symptom_analysis', 'Tôi bị sốt, mệt mỏi và ho, có thể là bệnh gì?', 
@@ -464,9 +438,15 @@ VALUES
 ('app_issue', 'Ứng dụng bị lỗi khi tôi mở lên, phải làm sao?', 'Bạn hãy thử khởi động lại ứng dụng hoặc cập nhật lên phiên bản mới nhất. Nếu vẫn gặp lỗi, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ kỹ thuật'),
 ('payment_issue', 'Tôi không thể thanh toán đơn thuốc, phải làm sao?', 'Bạn hãy kiểm tra lại thông tin thẻ hoặc tài khoản ngân hàng. Nếu vẫn không thanh toán được, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ thanh toán');
 
-----------------------------------------------------------------5. Dịch vụ y tế-------------------------------------------------------------------------------
+-- Có thể sẽ có thây đổi nên chưa dùng
+-- Đặt lịch hẹn
+-- ('booking_procedure', 'Làm sao để đặt lịch khám?', 'Bạn có thể đặt lịch khám trực tuyến qua website hoặc gọi tổng đài 1900-1234.', 'Đặt lịch'),
+-- ('booking_available_slots', 'Tôi muốn biết lịch khám của bác sĩ A vào tuần tới?', 'Bạn có thể kiểm tra lịch khám trên trang web hoặc ứng dụng của bệnh viện.', 'Đặt lịch'),
+-- ('booking_cancellation', 'Tôi muốn huỷ lịch hẹn đã đặt thì làm sao?', 'Bạn có thể huỷ lịch hẹn trong tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
+-- ('booking_confirmation', 'Tôi đã đặt lịch khám nhưng chưa nhận được xác nhận, phải làm sao?', 'Bạn có thể kiểm tra trong mục "Lịch sử đặt lịch" hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
+-- ('reschedule_booking', 'Tôi muốn thay đổi lịch hẹn đã đặt thì làm sao?', 'Bạn có thể thay đổi lịch hẹn qua tài khoản cá nhân hoặc gọi đến tổng đài.', 'Đặt lịch'),
+-- ('cancel_booking', 'Tôi muốn huỷ lịch hẹn thì làm sao?', 'Bạn có thể huỷ lịch qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
 
-----------------------------------------------------------------Dữ liệu mẫu cho categories--------------------------------------------------------------------------------------------------------------------------
 INSERT INTO service_categories (name, slug, icon, description) VALUES
 ('Khám Tổng Quát', 'kham-tong-quat', 'fas fa-stethoscope', 'Dịch vụ khám sức khỏe tổng quát và tầm soát bệnh'),
 ('Tim Mạch', 'tim-mach', 'fas fa-heartbeat', 'Chẩn đoán và điều trị các bệnh lý tim mạch'),
@@ -498,52 +478,6 @@ INSERT INTO service_packages (name, slug, description, price, duration, is_featu
 ('Gói Cơ Bản', 'goi-co-ban', 'Gói khám sức khỏe cơ bản', 1500000, '/lần', FALSE),
 ('Gói Nâng Cao', 'goi-nang-cao', 'Gói khám sức khỏe nâng cao', 3500000, '/lần', TRUE),
 ('Gói Cao Cấp', 'goi-cao-cap', 'Gói khám sức khỏe cao cấp', 6500000, '/lần', FALSE);
-
-INSERT INTO chatbot_knowledge_base (intent, question, answer, category)
-VALUES
--- Hành chính
-('ask_working_hours', 'Bệnh viện làm việc vào thời gian nào?', 'Bệnh viện làm việc từ 7h00 đến 17h00 từ thứ 2 đến thứ 7.', 'Thông tin chung'),
-('ask_contact_info', 'Tôi có thể liên hệ bệnh viện qua số điện thoại nào?', 'Bạn có thể gọi đến số 1900-1234 để được hỗ trợ.', 'Thông tin chung'),
-('ask_location', 'Địa chỉ bệnh viện là gì?', 'Bệnh viện nằm tại số 123 Đường Sức Khỏe, Quận 10, TP.HCM.', 'Thông tin chung'),
-('ask_services', 'Bệnh viện có những dịch vụ gì?', 'Chúng tôi cung cấp các dịch vụ khám bệnh, xét nghiệm, chẩn đoán hình ảnh và điều trị nội trú.', 'Thông tin chung'),
-
--- Y tế / chuyên môn
-('symptom_analysis', 'Tôi bị sốt, mệt mỏi và ho, có thể là bệnh gì?', 
- 'Triệu chứng như vậy có thể do cảm lạnh, viêm họng, hoặc dị ứng thời tiết gây ra. Bạn nên nghỉ ngơi, uống nhiều nước và theo dõi kỹ. Nếu không đỡ thì đi khám nha.', 
- 'Triệu chứng chung'),
-
-('symptom_analysis', 'Tôi bị đau đầu và chóng mặt, có thể là bệnh gì?', 
- 'Đau đầu và chóng mặt có thể do căng thẳng, thiếu ngủ, hoặc các vấn đề về huyết áp. Nếu cảm thấy nghiêm trọng, bạn nên đi khám để được kiểm tra kỹ hơn.', 
- 'Triệu chứng chung'),
-
-('symptom_analysis', 'Tôi bị khó thở và tức ngực, có thể là bệnh gì?', 
- 'Khó thở và tức ngực có thể liên quan đến nhiều bệnh như hen suyễn, viêm phổi hoặc các bệnh tim mạch. Bạn nên đi khám để được chẩn đoán chính xác.', 
- 'Triệu chứng chung'),
-
-('symptom_analysis', 'Tôi bị ngứa da và phát ban, có thể là do bệnh gì?', 
- 'Ngứa da và phát ban có thể do dị ứng, viêm da cơ địa hoặc nhiễm nấm da. Nên tránh tiếp xúc với các chất gây kích ứng và đi khám nếu triệu chứng kéo dài.', 
- 'Triệu chứng chung'),
-
-('symptom_analysis', 'Tôi bị buồn nôn và chán ăn, có thể do bệnh gì?', 
- 'Buồn nôn và chán ăn có thể là dấu hiệu của nhiều vấn đề như rối loạn tiêu hóa, stress hoặc nhiễm trùng nhẹ. Nếu triệu chứng kéo dài, bạn nên đến bác sĩ để kiểm tra.', 
- 'Triệu chứng chung');
-('disease_info', 'Bệnh tiểu đường có những triệu chứng gì?', 'Các triệu chứng bao gồm khát nước nhiều, đi tiểu thường xuyên, mệt mỏi và giảm cân không rõ nguyên nhân.', 'Thông tin bệnh'),
-('medicine_usage', 'Tôi nên uống thuốc hạ sốt như thế nào?', 'Bạn nên uống thuốc theo chỉ định bác sĩ. Thông thường, thuốc hạ sốt được dùng khi nhiệt độ trên 38.5°C.', 'Hướng dẫn dùng thuốc'),
-('disease_info', 'Bệnh tiểu đường có những triệu chứng gì?', 'Các triệu chứng bao gồm khát nước nhiều, đi tiểu thường xuyên, mệt mỏi và giảm cân không rõ nguyên nhân.', 'Thông tin bệnh'),
-('medicine_usage', 'Tôi nên uống thuốc hạ sốt như thế nào?', 'Bạn nên uống thuốc theo chỉ định bác sĩ. Thông thường, thuốc hạ sốt được dùng khi nhiệt độ trên 38.5°C.', 'Hướng dẫn dùng thuốc'),
-
--- Hỗ trợ kỹ thuật
-('account_help', 'Tôi quên mật khẩu đăng nhập thì phải làm sao?', 'Bạn có thể sử dụng chức năng "Quên mật khẩu" trên trang đăng nhập để đặt lại mật khẩu.', 'Hỗ trợ tài khoản'),
-('app_issue', 'Ứng dụng bị lỗi khi tôi mở lên, phải làm sao?', 'Bạn hãy thử khởi động lại ứng dụng hoặc cập nhật lên phiên bản mới nhất. Nếu vẫn gặp lỗi, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ kỹ thuật'),
-('payment_issue', 'Tôi không thể thanh toán đơn thuốc, phải làm sao?', 'Bạn hãy kiểm tra lại thông tin thẻ hoặc tài khoản ngân hàng. Nếu vẫn không thanh toán được, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ thanh toán');
--- Có thể sẽ có thây đổi nên chưa dùng
--- Đặt lịch hẹn
--- ('booking_procedure', 'Làm sao để đặt lịch khám?', 'Bạn có thể đặt lịch khám trực tuyến qua website hoặc gọi tổng đài 1900-1234.', 'Đặt lịch'),
--- ('booking_available_slots', 'Tôi muốn biết lịch khám của bác sĩ A vào tuần tới?', 'Bạn có thể kiểm tra lịch khám trên trang web hoặc ứng dụng của bệnh viện.', 'Đặt lịch'),
--- ('booking_cancellation', 'Tôi muốn huỷ lịch hẹn đã đặt thì làm sao?', 'Bạn có thể huỷ lịch hẹn trong tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
--- ('booking_confirmation', 'Tôi đã đặt lịch khám nhưng chưa nhận được xác nhận, phải làm sao?', 'Bạn có thể kiểm tra trong mục "Lịch sử đặt lịch" hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
--- ('reschedule_booking', 'Tôi muốn thay đổi lịch hẹn đã đặt thì làm sao?', 'Bạn có thể thay đổi lịch hẹn qua tài khoản cá nhân hoặc gọi đến tổng đài.', 'Đặt lịch'),
--- ('cancel_booking', 'Tôi muốn huỷ lịch hẹn thì làm sao?', 'Bạn có thể huỷ lịch qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
 ----------------------------------------------------------------Dữ liệu mẫu cho --------------------------------------------------------------------------------------------------------------------------------
 INSERT INTO package_features (package_id, feature_name) VALUES
 (1, 'Khám lâm sàng tổng quát'),
