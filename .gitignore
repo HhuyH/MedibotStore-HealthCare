@@ -1,0 +1,9 @@
+<<<<<<< HEAD
+KMS_ChatBot/.env
+KMS_ChatBot/Chatbot_BackEnd/.env
+.env
+=======
+venv/
+.ipynb_checkpoints/
+.env
+>>>>>>> decb1f2fe01abc043f2296e28be263d0a64c1628
