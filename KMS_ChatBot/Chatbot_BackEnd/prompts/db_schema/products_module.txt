@@ -1,0 +1,46 @@
+25. product_categories  
+- category_id (INT, PK): primary key  
+- name (VARCHAR): category name  
+- description (TEXT): category description  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+26. products  
+- product_id (INT, PK): primary key  
+- category_id (INT): foreign key to product_categories  
+- name (VARCHAR): product name  
+- description (TEXT): product description  
+- price (DECIMAL): price of product  
+- stock (INT): stock quantity  
+- image_url (TEXT): product image URL  
+- is_active (BOOLEAN): product active status  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+27. medicines  
+- medicine_id (INT, PK): primary key, foreign key to products.product_id  
+- active_ingredient (VARCHAR): main active ingredient  
+- dosage_form (VARCHAR): dosage form (tablet, vial, pack...)  
+- unit (VARCHAR): measurement unit (tablet, ml, etc.)  
+- usage_instructions (TEXT): instructions for use  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+28. prescription_products  
+- id (INT, PK): primary key  
+- prescription_id (INT): foreign key to prescriptions.prescription_id  
+- product_id (INT, nullable): foreign key to products.product_id  
+- quantity (INT): quantity prescribed  
+- dosage (TEXT): dosage details  
+- usage_time (TEXT): duration or timing of use  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  
+
+29. product_reviews  
+- review_id (INT, PK): primary key  
+- product_id (INT): foreign key to products.product_id  
+- user_id (INT): foreign key to users.user_id  
+- rating (INT): rating from 1 to 5  
+- comment (TEXT): user comment  
+- created_at (TIMESTAMP): creation timestamp  
+- updated_at (DATETIME): last update timestamp  

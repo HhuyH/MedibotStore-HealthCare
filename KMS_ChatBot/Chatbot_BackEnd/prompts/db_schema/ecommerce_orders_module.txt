@@ -1,0 +1,29 @@
+
+30. orders  
+- order_id (INT, PK): primary key  
+- user_id (INT): foreign key to users.user_id  
+- address_id (INT, nullable): foreign key to user_addresses.address_id  
+- shipping_address (TEXT): snapshot of shipping address at order time  
+- total (DECIMAL): total price (nullable if not confirmed)  
+- payment_method (VARCHAR): method used (COD, Momo, VNPay, etc.)  
+- payment_status (VARCHAR): payment status, default 'pending'  
+- status (ENUM): order status ('cart', 'pending', 'processing', 'shipped', 'completed', 'cancelled'), default 'cart'  
+- order_note (TEXT): optional customer note  
+- order_date (TIMESTAMP): order creation time  
+- updated_at (DATETIME): last update timestamp  
+
+31. order_items  
+- item_id (INT, PK): primary key  
+- order_id (INT): foreign key to orders.order_id  
+- product_id (INT): foreign key to products.product_id  
+- quantity (INT): quantity purchased  
+- unit_price (DECIMAL): price per product at purchase time  
+
+32. payments  
+- payment_id (INT, PK): primary key  
+- user_id (INT, nullable): foreign key to users.user_id  
+- order_id (INT): foreign key to orders.order_id  
+- payment_method (VARCHAR): payment method used  
+- payment_status (VARCHAR): payment status ('pending', 'completed', 'failed'), default 'pending'  
+- amount (DECIMAL): amount paid  
+- payment_time (TIMESTAMP): time of payment 
