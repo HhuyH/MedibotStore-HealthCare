@@ -11,61 +11,65 @@ if (isset($_SESSION['user_id'])) {
 $err = '';
 $success = '';
 
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
-    $password = $_POST['password']; // sửa lại, input form là 'password', không phải 'password_hash'
+    $password = $_POST['password'];
     $remember = isset($_POST['remember']);
-    
+
     if (!$username || !$password) {
         $err = 'Vui lòng nhập đầy đủ thông tin!';
     } else {
-        // Gọi stored procedure get_user_info
-        $stmt = $conn->prepare("CALL get_user_info(?)");
-        $stmt->bind_param('s', $username);
+        $query = "
+            SELECT u.user_id, u.username, u.email, u.password, r.role_name, ui.phone, ui.full_name 
+            FROM users u
+            JOIN roles r ON u.role_id = r.role_id
+            LEFT JOIN users_info ui ON u.user_id = ui.user_id
+            WHERE u.username = ? OR u.email = ? OR ui.phone = ?
+            LIMIT 1
+        ";
+
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param('sss', $username, $username, $username);
         $stmt->execute();
 
-        // Vì stored procedure thường không hỗ trợ get_result trực tiếp, dùng bind_result
-        $stmt->store_result();
+        // Lấy kết quả dưới dạng associative array
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
 
-        // khai báo biến tương ứng với các trường select trong proc
-        $stmt->bind_result($user_id, $db_username, $email, $password_hash, $role_name);
+        if ($row) {
+            if ($password === $row['password']) {  // Hoặc dùng password_verify nếu hash rồi
+                $_SESSION['user_id'] = $row['user_id'];
+                $_SESSION['username'] = $row['username'];
+                $_SESSION['email'] = $row['email'];
+                $_SESSION['role_name'] = $row['role_name'];
+                $_SESSION['full_name'] = $row['full_name'];
 
-        if ($stmt->fetch()) {
-            // So sánh mật khẩu trực tiếp
-            if ($password === $password_hash) {
-                // Đăng nhập thành công
-                $_SESSION['user_id'] = $user_id;
-                $_SESSION['username'] = $db_username;
-                $_SESSION['email'] = $email;
-                $_SESSION['role_name'] = $role_name;
-
-                // Xử lý "Remember me"
                 if ($remember) {
                     $token = bin2hex(random_bytes(32));
-                    setcookie('remember_token', $token, time() + (86400 * 30), '/'); // 30 ngày
-                    
-                    // Lưu token vào database
-                    $stmt_token = $conn->prepare(
-                        "INSERT INTO remember_tokens (user_id, token, expires_at) 
-                         VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY)) 
-                         ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)"
-                    );
-                    $stmt_token->bind_param('is', $user_id, $token);
+                    setcookie('remember_token', $token, time() + (86400 * 30), '/');
+
+                    $stmt_token = $conn->prepare("
+                        INSERT INTO remember_tokens (user_id, token, expires_at)
+                        VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY))
+                        ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)
+                    ");
+                    $stmt_token->bind_param('is', $row['user_id'], $token);
                     $stmt_token->execute();
+                    $stmt_token->close();
                 }
 
-                // Redirect theo role_name
-                switch ($role_name) {
-                    case 'Admin':
-                        header('Location: admin/index.php');
-                        break;
-                    case 'Doctor':
-                        header('Location: doctor/index.php');
-                        break;
-                    default:
-                        header('Location: index.php');
-                        break;
-                }
+                // ✅ Trả JSON cho JS xử lý
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Đăng nhập thành công!',
+                    'user' => [
+                        'user_id' => $row['user_id'],
+                        'username' => $row['username'],
+                        'role' => $row['role_name']
+                    ]
+                ]);
                 exit;
             } else {
                 $err = 'Mật khẩu không chính xác!';
@@ -73,9 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $err = 'Tài khoản không tồn tại!';
         }
+
         $stmt->close();
     }
 }
+
 
 
 
@@ -620,7 +626,7 @@ if (isset($_GET['logout'])) {
                     <p>Bạn có thể đăng nhập bằng: <strong>Tên đăng nhập</strong>, <strong>Email</strong> hoặc <strong>Số điện thoại</strong></p>
                 </div>
 
-                <form method="post" class="needs-validation" novalidate>
+                <form id="loginForm" method="post" class="needs-validation" novalidate>
                     <div class="form-group">
                         <label class="form-label">Tên đăng nhập, Email hoặc Số điện thoại</label>
                         <input type="text" name="username" class="form-control" 
@@ -711,6 +717,40 @@ if (isset($_GET['logout'])) {
             // Auto focus first input
             document.querySelector('input[name="username"]').focus();
         });
+
+        document.getElementById("loginForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = new URLSearchParams(formData);
+
+            try {
+                const res = await fetch("login.php", {
+                method: "POST",
+                body: data
+                });
+
+                const result = await res.json();
+
+                if (result.status === "success") {
+                const u = result.user;
+                localStorage.setItem("userInfo", JSON.stringify({
+                    user_id: u.user_id,
+                    username: u.username,
+                    role: u.role
+                }));
+                window.location.href = "Index_Chat.php";
+                }
+                else {
+                document.getElementById("loginMessage").innerText = "Đăng nhập thất bại!";
+                }
+
+            } catch (err) {
+                console.error("Lỗi kết nối:", err);
+                document.getElementById("loginMessage").innerText = "Lỗi server!";
+            }
+        });
+
     </script>
 </body>
 </html> 

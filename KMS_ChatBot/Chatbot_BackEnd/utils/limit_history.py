@@ -1,11 +1,21 @@
 import tiktoken
 from config import MODEL
+from models import ChatHistoryItem
 
-def count_message_tokens(message: dict, model_name: str = MODEL) -> int:
+def count_message_tokens(message, model_name: str = MODEL) -> int:
     encoding = tiktoken.encoding_for_model(model_name)
-    # Tính token cho role + content + 4 token overhead (theo docs)
-    tokens = len(encoding.encode(message.get("role", "") + message.get("content", ""))) + 4
+    # Kiểm tra nếu message là dict
+    if isinstance(message, dict):
+        role = message.get("role", "")
+        content = message.get("content", "")
+    else:
+        # Giả định object có attr role và content
+        role = getattr(message, "role", "")
+        content = getattr(message, "content", "")
+
+    tokens = len(encoding.encode(role + content)) + 4
     return tokens
+
 
 def limit_history_by_tokens(system_message: dict, history: list, max_tokens=1000):
     total_tokens = count_message_tokens(system_message)

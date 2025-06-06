@@ -1,10 +1,15 @@
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+
+class ChatHistoryItem(BaseModel):
+    role: str
+    content: str
 
 class Message(BaseModel):
     message: str
-    history: List[Dict[str, Any]] = []
+    user_id: Optional[int] = None
+    username: Optional[str] = None
+    role: Optional[str] = None
+    history: Optional[List[ChatHistoryItem]] = []
+
     
-class ChatRequest(BaseModel):
-    message: str
-    history: List[Dict[str, Any]] = []

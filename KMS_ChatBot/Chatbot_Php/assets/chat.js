@@ -14,31 +14,54 @@ function scrollToBottom() {
     }, 50);
 }
 
+const userInfo = JSON.parse(localStorage.getItem("userInfo")); // Được lưu sau khi login
+
 
 // Gọi API chat không stream, trả về reply đầy đủ 1 lần
 async function sendChatMessage(message, history) {
     const response = await fetch("http://127.0.0.1:8000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, history }),
+        body: JSON.stringify({
+            message,
+            history,
+            user_id: userInfo.user_id,
+            role: userInfo.role
+        }),
     });
+
+
     if (!response.ok) throw new Error("Lỗi khi kết nối server");
     const data = await response.json();
     return data.reply;
 }
 
-// Gọi API chat stream, xử lý JSON hoặc text
-async function sendChatStream(message, history, onUpdate) {
+async function sendChatStream({ message, history }, onUpdate) {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
+    const { user_id, username, role } = userInfo;
+
+    const payload = {
+        message,
+        history,
+        user_id,
+        username,
+        role
+    };
+
     const response = await fetch("http://127.0.0.1:8000/chat/stream", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Accept": "text/event-stream",
         },
-        body: JSON.stringify({ message, history }),
+        body: JSON.stringify(payload),
     });
 
-    if (!response.ok) throw new Error("Lỗi khi kết nối server");
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Lỗi chi tiết:", errorText);
+        throw new Error("Lỗi khi kết nối server");
+    }
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder("utf-8");
@@ -57,17 +80,29 @@ async function sendChatStream(message, history, onUpdate) {
                 const jsonStr = part.replace(/^data:\s*/, "");
                 if (jsonStr === "[DONE]") return;
                 try {
-                    const dataObj = JSON.parse(jsonStr);
-                    onUpdate(dataObj.text);
+                    const parsed = JSON.parse(jsonStr);
+                    const textToShow = parsed.natural_text;
+                    if (textToShow && textToShow.trim() !== "") {
+                        onUpdate(textToShow);
+                    } else {
+                        // Không làm gì hoặc log debug
+                        console.debug("Chunk không có natural_text hợp lệ:", parsed);
+                    }
                 } catch (err) {
-                    console.error("Lỗi parse JSON:", err);
-                    onUpdate("[Lỗi dữ liệu]");
+                    console.warn("Không phải JSON, hiển thị raw text:", jsonStr);
+                    if (jsonStr.trim() !== "") {
+                        onUpdate(jsonStr); // fallback plain text, nhưng tránh string rỗng
+                    }
                 }
             }
+
         }
+
         buffer = parts[parts.length - 1];
     }
 }
+
+
 
 document.getElementById("chat-form").addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -76,6 +111,10 @@ document.getElementById("chat-form").addEventListener("submit", async function (
     const message = input.value.trim();
     if (!message) return;
 
+    // Lấy userInfo từ localStorage ngay đây
+    const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
+    const role = userInfo.role || "guest";
+    
     appendMessage(message + " 👤", "user");
     input.value = "";
     input.disabled = true;
@@ -91,13 +130,31 @@ document.getElementById("chat-form").addEventListener("submit", async function (
         credentials: "include"
     });
 
-    // Biến chọn dùng streaming hay không
-    const useStreaming = true; // true để dùng stream, false để gọi API bình thường
+    // Tạo payload chung có thêm userInfo
+    const payload = {
+        message: message,
+        user_id: userInfo.user_id || null,
+        username: userInfo.username || null,
+        role: role,
+        history: history // Nếu backend cần lịch sử luôn thì gửi kèm
+    };
+
+    const useStreaming = true; // hoặc false tùy bạn
 
     if (!useStreaming) {
         try {
-            const reply = await sendChatMessage(message, history);
+            // Gọi backend gửi chat, đính kèm payload
+            const res = await fetch('/api/chatbot_backend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            const reply = data.reply;
             appendMessage("🤖 " + reply, "bot");
+
             await fetch("update_history.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -112,42 +169,42 @@ document.getElementById("chat-form").addEventListener("submit", async function (
             input.focus();
         }
     } else {
-            const botMessageDiv = document.createElement("div");
-            botMessageDiv.className = "bot-msg";
-            botMessageDiv.innerHTML = "<strong>🤖</strong> ";
-            document.getElementById("chat-box").appendChild(botMessageDiv);
+        const botMessageDiv = document.createElement("div");
+        botMessageDiv.className = "bot-msg";
+        botMessageDiv.innerHTML = "<strong>🤖</strong> ";
+        document.getElementById("chat-box").appendChild(botMessageDiv);
 
-            let fullBotReply = "";
+        let fullBotReply = "";
 
-            try {
-            await sendChatStream(message, history, (text) => {
+        try {
+            await sendChatStream(payload, (text) => {
+                // parse và render như bạn đã có
                 let parsed;
                 try {
-                parsed = JSON.parse(text);
+                    parsed = JSON.parse(text);
                 } catch (e) {
-                parsed = null;
+                    parsed = null;
                 }
 
                 if (parsed && parsed.natural_text) {
-                fullBotReply += parsed.natural_text;
-                botMessageDiv.innerHTML = "<strong>🤖</strong> " + marked.parse(fullBotReply);
+                    fullBotReply += parsed.natural_text;
+                    botMessageDiv.innerHTML = "<strong>🤖</strong> " + marked.parse(fullBotReply);
 
-                if (parsed.sql_query) {
-                    const sqlDiv = document.createElement("pre");
-                    sqlDiv.textContent = "[SQL nội bộ]\n" + parsed.sql_query;
-                    sqlDiv.style.color = "gray";
-                    sqlDiv.style.fontSize = "0.9em";
-                    sqlDiv.style.marginTop = "5px";
-                    document.getElementById("chat-box").appendChild(sqlDiv);
-                }
+                    if (parsed.sql_query) {
+                        const sqlDiv = document.createElement("pre");
+                        sqlDiv.textContent = "[SQL nội bộ]\n" + parsed.sql_query;
+                        sqlDiv.style.color = "gray";
+                        sqlDiv.style.fontSize = "0.9em";
+                        sqlDiv.style.marginTop = "5px";
+                        document.getElementById("chat-box").appendChild(sqlDiv);
+                    }
                 } else {
-                fullBotReply += text;
-                botMessageDiv.innerHTML = "<strong>🤖</strong> " + marked.parse(fullBotReply);
+                    fullBotReply += text;
+                    botMessageDiv.innerHTML = "<strong>🤖</strong> " + marked.parse(fullBotReply);
                 }
 
                 scrollToBottom();
             });
-
 
             await fetch("update_history.php", {
                 method: "POST",
@@ -165,3 +222,4 @@ document.getElementById("chat-form").addEventListener("submit", async function (
         }
     }
 });
+

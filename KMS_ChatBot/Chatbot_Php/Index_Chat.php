@@ -129,6 +129,15 @@
 </head>
 <body>
 
+  <!-- Log out -->
+  <button id="logoutBtn" style="background:#dc3545; color:#fff; padding:8px 16px; border:none; border-radius:6px; cursor:pointer;">
+    🚪 Logout
+  </button>
+
+    <!-- Đặt chỗ hiện info user -->
+  <div id="user-info" style="position: fixed; top: 10px; right: 10px; background: #eee; padding: 10px 15px; border-radius: 6px;"></div>
+
+
   <h2>🧠 Trò Chuyện Sức Khỏe AI</h2>
 
   <div id="chat-box"></div>
@@ -146,6 +155,26 @@
 
   <!-- Gắn file JS -->
   <script src="assets/chat.js"></script>
+  <script src="assets/logout.js"></script>
+  
+  <script>
+    // Lấy userInfo từ localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
+      if (userInfo) {
+        const userDiv = document.getElementById("user-info");
+        userDiv.innerHTML = `
+          <strong>Xin chào:</strong> ${userInfo.username} <br/>
+          <strong>Vai trò:</strong> ${userInfo.role} <br/>
+          <strong>ID:</strong> ${userInfo.user_id}
+        `;
+      } else {
+        document.getElementById("user-info").innerText = "Chưa đăng nhập hoặc session hết hạn.";
+      }
+    });
+  </script>
+
 
 </body>
 </html>

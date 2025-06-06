@@ -1,9 +1,4 @@
-from db_schema.load_schema import user_core_schema, schema_modules
-import sys
-import os
-
-# Thêm đường dẫn thư mục cha vào sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from .db_schema.load_schema import user_core_schema, schema_modules
 
 from models import Message
 
@@ -77,9 +72,10 @@ Then generate a SQL SELECT query for that case.
 
 4. When generating SQL, your **entire output must be a single valid JSON object**, like this:
    {example_json}  
+   - Không được bao quanh bởi dấu {{ hoặc bất kỳ định dạng không chuẩn nào.
    - ❌ Do NOT explain anything.
    - ✅ DO return only the JSON object above — no extra text.
-
+   
 5. If the user requests information about **a single disease or drug**, do not use SQL.
    - Instead, present relevant details (e.g., symptoms, treatment) as clear bullet points.
 
@@ -108,3 +104,9 @@ Load additional schema modules as needed, based on context:
 
 """.strip()
 
+system_message = "\n\n".join([
+    system_prompt_sql,
+    system_prompt_medical,
+   #  system_prompt_safety,       # nếu có
+   #  system_prompt_contextual    # nếu có
+])

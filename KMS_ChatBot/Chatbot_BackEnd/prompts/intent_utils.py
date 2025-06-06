@@ -1,18 +1,25 @@
-from db_schema.load_schema import user_core_schema, schema_modules
-import openai
 
+import openai
+from unidecode import unidecode
 import sys
 import os
 
 # Thêm đường dẫn thư mục cha vào sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from .db_schema.load_schema import user_core_schema, schema_modules
+
+
 from config import MODEL
 
-from prompts import system_prompt_medical, system_prompt_sql
+from prompts.prompts import system_prompt_medical, system_prompt_sql
+from utils.openai_client import chat_completion, chat_stream
+
+def remove_accents(text: str) -> str:
+    return unidecode(text).lower()
 
 def get_combined_schema_for_intent(intent: str) -> str:
     schema_parts = [user_core_schema]  # luôn load phần lõi
-    intent = intent.lower()
+    intent = remove_accents(intent)  # chuẩn hóa không dấu, lowercase
 
     # Map nhóm từ khóa tương ứng với từng module
     keyword_map = {
@@ -41,7 +48,11 @@ def get_combined_schema_for_intent(intent: str) -> str:
         'services': [
             'service', 'gói khám', 'dịch vụ', 'gói'
         ],
-        
+    }
+
+    keyword_map_norm = {
+        k: [remove_accents(word) for word in v]
+        for k, v in keyword_map.items()
     }
 
     extra_intent_map = {
@@ -53,27 +64,32 @@ def get_combined_schema_for_intent(intent: str) -> str:
         ],
     }
 
+    extra_intent_map_norm = {
+        k: [remove_accents(word) for word in v]
+        for k, v in extra_intent_map.items()
+    }
+
     # Duyệt tất cả keyword theo module
-    for module_name, keywords in keyword_map.items():
+    for module_name, keywords in keyword_map_norm.items():
         if any(kw in intent for kw in keywords):
             if module_name in schema_modules:
                 if schema_modules[module_name] not in schema_parts:
                     schema_parts.append(schema_modules[module_name])
 
     # Bắt buộc thêm doctor_clinic nếu có lịch hẹn
-    if any(kw in intent for kw in keyword_map['appointments']):
+    if any(kw in intent for kw in keyword_map_norm['appointments']):
         if schema_modules['doctor_clinic'] not in schema_parts:
             schema_parts.append(schema_modules['doctor_clinic'])
         if schema_modules['user_profile'] not in schema_parts:
-            schema_parts.append(schema_modules['user_profile'])# liên quan đến user_id & guest_id
+            schema_parts.append(schema_modules['user_profile']) # liên quan đến user_id & guest_id
 
     # nếu người hỏi hỏi những loại thuốc nào đi kèm theo đơn thuốc thì sẽ gọi cả 2 products và prescription để lấy thông tin thuốc
-    if any(kw in intent for kw in extra_intent_map['prescription_products']):
+    if any(kw in intent for kw in extra_intent_map_norm['prescription_products']):
         schema_parts.append(schema_modules['products'])
         schema_parts.append(schema_modules['appointments'])
 
     # lấy thông tin chi tiết của sản phẩm theo hóa đơn
-    if any(kw in intent for kw in extra_intent_map['order_items_details']):
+    if any(kw in intent for kw in extra_intent_map_norm['order_items_details']):
         schema_parts.append(schema_modules['products'])
         schema_parts.append(schema_modules['orders'])
 
@@ -91,13 +107,8 @@ def get_combined_schema_for_intent(intent: str) -> str:
 
 def detect_intent(user_message: str) -> str:
     prompt = f"Xác định intent chính của câu sau trong các loại: user_profile, medical_history, products, appointments, ai_prediction, orders, notifications, services, prescription_products, order_items_details.\nCâu: {user_message}\nIntent:"
-    response = openai.ChatCompletion.create(
-        model=MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=10,
-        temperature=0
-    )
-    intent = response.choices[0].message['content'].strip().lower()
+    response = chat_completion([{"role": "user", "content": prompt}], max_tokens=10, temperature=0)
+    intent = response.choices[0].message.content.strip().lower()
 
     return intent
 

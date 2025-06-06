@@ -1,7 +1,8 @@
 import os
 
-def load_schema(module_name):
-    filepath = os.path.join('db_schema', f'{module_name}.txt')
+def load_schema(schema_name):
+    base_dir = os.path.dirname(__file__)  # thư mục hiện tại: .../prompts/db_schema
+    filepath = os.path.join(base_dir, f"{schema_name}.txt")
     with open(filepath, 'r', encoding='utf-8') as f:
         return f.read()
 
