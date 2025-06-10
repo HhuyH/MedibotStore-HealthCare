@@ -1,7 +1,7 @@
 ROLE_PERMISSIONS = {
     "Admin": ["chat", "view_all", "manage_users"],
     "Doctor": ["chat", "view_patients"],
-    "User": ["chat"],
+    "Patient": ["chat"],
     "Guest": []  # Khách chưa đăng nhập
 }
 

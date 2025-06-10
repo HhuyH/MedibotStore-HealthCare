@@ -80,167 +80,113 @@ INSERT INTO diseases (name, description, treatment_guidelines, category_id) VALU
 
 
 -------------------------------------------------------symptoms--------------------------------------------------------------------------------------------------------------
-INSERT INTO symptoms (name, description) VALUES
-('Đau đầu', 'Cảm giác đau ở vùng đầu hoặc cổ'),
-('Khó thở', 'Khó khăn trong việc hít thở bình thường'),
-('Buồn nôn', 'Cảm giác muốn nôn mửa'),
-('Sốt', 'Nhiệt độ cơ thể cao hơn bình thường'),
-('Tức ngực', 'Cảm giác đau hoặc áp lực ở ngực'),
-('Mệt mỏi', 'Cảm giác kiệt sức, thiếu năng lượng'),
-('Co giật', 'Chuyển động không kiểm soát của cơ'),
-('Ngứa da', 'Cảm giác châm chích khiến muốn gãi'),
-('Phát ban', 'Vùng da bị nổi mẩn đỏ hoặc sưng'),
-('Đau lưng', 'Cảm giác đau hoặc khó chịu ở vùng lưng'),
-('Chán ăn', 'Mất cảm giác thèm ăn, không muốn ăn uống'),
-('Buồn nôn', 'Cảm giác muốn nôn mửa'),
-('Đau cơ', 'Cảm giác đau hoặc căng cứng cơ bắp'),
-('Mất ngủ', 'Không thể ngủ hoặc ngủ không sâu giấc'),
-('Hơi thở hôi', 'Có mùi khó chịu khi thở ra'),
-('Nấc cụt', 'Hiện tượng thở ra đột ngột gây tiếng nấc'),
-('Đau họng', 'Cảm giác đau hoặc rát ở vùng họng'),
-('Chóng mặt', 'Cảm giác quay cuồng hoặc mất thăng bằng'),
-('Mờ mắt', 'Giảm khả năng nhìn rõ hoặc bị mờ mắt'),
-('Phù nề', 'Sưng lên do tích tụ dịch ở các mô'),
-('Khó thở khi nằm', 'Cảm giác khó thở tăng lên khi nằm xuống'),
+INSERT INTO symptoms (name, alias, description) VALUES
+('Đau đầu', 'đau đầu,căng đầu,nhức đầu', 'Cảm giác đau ở vùng đầu hoặc cổ'),
+('Khó thở', 'khó hít thở,ngộp thở,thở không ra hơi', 'Khó khăn trong việc hít thở bình thường'),
+('Buồn nôn', 'muốn ói,nôn nao,ói mửa,khó chịu bụng', 'Cảm giác muốn nôn mửa'),
+('Sốt', 'nóng sốt,sốt cao,sốt nhẹ,thân nhiệt cao', 'Nhiệt độ cơ thể cao hơn bình thường'),
+('Tức ngực', 'đau ngực,nặng ngực,ép ngực', 'Cảm giác đau hoặc áp lực ở ngực'),
+('Mệt mỏi', 'mệt,uể oải,đuối sức,yếu người', 'Cảm giác kiệt sức, thiếu năng lượng'),
+('Co giật', 'giật cơ,co rút,co cứng', 'Chuyển động không kiểm soát của cơ'),
+('Ngứa da', 'ngứa,ngứa ngáy,muốn gãi', 'Cảm giác châm chích khiến muốn gãi'),
+('Phát ban', 'mẩn đỏ,nổi mẩn,da dị ứng', 'Vùng da bị nổi mẩn đỏ hoặc sưng'),
+('Chán ăn', 'không thèm ăn,bỏ ăn,ăn không ngon miệng', 'Mất cảm giác thèm ăn, không muốn ăn uống'),
+('Ho', 'ho khan,ho có đờm,ho dữ dội', 'Phản xạ đẩy không khí ra khỏi phổi để làm sạch đường hô hấp'),
+('Hắt hơi', 'hắt xì,hắt xì hơi,nhảy mũi', 'Phản xạ mạnh của mũi để đẩy chất gây kích ứng ra ngoài'),
+('Chảy nước mũi', 'nước mũi,nước mũi chảy,chảy dịch mũi', 'Dịch nhầy chảy ra từ mũi do viêm hoặc dị ứng'),
+('Đau họng', 'rát họng,viêm họng,ngứa họng', 'Cảm giác đau hoặc rát ở vùng họng'),
+('Khó nuốt', 'nuốt đau,khó ăn,vướng cổ họng', 'Cảm giác vướng hoặc đau khi nuốt thức ăn hoặc nước'),
+('Đau bụng', 'đầy bụng,đau bụng dưới,đau bụng trên', 'Cảm giác khó chịu hoặc đau ở vùng bụng'),
+('Tiêu chảy', 'tiêu lỏng,phân lỏng,đi cầu nhiều', 'Đi ngoài phân lỏng, thường xuyên'),
+('Táo bón', 'bón,khó đi ngoài,ít đi cầu', 'Đi đại tiện khó khăn hoặc không thường xuyên'),
+('Hoa mắt chóng mặt', 'chóng mặt,hoa mắt,quay cuồng,mất thăng bằng', 'Cảm giác quay cuồng hoặc mất thăng bằng'),
+('Đổ mồ hôi nhiều', 'ra mồ hôi,nhiều mồ hôi,ướt người', 'Ra mồ hôi quá mức, không do vận động'),
+('Run tay chân', 'tay chân run,rung người,run rẩy', 'Chuyển động không tự chủ ở tay hoặc chân'),
+('Khó ngủ', 'mất ngủ,khó ngủ,khó chợp mắt', 'Gặp vấn đề khi ngủ hoặc ngủ không ngon giấc'),
+('Thở gấp', 'thở nhanh,thở gấp,gấp gáp', 'Hơi thở nhanh, ngắn do thiếu oxy'),
+('Tim đập nhanh', 'tim nhanh,đánh trống ngực,tim đập mạnh', 'Nhịp tim tăng bất thường, có thể do lo âu hoặc bệnh lý'),
+('Tê tay chân', 'tê bì,châm chích,mất cảm giác tay chân', 'Mất cảm giác hoặc cảm giác châm chích ở tay hoặc chân');
+
 
 
 -------------------------------------------------------liên kết diseases với symptoms--------------------------------------------------------------------------------------------------------------
-
-CREATE TABLE disease_symptom (
-    disease_id INT,
-    symptom_id INT,
-    PRIMARY KEY (disease_id, symptom_id),
-    FOREIGN KEY (disease_id) REFERENCES diseases(id),
-    FOREIGN KEY (symptom_id) REFERENCES symptoms(id)
-);
-
--- Cảm lạnh thông thường
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(1, 1),  -- Ho
-(1, 2),  -- Hắt hơi
-(1, 3),  -- Chảy nước mũi
-(1, 19), -- Sốt
-(1, 21); -- Mệt mỏi
-
--- Viêm họng cấp
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(3, 1),   -- Ho
-(3, 4),   -- Đau họng
-(3, 5),   -- Khó nuốt
-(3, 19);  -- Sốt
-
--- Nổi mề đay
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(4, 22),  -- Ngứa da
-(4, 23);  -- Phát ban
-
--- Táo bón chức năng
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(5, 8),   -- Táo bón
-(5, 6),   -- Đau bụng
-(5, 24);  -- Chán ăn
-
--- Đau bụng kinh
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(6, 6),   -- Đau bụng
-(6, 21);  -- Mệt mỏi
-
--- Lupus ban đỏ hệ thống
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(7, 23),  -- Phát ban
-(7, 21);  -- Mệt mỏi
-
--- Bạch cầu cấp
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(8, 21),  -- Mệt mỏi
-(8, 19),  -- Sốt
-(8, 24);  -- Chán ăn
-
--- Xơ cứng bì
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(9, 22),  -- Ngứa da
-(9, 21);  -- Mệt mỏi
-
--- Xơ nang
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(10, 1),  -- Ho
-(10, 17), -- Khó thở
-(10, 6);  -- Đau bụng
-
--- U não ác tính
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(11, 16), -- Đau đầu
-(11, 12), -- Khó ngủ
-(11, 14); -- Tim đập nhanh
-
+INSERT INTO disease_symptoms (disease_id, symptom_id) VALUES
 -- Tăng huyết áp
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(12, 14), -- Tim đập nhanh
-(12, 9);  -- Hoa mắt chóng mặt
+(1, 1),  -- Đau đầu
+(1, 5),  -- Tức ngực
+(1, 24), -- Tim đập nhanh
+(1, 20), -- Đổ mồ hôi nhiều
 
 -- Đột quỵ
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(13, 14), -- Tim đập nhanh
-(13, 15); -- Tê tay chân
+(2, 1),  -- Đau đầu
+(2, 6),  -- Mệt mỏi
+(2, 7),  -- Co giật
+(2, 19), -- Hoa mắt chóng mặt
 
 -- Hen suyễn
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(14, 17), -- Khó thở
-(14, 1),  -- Ho
-(14, 13); -- Thở gấp
+(3, 2),  -- Khó thở
+(3, 11), -- Ho
+(3, 23), -- Thở gấp
+(3, 13), -- Chảy nước mũi
 
 -- Viêm phổi
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(15, 1),   -- Ho
-(15, 19),  -- Sốt
-(15, 17);  -- Khó thở
+(4, 2),  -- Khó thở
+(4, 4),  -- Sốt
+(4, 11), -- Ho
+(4, 14), -- Đau họng
 
 -- Viêm dạ dày
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(16, 6),   -- Đau bụng
-(16, 18),  -- Buồn nôn
-(16, 24);  -- Chán ăn
+(5, 3),  -- Buồn nôn
+(5, 10), -- Chán ăn
+(5, 16), -- Đau bụng
+(5, 18), -- Táo bón
 
 -- Xơ gan
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(17, 6),   -- Đau bụng
-(17, 21);  -- Mệt mỏi
+(6, 6),  -- Mệt mỏi
+(6, 10), -- Chán ăn
+(6, 16), -- Đau bụng
+(6, 17), -- Tiêu chảy
 
 -- Động kinh
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(18, 7),   -- Co giật
-(18, 15);  -- Tê tay chân
+(7, 7),  -- Co giật
+(7, 6),  -- Mệt mỏi
+(7, 21), -- Run tay chân
+(7, 19), -- Hoa mắt chóng mặt
 
 -- Trầm cảm
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(19, 12), -- Khó ngủ
-(19, 21); -- Mệt mỏi
+(8, 6),  -- Mệt mỏi
+(8, 22), -- Khó ngủ
+(8, 10), -- Chán ăn
+(8, 25), -- Tê tay chân
 
 -- Viêm da cơ địa
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(20, 22), -- Ngứa da
-(20, 23); -- Phát ban
+(9, 8),  -- Ngứa da
+(9, 9),  -- Phát ban
 
 -- Nấm da
-INSERT INTO disease_symptom (disease_id, symptom_id) VALUES
-(21, 22), -- Ngứa da
-(21, 23); -- Phát ban
+(10, 8), -- Ngứa da
+(10, 9); -- Phát ban
 
 
-
-
+GO
 -------------------------------------------------------Lịch sử chiệu chứng của bênh nhân Nguyễn Văn A user_id = 4--------------------------------------------------------------------------------------------------------------
 INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes) VALUES
-(4, 1, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày'),
-(4, 2, '2025-05-18', 'Ho khan, không có đờm'),
-(4, 3, '2025-05-19', 'Cổ họng đau rát, nuốt đau'),
-(4, 5, '2025-05-20', 'Đau đầu nhẹ, chủ yếu vào buổi sáng'),
-(4, 4, '2025-05-21', 'Cảm giác khó thở nhẹ khi vận động'),
-(4, 4, '2025-05-18', 'Sốt cao 39 độ, kéo dài 2 ngày');
-(4, 1, '2025-05-18', 'Đau đầu âm ỉ vùng trán và sau gáy'),
-(4, 2, '2025-05-19', 'Khó thở nhẹ, đặc biệt khi leo cầu thang'),
-(4, 6, '2025-05-20', 'Cảm thấy mệt mỏi suốt cả ngày'),
-(4, 5, '2025-05-21', 'Cảm giác tức ngực nhẹ khi hít sâu');
+(4, 1, '2025-06-01', 'Đau âm ỉ cả ngày, uống paracetamol thấy đỡ'),
+(4, 4, '2025-06-01', 'Sốt nhẹ buổi chiều, khoảng 38°C'),
+(4, 6, '2025-06-01', 'Cảm thấy mệt, không muốn làm việc'),
+
+(4, 11, '2025-06-02', 'Ho khan, đặc biệt vào sáng sớm'),
+(4, 14, '2025-06-02', 'Đau họng nhẹ, khó nuốt nước lạnh'),
+
+(4, 2, '2025-06-03', 'Khó thở nhẹ khi leo cầu thang'),
+(4, 23, '2025-06-03', 'Thở nhanh khi vận động nhẹ'),
+
+(4, 5, '2025-06-04', 'Cảm giác tức ngực, không đau nhưng khó chịu'),
+(4, 20, '2025-06-04', 'Đổ mồ hôi nhiều dù không vận động'),
+
+(4, 6, '2025-06-05', 'Vẫn còn mệt mỏi, ngủ không ngon'),
+(4, 22, '2025-06-05', 'Khó ngủ, trằn trọc đến 2 giờ sáng');
+
 
 -------------------------------------------------------Phòng khám--------------------------------------------------------------------------------------------------------------
 INSERT INTO clinics (name, address, phone, email, description) VALUES

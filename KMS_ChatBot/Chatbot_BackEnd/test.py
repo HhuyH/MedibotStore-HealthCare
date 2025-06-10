@@ -1,14 +1,16 @@
-import openai
-from config import OPENAI_API_KEY, MODEL
-from prompts import system_message
+from utils.symptom_utils import load_symptom_list, extract_symptoms_gpt
 
-openai.api_key = OPENAI_API_KEY
+# Tải danh sách triệu chứng vào bộ nhớ đệm toàn cục
+load_symptom_list()
 
-response = openai.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "hello"}],
-    stream=True
-)
+text = "em bị toc ngoc"
 
-for chunk in response:
-    print(chunk.choices[0].delta.content or "", end="")
+matched, suggestion = extract_symptoms_gpt(text)
+
+print("🔍 Triệu chứng tìm thấy:")
+for s in matched:
+    print(f" - {s['id']}: {s['name']}")
+
+if suggestion:
+    print(suggestion)
+

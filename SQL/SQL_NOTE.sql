@@ -154,6 +154,7 @@ CREATE TABLE diseases (
 CREATE TABLE symptoms (
     symptom_id INT AUTO_INCREMENT PRIMARY KEY,        -- Khóa chính
     name VARCHAR(255) NOT NULL,                       -- Tên triệu chứng
+    alias TEXT,
     description TEXT,                                 -- Mô tả triệu chứng
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)

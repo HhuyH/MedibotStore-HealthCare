@@ -7,11 +7,11 @@ import os
 # Thêm đường dẫn thư mục cha vào sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from .db_schema.load_schema import user_core_schema, schema_modules
-
+from prompts.prompts import build_system_prompt
 
 from config import MODEL
 
-from prompts.prompts import system_prompt_medical, system_prompt_sql
+from prompts.prompts import system_prompt_sql
 from utils.openai_client import chat_completion, chat_stream
 
 def remove_accents(text: str) -> str:
@@ -105,24 +105,86 @@ def get_combined_schema_for_intent(intent: str) -> str:
 
     return '\n'.join(schema_parts)
 
-def detect_intent(user_message: str) -> str:
-    prompt = f"Xác định intent chính của câu sau trong các loại: user_profile, medical_history, products, appointments, ai_prediction, orders, notifications, services, prescription_products, order_items_details.\nCâu: {user_message}\nIntent:"
-    response = chat_completion([{"role": "user", "content": prompt}], max_tokens=10, temperature=0)
-    intent = response.choices[0].message.content.strip().lower()
+VALID_INTENTS = [
+    "user_profile",
+    "medical_history",
+    "products",
+    "appointments",
+    "ai_prediction",
+    "orders",
+    "notifications",
+    "services",
+    "prescription_products",
+    "order_items_details",
+    "health_query",
+    "general_chat",
+    "product_query"
+]
 
-    return intent
+INTENT_MAPPING = {
+    "medical_history": "health_query",
+    "ai_prediction": "health_query",
+    "appointments": "health_query",
+    "prescription_products": "health_query",
+    "health_query": "health_query",
+
+    "products": "product_query",
+    "order_items_details": "product_query",
+    "orders": "product_query",
+    "user_profile": "product_query",
+    "services": "product_query",
+
+    "notifications": "general_chat",
+}
+
+
+def detect_intent(user_message: str) -> str:
+    prompt = (
+        "Xác định intent chính của câu sau trong các loại:\n"
+        + ", ".join(VALID_INTENTS) +
+        f"\nCâu: {user_message}\nIntent:"
+    )
+
+    try:
+        response = chat_completion(
+            [{"role": "user", "content": prompt}],
+            max_tokens=10,
+            temperature=0
+        )
+        raw_intent = response.choices[0].message.content.strip().lower()
+        mapped_intent = INTENT_MAPPING.get(raw_intent, raw_intent)
+        print(f"🧭 GPT intent: {raw_intent} → Pipeline intent: {mapped_intent}")
+
+        # ✅ Rule override bằng keyword nếu có nghi ngờ là SQL/user info
+        normalized = remove_accents(user_message)
+
+        sql_like_keywords = [
+            "select", "user_id", "ten dang nhap", "email", "vai tro", "dia chi email", "thong tin nguoi dung",
+            "lay thong tin", "id nguoi dung", "query", "from users", "thong tin user"
+        ]
+
+        if any(kw in normalized for kw in sql_like_keywords):
+            print("🔁 Override intent → 'product_query' do phát hiện keyword liên quan SQL/user_info")
+            return "product_query"
+
+        return mapped_intent
+
+    except Exception as e:
+        print("❌ Lỗi khi detect intent:", str(e))
+        return "general_chat"
 
 def get_sql_prompt_for_intent(intent: str) -> str:
     schema = get_combined_schema_for_intent(intent)
     return system_prompt_sql.replace("{schema}", schema)
 
-def build_system_message(intent: str) -> dict:
+def build_system_message(intent: str, symptoms: list[str] = None) -> dict:
     """
     Tạo message hệ thống hoàn chỉnh dựa trên intent,
     kết hợp medical prompt và SQL prompt có chèn schema phù hợp.
     """
-    medical_part = system_prompt_medical.strip()
     sql_part = get_sql_prompt_for_intent(intent).strip()
+    medical_part = build_system_prompt(intent, symptoms).strip()
+
     full_content = f"{medical_part}\n\n{sql_part}"
 
     return {

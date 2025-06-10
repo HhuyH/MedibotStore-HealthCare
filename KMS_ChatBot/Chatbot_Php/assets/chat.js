@@ -154,6 +154,16 @@ document.getElementById("chat-form").addEventListener("submit", async function (
 
             const reply = data.reply;
             appendMessage("🤖 " + reply, "bot");
+            
+            if (data.symptoms && data.symptoms.length > 0) {
+                const symptomIds = data.symptoms.map(s => s.id);
+                await fetch("/kms/chatbot_agent/save_symptoms.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ symptoms: symptomIds }),
+                    credentials: "include"
+                });
+            }
 
             await fetch("update_history.php", {
                 method: "POST",
@@ -189,6 +199,18 @@ document.getElementById("chat-form").addEventListener("submit", async function (
                 if (parsed && parsed.natural_text) {
                     fullBotReply += parsed.natural_text;
                     botMessageDiv.innerHTML = "<strong>🤖</strong> " + marked.parse(fullBotReply);
+
+                    if (parsed.symptoms && Array.isArray(parsed.symptoms)) {
+                        const symptomIds = parsed.symptoms.map(s => s.id);
+                        fetch("/kms/chatbot_agent/save_symptoms.php", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ symptoms: symptomIds }),
+                            credentials: "include"
+                        }).then(res => res.json()).then(data => {
+                            console.log("✅ Lưu symptom:", data);
+                        });
+                    }
 
                     if (parsed.sql_query) {
                         const sqlDiv = document.createElement("pre");
