@@ -17,9 +17,11 @@
 10. symptoms
 - symptom_id (INT, PK): định danh triệu chứng.
 - name (VARCHAR): tên triệu chứng.
+- alias (TEXT): các tên gọi khác của triệu chứng (viết tắt, từ đồng nghĩa, cách diễn đạt khác).
 - description (TEXT): mô tả triệu chứng.
-- created_at (TIMESTAMP): thời điểm tạo.
-- updated_at (DATETIME): thời điểm cập nhật.
+- followup_question (TEXT): câu hỏi gợi mở để khai thác thêm thông tin từ người dùng liên quan đến triệu chứng.
+- created_at (TIMESTAMP): thời điểm tạo bản ghi.
+- updated_at (DATETIME): thời điểm cập nhật lần cuối bản ghi.
 
 11. disease_symptoms
 - disease_id (INT, PK, FK → diseases.disease_id): ID bệnh.

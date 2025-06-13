@@ -1,6 +1,7 @@
 import os
 import openai
 from dotenv import load_dotenv
+import pymysql
 
 #Tải tệp .env và ghi đè các biến môi trường hiện có
 load_dotenv(override=True)
@@ -16,3 +17,13 @@ openai.api_key = OPENAI_API_KEY
 
 #Đặt model sẽ dùng
 MODEL = "gpt-4o-mini"
+
+
+DB_CONFIG = {
+    "host": "localhost",
+    "user": "chatbot_user",
+    "password": "StrongPassword123",
+    "database": "kms",
+    "charset": 'utf8mb4',
+    "cursorclass": pymysql.cursors.Cursor
+}

@@ -156,10 +156,13 @@ CREATE TABLE symptoms (
     name VARCHAR(255) NOT NULL,                       -- Tên triệu chứng
     alias TEXT,
     description TEXT,                                 -- Mô tả triệu chứng
+    followup_question TEXT
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP
 );
+
+
 
 -- Bảng disease_symptoms: Bảng nối giữa bệnh và triệu chứng
 CREATE TABLE disease_symptoms (

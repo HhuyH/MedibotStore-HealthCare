@@ -1,16 +1,4 @@
-from utils.symptom_utils import load_symptom_list, extract_symptoms_gpt
 
-# Tải danh sách triệu chứng vào bộ nhớ đệm toàn cục
-load_symptom_list()
+from utils.symptom_utils import extract_symptoms_gpt, get_symptom_list, save_symptoms_to_db, generate_symptom_note, generate_friendly_followup_question, get_related_symptoms_by_disease, looks_like_followup
 
-text = "em bị toc ngoc"
-
-matched, suggestion = extract_symptoms_gpt(text)
-
-print("🔍 Triệu chứng tìm thấy:")
-for s in matched:
-    print(f" - {s['id']}: {s['name']}")
-
-if suggestion:
-    print(suggestion)
-
+print(generate_symptom_note("ho thuong xuyen vao buoi toi va co so mui"))

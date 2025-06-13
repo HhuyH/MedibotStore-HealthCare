@@ -11,5 +11,8 @@ class Message(BaseModel):
     username: Optional[str] = None
     role: Optional[str] = None
     history: Optional[List[ChatHistoryItem]] = []
+    session_id: Optional[str]
 
-    
+class ResetRequest(BaseModel):
+    session_id: str
+    user_id: Optional[int] = None

@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import chat
+import signal
+import sys
 
 app = FastAPI()
 # Cấu hình CORS
@@ -20,3 +22,10 @@ app.add_middleware(
 
 app.include_router(chat.router)
 
+
+
+def handle_shutdown():
+    print("🛑 Server shutting down...")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, lambda sig, frame: handle_shutdown())
