@@ -1,6 +1,6 @@
 # utils/sql_executor.py
 import pymysql
-from config import DB_CONFIG
+from config.config import DB_CONFIG
 from decimal import Decimal
 
 def run_sql_query(query: str):

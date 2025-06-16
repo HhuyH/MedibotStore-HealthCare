@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes import chat
 import signal
 import sys
+from config.logging_config import configure_logging
+
+configure_logging()
 
 app = FastAPI()
 # Cấu hình CORS

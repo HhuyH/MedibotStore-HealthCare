@@ -1,24 +1,27 @@
 import pymysql
-import unidecode  # Cài bằng: pip install Unidecode
 from rapidfuzz import fuzz, process
 from utils.openai_client import chat_completion
 from utils.symptom_session import get_symptoms_from_session
 import json
 from datetime import date
-from config import DB_CONFIG
+from config.config import DB_CONFIG
 import re
-import unicodedata
+from utils.text_utils import normalize_text
 
 SYMPTOM_LIST = []  # Cache triệu chứng toàn cục
 
-def normalize_text(text):
-    text = text.lower().strip()
-    text = unicodedata.normalize('NFD', text)
-    text = ''.join(c for c in text if unicodedata.category(c) != 'Mn')  # bỏ dấu
-    text = re.sub(r'[^\w\s]', '', text)  # bỏ ký tự đặc biệt
-    text = re.sub(r'\s+', ' ', text)  # gộp khoảng trắng
-    return text
+# Nhận diện câu trả lời mơ hồ với ngôn ngữ không chuẩn (lóng, sai chính tả...)
+def is_vague_response(text: str) -> bool:
+    vague_phrases = [
+        "khong biet", "khong ro", "toi khong ro", "hinh nhu", "chac vay",
+        "toi nghi la", "co the", "cung duoc", "hoi hoi", "chac la", "hem biet", "k biet", "k ro"
+    ]
+    text_norm = normalize_text(text)
 
+    for phrase in vague_phrases:
+        if phrase in text_norm or fuzz.partial_ratio(phrase, text_norm) > 85:
+            return True
+    return False
 
 # Load danh sách symptoms từ db lên gồm id và name
 def load_symptom_list():
@@ -86,7 +89,7 @@ def extract_symptoms(text):
 
 def extract_symptoms_gpt(text, session_key=None, debug=False):
     prompt = f"""
-    Bạn là một trợ lý y tế. Hãy đọc câu sau và liệt kê các triệu chứng sức khỏe mà người nói đang mô tả, dù họ dùng cách nói dân gian, từ lóng hay không rõ ràng. Trả kết quả dưới dạng danh sách JSON, ví dụ: ["Ho", "Sốt", "Táo bón"]. Nếu không có triệu chứng rõ ràng, hãy trả về [].
+    Bạn là một trợ lý y tế. Hãy đọc câu sau và liệt kê các triệu chứng sức khỏe mà người nói đang mô tả, dù họ dùng cách nói dân gian, từ lóng hay không rõ ràng. Trả kết quả dưới dạng danh sách JSON, ví dụ: ["Ho", "Sốt", "Táo bón"]. Nếu không có triệu chứng rõ ràng, hãy trả về []. 
 
     Ví dụ:
     - "Tôi bị ho quá trời" → ["Ho"]
@@ -120,6 +123,19 @@ def extract_symptoms_gpt(text, session_key=None, debug=False):
             if debug:
                 print(f"❌ Không thể parse JSON từ: {content}")
             return [], "Xin lỗi, tôi không hiểu rõ các triệu chứng bạn mô tả."
+
+        if not names:
+            # Nếu không có triệu chứng rõ ràng → yêu cầu GPT tạo câu hỏi làm rõ
+            vague_prompt = f"""
+            Người dùng nói: "{text}"
+            Bạn là một trợ lý y tế thân thiện. Câu trên là mô tả mơ hồ về tình trạng sức khỏe. Hãy phản hồi lại bằng lời nhắn gần gũi, nhẹ nhàng, không quá trang trọng. Tránh nói "chào bạn" hoặc "mình rất tiếc". Thay vào đó, hãy thể hiện sự quan tâm một cách tự nhiên và gợi mở để người dùng mô tả rõ hơn các triệu chứng như đau ở đâu, khó chịu như thế nào. Tránh dùng từ chuyên môn, và hãy nói bằng tiếng Việt đời thường."""
+            clarification = chat_completion(
+                [{"role": "user", "content": vague_prompt}],
+                temperature=0.4,
+                max_tokens=100
+            )
+            clarification_text = clarification.choices[0].message.content.strip()
+            return [], clarification_text
 
         matched = []
         unmatched = []

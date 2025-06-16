@@ -70,10 +70,10 @@ def build_system_prompt(intent: str, symptom_names: list[str] = None) -> str:
 
 
 example_json = """
-{{
-  "natural_text": "",
+{
+  "natural_text": "🧠 Dưới đây là các triệu chứng phổ biến của đột quỵ:",
   "sql_query": "SELECT name AS 'Tên sản phẩm', price AS 'Giá' FROM products WHERE is_action = 1"
-}}
+}
 """
 
 # Block rule khi tạo và truy vấn câu lệnh sql 
@@ -121,9 +121,18 @@ Then generate a SQL SELECT query for that case.
    - "sql_query": the raw SQL string (for internal use only)
 
 4. When generating SQL, your **entire output must be a single valid JSON object**, like this:
+   ⚠️ VERY IMPORTANT: You must return only one JSON object with the following format:
    {example_json}  
-   - Không được bao quanh bởi dấu {{ hoặc bất kỳ định dạng không chuẩn nào.
-   - ❌ Do NOT explain anything.
+
+   📌 This is a data retrieval task.
+   You are accessing structured healthcare data from a relational database.
+   Do NOT try to explain the medical condition, do NOT summarize symptoms — just retrieve data from the database.
+
+   -  Not surrounded by {{ or any non-standard formatting.
+   - ❌ Do NOT return bullet-point lists.
+   - ❌ Do NOT use Markdown.
+   - ❌ Do NOT describe the disease or explain symptoms.
+   - ❌ Do NOT write in paragraph form or add comments.
    - ✅ DO return only the JSON object above — no extra text.
    
 5. If the user requests information about **a single disease or drug**, do not use SQL.
