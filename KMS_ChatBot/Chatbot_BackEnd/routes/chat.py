@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 import json
 import asyncio
 import logging
+logger = logging.getLogger(__name__)
 
 from models import Message,ResetRequest
 from config.intents import INTENT_MAPPING, INTENT_PIPELINES
@@ -14,8 +15,7 @@ from utils.symptom_utils import (
     generate_symptom_note,
     save_symptoms_to_db,
     generate_friendly_followup_question,
-    get_related_symptoms_by_disease,
-    looks_like_followup,
+    looks_like_followup_with_gpt,
     get_symptom_list
 )
 from utils.symptom_session import save_symptoms_to_session, get_symptoms_from_session, clear_symptoms_all_keys
@@ -23,8 +23,7 @@ from utils.limit_history import limit_history_by_tokens, refresh_system_context
 from utils.openai_utils import stream_chat
 from utils.sql_executor import run_sql_query
 from utils.disease_utils import predict_disease_based_on_symptoms, save_prediction_to_db, generate_diagnosis_summary
-import logging
-logger = logging.getLogger(__name__)
+
 
 router = APIRouter()
 
@@ -54,7 +53,7 @@ async def chat_stream(msg: Message = Body(...)):
 
     # Xác định các bước xử lý
     pipeline = INTENT_PIPELINES.get(intent, [])
-    logger.info(f"[PIPELINE] Pipeline for intent '{intent}': {pipeline}")
+    logger.debug(f"[PIPELINE] Pipeline for intent '{intent}': {pipeline}")
     session_key = msg.user_id or msg.session_id
     stored_symptoms = await get_symptoms_from_session(session_key)
 
@@ -71,8 +70,10 @@ async def chat_stream(msg: Message = Body(...)):
         natural_text = ""
         for step in pipeline:
             # --- Step 1: Chat trước ---
-            if step.strip().lower() == "chat":
-                limited_history, system_message_dict = refresh_system_context(intent, stored_symptoms, msg.history)
+            if step == "chat":
+                limited_history, _ = refresh_system_context(intent, stored_symptoms, msg.history)
+                symptoms = [s['name'] for s in stored_symptoms] if stored_symptoms else []
+                system_message_dict = build_system_message(intent, symptoms)
                 if stored_symptoms:
                     system_message_dict.update(build_system_message(intent, [s['name'] for s in stored_symptoms]))
                     limited_history.clear()
@@ -100,14 +101,13 @@ async def chat_stream(msg: Message = Body(...)):
                             yield f"data: {json.dumps({'natural_text': content})}\n\n"
                             await asyncio.sleep(0.01)
 
-
             # --- Step 2: Trích xuất và từ vấn sức khỏe ---
             if step == "symptom_extract":
                 symptoms, suggestion = extract_symptoms_gpt(msg.message, session_key)
                 logger.info(f"✅ Triệu chứng trích được: {symptoms}")
 
                 if not symptoms:
-                    if stored_symptoms and looks_like_followup(msg.message):
+                    if stored_symptoms and looks_like_followup_with_gpt(msg.message):
                         symptoms = stored_symptoms
 
                         asked_ids = session_data.get("asked_followup_ids", [])
@@ -194,12 +194,6 @@ async def chat_stream(msg: Message = Body(...)):
 
                 followup_question = await generate_friendly_followup_question(unasked_symptoms, session_key=session_key)
                 session_data["asked_followup_ids"] = asked_ids + [s['id'] for s in unasked_symptoms]
-
-                combined_ids = list(existing_ids.union(incoming_ids))
-                related = get_related_symptoms_by_disease(combined_ids)
-                if related:
-                    rel_names = [s['name'] for s in related[:3]]
-                    followup_question += f" Ngoài ra, bạn có gặp thêm triệu chứng nào như: {', '.join(rel_names)} không?"
 
                 yield f"data: {json.dumps({'natural_text': followup_question})}\n\n"
                 yield "data: [DONE]\n\n"

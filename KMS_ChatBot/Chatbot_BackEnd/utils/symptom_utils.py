@@ -1,11 +1,14 @@
 import pymysql
-from rapidfuzz import fuzz, process
-from utils.openai_client import chat_completion
-from utils.symptom_session import get_symptoms_from_session
+import logging
+logger = logging.getLogger(__name__)
 import json
 from datetime import date
-from config.config import DB_CONFIG
+from rapidfuzz import fuzz, process
 import re
+from utils.openai_utils import chat_completion
+from utils.openai_client import chat_completion
+from utils.symptom_session import get_symptoms_from_session
+from config.config import DB_CONFIG
 from utils.text_utils import normalize_text
 
 SYMPTOM_LIST = []  # Cache triệu chứng toàn cục
@@ -89,16 +92,24 @@ def extract_symptoms(text):
 
 def extract_symptoms_gpt(text, session_key=None, debug=False):
     prompt = f"""
-    Bạn là một trợ lý y tế. Hãy đọc câu sau và liệt kê các triệu chứng sức khỏe mà người nói đang mô tả, dù họ dùng cách nói dân gian, từ lóng hay không rõ ràng. Trả kết quả dưới dạng danh sách JSON, ví dụ: ["Ho", "Sốt", "Táo bón"]. Nếu không có triệu chứng rõ ràng, hãy trả về []. 
+        Bạn là một trợ lý y tế thông minh. Hãy đọc kỹ câu sau và cố gắng nhận diện **mọi triệu chứng sức khỏe có thể có**, dù người nói dùng cách diễn đạt không rõ ràng, mơ hồ, dân dã hay không chắc chắn.
 
-    Ví dụ:
-    - "Tôi bị ho quá trời" → ["Ho"]
-    - "Khó đi cầu, cảm giác đầy bụng" → ["Táo bón", "Đầy bụng"]
-    - "Cổ đau rát, nuốt khó" → ["Đau họng"]
+        Nếu trong câu có bất kỳ từ hoặc cụm từ nào **gợi ý triệu chứng phổ biến** (như: mệt, đau, nhức, khó chịu, chóng mặt, đầy bụng, buồn nôn…), thì **hãy đưa triệu chứng đó vào kết quả**, ngay cả khi chưa thật rõ ràng.
 
-    Câu: "{text}"
-    Trả lời:
-    """
+        Đừng bỏ qua triệu chứng chỉ vì câu nói chưa chắc chắn hoặc nói kiểu: “chắc là”, “không biết có phải không”.
+
+        Trả kết quả dưới dạng danh sách JSON, ví dụ: ["Ho", "Sốt", "Táo bón"]. Nếu thật sự không có triệu chứng nào dù đã cố gắng suy luận, hãy trả về [].
+
+        Ví dụ:
+        - "Tôi bị ho quá trời" → ["Ho"]
+        - "Khó đi cầu, cảm giác đầy bụng" → ["Táo bón", "Đầy bụng"]
+        - "Cổ đau rát, nuốt khó" → ["Đau họng"]
+        - "Tôi cảm thấy mệt mỏi chung chung thôi" → ["Mệt mỏi"]
+        - "Mấy nay thấy không khỏe" → ["Mệt mỏi"]
+
+        Câu: "{text}"
+        Trả lời:
+        """
 
     try:
         reply = chat_completion(
@@ -107,9 +118,7 @@ def extract_symptoms_gpt(text, session_key=None, debug=False):
             max_tokens=150
         )
         content = reply.choices[0].message.content.strip()
-        print("🤖 GPT reply:", repr(content))
-        if debug:
-            print("🧠 GPT raw reply:", repr(content))
+        logging.debug("🧠 GPT raw reply: %r", content)
 
         if content.startswith("```json"):
             content = content.replace("```json", "").replace("```", "").strip()
@@ -126,9 +135,17 @@ def extract_symptoms_gpt(text, session_key=None, debug=False):
 
         if not names:
             # Nếu không có triệu chứng rõ ràng → yêu cầu GPT tạo câu hỏi làm rõ
-            vague_prompt = f"""
-            Người dùng nói: "{text}"
-            Bạn là một trợ lý y tế thân thiện. Câu trên là mô tả mơ hồ về tình trạng sức khỏe. Hãy phản hồi lại bằng lời nhắn gần gũi, nhẹ nhàng, không quá trang trọng. Tránh nói "chào bạn" hoặc "mình rất tiếc". Thay vào đó, hãy thể hiện sự quan tâm một cách tự nhiên và gợi mở để người dùng mô tả rõ hơn các triệu chứng như đau ở đâu, khó chịu như thế nào. Tránh dùng từ chuyên môn, và hãy nói bằng tiếng Việt đời thường."""
+            vague_prompt = f""" 
+                The user just said: "{text}"
+
+                You are a friendly health assistant. The sentence above is a vague description of their health condition. Reply in a warm, natural, and casual way — like a friend checking in — to encourage them to be more specific about their symptoms. Avoid using medical terms. Don't apologize, and don't say "hello."
+
+                Instead, gently ask questions like: When did you start feeling this way? Are you experiencing any other discomfort?
+
+                If they say "tired," you can ask: How are you feeling tired? Are you dizzy or sleepy?
+
+                Reply with only a short, simple, and natural question in Vietnamese.
+                """ 
             clarification = chat_completion(
                 [{"role": "user", "content": vague_prompt}],
                 temperature=0.4,
@@ -252,59 +269,6 @@ def join_symptom_names_vietnamese(names: list[str]) -> str:
         return f"{names[0]} và {names[1]}"
     return f"{', '.join(names[:-1])} và {names[-1]}"
 
-async def generate_friendly_followup_question(symptoms: list[dict], session_key: str = None) -> str:
-    symptom_ids = [s['id'] for s in symptoms]
-    all_symptom_names = [s['name'] for s in symptoms]
-    # Lấy toàn bộ triệu chứng trong session để hiển thị đầy đủ
-    all_symptoms = symptoms
-    if session_key:
-        session_symptoms = await get_symptoms_from_session(session_key)
-        if session_symptoms:
-            all_symptoms = session_symptoms
-
-    all_symptom_names = [s['name'] for s in all_symptoms]
-    symptom_text = join_symptom_names_vietnamese(all_symptom_names)
-
-    followup_questions = []
-
-    # Truy vấn follow-up từ DB
-    conn = pymysql.connect(**DB_CONFIG)
-    try:
-        with conn.cursor() as cursor:
-            format_strings = ','.join(['%s'] * len(symptom_ids))
-            cursor.execute(f"""
-                SELECT name, followup_question
-                FROM symptoms
-                WHERE symptom_id IN ({format_strings})
-            """, symptom_ids)
-
-            results = cursor.fetchall()
-            for name, question in results:
-                if question:
-                    followup_questions.append(f"🩺 Về triệu chứng *{name}*: {question.strip()}")
-    finally:
-        conn.close()
-
-    if followup_questions:
-        greeting = f"😌 Mình đã ghi nhận bạn đang gặp triệu chứng: **{symptom_text}**.\n"
-        closing = "\nBạn có thể chia sẻ thêm để mình hỗ trợ chính xác hơn nhé:"
-        return greeting + closing + "\n\n" + "\n".join(followup_questions)
-
-    # Fallback GPT nếu DB không có follow-up câu hỏi
-    symptom_prompt = join_symptom_names_vietnamese([s['name'] for s in symptoms])
-    prompt = (
-        f"Bạn là trợ lý y tế thân thiện. Người dùng có các triệu chứng: {symptom_prompt}. "
-        "Hãy đặt một câu hỏi gợi mở, nhẹ nhàng để người dùng chia sẻ thêm thông tin (ví dụ mức độ, thời gian, điều gì làm nặng hơn). "
-        "Tránh dùng từ chuyên môn và viết bằng tiếng Việt."
-    )
-
-    response = chat_completion([
-        {"role": "system", "content": "Bạn là trợ lý y tế, cần giao tiếp thân thiện, dễ hiểu."},
-        {"role": "user", "content": prompt}
-    ])
-
-    return f"😌 Mình đã ghi nhận bạn đang gặp triệu chứng: **{symptom_text}**.\n{response.strip()}"
-
 # Dựa vào các symptom_id hiện có truy bảng disease_symptoms → lấy danh sách các disease_id có liên quan truy ngược lại → lấy thêm các symptom khác thuộc cùng bệnh (trừ cái đã có)
 def get_related_symptoms_by_disease(symptom_ids: list[int]) -> list[dict]:
     if not symptom_ids:
@@ -345,33 +309,153 @@ def get_related_symptoms_by_disease(symptom_ids: list[int]) -> list[dict]:
     return related_symptoms
 
 # Kiểm tra xem câu tiếp theo có bổ sung cho triêu chứng ko
-def looks_like_followup(text: str) -> bool:
-    """
-    Nhận diện xem text có phải là câu bổ sung thông tin cho triệu chứng đã nêu không.
-    """
-    text = text.lower().strip()
+def looks_like_followup_with_gpt(text: str, context: str = "") -> bool:
+    prompt = f""" 
+        You are an AI assistant that helps identify intent in health care conversations.
 
-    # 1. Câu ngắn (thường là bổ sung)
-    if len(text.split()) <= 6:
-        return True
+        The user has started a conversation about health symptoms. Now they have said the following sentence:
 
-    # 2. Chứa các từ khóa mô tả thời gian, mức độ, hoàn cảnh, màu sắc...
-    followup_keywords = [
-        "ban dem", "buoi toi", "buoi sang", "mau xanh", "mau vang", "mau trong",
-        "luc nao", "thuong xuyen", "doi luc", "nang hon", "nhẹ hơn",
-        "khi nam", "khi van dong", "khi di lai", "khi hit", "khi an",
-        "co mui", "kho chiu", "co mui la", "rat nhieu", "mot chut"
-    ]
+        "{text}"
 
-    for kw in followup_keywords:
-        if kw in text:
-            return True
+        Is this a continuation of the previous context — for example, adding more symptoms, describing their feeling, or explaining progression — or not?
 
-    # 3. Có chứa mô tả đơn giản nhưng không đủ để nhận diện là triệu chứng mới
-    if re.match(r"^(khi|vao|luc|co|hay|thuong).*", text):
-        return True
+        Answer with "YES" or "NO" only.
+        """ 
 
-    return False
+    response = chat_completion([
+        {"role": "system", "content": "Bạn là AI phân tích hội thoại."},
+        {"role": "user", "content": prompt}
+    ], temperature=0.0, max_tokens=5)
+
+    answer = response.choices[0].message.content.strip().lower()
+    return "yes" in answer
+
+# Tự động nhận biết nếu message chứa triệu chứng hay không
+def gpt_detect_symptom_intent(text: str) -> bool:
+    prompt = (
+        "Please determine whether the following sentence is a description of health symptoms.\n"
+        "Answer with YES or NO only.\n\n"
+        f"Sentence: \"{text}\"\n"
+        "Answer: "
+    )
+    response = chat_completion(
+        [{"role": "user", "content": prompt}],
+        max_tokens=5,
+        temperature=0
+    )
+    result = response.choices[0].message.content.strip().lower()
+    return result.startswith("yes")
+
+# Tạo 1 câu hỏi thân thiện về triệu chứng đã trích xuất được
+async def generate_friendly_followup_question(symptoms: list[dict], session_key: str = None) -> str:
+
+    symptom_ids = [s['id'] for s in symptoms]
+    all_symptoms = symptoms
+
+    if session_key:
+        session_symptoms = await get_symptoms_from_session(session_key)
+        if session_symptoms:
+            all_symptoms = session_symptoms
+
+    all_symptom_names = [s['name'] for s in all_symptoms]
+    symptom_text = join_symptom_names_vietnamese(all_symptom_names)
+
+    # Truy vấn follow-up từ DB
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            format_strings = ','.join(['%s'] * len(symptom_ids))
+            cursor.execute(f"""
+                SELECT name, followup_question
+                FROM symptoms
+                WHERE symptom_id IN ({format_strings})
+            """, symptom_ids)
+
+            results = cursor.fetchall()
+    finally:
+        conn.close()
+
+    if results:
+        names = []
+        questions = []
+        for name, question in results:
+            if question:
+                names.append(name)
+                questions.append(question.strip())
+
+        related = get_related_symptoms_by_disease(symptom_ids)
+        # Lọc để không đề xuất lại các triệu chứng đã có trong follow-up
+        followup_symptom_names = set(name.lower() for name, _ in results)
+        related_filtered = [
+            s for s in related if s['name'].lower() not in followup_symptom_names
+        ]
+        related_names = [s['name'] for s in related_filtered]
+
+        gpt_prompt = f"""
+            You are a warm and understanding doctor. The patient has shared the following symptoms: {', '.join(names)}.
+
+            Here are the follow-up questions you'd normally ask:
+            {chr(10).join([f"- {n}: {q}" for n, q in zip(names, questions)])}
+
+            Now write a single, fluent, caring conversation in Vietnamese to follow up with the patient.
+
+            Instructions:
+            - Combine all follow-up questions into one natural Vietnamese message.
+            - Connect questions smoothly. If symptoms are related, group them in one paragraph.
+            - Vary transitions. You may use phrases like "Bên cạnh đó", "Một điều nữa", or "Thêm vào đó", but each only once.
+            - Ask about related symptoms (e.g. {', '.join(related_names[:3])}) only once — at the most relevant point in the conversation.
+            - If you already mentioned related symptoms, DO NOT repeat them again.
+            - Do not add them again at the end under any phrasing like "Ngoài ra..." or "Bạn có gặp thêm...".
+            - Avoid repeating sentence structure. Keep it soft, natural, and human.
+            - No greetings or thank yous — continue mid-conversation.
+
+            Your response must be in Vietnamese.
+            """
+        try:
+            response = chat_completion([
+                {"role": "user", "content": gpt_prompt}
+            ], temperature=0.4, max_tokens=200)
+
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            # fallback nếu GPT lỗi
+            return "Bạn có thể chia sẻ thêm về các triệu chứng để mình hỗ trợ tốt hơn nhé?"
+
+    # Nếu không có câu hỏi follow-up từ DB → fallback
+    symptom_prompt = join_symptom_names_vietnamese([s['name'] for s in symptoms])
+    fallback_prompt = (
+        f"You are a helpful medical assistant. The user reported the following symptoms: {symptom_prompt}. "
+        "Write a natural, open-ended follow-up question in Vietnamese to ask about timing, severity, or other related details. "
+        "Avoid technical language. No greetings — just ask naturally."
+    )
+
+    response = chat_completion([
+        {"role": "user", "content": fallback_prompt}
+    ])
+    fallback_text = response.choices[0].message.content.strip()
+    return fallback_text
+
+# 1 câu trả lời mơ hồ từ người nói không xác định được follow up hàm này để kiểm tra xem câu đó có phải vẫn nằm trong trieu chung ko
+def gpt_looks_like_symptom_followup_uncertain(text: str) -> bool:
+    prompt = f""" 
+        You are an AI assistant that determines whether the following message from a user in a health-related conversation sounds like a vague or uncertain follow-up to previous symptom discussion.
+
+        Message: "{text}"
+
+        Examples of vague/uncertain replies: "không chắc", "có thể", "tôi không biết", "vẫn chưa rõ", "can't tell", "một chút", "kind of", etc.
+
+        Is this message an uncertain continuation of a prior symptom conversation — meaning the user might still be talking about symptoms but isn't describing clearly?
+
+        Answer only YES or NO.
+        """ 
+
+
+    response = chat_completion([
+        {"role": "user", "content": prompt}
+    ], temperature=0.0, max_tokens=5)
+
+    answer = response.choices[0].message.content.strip().lower()
+    return "yes" in answer
 
 def load_followup_keywords():
     """

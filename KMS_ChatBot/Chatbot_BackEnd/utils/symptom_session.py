@@ -1,4 +1,6 @@
 from collections import defaultdict
+import logging
+logger = logging.getLogger(__name__)
 
 # Tạm lưu triệu chứng theo user_id hoặc session_id
 SYMPTOM_SESSION = defaultdict(list)
@@ -14,7 +16,7 @@ def save_symptoms_to_session(key, new_symptoms):
             current_symptoms.append(symptom)
             current_ids.add(symptom['id'])
         else:
-            print(f"[DEBUG] Triệu chứng '{symptom['name']}' (ID {symptom['id']}) đã có. Bỏ qua.")
+            logger.info(f"Triệu chứng '{symptom['name']}' (ID {symptom['id']}) đã có. Bỏ qua.")
 
     SYMPTOM_SESSION[key] = current_symptoms
     return current_symptoms
