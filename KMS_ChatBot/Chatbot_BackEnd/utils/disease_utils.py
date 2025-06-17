@@ -1,8 +1,6 @@
 import json
-from utils.sql_executor import run_sql_query
-import random
 import pymysql
-from config import DB_CONFIG
+from config.config import DB_CONFIG
 from datetime import date
 
 # Dự đoán bệnh dựa trên list triệu chứng

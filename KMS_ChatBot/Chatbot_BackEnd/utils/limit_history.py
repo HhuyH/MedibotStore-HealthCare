@@ -1,5 +1,5 @@
 import tiktoken
-from config import MODEL
+from config.config import MODEL
 from models import ChatHistoryItem
 from utils.intent_utils import build_system_message 
 

@@ -554,3 +554,48 @@ CREATE TABLE package_features (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày tạo
     FOREIGN KEY (package_id) REFERENCES service_packages(id) -- Khóa ngoại đến gói dịch vụ
 );
+
+----------------------------------------------------------------6. Blog-------------------------------------------------------------------------------
+
+-- Tạo bảng categories (danh mục bài viết)
+CREATE TABLE IF NOT EXISTS blog_categories (
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tạo bảng authors (tác giả)
+CREATE TABLE IF NOT EXISTS blog_authors (
+    author_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    name VARCHAR(100) NOT NULL,
+    avatar VARCHAR(255),
+    bio TEXT,
+    title VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
+);
+
+-- Tạo bảng posts (bài viết)
+CREATE TABLE IF NOT EXISTS blog_posts (
+    post_id INT PRIMARY KEY AUTO_INCREMENT,
+    author_id INT,
+    category_id INT,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    content TEXT NOT NULL,
+    excerpt TEXT,
+    featured_image VARCHAR(255),
+    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
+    is_featured BOOLEAN DEFAULT FALSE,
+    view_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    published_at TIMESTAMP NULL,
+    FOREIGN KEY (author_id) REFERENCES blog_authors(author_id) ON DELETE SET NULL,
+    FOREIGN KEY (category_id) REFERENCES blog_categories(category_id) ON DELETE SET NULL
+);

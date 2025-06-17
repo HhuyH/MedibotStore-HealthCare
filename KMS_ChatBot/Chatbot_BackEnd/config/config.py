@@ -18,7 +18,6 @@ openai.api_key = OPENAI_API_KEY
 #Đặt model sẽ dùng
 MODEL = "gpt-4o-mini"
 
-
 DB_CONFIG = {
     "host": "localhost",
     "user": "chatbot_user",
@@ -27,3 +26,5 @@ DB_CONFIG = {
     "charset": 'utf8mb4',
     "cursorclass": pymysql.cursors.Cursor
 }
+
+
