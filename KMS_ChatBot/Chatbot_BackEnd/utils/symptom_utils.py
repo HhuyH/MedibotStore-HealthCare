@@ -5,7 +5,6 @@ import json
 from datetime import date
 from rapidfuzz import fuzz, process
 import re
-from utils.openai_utils import chat_completion
 from utils.openai_client import chat_completion
 from utils.symptom_session import get_symptoms_from_session
 from config.config import DB_CONFIG
@@ -29,7 +28,7 @@ def is_vague_response(text: str) -> bool:
 # Load danh sách symptoms từ db lên gồm id và name
 def load_symptom_list():
     """
-    Load danh sách triệu chứng từ DB, bao gồm ID, tên và alias đã normalize.
+    Load danh sách triệu chứng từ DB, bao gồm ID, tên gốc, alias và các trường đã chuẩn hóa để tra nhanh.
     Lưu vào biến toàn cục SYMPTOM_LIST.
     """
     global SYMPTOM_LIST
@@ -42,20 +41,21 @@ def load_symptom_list():
             SYMPTOM_LIST = []
             for row in results:
                 symptom_id, name, alias_raw = row
-                aliases = [normalize_text(name)]
+                norm_name = normalize_text(name)
 
+                aliases = [norm_name]
                 if alias_raw:
                     aliases += [normalize_text(a.strip()) for a in alias_raw.split(',') if a.strip()]
 
                 SYMPTOM_LIST.append({
                     "id": symptom_id,
                     "name": name,
-                    "aliases": aliases
+                    "aliases": alias_raw,
+                    "norm_name": norm_name,
+                    "norm_aliases": aliases
                 })
 
-            print(f"✅ SYMPTOM_LIST nạp {len(SYMPTOM_LIST)} triệu chứng:")
-            # for s in SYMPTOM_LIST:
-            #     print(f" - {s['name']}: {s['aliases']}")
+            print(f"✅ SYMPTOM_LIST nạp {len(SYMPTOM_LIST)} triệu chứng.")
     
     except Exception as e:
         print(f"❌ Lỗi khi load SYMPTOM_LIST từ DB: {e}")
@@ -91,24 +91,28 @@ def extract_symptoms(text):
     return found
 
 def extract_symptoms_gpt(text, session_key=None, debug=False):
+    # Chuẩn bị danh sách triệu chứng cho GPT
+    symptom_lines = []
+    name_to_symptom = {}
+
+    for s in SYMPTOM_LIST:
+        line = f"- {s['name']}: {s['aliases']}"
+        symptom_lines.append(line)
+        name_to_symptom[normalize_text(s["name"])] = s  # map name đã chuẩn hóa → symptom obj
+
     prompt = f"""
-        Bạn là một trợ lý y tế thông minh. Hãy đọc kỹ câu sau và cố gắng nhận diện **mọi triệu chứng sức khỏe có thể có**, dù người nói dùng cách diễn đạt không rõ ràng, mơ hồ, dân dã hay không chắc chắn.
+        You are a smart medical assistant.
 
-        Nếu trong câu có bất kỳ từ hoặc cụm từ nào **gợi ý triệu chứng phổ biến** (như: mệt, đau, nhức, khó chịu, chóng mặt, đầy bụng, buồn nôn…), thì **hãy đưa triệu chứng đó vào kết quả**, ngay cả khi chưa thật rõ ràng.
+        Below is a list of known health symptoms, each with possible ways users might describe them informally (aliases in Vietnamese):
 
-        Đừng bỏ qua triệu chứng chỉ vì câu nói chưa chắc chắn hoặc nói kiểu: “chắc là”, “không biết có phải không”.
+        {chr(10).join(symptom_lines)}
 
-        Trả kết quả dưới dạng danh sách JSON, ví dụ: ["Ho", "Sốt", "Táo bón"]. Nếu thật sự không có triệu chứng nào dù đã cố gắng suy luận, hãy trả về [].
+        Read the sentence below. Your task is to select all symptom **names** (not aliases) that best match what the user is trying to describe — even if they speak vaguely or casually.
 
-        Ví dụ:
-        - "Tôi bị ho quá trời" → ["Ho"]
-        - "Khó đi cầu, cảm giác đầy bụng" → ["Táo bón", "Đầy bụng"]
-        - "Cổ đau rát, nuốt khó" → ["Đau họng"]
-        - "Tôi cảm thấy mệt mỏi chung chung thôi" → ["Mệt mỏi"]
-        - "Mấy nay thấy không khỏe" → ["Mệt mỏi"]
+        Return a list of names in Vietnamese. Example: ["Mệt mỏi", "Đau đầu"]
 
-        Câu: "{text}"
-        Trả lời:
+        Sentence: "{text}"
+        Answer:
         """
 
     try:
@@ -118,98 +122,32 @@ def extract_symptoms_gpt(text, session_key=None, debug=False):
             max_tokens=150
         )
         content = reply.choices[0].message.content.strip()
-        logging.debug("🧠 GPT raw reply: %r", content)
 
+        # Cleanup if GPT wraps in ```json
         if content.startswith("```json"):
             content = content.replace("```json", "").replace("```", "").strip()
-        elif content.startswith("[") is False:
-            content = content.split("[")[-1]
-            content = "[" + content if not content.startswith("[") else content
+        elif not content.startswith("["):
+            content = "[" + content.split("[")[-1]
 
-        try:
-            names = json.loads(content)
-        except json.JSONDecodeError:
-            if debug:
-                print(f"❌ Không thể parse JSON từ: {content}")
-            return [], "Xin lỗi, tôi không hiểu rõ các triệu chứng bạn mô tả."
-
-        if not names:
-            # Nếu không có triệu chứng rõ ràng → yêu cầu GPT tạo câu hỏi làm rõ
-            vague_prompt = f""" 
-                The user just said: "{text}"
-
-                You are a friendly health assistant. The sentence above is a vague description of their health condition. Reply in a warm, natural, and casual way — like a friend checking in — to encourage them to be more specific about their symptoms. Avoid using medical terms. Don't apologize, and don't say "hello."
-
-                Instead, gently ask questions like: When did you start feeling this way? Are you experiencing any other discomfort?
-
-                If they say "tired," you can ask: How are you feeling tired? Are you dizzy or sleepy?
-
-                Reply with only a short, simple, and natural question in Vietnamese.
-                """ 
-            clarification = chat_completion(
-                [{"role": "user", "content": vague_prompt}],
-                temperature=0.4,
-                max_tokens=100
-            )
-            clarification_text = clarification.choices[0].message.content.strip()
-            return [], clarification_text
+        names = json.loads(content)
+        if not isinstance(names, list):
+            raise ValueError("GPT returned non-list symptom names.")
 
         matched = []
-        unmatched = []
         seen_ids = set()
-
         for name in names:
-            norm_name = normalize_text(name)
-            found_match = False
+            norm = normalize_text(name)
+            symptom = name_to_symptom.get(norm)
+            if symptom and symptom["id"] not in seen_ids:
+                matched.append({"id": symptom["id"], "name": symptom["name"]})
+                seen_ids.add(symptom["id"])
 
-            # Ưu tiên khớp với tên chính
-            for symptom in SYMPTOM_LIST:
-                if normalize_text(symptom["name"]) == norm_name:
-                    if symptom["id"] not in seen_ids:
-                        matched.append({"id": symptom["id"], "name": symptom["name"]})
-                        seen_ids.add(symptom["id"])
-                        found_match = True
-                        break
-
-            # Nếu chưa khớp tên chính → thử alias
-            if not found_match:
-                for symptom in SYMPTOM_LIST:
-                    if any(norm_name == alias for alias in symptom["aliases"]):
-                        if symptom["id"] not in seen_ids:
-                            matched.append({"id": symptom["id"], "name": symptom["name"]})
-                            seen_ids.add(symptom["id"])
-                            found_match = True
-                            break
-
-            if not found_match:
-                unmatched.append(name)
-
-        # Nếu vẫn unmatched → fuzzy gợi ý
-        suggestion = None
-        if unmatched:
-            all_names = [normalize_text(s["name"]) for s in SYMPTOM_LIST]
-            name_map = {normalize_text(s["name"]): s["name"] for s in SYMPTOM_LIST}
-
-            fuzzy_suggestions = set()
-            for name in unmatched:
-                norm = normalize_text(name)
-                match, score = process.extractOne(norm, all_names, scorer=fuzz.ratio)
-                if score >= 80:
-                    fuzzy_suggestions.add(name_map[match])
-
-            if fuzzy_suggestions:
-                joined = ' hoặc '.join(fuzzy_suggestions)
-                suggestion = f"Ý bạn có phải là {joined} không?"
-            else:
-                joined = ' hoặc '.join(unmatched)
-                suggestion = f"Mình chưa rõ. Bạn có đang nhắc tới: {joined} không?"
-
-        return matched, suggestion
+        return matched, None if matched else ("Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?")
 
     except Exception as e:
         if debug:
             print("❌ GPT symptom extraction failed:", str(e))
-        return [], "Xin lỗi, có lỗi xảy ra khi phân tích triệu chứng."
+        return [], "Xin lỗi, mình chưa rõ bạn đang cảm thấy gì. Bạn có thể mô tả cụ thể hơn không?"
 
 # lưu triệu chứng vào database lưu vào user_symptom_history khi đang thực hiện chẩn đoán kết quả
 def save_symptoms_to_db(user_id: int, symptoms: list[dict], note: str = "") -> list[int]:
@@ -235,29 +173,6 @@ def save_symptoms_to_db(user_id: int, symptoms: list[dict], note: str = "") -> l
         conn.close()
 
     return saved_symptom_ids
-
-def generate_symptom_note(prompt: str) -> str:
-    # Bước 1: Đảm bảo đầu vào có ngữ cảnh rõ ràng
-    full_prompt = f"User reports: {prompt.strip()}"
-
-    messages_en = [
-        {"role": "system", "content": "You are a medical assistant. Summarize the symptoms described by the user into a short, clear, and objective medical note. Do not diagnose."},
-        {"role": "user", "content": "I've been having headaches and dizziness for the past two days."},
-        {"role": "assistant", "content": "Patient reports headaches and dizziness lasting for two days."},
-        {"role": "user", "content": full_prompt}
-    ]
-    response_en = chat_completion(messages_en)
-    english_note = response_en.choices[0].message.content.strip()
-
-    # Bước 2: Dịch sang tiếng Việt
-    messages_translate = [
-        {"role": "system", "content": "Hãy dịch đoạn văn bản y tế sau sang tiếng Việt, giữ nguyên giọng văn chuyên nghiệp."},
-        {"role": "user", "content": english_note}
-    ]
-    response_vi = chat_completion(messages_translate)
-    vietnamese_note = response_vi.choices[0].message.content.strip()
-
-    return vietnamese_note
 
 # Tạo câu hỏi tiếp theo nhẹ nhàng, thân thiện, gợi ý người dùng chia sẻ thêm thông tin dựa trên các triệu chứng đã ghi nhận.
 def join_symptom_names_vietnamese(names: list[str]) -> str:
@@ -307,28 +222,6 @@ def get_related_symptoms_by_disease(symptom_ids: list[int]) -> list[dict]:
         conn.close()
 
     return related_symptoms
-
-# Kiểm tra xem câu tiếp theo có bổ sung cho triêu chứng ko
-def looks_like_followup_with_gpt(text: str, context: str = "") -> bool:
-    prompt = f""" 
-        You are an AI assistant that helps identify intent in health care conversations.
-
-        The user has started a conversation about health symptoms. Now they have said the following sentence:
-
-        "{text}"
-
-        Is this a continuation of the previous context — for example, adding more symptoms, describing their feeling, or explaining progression — or not?
-
-        Answer with "YES" or "NO" only.
-        """ 
-
-    response = chat_completion([
-        {"role": "system", "content": "Bạn là AI phân tích hội thoại."},
-        {"role": "user", "content": prompt}
-    ], temperature=0.0, max_tokens=5)
-
-    answer = response.choices[0].message.content.strip().lower()
-    return "yes" in answer
 
 # Tự động nhận biết nếu message chứa triệu chứng hay không
 def gpt_detect_symptom_intent(text: str) -> bool:
@@ -383,14 +276,6 @@ async def generate_friendly_followup_question(symptoms: list[dict], session_key:
                 names.append(name)
                 questions.append(question.strip())
 
-        related = get_related_symptoms_by_disease(symptom_ids)
-        # Lọc để không đề xuất lại các triệu chứng đã có trong follow-up
-        followup_symptom_names = set(name.lower() for name, _ in results)
-        related_filtered = [
-            s for s in related if s['name'].lower() not in followup_symptom_names
-        ]
-        related_names = [s['name'] for s in related_filtered]
-
         gpt_prompt = f"""
             You are a warm and understanding doctor. The patient has shared the following symptoms: {', '.join(names)}.
 
@@ -403,9 +288,7 @@ async def generate_friendly_followup_question(symptoms: list[dict], session_key:
             - Combine all follow-up questions into one natural Vietnamese message.
             - Connect questions smoothly. If symptoms are related, group them in one paragraph.
             - Vary transitions. You may use phrases like "Bên cạnh đó", "Một điều nữa", or "Thêm vào đó", but each only once.
-            - Ask about related symptoms (e.g. {', '.join(related_names[:3])}) only once — at the most relevant point in the conversation.
-            - If you already mentioned related symptoms, DO NOT repeat them again.
-            - Do not add them again at the end under any phrasing like "Ngoài ra..." or "Bạn có gặp thêm...".
+            - Do not ask about any additional or related symptoms in this message.
             - Avoid repeating sentence structure. Keep it soft, natural, and human.
             - No greetings or thank yous — continue mid-conversation.
 
@@ -435,27 +318,31 @@ async def generate_friendly_followup_question(symptoms: list[dict], session_key:
     fallback_text = response.choices[0].message.content.strip()
     return fallback_text
 
-# 1 câu trả lời mơ hồ từ người nói không xác định được follow up hàm này để kiểm tra xem câu đó có phải vẫn nằm trong trieu chung ko
-def gpt_looks_like_symptom_followup_uncertain(text: str) -> bool:
-    prompt = f""" 
-        You are an AI assistant that determines whether the following message from a user in a health-related conversation sounds like a vague or uncertain follow-up to previous symptom discussion.
+# Hỏi triệu chứng tiếp theo khi đã hỏi xong nhưng vẫn đề từ triệu chứng trước đó
+async def generate_related_symptom_question(related_names: list[str]) -> str:
 
-        Message: "{text}"
+    related_names_str = ', '.join(related_names)
 
-        Examples of vague/uncertain replies: "không chắc", "có thể", "tôi không biết", "vẫn chưa rõ", "can't tell", "một chút", "kind of", etc.
+    prompt = f"""
+    You're a warm and understanding health assistant. The user has already shared some symptom(s).
 
-        Is this message an uncertain continuation of a prior symptom conversation — meaning the user might still be talking about symptoms but isn't describing clearly?
+    Now, based on possibly related symptoms like: {related_names_str}, ask if they’ve experienced any of those too — without making it sound like a checklist.
 
-        Answer only YES or NO.
-        """ 
+    Write your response in Vietnamese.
 
+    Tone guide:
+    - Natural, friendly, and mid-conversation — as if you're continuing a gentle check-in.
+    - No greetings, no thanking the user.
+    - Do not over-explain or sound too casual (no Gen Z slang or emojis).
+    - Avoid technical or overly medical terms.
+    - Keep it as **one smooth message** — not fragmented.
+    - You can group related symptoms in a subtle way (e.g., chest tightness, fast heartbeat, sweating).
 
-    response = chat_completion([
-        {"role": "user", "content": prompt}
-    ], temperature=0.0, max_tokens=5)
+    Imagine you're calmly checking in with someone who's already opened up a bit.
+    """
 
-    answer = response.choices[0].message.content.strip().lower()
-    return "yes" in answer
+    response = chat_completion([{"role": "user", "content": prompt}])
+    return response.choices[0].message.content.strip()
 
 def load_followup_keywords():
     """
@@ -480,4 +367,35 @@ def load_followup_keywords():
 
     return keyword_map
 
+def should_attempt_symptom_extraction(message: str, session_data: dict, stored_symptoms: list) -> bool:
+    from utils.openai_client import chat_completion
+
+    prompt = f"""
+    You are a smart assistant helping identify whether a sentence from a user in a medical chat should trigger symptom extraction.
+
+    Your task is simple:
+    If the sentence contains, suggests, or continues a description of physical or emotional health symptoms — even vaguely — respond with YES.
+    Otherwise, respond with NO. Do not add anything else.
+
+    Examples:
+    - "Tôi bị nhức đầu từ sáng" → YES
+    - "Mình thấy không khỏe lắm" → YES
+    - "Ừ đúng rồi" → NO
+    - "Cảm ơn bạn" → NO
+    - "Chắc là không sao đâu" → MAYBE → YES
+
+    Sentence: "{message.strip()}"
+    Answer:
+    """
+
+    try:
+        reply = chat_completion([
+            {"role": "user", "content": prompt}
+        ], temperature=0, max_tokens=5)
+
+        content = reply.choices[0].message.content.strip().lower()
+        return content.startswith("yes")
+    except Exception as e:
+        print("❌ should_attempt_symptom_extraction error:", e)
+        return False
 

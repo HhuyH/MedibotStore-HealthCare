@@ -32,3 +32,17 @@ async def clear_symptoms_in_session(session_id: str):
     session = await get_session_data(session_id)
     session[SYMPTOM_KEY] = []
     await save_session_data(session_id, session)
+
+
+FOLLOWUP_KEY = "followup_asked"
+
+async def get_followed_up_symptom_ids(session_id: str) -> list:
+    session = await get_session_data(session_id)
+    return session.get(FOLLOWUP_KEY, [])
+
+async def mark_followup_asked(session_id: str, symptom_ids: list[int]):
+    session = await get_session_data(session_id)
+    already = set(session.get(FOLLOWUP_KEY, []))
+    already.update(symptom_ids)
+    session[FOLLOWUP_KEY] = list(already)
+    await save_session_data(session_id, session)

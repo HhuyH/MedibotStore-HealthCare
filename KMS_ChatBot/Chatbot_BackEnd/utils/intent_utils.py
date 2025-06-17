@@ -9,11 +9,13 @@ import asyncio
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from prompts.db_schema.load_schema import user_core_schema, schema_modules
 from prompts.prompts import build_system_prompt
-from utils.symptom_utils import looks_like_followup_with_gpt, gpt_detect_symptom_intent, gpt_looks_like_symptom_followup_uncertain
-from prompts.prompts import system_prompt_sql
+from utils.symptom_utils import gpt_detect_symptom_intent
+from utils.health_care import gpt_looks_like_symptom_followup_uncertain, looks_like_followup_with_gpt
+from prompts.prompts import system_prompt_sql, build_diagnosis_controller_prompt
 from utils.openai_client import chat_completion
 from utils.text_utils import normalize_text
 from config.intents import VALID_INTENTS, INTENT_MAPPING
+import json
 
 def is_confirmation(text):
         norm = normalize_text(text)
@@ -75,20 +77,33 @@ def get_combined_schema_for_intent(intent: str) -> str:
     return "\n".join(schema_parts)
 
 # Phạt hiện đang là sử dụng chức nắng nào là chat bình thường hay là phát hiện và dự đoán bệnh
-async def detect_intent(user_message: str, session_key: str = None, last_intent: str = None) -> str:
-    prompt = (
-        "Xác định intent chính của câu sau trong các loại:\n"
-        + ", ".join(VALID_INTENTS) +
-        f"\nCâu: {user_message}\nIntent:"
-    )
+async def detect_intent(user_message: str, session_key: str = None, last_intent: str = None, recent_messages: list[str] = []) -> str:
+    # Lấy câu trước (nếu có) để tạo context
+    previous_msg = recent_messages[-1] if recent_messages else ""
+
+    prompt = f"""
+    Classify the user's intent in a chatbot conversation.
+
+    Previous user intent: "{last_intent or 'unknown'}"
+    Previous message: "{previous_msg}"
+    Current message: "{user_message}"
+
+    Valid intents: {", ".join(VALID_INTENTS)}
+
+    Instructions:
+    - If the previous intent was "symptom_query", and the user's current message is vague, uncertain, or negative (e.g. "không", "không rõ", "not sure", "no idea"), then assume they are still replying to a symptom-related follow-up — not starting a new topic.
+    - Do NOT switch to "general_chat" too quickly unless it's clearly off-topic or small talk.
+    - If the message sounds like a follow-up, continuation, or clarification — keep the same intent.
+    - Only choose ONE valid intent. Do not explain your reasoning. Do not include extra words.
+    """
 
     try:
-        # Giữ lại intent nếu user xác nhận và đang hỏi về triệu chứng
+        # ✅ Trường hợp xác nhận triệu chứng → giữ intent
         if is_confirmation(user_message) and last_intent == "symptom_query":
             print("🔁 User xác nhận triệu chứng → Giữ intent là 'symptom_query'")
             return "symptom_query"
 
-        # Gọi GPT để phân loại intent
+        # 🧠 Gọi GPT để phân loại intent
         response = chat_completion(
             [{"role": "user", "content": prompt}],
             max_tokens=10,
@@ -97,7 +112,7 @@ async def detect_intent(user_message: str, session_key: str = None, last_intent:
         raw_intent = response.choices[0].message.content.strip()
         raw_intent = raw_intent.replace("intent:", "").replace("Intent:", "").strip().lower()
 
-        # Nếu GPT trả về format không hợp lệ
+        # Nếu GPT trả sai format
         if "intent chính của câu" in raw_intent:
             print("⚠️ GPT trả sai format → fallback xử lý theo rule-based")
             raw_intent = ""
@@ -105,26 +120,52 @@ async def detect_intent(user_message: str, session_key: str = None, last_intent:
         mapped_intent = INTENT_MAPPING.get(raw_intent, raw_intent)
         print(f"🧭 GPT intent: {raw_intent} → Pipeline intent: {mapped_intent}")
 
-        # Nếu intent hợp lệ → trả luôn
+        # ✅ Nếu câu là phủ định trong luồng health → vẫn giữ 'symptom_query'
+        lower_msg = user_message.lower().strip()
+        negation_phrases = ["không", "không có", "ko", "ko có", "k có", "không rõ", "không biết", "k rõ", "k biết", "k bít"]
+        if last_intent == "symptom_query" and any(p in lower_msg for p in negation_phrases):
+            print("🔁 Người dùng phủ định trong luồng symptom → giữ intent 'symptom_query'")
+            return "symptom_query"
+
+        # ✅ Nếu GPT trả 'general_chat' nhưng trước là symptom → kiểm tra lại
+        if mapped_intent == "general_chat" and last_intent == "symptom_query":
+            is_followup = await asyncio.to_thread(looks_like_followup_with_gpt, user_message, previous_msg)
+            is_uncertain = await asyncio.to_thread(gpt_looks_like_symptom_followup_uncertain, user_message)
+
+            if is_followup:
+                print("🔁 GPT xác định đây là follow-up triệu chứng → giữ intent 'symptom_query'")
+                return "symptom_query"
+
+            if is_uncertain:
+                print("🤔 GPT xác định đây là câu trả lời mơ hồ tiếp tục chẩn đoán → giữ intent 'symptom_query'")
+                return "symptom_query"
+
+            print("⛔️ GPT cho rằng đây là general_chat, và không phải follow-up → giữ 'general_chat'")
+
+        # ✅ Nếu intent hợp lệ → dùng
         if mapped_intent in VALID_INTENTS:
             print(f"🎯 Intent phát hiện cuối cùng: {mapped_intent}")
             return mapped_intent
 
-        # Nếu không rõ intent, kiểm tra câu có mô tả triệu chứng không
+        # ❓ Nếu không rõ intent → fallback
         if not raw_intent or mapped_intent not in VALID_INTENTS:
-            # Case 1: Câu này giống mô tả triệu chứng
             if gpt_detect_symptom_intent(user_message):
                 print("🩺 GPT nhận đây là mô tả triệu chứng mới → intent = 'symptom_query'")
                 return "symptom_query"
 
-            # Case 2: Nếu trước đó là symptom_query, kiểm tra xem đây có phải follow-up không
             if last_intent == "symptom_query":
-                is_followup = await asyncio.to_thread(looks_like_followup_with_gpt, user_message)
+                is_followup = await asyncio.to_thread(looks_like_followup_with_gpt, user_message, previous_msg)
+                is_uncertain = await asyncio.to_thread(gpt_looks_like_symptom_followup_uncertain, user_message)
+
                 if is_followup:
-                    print("🔁 GPT xác định đây là follow-up triệu chứng → giữ intent là 'symptom_query'")
+                    print("🔁 GPT xác định đây là follow-up triệu chứng → giữ intent 'symptom_query'")
                     return "symptom_query"
 
-        # Nếu không có intent hợp lệ → fallback theo intent trước
+                if is_uncertain:
+                    print("🤔 GPT xác định đây là câu trả lời mơ hồ tiếp tục chẩn đoán → giữ intent 'symptom_query'")
+                    return "symptom_query"
+
+        # 🔁 Nếu không xác định được rõ → giữ intent cũ nếu có
         if mapped_intent not in INTENT_MAPPING.values():
             if last_intent in INTENT_MAPPING:
                 print(f"🔁 Fallback giữ intent cũ → {last_intent}")
@@ -133,19 +174,14 @@ async def detect_intent(user_message: str, session_key: str = None, last_intent:
                 print("❓ Không detect được intent hợp lệ → Trả về 'general_chat'")
                 return "general_chat"
 
-        # Trường hợp đặc biệt: câu rất ngắn nhưng đang follow-up triệu chứng
-        if last_intent == "symptom_query":
-            if await asyncio.to_thread(gpt_looks_like_symptom_followup_uncertain, user_message):
-                print("🤔 GPT xác định đây là câu trả lời mơ hồ tiếp tục chẩn đoán → giữ intent 'symptom_query'")
-                return "symptom_query"
-
-        # Trả về intent cuối cùng
+        # ✅ Cuối cùng: return intent hợp lệ
         print(f"🎯 Intent phát hiện cuối cùng: {mapped_intent}")
         return mapped_intent
 
     except Exception as e:
         print("❌ Lỗi khi detect intent:", str(e))
         return "general_chat"
+
 
 def get_sql_prompt_for_intent(intent: str) -> str:
     schema = get_combined_schema_for_intent(intent)
@@ -165,29 +201,62 @@ def build_system_message(intent: str, symptoms: list[str] = None) -> dict:
     }
 
 # Xác định để chuẩn đoán bệnh
-async def should_trigger_diagnosis(user_message: str, collected_symptoms: list[dict]) -> bool:
-    prompt = (
-        "Bạn là trợ lý y tế. Hãy xác định người dùng đã mô tả xong triệu chứng chưa để chuyển sang bước chẩn đoán.\n"
-        "Chỉ trả lời YES hoặc NO.\n\n"
-        "Ví dụ:\n"
-        "- Triệu chứng: ['Sốt', 'Ho']\n"
-        "- Người dùng: 'hết rồi' → YES\n"
-        "- Người dùng: 'không có gì thêm' → YES\n"
-        "- Người dùng: 'còn đau bụng nữa' → NO\n"
-        "- Người dùng: 'ờ để xem' → NO\n\n"
-        f"Triệu chứng: {[s['name'] for s in collected_symptoms]}\n"
-        f"Người dùng: \"{user_message}\"\n\n"
-        "Trả lời: "
-    )
+async def should_trigger_diagnosis(user_message: str, collected_symptoms: list[dict], recent_messages: list[str] = []) -> bool:
 
-    response = chat_completion(
-        [{"role": "user", "content": prompt}],
-        max_tokens=5,
-        temperature=0
-    )
+    # ✅ Nếu có từ 2 triệu chứng → luôn trigger
+    if len(collected_symptoms) >= 2:
+        print("✅ Rule-based: đủ 2 triệu chứng → cho phép chẩn đoán")
+        return True
 
-    result = response.choices[0].message.content.strip().lower()
-    return result.startswith("yes")
+    # 🧠 GPT fallback nếu không rõ
+    context_text = "\n".join(f"- {msg}" for msg in recent_messages[-2:])
+
+    prompt = f"""
+        You are a careful medical assistant helping diagnose possible conditions based on user-reported symptoms.
+
+        Has the user provided enough clear symptoms or context to proceed with a diagnosis?
+
+        Answer only YES or NO.
+
+        ---
+
+        Symptoms reported: {[s['name'] for s in collected_symptoms]}
+        Conversation context:
+        {context_text}
+        User (most recent): "{user_message}"
+
+        → Answer:
+        """.strip()
+
+    try:
+        response = chat_completion(
+            [{"role": "user", "content": prompt}],
+            max_tokens=5,
+            temperature=0
+        )
+        result = response.choices[0].message.content.strip().lower()
+        return result.startswith("yes")
+    except Exception as e:
+        print("❌ GPT fallback in should_trigger_diagnosis failed:", str(e))
+        return False
 
 
+async def generate_next_health_action(symptoms: list[dict], recent_messages: list[str]) -> dict:
+
+    symptom_names = [s["name"] for s in symptoms]
+    prompt = build_diagnosis_controller_prompt(symptom_names, recent_messages)
+
+    try:
+        response = chat_completion([{"role": "user", "content": prompt}], max_tokens=300, temperature=0.4)
+        content = response.choices[0].message.content.strip()
+
+        if content.startswith("```json"):
+            content = content.replace("```json", "").replace("```", "").strip()
+        return json.loads(content)
+    except Exception as e:
+        print("❌ Failed to generate next health action:", e)
+        return {
+            "trigger_diagnosis": False,
+            "message": "Mình chưa chắc chắn lắm. Bạn có thể nói rõ hơn về các triệu chứng hiện tại không?"
+        }
 

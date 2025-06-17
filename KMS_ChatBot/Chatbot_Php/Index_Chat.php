@@ -149,9 +149,8 @@
   </form>
 
   <!-- Reset chat -->
-  <form method="POST" action="reset.php" class="reset-form">
-    <button type="submit">🔁 Reset cuộc trò chuyện</button>
-  </form>
+  <button id="reset-chat" type="button">🔁 Reset cuộc trò chuyện</button>
+
 
   <!-- Gắn file JS -->
   <script src="assets/chat.js"></script>
