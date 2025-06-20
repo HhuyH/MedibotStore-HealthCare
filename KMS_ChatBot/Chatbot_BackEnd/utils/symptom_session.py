@@ -16,7 +16,7 @@ def save_symptoms_to_session(key, new_symptoms):
             current_symptoms.append(symptom)
             current_ids.add(symptom['id'])
         else:
-            logger.info(f"Triệu chứng '{symptom['name']}' (ID {symptom['id']}) đã có. Bỏ qua.")
+            logger.debug(f"Triệu chứng '{symptom['name']}' (ID {symptom['id']}) đã có. Bỏ qua.")
 
     SYMPTOM_SESSION[key] = current_symptoms
     return current_symptoms

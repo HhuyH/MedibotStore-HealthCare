@@ -143,6 +143,7 @@ CREATE TABLE diseases (
     name VARCHAR(255) NOT NULL,                       -- Tên bệnh
     description TEXT,                                 -- Mô tả về bệnh
     treatment_guidelines TEXT,                        -- Hướng dẫn điều trị
+    severity ENUM('nhẹ', 'trung bình', 'nghiêm trọng') DEFAULT 'trung bình'; -- Mức độ nghiệm trộng
     category_id INT,                                  -- Liên kết đến chuyên khoa
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
@@ -161,8 +162,6 @@ CREATE TABLE symptoms (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP
 );
-
-
 
 -- Bảng disease_symptoms: Bảng nối giữa bệnh và triệu chứng
 CREATE TABLE disease_symptoms (

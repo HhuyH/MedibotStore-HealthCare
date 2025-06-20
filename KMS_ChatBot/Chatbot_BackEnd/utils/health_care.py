@@ -9,276 +9,162 @@ from utils.openai_client import chat_completion
 from utils.symptom_utils import get_symptom_list, extract_symptoms_gpt, generate_related_symptom_question, save_symptoms_to_db
 from utils.symptom_session import get_symptoms_from_session, save_symptoms_to_session
 from utils.session_store import get_followed_up_symptom_ids, mark_followup_asked
-from prompts.prompts import build_diagnosis_controller_prompt
+from prompts.prompts import build_diagnosis_controller_prompt, build_KMS_prompt
+from utils.text_utils import normalize_text
 
-async def gpt_health_talk(user_message: str, stored_symptoms: list[dict], recent_messages: list[str], session_key=None, user_id=None, chat_id=None) -> dict:
-    # 1. Trích triệu chứng mới từ message
-    new_symptoms, _ = extract_symptoms_gpt(user_message, session_key=session_key)
+
+# Hàm mới dùng prompt tổng
+async def health_talk(user_message: str, stored_symptoms: list[dict], recent_messages: list[str], session_key=None, user_id=None, chat_id=None):
+    # Step 1: Trích triệu chứng mới từ user_message
+    new_symptoms, fallback_message = extract_symptoms_gpt(user_message, session_key=session_key, recent_messages = recent_messages)
+    logger.info("🌿 Triệu chứng trích được: %s", new_symptoms)
     if new_symptoms:
-        stored_symptoms += new_symptoms
-        stored_symptoms = save_symptoms_to_session(session_key, stored_symptoms)
+        stored_symptoms += [s for s in new_symptoms if s["name"] not in {sym["name"] for sym in stored_symptoms}]
+        save_symptoms_to_session(session_key, stored_symptoms)
 
-        logger.info(f"[📝] Triệu chứng mới lưu vào session {session_key}: {[s['name'] for s in new_symptoms]}")
+    # Step 2: Gọi decide followup / related
+    inputs = await decide_KMS_prompt_inputs(session_key=session_key, user_message=user_message, recent_messages=recent_messages)
+    logger.debug("📝 Recent messages gửi vào prompt:\n%s", recent_messages)
 
-    # 2. GPT quyết định hành vi
-    controller = await decide_health_action(user_message, [s['name'] for s in stored_symptoms], recent_messages)
+    # Step 3: Gọi GPT sinh phản hồi chính
+    prompt = build_KMS_prompt(
+        SYMPTOM_LIST=get_symptom_list(),
+        user_message=user_message,
+        stored_symptoms_name=[s["name"] for s in stored_symptoms],
+        recent_messages=recent_messages,
+        related_symptom_names=inputs["related_symptom_names"],
+        raw_followup_question=inputs["raw_followup_question"]
+    )
+    response = chat_completion([{"role": "user", "content": prompt}], temperature=0.3)
+    content = response.choices[0].message.content.strip()
 
-    if controller.get("trigger_diagnosis"):
-        logger.info("⚡ GPT xác định đủ điều kiện chẩn đoán")
-        diseases = predict_disease_based_on_symptoms(stored_symptoms)
+    if content.startswith("```json"):
+        content = content.replace("```json", "").replace("```", "").strip()
 
-        if diseases:
-            logger.info(f"✅ GPT đã dự đoán {len(diseases)} bệnh: {[d['name'] for d in diseases]}")
-
-            if user_id:
-                # 💾 Lưu triệu chứng vào lịch sử người dùng (ngoài lưu dự đoán)
-                note = generate_symptom_note(recent_messages)
-
-                save_symptoms_to_db(user_id, stored_symptoms, note=note)
-
-
-                # 💾 Lưu kết quả chẩn đoán
-                save_prediction_to_db(user_id, stored_symptoms, diseases, chat_id)
-
-            diagnosis_text = generate_diagnosis_summary(diseases)
-
-            return {
-                "symptoms": new_symptoms,
-                "followup_question": None,
-                "trigger_diagnosis": True,
-                "diagnosis_summary": diagnosis_text,
-                "message": diagnosis_text,
-                "end": controller.get("end", False)
-            }
-
-    # 3. Nếu còn triệu chứng chưa follow-up
-    if controller.get("ask_followup", True):
-
-        # Nếu đã hỏi triệu chứng liên quan trước đó và người dùng vừa phủ định rõ ràng → không hỏi gì nữa, kết luận nhẹ
-        if is_user_response_negative_or_uncertain(user_message):
-            summary = generate_light_diagnosis_message(stored_symptoms)
-            return {
-                "symptoms": [],
-                "followup_question": None,
-                "trigger_diagnosis": True,
-                "diagnosis_summary": summary,
-                "message": summary,
-                "end": True
-            }
-
-        followup, targets = await generate_friendly_followup_question(
-            stored_symptoms, session_key, recent_messages, return_with_targets=True
-        )
-
-        if not targets:
-            # 🔁 Nếu follow-up hết → hỏi thêm triệu chứng liên quan
-            symptom_ids = [s["id"] for s in stored_symptoms]
-            related = get_related_symptoms_by_disease(symptom_ids)
-
-            print(f"[DEBUG] Triệu chứng đã có: {symptom_ids}")
-            # print(f"[DEBUG] Gợi ý liên quan từ DB: {related}")
-
-            if related:
-                related_names = [s["name"] for s in related][:4]
-                followup_related = await generate_related_symptom_question(related_names)
-                return {
-                    "symptoms": [],
-                    "followup_question": followup_related,
-                    "trigger_diagnosis": False,
-                    "diagnosis_summary": None,
-                    "message": followup_related,
-                    "end": False
-                }
-
-        # ✅ Nếu vẫn còn câu hỏi follow-up hợp lệ
-        return {
-            "symptoms": new_symptoms,
-            "followup_question": followup,
-            "trigger_diagnosis": False,
-            "diagnosis_summary": None,
-            "message": followup,
-            "end": controller.get("end", False)
-        }
-
-    # 4. Nếu user trả lời mơ hồ → Gợi ý triệu chứng liên quan
-    is_vague = gpt_looks_like_symptom_followup_uncertain(user_message)
-    if is_vague:
-        symptom_ids = [s["id"] for s in stored_symptoms]
-        related = get_related_symptoms_by_disease(symptom_ids)
-
-        # Đã từng hỏi rồi mà user tiếp tục mơ hồ hoặc phủ định → kết luận
-        if is_user_response_negative_or_uncertain(user_message):
-            logger.info(f"[⚠️] Phát hiện phản hồi phủ định hoặc không rõ: '{user_message}' → Kết luận nhẹ.")
-            # Tự động kết luận nhẹ
-            summary = generate_light_diagnosis_message(stored_symptoms)
-
-            # 💾 Lưu triệu chứng vào lịch sử người dùng
-            note = generate_symptom_note(recent_messages)
-
-            save_symptoms_to_db(user_id, stored_symptoms, note=note)
-            return {
-                "symptoms": [],
-                "followup_question": None,
-                "trigger_diagnosis": True,
-                "diagnosis_summary": summary,
-                "message": summary,
-                "end": True
-            }
-
-    # 5. Fallback nếu chẳng còn gì để hỏi
-    return {
-        "symptoms": new_symptoms,
-        "followup_question": None,
-        "trigger_diagnosis": False,
-        "diagnosis_summary": None,
-        "message": controller.get("message", "Bạn có thể chia sẻ thêm để mình hiểu rõ hơn nhé?"),
-        "end": controller.get("end", False)
+    parsed = json.loads(content)
+    controller = {
+        "message": parsed.get("message", fallback_message or "Mình chưa rõ lắm bạn đang cảm thấy gì, bạn có thể nói cụ thể hơn không?"),
+        "action": parsed.get("action", "followup"),
+        "end": parsed.get("end", False),
+        "symptoms": stored_symptoms
     }
 
+    related = inputs.get("related_symptom_names")
+    question = inputs.get("raw_followup_question")
 
+    logger.info("📝 Raw follow-up question: %s", "not null" if question is not None else "null")
+    logger.info("📌 Related symptom names: %s", "not null" if related is not None else "null")
 
-def is_user_response_negative_or_uncertain(text: str) -> bool:
-    """
-    Kiểm tra xem phản hồi của người dùng có mang tính phủ định hoặc mơ hồ hay không.
-    Bao gồm các biểu thức phổ biến bằng tiếng Việt và tiếng Anh.
-    """
+    logger.info("🧩 Inputs gửi vào GPT:")
+    logger.info("🎯 Action decided by GPT: %s", controller["action"])
+    logger.info("💬 Message: %s", controller["message"])
 
-    text = text.lower().strip()
+    return controller   
 
-    # Các cụm từ phủ định hoặc không chắc chắn phổ biến
-    patterns = [
-        r"\bkhông\b", r"\bkhông có\b", r"\bko\b", r"\bk có\b", r"\bko có\b", r"\bko co\b",
-        r"\bk rõ\b", r"\bkhông rõ\b", r"\bkhông chắc\b", r"\bkhông biết\b", r"\bk biết\b",
-        r"\bmình không rõ\b", r"\bchưa biết\b", r"\bk bik\b", r"\bk bít\b", r"\bko ro\b",
-        r"\btôi không biết\b", r"\btôi không chắc\b",
-        # English equivalents
-        r"\bno\b", r"\bnot sure\b", r"\bi don't know\b", r"\bi'm not sure\b", r"\bidk\b", r"\bno idea\b"
-    ]
+ 
+# Trả về các dữ liệu cần thiết để truyền vào build_KMS_prompt:
+# - stored_symptoms
+# - raw_followup_question: danh sách triệu chứng kèm câu hỏi follow-up
+# - related_symptom_names: tên các triệu chứng liên quan nếu không còn follow-up
+async def decide_KMS_prompt_inputs(session_key: str, user_message: str, recent_messages: list[str]):
+    # Lấy các triệu chứng đã lưu trong session
+    stored_symptoms = await get_symptoms_from_session(session_key)
+    symptom_ids = [s['id'] for s in stored_symptoms]
 
-    for pattern in patterns:
-        if re.search(pattern, text):
-            return True
+    # Lấy câu hỏi follow-up từ DB (hàm này tự kiểm tra cái nào chưa hỏi và tự lưu lại)
+    raw_followup_question = await get_followup_question_fromDB(symptom_ids, session_key=session_key)
 
-    return False
+    # Nếu không còn follow-up → gợi ý triệu chứng liên quan
+    related_symptom_names = []
+    if not raw_followup_question:
+        related = get_related_symptoms_by_disease(symptom_ids)
+        stored_names = [s["name"] for s in stored_symptoms]
+        related_names = [s["name"] for s in related if s["name"] not in stored_names]
+        related_symptom_names = list(set(related_names))[:10]  # Giới hạn gợi ý
 
+    
+    return {
+        "raw_followup_question": raw_followup_question or None,
+        "related_symptom_names": related_symptom_names or None
+    }
 
-def generate_light_diagnosis_message(symptoms: list[dict]) -> str:
-    names = [s['name'] for s in symptoms]
-    symptom_text = ", ".join(names) if names else "một vài triệu chứng"
+# Lấy những câu hỏi liên quan tới triệu chứng từ DB
+async def get_followup_question_fromDB(symptom_ids: list[int], session_key: str = None) -> list[dict]:
+    if not symptom_ids:
+        return []
 
-    prompt = f"""
-        You are a kind and empathetic virtual health assistant.
+    already_asked = set()
+    if session_key:
+        already_asked = set(await get_followed_up_symptom_ids(session_key))
 
-        The user has shared some symptoms (e.g., {symptom_text}), but their responses to follow-up questions have been vague, uncertain, or negative.
+    ids_to_ask = [sid for sid in symptom_ids if sid not in already_asked]
+    if not ids_to_ask:
+        return []
 
-        Your job is to write a short and natural **message in Vietnamese**, gently acknowledging the situation and offering simple care advice.
-
-        Instructions:
-        - Do NOT list specific diseases or try to diagnose.
-        - Assume the situation is still unclear or mild.
-        - Use a natural, conversational tone — avoid sounding like a formal announcement.
-        - You may start directly with something soft and empathetic, without saying “Chào bạn” or “Cảm ơn bạn”.
-        - You can use friendly emojis (like 😌, 🌿, 💬) if it makes the message feel more human and reassuring — but no more than 2.
-        - Suggest light care actions (e.g., nghỉ ngơi, uống nước ấm) and remind the user to watch for any changes.
-        - Recommend seeing a doctor if symptoms persist or get worse.
-        - Do NOT repeat the full list of symptoms; refer to them generally (e.g., "vài triệu chứng bạn đã nói").
-        - End with a soft and comforting sentence like “Bạn cứ yên tâm theo dõi thêm nha.” or similar.
-        - Do NOT use Markdown, JSON, or medical jargon.
-
-        Output: Your entire message must be in Vietnamese only.
-        """.strip()
-
-    try:
-        response = chat_completion([
-            {"role": "user", "content": prompt}
-        ], temperature=0.4, max_tokens=150)
-
-        return response.choices[0].message.content.strip()
-    except Exception:
-        return "Có thể đây chỉ là tình trạng nhẹ thôi, bạn cứ nghỉ ngơi và theo dõi thêm nhé. Nếu không đỡ thì nên đi khám cho yên tâm nha."
-
-
-# hàm tạo ghi chú cho triệu chứng khi thêm vào database
-def generate_symptom_note(recent_messages: list[str]) -> str:
-    if not recent_messages:
-        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
-
-    context = "\n".join(f"- {msg}" for msg in recent_messages[-5:])
-
-    prompt = f"""
-        You are a helpful AI assistant supporting medical documentation.
-
-        Below is a recent conversation with a user about their health concerns:
-
-        {context}
-
-        Write a short **symptom note** in **Vietnamese**, summarizing the user's main symptom(s) and any relevant context (e.g., when it started, what triggered it, how it felt).
-
-        Instructions:
-        - Your note must be in Vietnamese.
-        - Keep it short (1–2 sentences).
-        - Use natural, friendly, easy-to-understand language.
-        - Do not use medical jargon.
-        - Do not invent symptoms that were not clearly mentioned.
-        - If the user was vague, still reflect that (e.g., “người dùng không rõ nguyên nhân”).
-
-        Your output must be only the note. Do not include any explanation or format it as JSON.
-    """.strip()
-
-    try:
-        response = chat_completion([
-            {"role": "user", "content": prompt}
-        ], temperature=0.3, max_tokens=100)
-
-        return response.choices[0].message.content.strip()
-    except Exception:
-        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
-
-# Dự đoán bệnh dựa trên list triệu chứng
-# Trả về danh sách các bệnh với độ phù hợp (confidence 0-1) danh sách bệnh gồm: id, tên, độ phù hợp, mô tả, hướng dẫn điều trị.
-def predict_disease_based_on_symptoms(symptoms: list[dict]) -> list[dict]:
     conn = pymysql.connect(**DB_CONFIG)
     try:
         with conn.cursor() as cursor:
-            symptom_ids = [s['id'] for s in symptoms]
-            if not symptom_ids:
-                return []
-
-            format_strings = ','.join(['%s'] * len(symptom_ids))
-
+            format_strings = ','.join(['%s'] * len(ids_to_ask))
             cursor.execute(f"""
-                SELECT 
-                    ds.disease_id,
-                    d.name,
-                    d.description,
-                    d.treatment_guidelines,
-                    COUNT(*) AS match_count
-                FROM disease_symptoms ds
-                JOIN diseases d ON ds.disease_id = d.disease_id
-                WHERE ds.symptom_id IN ({format_strings})
-                GROUP BY ds.disease_id
-                ORDER BY match_count DESC
-            """, symptom_ids)
-
+                SELECT symptom_id, name, followup_question
+                FROM symptoms
+                WHERE symptom_id IN ({format_strings}) AND followup_question IS NOT NULL
+            """, ids_to_ask)
             results = cursor.fetchall()
-            if not results:
-                return []
-
-            max_match = results[0][4]  # match_count cao nhất
-            predicted = []
-            for disease_id, name, desc, guideline, match_count in results:
-                confidence = round(match_count / max_match, 2)
-                predicted.append({
-                    "disease_id": disease_id,
-                    "name": name,
-                    "description": desc or "",
-                    "treatment_guidelines": guideline or "",
-                    "confidence": confidence
-                })
-
-            return predicted
     finally:
         conn.close()
+
+    followup_questions = [
+        {"name": name, "followup_question": question.strip()}
+        for _, name, question in results if question
+    ]
+
+    # Ghi lại follow-up đã hỏi theo symptom_id
+    if session_key:
+        asked_ids = [row[0] for row in results]
+        if asked_ids:
+            await mark_followup_asked(session_key, asked_ids)
+
+    return followup_questions
+
+# Dựa vào các symptom_id hiện có truy bảng disease_symptoms → lấy danh sách các disease_id có liên quan truy ngược lại → lấy thêm các symptom khác thuộc cùng bệnh (trừ cái đã có)
+def get_related_symptoms_by_disease(symptom_ids: list[int]) -> list[dict]:
+    if not symptom_ids:
+        return []
+
+    conn = pymysql.connect(**DB_CONFIG)
+    related_symptoms = []
+
+    try:
+        with conn.cursor() as cursor:
+            # B1: Lấy các disease_id liên quan tới các symptom hiện tại
+            format_strings = ','.join(['%s'] * len(symptom_ids))
+            cursor.execute(f"""
+                SELECT DISTINCT disease_id
+                FROM disease_symptoms
+                WHERE symptom_id IN ({format_strings})
+            """, tuple(symptom_ids))
+            disease_ids = [row[0] for row in cursor.fetchall()]
+
+            if not disease_ids:
+                return []
+
+            # B2: Lấy các symptom_id khác cùng thuộc các disease đó
+            format_diseases = ','.join(['%s'] * len(disease_ids))
+            cursor.execute(f"""
+                SELECT DISTINCT s.symptom_id, s.name
+                FROM disease_symptoms ds
+                JOIN symptoms s ON ds.symptom_id = s.symptom_id
+                WHERE ds.disease_id IN ({format_diseases})
+                  AND ds.symptom_id NOT IN ({format_strings})
+            """, tuple(disease_ids + symptom_ids))
+
+            related_symptoms = [{"id": row[0], "name": row[1]} for row in cursor.fetchall()]
+
+    finally:
+        conn.close()
+
+    return related_symptoms
 
 # lưu phỏng đoán bệnh vào database lưu vào health_records user_symptom_history khi đang thực hiện chẩn đoán kết quả
 def save_prediction_to_db(user_id: int, symptoms: list[dict], diseases: list[dict], chat_id: int = None):
@@ -319,58 +205,438 @@ def save_prediction_to_db(user_id: int, symptoms: list[dict], diseases: list[dic
     finally:
         conn.close()
 
-# Tạo đoạn văn tư vấn từ danh sách bệnh, bao gồm mô tả ngắn và gợi ý chăm sóc.
+# Hàm tạo ghi chú cho triệu chứng khi thêm vào database
+def generate_symptom_note(recent_messages: list[str]) -> str:
+    if not recent_messages:
+        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+
+    context = "\n".join(f"- {msg}" for msg in recent_messages[-5:])
+
+    prompt = f"""
+        You are a helpful AI assistant supporting medical documentation.
+
+        Below is a recent conversation with a user about their health concerns:
+
+        {context}
+
+        Write a short **symptom note** in **Vietnamese**, summarizing the user's main symptom(s) and any relevant context (e.g., when it started, what triggered it, how it felt).
+
+        Instructions:
+        - Your note must be in Vietnamese.
+        - Keep it short (1–2 sentences).
+        - Use natural, friendly, easy-to-understand language.
+        - Do not use medical jargon.
+        - Do not invent symptoms that were not clearly mentioned.
+        - If the user was vague, still reflect that (e.g., “người dùng không rõ nguyên nhân”).
+
+        Your output must be only the note. Do not include any explanation or format it as JSON.
+    """.strip()
+
+    try:
+        response = chat_completion([
+            {"role": "user", "content": prompt}
+        ], temperature=0.3, max_tokens=100)
+
+        return response.choices[0].message.content.strip()
+    except Exception:
+        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+
+# -------------- Chưa tích hộp vào cách dùng prompt tổng --------------------------------------------------
+
+# Dự đoán bệnh dựa trên list triệu chứng
+# Trả về danh sách các bệnh với độ phù hợp (confidence 0-1) danh sách bệnh gồm: id, tên, độ phù hợp, mô tả, hướng dẫn điều trị.
+def predict_disease_based_on_symptoms(symptoms: list[dict]) -> list[dict]:
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            symptom_ids = [s['id'] for s in symptoms]
+            if not symptom_ids:
+                return []
+
+            format_strings = ','.join(['%s'] * len(symptom_ids))
+
+            # B1: Lấy danh sách bệnh có triệu chứng khớp
+            cursor.execute(f"""
+                SELECT 
+                    ds.disease_id,
+                    d.name,
+                    d.description,
+                    d.treatment_guidelines,
+                    COUNT(*) AS match_count
+                FROM disease_symptoms ds
+                JOIN diseases d ON ds.disease_id = d.disease_id
+                WHERE ds.symptom_id IN ({format_strings})
+                GROUP BY ds.disease_id
+            """, symptom_ids)
+
+            matches = cursor.fetchall()
+            if not matches:
+                return []
+
+            disease_ids = [row[0] for row in matches]
+            disease_id_str = ','.join(['%s'] * len(disease_ids))
+
+            # B2: Lấy tổng số triệu chứng của từng bệnh
+            cursor.execute(f"""
+                SELECT disease_id, COUNT(*) as total_symptoms
+                FROM disease_symptoms
+                WHERE disease_id IN ({disease_id_str})
+                GROUP BY disease_id
+            """, disease_ids)
+
+            total_symptom_map = {row[0]: row[1] for row in cursor.fetchall()}
+
+            # B3: Tính penalty theo số lượng input từ người dùng
+            num_user_symptoms = len(symptom_ids)
+            if num_user_symptoms <= 2:
+                penalty = 0.75
+            elif num_user_symptoms == 3:
+                penalty = 0.85
+            else:
+                penalty = 0.9
+
+            # B4: Tính điểm confidence
+            predicted = []
+            for disease_id, name, desc, guideline, match_count in matches:
+                total = total_symptom_map.get(disease_id, match_count)
+                raw_score = match_count / total
+                confidence = min(round(raw_score * penalty, 2), 0.95)
+
+                predicted.append({
+                    "disease_id": disease_id,
+                    "name": name,
+                    "description": desc or "",
+                    "treatment_guidelines": guideline or "",
+                    "confidence": confidence
+                })
+
+            # Sắp xếp theo độ phù hợp
+            predicted.sort(key=lambda x: x["confidence"], reverse=True)
+
+            return predicted
+    finally:
+        conn.close()
+
+
+
+#-------------- dưới đây là nhừng hàm được sử dung cho việc chia theo controller không tôt không lien mạch bot gần như ko quyết định việc cần quyết định--------------------------------------------------
+
+# Hàm cũ dùng decide_health_action để quyết định hành động (có thể sẽ không dùng nữa Những chưa bỏ)
+async def gpt_health_talk(user_message: str, stored_symptoms: list[dict], recent_messages: list[str], session_key=None, user_id=None, chat_id=None) -> dict:
+    
+    # 1. Xác định các triệu chứng chưa follow-up và triệu chứng liên quan (ĐƯA LÊN TRƯỚC)
+    asked_ids = await get_followed_up_symptom_ids(session_key)
+    remaining = [s["name"] for s in stored_symptoms if s["id"] not in asked_ids]
+    symptom_ids = [s["id"] for s in stored_symptoms]
+    related_symptoms = get_related_symptoms_by_disease(symptom_ids)
+    related_names = [s["name"] for s in related_symptoms][:4] if related_symptoms else []
+
+    # 2. GPT quyết định hành vi và trích triệu chứng mới
+    new_symptoms, controller = await decide_health_action(
+        user_message,
+        [s['name'] for s in stored_symptoms],
+        recent_messages,
+        remaining_followup_symptoms=remaining,
+        related_symptom_names=related_names
+    )
+
+    # Trước khi lưu, loại bỏ triệu chứng trùng ID
+    if new_symptoms:
+
+        # Gộp lại danh sách triệu chứng cũ và mới
+        combined_symptoms = stored_symptoms + new_symptoms
+
+        # Khử trùng lặp theo ID
+        seen_ids = set()
+        unique_symptoms = []
+        for symptom in combined_symptoms:
+            if symptom['id'] not in seen_ids:
+                unique_symptoms.append(symptom)
+                seen_ids.add(symptom['id'])
+
+        # Cập nhật lại biến stored_symptoms
+        stored_symptoms = unique_symptoms
+
+        # Lưu lại vào session
+        stored_symptoms = save_symptoms_to_session(session_key, stored_symptoms)
+        symptoms_saved = await get_symptoms_from_session(session_key)
+
+        logger.info(f"[📝] Triệu chứng mới lưu vào session {session_key}: {[s['name'] for s in new_symptoms]}")
+        logger.info(f"[📝] Tổng triệu chứng hiện có (đã loại trùng): {[s['name'] for s in symptoms_saved]}")
+
+    # --- Block 1: Chẩn đoán chính thức ---
+    if controller.get("trigger_diagnosis"):
+        logger.info("⚡ GPT xác định đủ điều kiện chẩn đoán")
+        diseases = predict_disease_based_on_symptoms(stored_symptoms)
+
+        if diseases:
+            logger.info(f"✅ GPT đã dự đoán {len(diseases)} bệnh: {[d['name'] for d in diseases]}")
+            if user_id:
+                note = generate_symptom_note(recent_messages)
+                save_symptoms_to_db(user_id, stored_symptoms, note=note)
+                save_prediction_to_db(user_id, stored_symptoms, diseases, chat_id)
+
+            diagnosis_text = generate_diagnosis_summary(diseases)
+            return {
+                "symptoms": new_symptoms,
+                "followup_question": None,
+                "trigger_diagnosis": True,
+                "diagnosis_summary": diagnosis_text,
+                "message": diagnosis_text,
+                "end": True
+            }
+
+    # --- Block 2: Kết luận nhẹ nếu triệu chứng mơ hồ hoặc nhẹ ---
+    if controller.get("light_summary"):
+        logger.info("🌿 GPT xác định chỉ cần gửi kết luận nhẹ nhàng (light_summary)")
+        summary = generate_light_diagnosis_message(stored_symptoms)
+        if user_id:
+            note = generate_symptom_note(recent_messages)
+            save_symptoms_to_db(user_id, stored_symptoms, note=note)
+
+        return {
+            "symptoms": [],
+            "followup_question": None,
+            "trigger_diagnosis": False,
+            "diagnosis_summary": summary,
+            "message": summary,
+            "end": True
+        }
+
+    # --- Block 3: Tiếp tục hỏi follow-up ---     Block này đang có vấn đề về logic cần xem xét lại
+    if controller.get("ask_followup", True):
+        logger.info("⚡ GPT xác định câu hỏi followup")
+
+        followup, targets = await generate_friendly_followup_question(
+            stored_symptoms, session_key, recent_messages, return_with_targets=True
+        )
+
+        if targets:
+            return {
+                "symptoms": new_symptoms,
+                "followup_question": followup,
+                "trigger_diagnosis": False,
+                "diagnosis_summary": None,
+                "message": followup,
+                "end": controller.get("end", False)
+            }
+
+    # --- Block 4: Nếu GPT yêu cầu hỏi triệu chứng liên quan ---
+    if controller.get("ask_related") and related_names:
+        logger.info("⚡ GPT xác định hỏi chiệu chứng liên quan")
+        followup_related = await generate_related_symptom_question(related_names)
+        return {
+            "symptoms": [],
+            "followup_question": followup_related,
+            "trigger_diagnosis": False,
+            "diagnosis_summary": None,
+            "message": followup_related,
+            "end": False
+        }
+
+    # --- Block 5: Fallback hoặc trả lời dí dỏm ---
+    if controller.get("playful_reply"):
+        logger.info("😴 GPT chọn phản hồi dí dỏm hoặc nhẹ nhàng để kết thúc luồng.")
+        return {
+            "symptoms": [],
+            "followup_question": None,
+            "trigger_diagnosis": False,
+            "diagnosis_summary": None,
+            "message": controller["message"],
+            "end": True
+        }
+
+    # --- Block 6: Fallback cuối nếu không rõ hướng đi ---
+    return {
+        "symptoms": new_symptoms,
+        "followup_question": None,
+        "trigger_diagnosis": False,
+        "diagnosis_summary": None,
+        "message": controller.get("message", "Bạn có thể chia sẻ thêm để mình hiểu rõ hơn nhé?"),
+        "end": controller.get("end", False)
+    }
+
+# Hàm cũ quyết định chatbot sẽ làm gì (có thể sẽ không dùng nữa Những chưa bỏ)
+async def decide_health_action(
+    user_message,
+    symptom_names: list[str],
+    recent_messages: list[str],
+    remaining_followup_symptoms: list[str] = None,
+    related_symptom_names: list[str] = None
+) -> tuple[list[dict], dict]:
+    
+    symptom_list = get_symptom_list()
+
+    prompt = build_diagnosis_controller_prompt(
+        symptom_list,
+        user_message,
+        symptom_names,
+        recent_messages,
+        remaining_followup_symptoms=remaining_followup_symptoms,
+        related_symptom_names=related_symptom_names
+    )
+
+    try:
+        response = chat_completion([
+            {"role": "user", "content": prompt}
+        ], temperature=0.3, max_tokens=500)
+
+        content = response.choices[0].message.content.strip()
+
+        if content.startswith("```json"):
+            content = content.replace("```json", "").replace("```", "").strip()
+
+        parsed = json.loads(content)
+
+        # Parse triệu chứng mới
+        extracted_names = parsed.get("symptom_extract", [])
+        name_map = {normalize_text(s["name"]): s for s in symptom_list}
+        matched = []
+        seen_ids = set()
+
+        for name in extracted_names:
+            norm = normalize_text(name)
+            s = name_map.get(norm)
+            if s and s["id"] not in seen_ids:
+                matched.append({"id": s["id"], "name": s["name"]})
+                seen_ids.add(s["id"])
+
+        # Parse controller như cũ
+        controller = {
+            "trigger_diagnosis": parsed.get("trigger_diagnosis", False),
+            "ask_followup": parsed.get("ask_followup", True),
+            "ask_related": parsed.get("ask_related", False),
+            "light_summary": parsed.get("light_summary", False),
+            "playful_reply": parsed.get("playful_reply", False),
+            "diagnosis_text": parsed.get("diagnosis_text"),
+            "message": parsed.get("message"),
+            "end": (
+                parsed.get("trigger_diagnosis", False)
+                or parsed.get("light_summary", False)
+                or parsed.get("playful_reply", False)
+            )
+        }
+
+        return matched, controller
+
+    except Exception as e:
+        logger.error(f"[❌] Lỗi hệ thống trong decide_health_action: {e}")
+        return [], {
+            "trigger_diagnosis": False,
+            "ask_followup": True,
+            "ask_related": False,
+            "light_summary": False,
+            "playful_reply": False,
+            "diagnosis_text": None,
+            "message": "Bạn có thể chia sẻ thêm để mình hiểu rõ hơn nhé?",
+            "end": False
+        }
+
+
+# Tạo đoạn văn tư vấn từ danh sách bệnh, bao gồm mô tả ngắn và gợi ý chăm sóc (có thể sẽ không dùng or tái sử dụng cho chức năng khác)
 def generate_diagnosis_summary(diseases: list[dict]) -> str:
     if not diseases:
         return "Mình chưa có đủ thông tin để đưa ra chẩn đoán. Bạn có thể chia sẻ thêm triệu chứng nhé."
 
-    lines = ["Dựa trên những gì bạn chia sẻ, đây là một số tình trạng có thể liên quan. Bạn có thể theo dõi như sau:\n"]
-
-    # Tìm các bệnh thiếu thông tin
-    missing_info_names = [d["name"] for d in diseases[:3] if not d.get("description") or not d.get("treatment_guidelines")]
-    info_map = {}
-
-    if missing_info_names:
-        conn = pymysql.connect(**DB_CONFIG)
-        try:
-            with conn.cursor() as cursor:
-                format_strings = ','.join(['%s'] * len(missing_info_names))
-                cursor.execute(f"""
-                    SELECT name, description, treatment_guidelines
-                    FROM diseases
-                    WHERE name IN ({format_strings})
-                """, missing_info_names)
-                for name, desc, care in cursor.fetchall():
-                    info_map[name] = {
-                        "description": desc or "",
-                        "treatment_guidelines": care or ""
-                    }
-        finally:
-            conn.close()
-
-    for d in diseases[:3]:
+    # Chuẩn bị dữ liệu đầu vào cho GPT
+    disease_lines = []
+    for d in diseases[:3]:  # chỉ lấy top 3
         name = d.get("name", "Không xác định")
-        desc = (d.get("description") or "").strip()
-        care = (d.get("treatment_guidelines") or "").strip()
-        confidence = d.get("confidence", 0.0)
+        conf = int(d.get("confidence", 0.0) * 100)
+        desc = (d.get("description") or "").strip()[:120]
+        care = (d.get("treatment_guidelines") or "").strip()[:100]
+        disease_lines.append(f"- {name} (~{conf}%): {desc} | Gợi ý: {care}")
 
-        # Bổ sung từ DB nếu thiếu
-        if (not desc or not care) and name in info_map:
-            if not desc:
-                desc = info_map[name]["description"]
-            if not care:
-                care = info_map[name]["treatment_guidelines"]
+        prompt = f"""
+            You are a warm, empathetic, and natural-sounding virtual health assistant.
 
-        warning = " ⚠️ Cần lưu ý" if confidence >= 0.9 else ""
-        lines.append(f"- **{name}** (Độ phù hợp: {int(confidence * 100)}%){warning}")
-        lines.append(f"   • Mô tả sơ lược: {desc[:100]}..." if desc else "   • Chưa có mô tả chi tiết về bệnh này.")
-        lines.append(f"   • Gợi ý chăm sóc: {care[:100]}..." if care else "   • Hiện chưa có hướng dẫn chăm sóc cụ thể.")
-        lines.append("")  # khoảng cách
+            Based on the following possible conditions identified by AI:
 
-    lines.append("👉 Nếu bạn cảm thấy không ổn hoặc triệu chứng kéo dài, hãy cân nhắc đến gặp bác sĩ để kiểm tra kỹ hơn.")
-    return "\n".join(lines)
+            {chr(10).join(disease_lines)}
 
-# Tạo câu hỏi tiếp theo nhẹ nhàng, thân thiện, gợi ý người dùng chia sẻ thêm thông tin dựa trên các triệu chứng đã ghi nhận.
+            Please write a natural, friendly health summary **in Vietnamese**, following this structure and rules:
+
+            1. Begin gently: e.g., “Dựa trên những gì bạn chia sẻ...”
+
+            2. Then clearly list 2–3 possible conditions related to the user's symptoms.
+            - Each condition must be introduced with 📌 followed by the disease name in UPPERCASE
+            - You MAY use simple Markdown (like **bold**) to highlight the disease name ONLY
+
+            3. Next, suggest 1–2 lighter possible explanations (like posture, tiredness, stress). For example:
+            “Cũng có thể chỉ là do bạn thay đổi tư thế đột ngột hoặc đang mệt mỏi nhẹ 🌿”
+
+            4. Then provide friendly self-care suggestions, such as:
+            - 🧘 Nghỉ ngơi và thư giãn
+            - 🌊 Uống đủ nước
+            - 💬 Theo dõi cơ thể trong 1–2 ngày tới
+
+            5. After self-care suggestions, add a gentle reassurance like:
+            “Nhưng bạn cũng đừng quá lo vì đây chỉ là những triệu chứng được phỏng đoán từ tình trạng bạn chia sẻ.”
+
+            6. End with a final caring encouragement, like:
+            “Nếu triệu chứng vẫn kéo dài, bạn nên đến gặp bác sĩ để kiểm tra kỹ hơn nhé.”
+
+            Tone and formatting rules:
+            - Use warm, calm, non-alarming language
+            - Avoid medical jargon, complex terms, or test/procedure names (like EEG, MRI, etc.)
+            - You MAY use up to 2–3 relevant emojis total (no more)
+            - Use simple line breaks only — no extra spacing between lines
+            - Do NOT use bullet-point lists or tables
+            - Your response must be in Vietnamese only
+        """
+
+
+    try:
+        response = chat_completion([{"role": "user", "content": prompt}], temperature=0.6, max_tokens=350)
+        return response.choices[0].message.content.strip()
+    except Exception:
+        return "Dựa trên những gì bạn chia sẻ, có thể liên quan một vài tình trạng nhẹ. Bạn nên nghỉ ngơi và theo dõi thêm nhé. Nếu không đỡ, hãy đến bác sĩ để kiểm tra kỹ hơn."
+
+# Tạo câu trả lời mềm mại khi bot nghĩ đậy không thật sự là bệnh (có thể sẽ không dùng or tái sử dụng cho chức năng khác)
+def generate_light_diagnosis_message(symptoms: list[dict]) -> str:
+    names = [s['name'] for s in symptoms]
+    symptom_text = ", ".join(names) if names else "một vài triệu chứng"
+
+    prompt = f"""
+        You are a kind and empathetic virtual health assistant.
+
+        The user has shared some symptoms (e.g., {symptom_text}), but their responses to follow-up questions have been vague, uncertain, or negative.
+
+        Your job is to write a short and natural **message in Vietnamese**, gently acknowledging the situation and offering simple care advice.
+
+        Instructions:
+        - Do NOT list specific diseases or try to diagnose.
+        - Assume the situation is still unclear or mild.
+        - Use a natural, conversational tone — avoid sounding like a formal announcement.
+        - You may start directly with something soft and empathetic, without saying “Chào bạn” or “Cảm ơn bạn”.
+        - You can use friendly emojis (like 😌, 🌿, 💬) if it makes the message feel more human and reassuring — but no more than 2.
+        - Suggest light care actions (e.g., nghỉ ngơi, uống nước ấm) and remind the user to watch for any changes.
+        - Recommend seeing a doctor if symptoms persist or get worse.
+        - Do NOT repeat the full list of symptoms; refer to them generally (e.g., "vài triệu chứng bạn đã nói").
+        - End with a soft and comforting sentence like “Bạn cứ yên tâm theo dõi thêm nha.” or similar.
+        - Do NOT use Markdown, JSON, or medical jargon.
+
+        Output: Your entire message must be in Vietnamese only.
+        """.strip()
+
+    try:
+        response = chat_completion([
+            {"role": "user", "content": prompt}
+        ], temperature=0.4, max_tokens=150)
+
+        return response.choices[0].message.content.strip()
+    except Exception:
+        return "Có thể đây chỉ là tình trạng nhẹ thôi, bạn cứ nghỉ ngơi và theo dõi thêm nhé. Nếu không đỡ thì nên đi khám cho yên tâm nha."
+
+
+
+
+
+
+
+
+
+# Tạo câu hỏi tiếp theo nhẹ nhàng, thân thiện, gợi ý người dùng chia sẻ thêm thông tin dựa trên các triệu chứng đã ghi nhận.(Bỏ?)
 def join_symptom_names_vietnamese(names: list[str]) -> str:
     if not names:
         return ""
@@ -433,29 +699,39 @@ async def generate_friendly_followup_question(
     context = "\n".join(f"- {msg}" for msg in recent_messages[-3:]) if recent_messages else "(no prior messages)"
 
     gpt_prompt = f"""
-    You are a warm and understanding doctor. Below is the recent conversation with the patient:
-    {context}
+        You are a warm and understanding assistant helping a user who may not feel well. Below is the recent conversation with the user:
+        {context}
 
-    The patient has shared the following symptoms: {', '.join(names)}.
+        The user has shared the following symptoms: {', '.join(names)}.
 
-    Here are the follow-up questions you'd normally ask:
-    {chr(10).join([f"- {n}: {q}" for n, q in zip(names, questions)])}
+        Here are the follow-up questions you would normally ask:
+        {chr(10).join([f"- {n}: {q}" for n, q in zip(names, questions)])}
 
-    Now write a single, fluent, caring message in Vietnamese to gently follow up with the patient.
+        Now write a **single, natural, caring message in Vietnamese** to gently follow up with the user.
 
-    Instructions:
-    - Combine all follow-up questions into one natural Vietnamese message.
-    - Connect questions smoothly. If symptoms are related, group them in one paragraph.
-    - Vary transitions. You may use phrases like "Bên cạnh đó", "Một điều nữa", or "Thêm vào đó", but each only once.
-    - Do not ask about any additional or related symptoms in this message.
-    - Avoid repeating sentence structure. Keep it soft, natural, and human.
-    - No greetings or thank yous — continue mid-conversation.
-    - If the user has already described the symptom clearly (e.g., "sáng nay", "lúc đó", "vừa ngủ dậy"), treat that as valid context and avoid repeating.
-    - If the last message already asked about these symptoms, **do not repeat the exact same list**. Rephrase or follow up differently (e.g., ask about timing, severity, or impact on daily life).
-    - If you're unsure what else to ask, it's okay to acknowledge what the user has said and invite them to share more freely.
+        Instructions:
+        - Combine all follow-up questions into one fluent Vietnamese message.
+        - Start the message naturally. You may:
+        - Jump straight into the follow-up question, or
+        - Use a light, symptom-specific transition such as:
+            - “À, [triệu chứng] ha…”
+            - “Về chuyện [triệu chứng]…”
+            - "Um…”
+            - Or a soft emoji like 🫁 (for breathing), 💭 (thinking), 🌀 (dizzy), 😵‍💫 (lightheaded)
+        - Make sure the symptom name in the transition matches what the user reported (e.g., use “chóng mặt” if they mentioned dizziness).
+        - Do not insert the word “ho” unless the user’s symptom is cough.
+        - Use varied connectors such as “Bên cạnh đó”, “Một điều nữa”, “Thêm vào đó” — each only once.
+        - Avoid repeating sentence structure — write naturally.
+        - Do NOT ask about other or related symptoms.
+        - Do NOT greet or thank — just continue the conversation.
+        - If the user already gave context (e.g. time, severity), don’t repeat that — go deeper if needed.
+        - Refer to yourself as “mình” — not “tôi”.
+        - Keep the tone warm, friendly, and caring like a thoughtful assistant — not a formal doctor.
 
-    Your response must be in Vietnamese.
-    """.strip()
+        Your response must be in Vietnamese only.
+        """.strip()
+
+
 
 
     try:
@@ -473,87 +749,17 @@ async def generate_friendly_followup_question(
         default_reply = "Bạn có thể chia sẻ thêm để mình hỗ trợ tốt hơn nhé?"
         return (default_reply, []) if return_with_targets else default_reply
 
-# Dựa vào các symptom_id hiện có truy bảng disease_symptoms → lấy danh sách các disease_id có liên quan truy ngược lại → lấy thêm các symptom khác thuộc cùng bệnh (trừ cái đã có)
-def get_related_symptoms_by_disease(symptom_ids: list[int]) -> list[dict]:
-    if not symptom_ids:
-        return []
 
-    conn = pymysql.connect(**DB_CONFIG)
-    related_symptoms = []
 
-    try:
-        with conn.cursor() as cursor:
-            # B1: Lấy các disease_id liên quan tới các symptom hiện tại
-            format_strings = ','.join(['%s'] * len(symptom_ids))
-            cursor.execute(f"""
-                SELECT DISTINCT disease_id
-                FROM disease_symptoms
-                WHERE symptom_id IN ({format_strings})
-            """, tuple(symptom_ids))
-            disease_ids = [row[0] for row in cursor.fetchall()]
 
-            if not disease_ids:
-                return []
 
-            # B2: Lấy các symptom_id khác cùng thuộc các disease đó
-            format_diseases = ','.join(['%s'] * len(disease_ids))
-            cursor.execute(f"""
-                SELECT DISTINCT s.symptom_id, s.name
-                FROM disease_symptoms ds
-                JOIN symptoms s ON ds.symptom_id = s.symptom_id
-                WHERE ds.disease_id IN ({format_diseases})
-                  AND ds.symptom_id NOT IN ({format_strings})
-            """, tuple(disease_ids + symptom_ids))
 
-            related_symptoms = [{"id": row[0], "name": row[1]} for row in cursor.fetchall()]
 
-    finally:
-        conn.close()
 
-    return related_symptoms
 
-async def decide_health_action(user_message: str, symptom_names: list[str], recent_messages: list[str]) -> dict:
-    prompt = build_diagnosis_controller_prompt(symptom_names, recent_messages)
 
-    try:
-        response = chat_completion([
-            {"role": "user", "content": prompt}
-        ], temperature=0.3, max_tokens=400)
 
-        content = response.choices[0].message.content.strip()
-
-        # Clean nếu GPT bọc trong ```json
-        if content.startswith("```json"):
-            content = content.replace("```json", "").replace("```", "").strip()
-
-        # Xử lý fallback nếu không phải JSON
-        try:
-            parsed = json.loads(content)
-        except json.JSONDecodeError as je:
-            logger.error(f"[❌] JSON decode lỗi: {je} | Nội dung: {content}")
-            return {
-                "trigger_diagnosis": False,
-                "diagnosis_text": None,
-                "message": "Bạn có thể mô tả thêm để mình hiểu rõ hơn nhé?",
-                "end": False
-            }
-
-        return {
-            "trigger_diagnosis": parsed.get("trigger_diagnosis", False),
-            "diagnosis_text": parsed.get("diagnosis_text"),
-            "message": parsed.get("message"),
-            "end": parsed.get("trigger_diagnosis", False)
-        }
-
-    except Exception as e:
-        logger.error(f"[❌] Lỗi hệ thống trong decide_health_action: {e}")
-        return {
-            "trigger_diagnosis": False,
-            "diagnosis_text": None,
-            "message": "Bạn có thể chia sẻ thêm để mình hiểu rõ hơn nhé?",
-            "end": False
-        }
-
+# Kiểm tra xem câu tiếp theo có bổ sung cho triêu chứng ko (BỎ)
 def gpt_looks_like_symptom_followup_uncertain(text: str) -> bool:
     prompt = f""" 
         You are an AI assistant that determines whether the following message from a user in a health-related conversation sounds like a vague or uncertain follow-up to previous symptom discussion.
@@ -579,7 +785,7 @@ def gpt_looks_like_symptom_followup_uncertain(text: str) -> bool:
     answer = response.choices[0].message.content.strip().lower()
     return "yes" in answer
 
-# Kiểm tra xem câu tiếp theo có bổ sung cho triêu chứng ko
+# Kiểm tra xem câu tiếp theo có bổ sung cho triêu chứng ko (BỎ)
 def looks_like_followup_with_gpt(text: str, context: str = "") -> bool:
     prompt = f""" 
         You are an AI assistant that helps identify intent in health care conversations.

@@ -25,6 +25,7 @@ from utils.limit_history import limit_history_by_tokens, refresh_system_context
 from utils.openai_utils import stream_chat
 from utils.sql_executor import run_sql_query
 from utils.health_care import (
+    health_talk,
     gpt_health_talk,
     generate_symptom_note,
     predict_disease_based_on_symptoms,
@@ -51,10 +52,23 @@ async def chat_stream(msg: Message = Body(...)):
     # ✅ Load session data trước
     session_data = await get_session_data(msg.session_id)
 
-    # 🔁 Lấy recent messages đúng thứ tự
+    # Lấy lịch sử tin nhắn gần nhất (user + bot)
     recent_messages = session_data.get("recent_messages", [])
-    recent_messages = (recent_messages + [msg.message])[-5:]
+
+    # ✅ Nếu có message của bot trước đó, lấy ra từ GPT trả về lần trước
+    last_bot_reply = session_data.get("last_bot_message", None)
+    if last_bot_reply:
+        recent_messages.append(f"🤖 {last_bot_reply}")
+
+    # ✅ Thêm tin nhắn mới từ user
+    recent_messages.append(f"👤 {msg.message}")
+
+    # Giữ lại tối đa 6 dòng gần nhất (3 cặp user-bot)
+    recent_messages = recent_messages[-6:]
+
+    # Lưu lại vào session
     session_data["recent_messages"] = recent_messages
+
 
     # 🔁 Phát hiện intent
     last_intent = session_data.get("last_intent", None)
@@ -75,8 +89,6 @@ async def chat_stream(msg: Message = Body(...)):
     # Xác định các bước xử lý
     pipeline = INTENT_PIPELINES.get(intent, [])
     logger.debug(f"[PIPELINE] Pipeline for intent '{intent}': {pipeline}")
-    session_key = msg.user_id or msg.session_id
-    stored_symptoms = await get_symptoms_from_session(session_key)
 
     updated_session_data = None  # Sẽ lưu lại nếu cần
     symptoms = []
@@ -123,7 +135,7 @@ async def chat_stream(msg: Message = Body(...)):
 
             # --- Step 2: GPT điều phối health_talk ---
             elif step == "health_talk":
-                result = await gpt_health_talk(
+                result = await health_talk(
                     user_message=msg.message,
                     stored_symptoms=stored_symptoms,
                     recent_messages=recent_messages,
@@ -136,13 +148,16 @@ async def chat_stream(msg: Message = Body(...)):
                     updated = save_symptoms_to_session(session_key, result["symptoms"])
                     stored_symptoms = updated
 
-                if result.get("trigger_diagnosis"):
-                    yield f"data: {json.dumps({'natural_text': result['message']})}\n\n"
-                elif result.get("followup_question"):
-                    yield f"data: {{\"natural_text\": \"{result['followup_question']}\"}}\n\n"
-                else:
-                    yield f"data: {{\"natural_text\": \"{result['message']}\"}}\n\n"
+                # ✅ Stream message tự nhiên GPT trả về
+                if result.get("message"):
+                    async for line in stream_response_text(result["message"]):
+                        yield line
+                    
+                    # 🧠 Lưu lại tin nhắn cuối cùng của bot vào session để dùng cho recent_messages
+                    session_data["last_bot_message"] = result["message"]
+                    await save_session_data(msg.session_id, session_data)
 
+                # ✅ Nếu GPT đã xác định kết thúc → xóa session
                 if result.get("end"):
                     clear_symptoms_all_keys(user_id=msg.user_id, session_id=msg.session_id)
 
@@ -204,21 +219,31 @@ async def chat_stream(msg: Message = Body(...)):
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
+async def stream_response_text(text: str):
+    for line in text.split("\n"):
+        if line.strip():
+            yield f"data: {json.dumps({'natural_text': line.strip()})}\n\n"
+            await asyncio.sleep(0.01)
+
 
 @router.post("/chat/reset")
 async def reset_session(data: ResetRequest):
     session_id = data.session_id
     user_id = data.user_id
 
+    # 🔁 Reset toàn bộ session RAM (session_store)
     await save_session_data(session_id, {
-        # reset cả triệu chứng và follow-up đã hỏi
         "last_intent": None,
         "recent_messages": [],
         "symptoms": [],
         "followup_asked": []
     })
 
+    # 🧹 Reset luôn bộ nhớ symptom riêng nếu có
     clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
+
+    logger.info(f"✅ Đã reset session cho user_id={user_id}, session_id={session_id}")
+    logger.debug(await get_session_data(session_id))  # Log lại để xác nhận
 
     return {"status": "success", "message": "Đã reset session!"}
 
@@ -226,3 +251,33 @@ async def reset_session(data: ResetRequest):
 
 
 
+
+            # # --- Step 2: GPT điều phối health_talk ---
+            # elif step == "health_talk":
+            #     result = await gpt_health_talk(
+            #         user_message=msg.message,
+            #         stored_symptoms=stored_symptoms,
+            #         recent_messages=recent_messages,
+            #         session_key=msg.user_id or msg.session_id,
+            #         user_id=msg.user_id,
+            #         chat_id=getattr(msg, "chat_id", None)
+            #     )
+
+            #     if result.get("symptoms"):
+            #         updated = save_symptoms_to_session(session_key, result["symptoms"])
+            #         stored_symptoms = updated
+
+            #     # ✅ Stream từng dòng nếu là message dài
+            #     if result.get("trigger_diagnosis") or result.get("light_summary") or result.get("playful_reply"):
+            #         async for line in stream_response_text(result["message"]):
+            #             yield line
+            #     elif result.get("followup_question"):
+            #         yield f"data: {json.dumps({'natural_text': result['followup_question']})}\n\n"
+            #     else:
+            #         yield f"data: {json.dumps({'natural_text': result['message']})}\n\n"
+
+            #     if result.get("end"):
+            #         clear_symptoms_all_keys(user_id=msg.user_id, session_id=msg.session_id)
+
+            #     yield "data: [DONE]\n\n"
+            #     return

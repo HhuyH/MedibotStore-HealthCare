@@ -37,10 +37,18 @@ async def clear_symptoms_in_session(session_id: str):
 FOLLOWUP_KEY = "followup_asked"
 
 async def get_followed_up_symptom_ids(session_id: str) -> list:
+    """
+    Truy xuất danh sách các symptom_id đã được hỏi follow-up trong session hiện tại.
+    Nếu chưa có symptom nào được hỏi, trả về danh sách rỗng.
+    """
     session = await get_session_data(session_id)
     return session.get(FOLLOWUP_KEY, [])
 
 async def mark_followup_asked(session_id: str, symptom_ids: list[int]):
+    """
+    Đánh dấu rằng các symptom_id đã được hỏi follow-up trong session hiện tại.
+    Đảm bảo không bị trùng lặp bằng cách sử dụng set để loại bỏ ID đã có.
+    """
     session = await get_session_data(session_id)
     already = set(session.get(FOLLOWUP_KEY, []))
     already.update(symptom_ids)

@@ -90,7 +90,7 @@ def extract_symptoms(text):
                 break
     return found
 
-def extract_symptoms_gpt(text, session_key=None, debug=False):
+def extract_symptoms_gpt(user_message, recent_messages, session_key=None, debug=False):
     # Chuẩn bị danh sách triệu chứng cho GPT
     symptom_lines = []
     name_to_symptom = {}
@@ -98,22 +98,33 @@ def extract_symptoms_gpt(text, session_key=None, debug=False):
     for s in SYMPTOM_LIST:
         line = f"- {s['name']}: {s['aliases']}"
         symptom_lines.append(line)
-        name_to_symptom[normalize_text(s["name"])] = s  # map name đã chuẩn hóa → symptom obj
+        name_to_symptom[normalize_text(s["name"])] = s
 
     prompt = f"""
-        You are a smart medical assistant.
+        You are a smart and careful medical assistant.
 
-        Below is a list of known health symptoms, each with possible ways users might describe them informally (aliases in Vietnamese):
+        Below is a list of known health symptoms, each with informal ways users might describe them (Vietnamese aliases):
 
         {chr(10).join(symptom_lines)}
 
-        Read the sentence below. Your task is to select all symptom **names** (not aliases) that best match what the user is trying to describe — even if they speak vaguely or casually.
+        Now read the conversation below. Your task:
+
+        - Identify which symptom **names** the user is directly describing or clearly implying.
+        - Be careful: only extract a symptom if it is clearly mentioned or strongly suggested as something the user is **personally experiencing**.
+        - Do NOT infer based on cause/effect (e.g. "tim đập nhanh khi hít thở mạnh" ≠ "khó thở").
+        - If you are unsure (e.g., message is vague), return an empty list [].
+
+        Examples of valid symptom extraction:
+        - "Tôi thấy hơi chóng mặt và đau đầu" → ["Chóng mặt", "Đau đầu"]
+        - "Mình cảm thấy không khỏe mấy" → []
+
+        ---
+
+        Sentence:
+        "{user_message}"
 
         Return a list of names in Vietnamese. Example: ["Mệt mỏi", "Đau đầu"]
-
-        Sentence: "{text}"
-        Answer:
-        """
+    """.strip()
 
     try:
         reply = chat_completion(
@@ -324,22 +335,25 @@ async def generate_related_symptom_question(related_names: list[str]) -> str:
     related_names_str = ', '.join(related_names)
 
     prompt = f"""
-    You're a warm and understanding health assistant. The user has already shared some symptom(s).
+        You're a warm and understanding health assistant. The user has already shared one or more symptom(s).
 
-    Now, based on possibly related symptoms like: {related_names_str}, ask if they’ve experienced any of those too — without making it sound like a checklist.
+        Now, based on possibly related symptoms like: {related_names_str}, ask if they’ve experienced any of those too — without making it sound like a checklist.
 
-    Write your response in Vietnamese.
+        Write your response in Vietnamese.
 
-    Tone guide:
-    - Natural, friendly, and mid-conversation — as if you're continuing a gentle check-in.
-    - No greetings, no thanking the user.
-    - Do not over-explain or sound too casual (no Gen Z slang or emojis).
-    - Avoid technical or overly medical terms.
-    - Keep it as **one smooth message** — not fragmented.
-    - You can group related symptoms in a subtle way (e.g., chest tightness, fast heartbeat, sweating).
-
-    Imagine you're calmly checking in with someone who's already opened up a bit.
+        Tone guide:
+        - The message should sound like a gentle, mid-conversation follow-up.
+        - Do NOT start with “những triệu chứng bạn đã chia sẻ” — instead, adapt naturally:
+        - If there was only one symptom before, refer to it as “triệu chứng đó” or skip it.
+        - If there were multiple, you may say “bên cạnh những gì bạn đã chia sẻ”.
+        - Do NOT say "tôi" — use “mình” when referring to yourself.
+        - No greetings or thank-you phrases.
+        - Avoid overly formal, medical, or robotic language.
+        - No emoji or slang.
+        - Group related symptoms subtly if possible (e.g., mệt mỏi, đau đầu, chóng mặt).
+        - Write as **one fluid, caring message**.
     """
+
 
     response = chat_completion([{"role": "user", "content": prompt}])
     return response.choices[0].message.content.strip()

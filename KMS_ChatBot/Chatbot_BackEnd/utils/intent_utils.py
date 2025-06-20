@@ -17,10 +17,6 @@ from utils.text_utils import normalize_text
 from config.intents import VALID_INTENTS, INTENT_MAPPING
 import json
 
-def is_confirmation(text):
-        norm = normalize_text(text)
-        return norm in {"dung roi", "uh", "um", "dung", "đúng rồi", "vâng", "phải", "ừ"}
-
 def get_combined_schema_for_intent(intent: str) -> str:
     intent = normalize_text(intent)  # chuẩn hóa không dấu, lowercase
     schema_parts = [user_core_schema]  # luôn load phần lõi
@@ -98,11 +94,6 @@ async def detect_intent(user_message: str, session_key: str = None, last_intent:
     """
 
     try:
-        # ✅ Trường hợp xác nhận triệu chứng → giữ intent
-        if is_confirmation(user_message) and last_intent == "symptom_query":
-            print("🔁 User xác nhận triệu chứng → Giữ intent là 'symptom_query'")
-            return "symptom_query"
-
         # 🧠 Gọi GPT để phân loại intent
         response = chat_completion(
             [{"role": "user", "content": prompt}],
@@ -112,35 +103,8 @@ async def detect_intent(user_message: str, session_key: str = None, last_intent:
         raw_intent = response.choices[0].message.content.strip()
         raw_intent = raw_intent.replace("intent:", "").replace("Intent:", "").strip().lower()
 
-        # Nếu GPT trả sai format
-        if "intent chính của câu" in raw_intent:
-            print("⚠️ GPT trả sai format → fallback xử lý theo rule-based")
-            raw_intent = ""
-
         mapped_intent = INTENT_MAPPING.get(raw_intent, raw_intent)
         print(f"🧭 GPT intent: {raw_intent} → Pipeline intent: {mapped_intent}")
-
-        # ✅ Nếu câu là phủ định trong luồng health → vẫn giữ 'symptom_query'
-        lower_msg = user_message.lower().strip()
-        negation_phrases = ["không", "không có", "ko", "ko có", "k có", "không rõ", "không biết", "k rõ", "k biết", "k bít"]
-        if last_intent == "symptom_query" and any(p in lower_msg for p in negation_phrases):
-            print("🔁 Người dùng phủ định trong luồng symptom → giữ intent 'symptom_query'")
-            return "symptom_query"
-
-        # ✅ Nếu GPT trả 'general_chat' nhưng trước là symptom → kiểm tra lại
-        if mapped_intent == "general_chat" and last_intent == "symptom_query":
-            is_followup = await asyncio.to_thread(looks_like_followup_with_gpt, user_message, previous_msg)
-            is_uncertain = await asyncio.to_thread(gpt_looks_like_symptom_followup_uncertain, user_message)
-
-            if is_followup:
-                print("🔁 GPT xác định đây là follow-up triệu chứng → giữ intent 'symptom_query'")
-                return "symptom_query"
-
-            if is_uncertain:
-                print("🤔 GPT xác định đây là câu trả lời mơ hồ tiếp tục chẩn đoán → giữ intent 'symptom_query'")
-                return "symptom_query"
-
-            print("⛔️ GPT cho rằng đây là general_chat, và không phải follow-up → giữ 'general_chat'")
 
         # ✅ Nếu intent hợp lệ → dùng
         if mapped_intent in VALID_INTENTS:
@@ -148,22 +112,22 @@ async def detect_intent(user_message: str, session_key: str = None, last_intent:
             return mapped_intent
 
         # ❓ Nếu không rõ intent → fallback
-        if not raw_intent or mapped_intent not in VALID_INTENTS:
-            if gpt_detect_symptom_intent(user_message):
-                print("🩺 GPT nhận đây là mô tả triệu chứng mới → intent = 'symptom_query'")
-                return "symptom_query"
+        # if not raw_intent or mapped_intent not in VALID_INTENTS:
+        #     if gpt_detect_symptom_intent(user_message):
+        #         print("🩺 GPT nhận đây là mô tả triệu chứng mới → intent = 'symptom_query'")
+        #         return "symptom_query"
 
-            if last_intent == "symptom_query":
-                is_followup = await asyncio.to_thread(looks_like_followup_with_gpt, user_message, previous_msg)
-                is_uncertain = await asyncio.to_thread(gpt_looks_like_symptom_followup_uncertain, user_message)
+        #     if last_intent == "symptom_query":
+        #         is_followup = await asyncio.to_thread(looks_like_followup_with_gpt, user_message, previous_msg)
+        #         is_uncertain = await asyncio.to_thread(gpt_looks_like_symptom_followup_uncertain, user_message)
 
-                if is_followup:
-                    print("🔁 GPT xác định đây là follow-up triệu chứng → giữ intent 'symptom_query'")
-                    return "symptom_query"
+        #         if is_followup:
+        #             print("🔁 GPT xác định đây là follow-up triệu chứng → giữ intent 'symptom_query'")
+        #             return "symptom_query"
 
-                if is_uncertain:
-                    print("🤔 GPT xác định đây là câu trả lời mơ hồ tiếp tục chẩn đoán → giữ intent 'symptom_query'")
-                    return "symptom_query"
+        #         if is_uncertain:
+        #             print("🤔 GPT xác định đây là câu trả lời mơ hồ tiếp tục chẩn đoán → giữ intent 'symptom_query'")
+        #             return "symptom_query"
 
         # 🔁 Nếu không xác định được rõ → giữ intent cũ nếu có
         if mapped_intent not in INTENT_MAPPING.values():

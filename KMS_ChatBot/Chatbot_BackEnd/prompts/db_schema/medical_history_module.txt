@@ -10,6 +10,7 @@
 - name (VARCHAR): tên bệnh.
 - description (TEXT): mô tả về bệnh.
 - treatment_guidelines (TEXT): hướng dẫn điều trị.
+- severity (ENUM: 'nhẹ', 'trung bình', 'nghiêm trọng') DEFAULT 'trung bình': mức độ nghiêm trọng của bệnh.
 - category_id (INT, FK → medical_categories.category_id): liên kết đến chuyên khoa.
 - created_at (TIMESTAMP): thời điểm tạo.
 - updated_at (DATETIME): thời điểm cập nhật.
