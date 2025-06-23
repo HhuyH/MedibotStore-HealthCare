@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 from models import Message,ResetRequest
 from config.intents import INTENT_MAPPING, INTENT_PIPELINES
 from utils.auth_utils import has_permission, normalize_role
-from utils.session_store import get_session_data, save_session_data
+from utils.session_store import get_session_data, save_session_data, save_symptoms_to_session, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys
 from utils.intent_utils import detect_intent, build_system_message, generate_next_health_action
 from utils.symptom_utils import (
     extract_symptoms_gpt,
@@ -20,7 +20,6 @@ from utils.symptom_utils import (
     should_attempt_symptom_extraction,
     gpt_detect_symptom_intent
 )
-from utils.symptom_session import save_symptoms_to_session, get_symptoms_from_session, clear_symptoms_all_keys
 from utils.limit_history import limit_history_by_tokens, refresh_system_context
 from utils.openai_utils import stream_chat
 from utils.sql_executor import run_sql_query
@@ -47,7 +46,7 @@ async def chat_stream(msg: Message = Body(...)):
             yield "data: ⚠️ Bạn không được phép thực hiện chức năng này.\n\n"
             await asyncio.sleep(1)
             yield "data: 😅 Vui lòng liên hệ admin để biết thêm chi tiết.\n\n"
-        return StreamingResponse(denied_stream(), media_type="text/event-stream")
+        return StreamingResponse(denied_stream(), media_type="text/event-stream; charset=utf-8")
 
     # ✅ Load session data trước
     session_data = await get_session_data(msg.session_id)
@@ -80,7 +79,7 @@ async def chat_stream(msg: Message = Body(...)):
     )
 
     session_data["last_intent"] = intent
-    await save_session_data(msg.session_id, session_data)
+    save_session_data(msg.session_id, session_data)
 
     # Xác định mục tiêu người dùng để lấy chức năng phù hợp
     intent = intent.replace("intent:", "").strip()
@@ -135,31 +134,26 @@ async def chat_stream(msg: Message = Body(...)):
 
             # --- Step 2: GPT điều phối health_talk ---
             elif step == "health_talk":
-                result = await health_talk(
+                chunks = []
+
+                async for chunk in health_talk(
                     user_message=msg.message,
                     stored_symptoms=stored_symptoms,
                     recent_messages=recent_messages,
                     session_key=msg.user_id or msg.session_id,
                     user_id=msg.user_id,
                     chat_id=getattr(msg, "chat_id", None)
-                )
+                ):
+                    chunks.append(chunk)
+                    yield f"data: {json.dumps({'natural_text': chunk}, ensure_ascii=False)}\n\n"
 
-                if result.get("symptoms"):
-                    updated = save_symptoms_to_session(session_key, result["symptoms"])
-                    stored_symptoms = updated
+                full_message = "".join(chunks).strip()
 
-                # ✅ Stream message tự nhiên GPT trả về
-                if result.get("message"):
-                    async for line in stream_response_text(result["message"]):
-                        yield line
-                    
-                    # 🧠 Lưu lại tin nhắn cuối cùng của bot vào session để dùng cho recent_messages
-                    session_data["last_bot_message"] = result["message"]
-                    await save_session_data(msg.session_id, session_data)
+                final_message = full_message
 
-                # ✅ Nếu GPT đã xác định kết thúc → xóa session
-                if result.get("end"):
-                    clear_symptoms_all_keys(user_id=msg.user_id, session_id=msg.session_id)
+                # ✅ Lưu message cuối của bot
+                session_data["last_bot_message"] = final_message
+                save_session_data(msg.session_id, session_data)
 
                 yield "data: [DONE]\n\n"
                 return
@@ -184,26 +178,18 @@ async def chat_stream(msg: Message = Body(...)):
                     yield "data: [DONE]\n\n"
                     return
 
-                if natural_text:
-                    yield f"data: {json.dumps({'natural_text': natural_text})}\n\n"
-
                 if sql_query:
                     result = run_sql_query(sql_query)
                     if result.get("status") == "success":
                         rows = result.get("data", [])
                         if rows:
-                            headers = rows[0].keys()
-                            header_row = "| " + " | ".join(headers) + " |"
-                            separator_row = "| " + " | ".join(["---"] * len(headers)) + " |"
-                            data_rows = [
-                                "| " + " | ".join(str(row[h]) for h in headers) + " |"
-                                for row in rows
-                            ]
-                            result_text = "\n📊 Kết quả:\n" + "\n".join([header_row, separator_row] + data_rows) + "\n"
+                            result_text = natural_text
                         else:
-                            result_text = "\n📊 Kết quả: Không có dữ liệu.\n"
+                            result_text = "📋 Không có dữ liệu phù hợp."
 
                         yield f"data: {json.dumps({'natural_text': result_text, 'table': rows})}\n\n"
+                        payload = {'natural_text': result_text, 'table': rows}
+                        logger.debug(f"[DEBUG] Payload gửi về frontend: {json.dumps(payload, ensure_ascii=False, indent=2)}")
                     else:
                         error_msg = result.get("error", "Lỗi không xác định.")
                         yield f"data: {json.dumps({'natural_text': f'⚠️ Lỗi SQL: {error_msg}'})}\n\n"
@@ -212,12 +198,12 @@ async def chat_stream(msg: Message = Body(...)):
 
         # ✅ Lưu session nếu có cập nhật
         if updated_session_data:
-            await save_session_data(msg.session_id, updated_session_data)
+            save_session_data(msg.session_id, updated_session_data)
 
         yield "data: [DONE]\n\n"
     
 
-    return StreamingResponse(event_generator(), media_type="text/event-stream")
+    return StreamingResponse(event_generator(), media_type="text/event-stream; charset=utf-8")
 
 async def stream_response_text(text: str):
     for line in text.split("\n"):
@@ -232,7 +218,7 @@ async def reset_session(data: ResetRequest):
     user_id = data.user_id
 
     # 🔁 Reset toàn bộ session RAM (session_store)
-    await save_session_data(session_id, {
+    save_session_data(session_id, {
         "last_intent": None,
         "recent_messages": [],
         "symptoms": [],
@@ -240,7 +226,8 @@ async def reset_session(data: ResetRequest):
     })
 
     # 🧹 Reset luôn bộ nhớ symptom riêng nếu có
-    clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
+    await clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
+    await clear_followup_asked_all_keys(user_id=user_id, session_id=session_id)
 
     logger.info(f"✅ Đã reset session cho user_id={user_id}, session_id={session_id}")
     logger.debug(await get_session_data(session_id))  # Log lại để xác nhận

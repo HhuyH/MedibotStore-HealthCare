@@ -125,9 +125,14 @@ Then generate a SQL SELECT query for that case.
 
    - 🚫 VERY IMPORTANT: Never include the SQL query in the response shown to the user.
 
-   - ✅ Instead, respond in a structured JSON format with the following fields:
-   - "natural_text": natural-language message in Vietnamese (for the user)
-   - "sql_query": the raw SQL string (for internal use only)
+   ✅ Instead, respond in a structured JSON format with the following fields:
+      "natural_text": a short, natural-language sentence. Do not include any Markdown tables, do not format it as a table, and do not use symbols like |, ---, or excessive line breaks.
+      → Valid example: "natural_text": "📦 Here is the list of currently available products."
+
+      "sql_query": the raw SQL string (for internal use only)
+
+      ⚠️ natural_text must never contain tabular data or Markdown-style tables.
+      ⚠️ Do not embed actual query results or rows in the natural_text field — those will be handled separately by the frontend from the table data.
 
 4. When generating SQL, your **entire output must be a single valid JSON object**, like this:
    ⚠️ VERY IMPORTANT: You must return only one JSON object with the following format:
@@ -409,11 +414,11 @@ def build_KMS_prompt(
         - Combine all follow-up questions into one fluent Vietnamese message.
         - Start the message naturally. You may:
           - Jump straight into the follow-up question, or
-          - Use a light, symptom-specific transition such as:
-                - “À, [triệu chứng]”
-                - “Về [triệu chứng]”
-                - "Um…”
-                - Or a soft emoji like 🫁 (for breathing), 💭 (thinking), 🌀 (dizzy), 😵‍💫 (lightheaded)
+            Use a light, symptom-specific transition chosen naturally from the following options:
+            - “À là bạn cảm thấy [triệu chứng]”
+            - “Về [triệu chứng]”
+            - “Um…”
+            - 🌀 (for dizziness), 💭 (for thinking), 🫁 (for breathing), 😵‍💫 (for lightheadedness)
         - Make sure the symptom name in the transition matches what the user reported (e.g., use “chóng mặt” if they mentioned dizziness).
         - Do not insert the word “ho” unless the user’s symptom is cough.
         - Use varied connectors such as “Bên cạnh đó”, “Một điều nữa”, “Thêm vào đó” — each only once.
@@ -445,6 +450,10 @@ def build_KMS_prompt(
          - If the user already said “mệt từ sáng tới giờ”, do NOT ask “Bạn thường thấy mệt lúc nào?”.  
          → Instead, ask: “Cảm giác đó thường kéo dài bao lâu?” or “Có khi nào bạn cảm thấy đỡ hơn chút không?.
         """
+    else:
+       followup_instruction = """
+       🛑 You MUST NOT select `"action": "followup"` because no follow-up questions are provided.
+       """
 
     return f"""
     You are a smart, friendly, and empathetic virtual health assistant working for KMS Health Care.
@@ -491,6 +500,12 @@ def build_KMS_prompt(
     DEV_NOTE_END >>>
 
    ✨ 0. ask_symptom_intro:
+   
+   🛑 ABSOLUTELY FORBIDDEN:
+   → If `stored_symptoms_name` is not empty, under NO circumstance are you allowed to select `"ask_symptom_intro"`.
+
+   → This action is ONLY for the **very first vague message** in the conversation, when there are NO prior symptoms.
+
 
    Use this only when:
    - The user says something vague like “Mình cảm thấy không ổn”, “Không khỏe lắm”, but does NOT describe any specific symptom
@@ -516,11 +531,6 @@ def build_KMS_prompt(
 
       - This decision must be based on the **most recent user message only** (user_message).
       - Do NOT use past conversation history (recent_messages) to determine whether to trigger `"ask_symptom_intro"`.
-
-   🛑 Do NOT use this action if the user has already shared any symptoms earlier.
-
-      → If `stored_symptoms_name` is not empty, then this is no longer the beginning of the conversation.  
-      → In that case, you must NOT select `"ask_symptom_intro"`, even if the current message is vague.
 
     <<< DEV_NOTE_START
             Ghi chú nội bộ: miểu tả về việc tao câu hỏi về triệu chứng đã được nói đến
@@ -576,6 +586,9 @@ def build_KMS_prompt(
    
    3. 🌿 Light Summary:
 
+      🛑 You must NEVER select `"light_summary"` unless you have attempted a `related symptom` inquiry and received a vague or negative response.
+      → If related symptom question has NOT been attempted, you must try that first.
+
       Use this only when:
       - The user has shared 1–2 symptoms
       - AND their descriptions are clearly **mild** or **transient** (e.g., “mệt chút”, “choáng thoáng qua”, “hơi buồn nôn nhẹ”)
@@ -621,6 +634,12 @@ def build_KMS_prompt(
    DEV_NOTE_END >>>
 
    4. 🧠 Diagnosis
+         🛑 Do NOT select `"diagnosis"` unless:
+         - All follow-up questions have been asked AND
+         - You have ALREADY attempted a **related symptom** inquiry, or no related symptoms are available
+
+         → If related symptom names are available but have NOT been asked yet, you MUST select `"related"` before `"diagnosis"`
+
          Use this if:
          - The user has reported at least 2–3 symptoms with clear details (e.g., duration, intensity, when it started)
          - The symptoms form a meaningful pattern — NOT just vague or generic complaints

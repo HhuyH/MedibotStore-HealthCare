@@ -6,7 +6,7 @@ from datetime import date
 from rapidfuzz import fuzz, process
 import re
 from utils.openai_client import chat_completion
-from utils.symptom_session import get_symptoms_from_session
+from utils.session_store import get_symptoms_from_session
 from config.config import DB_CONFIG
 from utils.text_utils import normalize_text
 

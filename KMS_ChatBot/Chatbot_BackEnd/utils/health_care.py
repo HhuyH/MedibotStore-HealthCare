@@ -3,30 +3,54 @@ import pymysql
 from datetime import date
 import logging
 import re
+import random, asyncio
 logger = logging.getLogger(__name__)
 from config.config import DB_CONFIG
-from utils.openai_client import chat_completion
+from utils.openai_utils import stream_gpt_tokens
+from utils.openai_client import chat_completion, chat_stream, chat_stream_health
 from utils.symptom_utils import get_symptom_list, extract_symptoms_gpt, generate_related_symptom_question, save_symptoms_to_db
-from utils.symptom_session import get_symptoms_from_session, save_symptoms_to_session
-from utils.session_store import get_followed_up_symptom_ids, mark_followup_asked
 from prompts.prompts import build_diagnosis_controller_prompt, build_KMS_prompt
 from utils.text_utils import normalize_text
+from utils.session_store import get_followed_up_symptom_ids, mark_followup_asked, save_symptoms_to_session, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys
 
+def extract_json(content: str) -> str:
+    """
+    Trích JSON từ đoạn text có thể chứa rác GPT.
+    """
+    match = re.search(r"\{[\s\S]*\}", content)
+    return match.group(0).strip() if match else ""
 
 # Hàm mới dùng prompt tổng
-async def health_talk(user_message: str, stored_symptoms: list[dict], recent_messages: list[str], session_key=None, user_id=None, chat_id=None):
-    # Step 1: Trích triệu chứng mới từ user_message
-    new_symptoms, fallback_message = extract_symptoms_gpt(user_message, session_key=session_key, recent_messages = recent_messages)
+async def health_talk(
+    user_message: str,
+    stored_symptoms: list[dict],
+    recent_messages: list[str],
+    session_key=None,
+    user_id=None,
+    chat_id=None
+):
+    # Step 1: Trích triệu chứng mới
+    new_symptoms, fallback_message = extract_symptoms_gpt(
+        user_message,
+        session_key=session_key,
+        recent_messages=recent_messages
+    )
     logger.info("🌿 Triệu chứng trích được: %s", new_symptoms)
+
     if new_symptoms:
-        stored_symptoms += [s for s in new_symptoms if s["name"] not in {sym["name"] for sym in stored_symptoms}]
+        stored_symptoms += [
+            s for s in new_symptoms if s["name"] not in {sym["name"] for sym in stored_symptoms}
+        ]
         save_symptoms_to_session(session_key, stored_symptoms)
 
-    # Step 2: Gọi decide followup / related
-    inputs = await decide_KMS_prompt_inputs(session_key=session_key, user_message=user_message, recent_messages=recent_messages)
-    logger.debug("📝 Recent messages gửi vào prompt:\n%s", recent_messages)
+    # Step 2: Lấy related symptom + câu hỏi followup
+    inputs = await decide_KMS_prompt_inputs(
+        session_key=session_key,
+        user_message=user_message,
+        recent_messages=recent_messages
+    )
 
-    # Step 3: Gọi GPT sinh phản hồi chính
+    # Step 3: Xây prompt tổng hợp
     prompt = build_KMS_prompt(
         SYMPTOM_LIST=get_symptom_list(),
         user_message=user_message,
@@ -35,33 +59,45 @@ async def health_talk(user_message: str, stored_symptoms: list[dict], recent_mes
         related_symptom_names=inputs["related_symptom_names"],
         raw_followup_question=inputs["raw_followup_question"]
     )
-    response = chat_completion([{"role": "user", "content": prompt}], temperature=0.3)
-    content = response.choices[0].message.content.strip()
 
-    if content.startswith("```json"):
-        content = content.replace("```json", "").replace("```", "").strip()
+    # Step 4: Gọi GPT (non-stream)
+    completion = chat_completion(messages=[{"role": "user", "content": prompt}], temperature=0.3)
 
-    parsed = json.loads(content)
-    controller = {
-        "message": parsed.get("message", fallback_message or "Mình chưa rõ lắm bạn đang cảm thấy gì, bạn có thể nói cụ thể hơn không?"),
-        "action": parsed.get("action", "followup"),
-        "end": parsed.get("end", False),
-        "symptoms": stored_symptoms
-    }
+    content = completion.choices[0].message.content.strip()
+    logger.debug("🔎 Raw content từ GPT:\n%s", content)
 
-    related = inputs.get("related_symptom_names")
-    question = inputs.get("raw_followup_question")
+    raw_json = extract_json(content)
 
-    logger.info("📝 Raw follow-up question: %s", "not null" if question is not None else "null")
-    logger.info("📌 Related symptom names: %s", "not null" if related is not None else "null")
+    try:
+        parsed = json.loads(raw_json)
+        logger.debug("🧾 JSON từ GPT:\n%s", json.dumps(parsed, indent=2, ensure_ascii=False))
+    except json.JSONDecodeError as e:
+        logger.warning("⚠️ GPT trả về không phải JSON hợp lệ: %s", str(e))
+        parsed = {}
 
-    logger.info("🧩 Inputs gửi vào GPT:")
-    logger.info("🎯 Action decided by GPT: %s", controller["action"])
-    logger.info("💬 Message: %s", controller["message"])
+    message = parsed.get("message", fallback_message or "Xin lỗi, mình chưa hiểu rõ lắm...")
 
-    return controller   
+    # Step 5: Điều phối logic từ parsed JSON
+    message = parsed.get("message", fallback_message or "Bạn có thể nói rõ hơn về tình trạng của mình không?")
+    action = parsed.get("action", "followup")
+    end = parsed.get("end", False)
 
- 
+    # Log các biến phụ trợ
+    logger.info("🎯 Action: %s", action)
+    logger.info("📌 Related: %s", "not null" if inputs.get("related_symptom_names") else "null")
+    logger.info("📝 Raw follow-up: %s", "not null" if inputs.get("raw_followup_question") else "null")
+
+    # Step 6: Nếu cần, clear session
+    if end:
+        logger.info("🛑 GPT yêu cầu kết thúc session.")
+        await clear_symptoms_all_keys(user_id=user_id, session_id=session_key)
+        await clear_followup_asked_all_keys(user_id=user_id, session_id=session_key)
+
+    # Step 7: Stream message từng đoạn ra ngoài
+    for chunk in stream_gpt_tokens(message):
+        yield chunk 
+        await asyncio.sleep(0.045)
+
 # Trả về các dữ liệu cần thiết để truyền vào build_KMS_prompt:
 # - stored_symptoms
 # - raw_followup_question: danh sách triệu chứng kèm câu hỏi follow-up

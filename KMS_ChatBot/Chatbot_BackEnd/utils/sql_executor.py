@@ -2,6 +2,7 @@
 import pymysql
 from config.config import DB_CONFIG
 from decimal import Decimal
+import re
 
 def run_sql_query(query: str):
     conn = pymysql.connect(**DB_CONFIG)
