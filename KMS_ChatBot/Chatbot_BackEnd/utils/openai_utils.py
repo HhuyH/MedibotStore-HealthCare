@@ -32,40 +32,69 @@ def is_possible_emoji(token_id, enc):
     except Exception:
         return False
 
-def stream_gpt_tokens(text: str, model: str = "gpt-4o", max_default: int = 1):
+
+
+def stream_gpt_tokens(text: str, model: str = "gpt-4o"):
     """
-    Stream text giống GPT, chia token thông minh để tránh lỗi khi gặp emoji.
+    Stream text giống GPT nhưng chống gãy icon, kể cả khi icon ở đầu chuỗi.
+    Giữ lại 2 token trước emoji và 6 token sau emoji rồi mới decode.
     """
     enc = tiktoken.encoding_for_model(model)
     tokens = enc.encode(text)
+
     buffer = []
+    pre_emoji_buffer = []
+    hold_mode = False
+    post_emoji_hold = 0
+
     i = 0
     while i < len(tokens):
         token = tokens[i]
-        buffer.append(token)
-
-        # Nếu token có thể là emoji → gom nhiều hơn
+        token_text = enc.decode([token])
         is_emoji = is_possible_emoji(token, enc)
 
-        # Nếu gom đủ rồi hoặc không phải emoji → thử decode
-        if len(buffer) >= (4 if is_emoji else max_default):
-            try:
-                chunk_text = enc.decode(buffer)
-                yield chunk_text
-                buffer.clear()
-            except Exception:
-                if len(buffer) >= 6:
-                    # fallback nếu quá nhiều token vẫn decode fail
+        if hold_mode:
+            buffer.append(token)
+            post_emoji_hold -= 1
+
+            if post_emoji_hold <= 0:
+                try:
+                    full = enc.decode(pre_emoji_buffer + buffer)
+                    yield full
+                except Exception:
                     yield "[⚠️ lỗi emoji]"
+                buffer.clear()
+                pre_emoji_buffer.clear()
+                hold_mode = False
+        else:
+            if is_emoji:
+                # Kích hoạt giữ token nếu thấy emoji
+                hold_mode = True
+                post_emoji_hold = 6  # giữ thêm 6 token sau emoji
+
+                # Lưu lại 2 token trước emoji (nếu có)
+                pre_emoji_buffer = buffer[-2:] if len(buffer) >= 2 else buffer[:]
+                buffer = buffer[:-2] if len(buffer) >= 2 else []
+
+                buffer.append(token)  # emoji token
+            else:
+                buffer.append(token)
+                if len(buffer) >= 3:
+                    try:
+                        chunk = enc.decode(buffer)
+                        yield chunk
+                    except Exception:
+                        yield "[⚠️ lỗi decode]"
                     buffer.clear()
         i += 1
 
-    # Còn sót lại
-    if buffer:
+    # Flush phần còn lại
+    if buffer or pre_emoji_buffer:
         try:
-            yield enc.decode(buffer)
-        except:
-            yield "[⚠️ lỗi đoạn cuối]"
+            chunk = enc.decode(pre_emoji_buffer + buffer)
+            yield chunk
+        except Exception:
+            yield "[⚠️ lỗi cuối]"
 
 
 

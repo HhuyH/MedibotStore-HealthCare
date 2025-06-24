@@ -107,3 +107,13 @@ def generate_diagnosis_summary(diseases: list[dict]) -> str:
     lines.append("\nNếu bạn cảm thấy triệu chứng trở nặng hoặc kéo dài, bạn nên đến cơ sở y tế để kiểm tra cụ thể.")
     return "\n".join(lines)
 
+# Lấy id bệnh từ tên bệnh được trả về từ GPT tự phỏng đoán
+def get_disease_id_by_name(disease_name: str) -> int | None:
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT id FROM diseases WHERE name = %s", (disease_name,))
+            row = cursor.fetchone()
+            return row[0] if row else None
+    finally:
+        conn.close()

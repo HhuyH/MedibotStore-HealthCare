@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from collections import defaultdict
-
+import hashlib
 logger = logging.getLogger(__name__)
 
 # ---------------------------
@@ -66,16 +66,23 @@ async def get_followed_up_symptom_ids(session_id: str) -> list[int]:
     session = await get_session_data(session_id)
     return session.get(FOLLOWUP_KEY, [])
 
+def hash_question(text: str) -> str:
+    return hashlib.sha256(text.strip().encode()).hexdigest()
+
+async def get_followed_up_question_hashes(session_id: str) -> list[str]:
+    session = await get_session_data(session_id)
+    return session.get(FOLLOWUP_KEY, [])
+
 async def mark_followup_asked(session_id: str, symptom_ids: list[int]):
     """
-    Đánh dấu rằng các symptom_id đã được hỏi follow-up.
-    Đảm bảo không bị trùng lặp.
+    Ghi lại symptom_id đã được hỏi follow-up để tránh lặp lại.
     """
     session = await get_session_data(session_id)
     already = set(session.get(FOLLOWUP_KEY, []))
     already.update(symptom_ids)
     session[FOLLOWUP_KEY] = list(already)
     save_session_data(session_id, session)
+
 
 async def clear_followup_asked_all_keys(user_id: str = None, session_id: str = None):
     """

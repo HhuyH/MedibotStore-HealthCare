@@ -65,6 +65,8 @@ INSERT INTO medical_categories (name, description) VALUES
 
 
 -------------------------------------------------------diseases--------------------------------------------------------------------------------------------------------------
+INSERT INTO diseases (disease_id, name, description)
+VALUES (-1, 'Chưa rõ', 'Dự đoán từ GPT nhưng chưa có trong cơ sở dữ liệu');
 
 INSERT INTO diseases (name, description, treatment_guidelines, category_id, severity) VALUES
 ('Tăng huyết áp', 'Huyết áp cao mãn tính', 'Theo dõi huyết áp thường xuyên, dùng thuốc hạ áp', 1, 'trung bình'), --1

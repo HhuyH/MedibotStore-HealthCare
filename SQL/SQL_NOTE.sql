@@ -341,6 +341,7 @@ CREATE TABLE prediction_diseases (
     id INT AUTO_INCREMENT PRIMARY KEY,
     prediction_id INT NOT NULL,                         -- Khóa ngoại đến health_predictions
     disease_id INT NOT NULL,                            -- Khóa ngoại đến diseases
+    disease_name_raw VARCHAR(255) DEFAULT NULL          -- Chứa tên bệnh được phỏng đoán từ GPT nếu như trong danh sách bệnh không có
     confidence FLOAT CHECK (confidence BETWEEN 0 AND 1),-- Độ tin cậy (0–1) 0 nghĩa là rất không chắc chắn.
                                                         -- 1 nghĩa là rất chắc chắn. --Tôi nghĩ bệnh này là A (90%), bệnh B (70%), còn lại là C (30%)
                                                         -- sẽ không có bất ký lệnh nào chac chan se la bệnh đó 
@@ -349,6 +350,14 @@ CREATE TABLE prediction_diseases (
     FOREIGN KEY (disease_id) REFERENCES diseases(disease_id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- có thêm 1 biến mới disease_name_raw biến này sẽ chứa tên bệnh từ gpt nếu như danh sách bệnh hiện tại chưa có
+-- mapping lại những tên đã lưu tạm mà nay đã có ID
+UPDATE prediction_diseases pd
+JOIN diseases d ON pd.disease_name_raw = d.name
+SET pd.disease_id = d.id
+WHERE pd.disease_id IS NULL;
+
 
 -- Bảng lưu câu hỏi và câu trả lời để huấn luyện hoặc phục vụ chatbot
 CREATE TABLE chatbot_knowledge_base (
@@ -555,6 +564,51 @@ CREATE TABLE package_features (
 );
 
 ----------------------------------------------------------------6. Blog-------------------------------------------------------------------------------
+
+-- Tạo bảng categories (danh mục bài viết)
+CREATE TABLE IF NOT EXISTS blog_categories (
+    category_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tạo bảng authors (tác giả)
+CREATE TABLE IF NOT EXISTS blog_authors (
+    author_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    name VARCHAR(100) NOT NULL,
+    avatar VARCHAR(255),
+    bio TEXT,
+    title VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
+);
+
+-- Tạo bảng posts (bài viết)
+CREATE TABLE IF NOT EXISTS blog_posts (
+    post_id INT PRIMARY KEY AUTO_INCREMENT,
+    author_id INT,
+    category_id INT,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    content TEXT NOT NULL,
+    excerpt TEXT,
+    featured_image VARCHAR(255),
+    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
+    is_featured BOOLEAN DEFAULT FALSE,
+    view_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    published_at TIMESTAMP NULL,
+    FOREIGN KEY (author_id) REFERENCES blog_authors(author_id) ON DELETE SET NULL,
+    FOREIGN KEY (category_id) REFERENCES blog_categories(category_id) ON DELETE SET NULL
+);
+
+
 
 -- Tạo bảng categories (danh mục bài viết)
 CREATE TABLE IF NOT EXISTS blog_categories (

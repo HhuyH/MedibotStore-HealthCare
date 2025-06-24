@@ -50,24 +50,28 @@ async def chat_stream(msg: Message = Body(...)):
 
     # ✅ Load session data trước
     session_data = await get_session_data(msg.session_id)
+    
+    recent_messages = list(session_data.get("recent_messages") or [])
 
-    # Lấy lịch sử tin nhắn gần nhất (user + bot)
-    recent_messages = session_data.get("recent_messages", [])
-
-    # ✅ Nếu có message của bot trước đó, lấy ra từ GPT trả về lần trước
+    # Gộp bot reply gần nhất nếu có
     last_bot_reply = session_data.get("last_bot_message", None)
     if last_bot_reply:
         recent_messages.append(f"🤖 {last_bot_reply}")
 
-    # ✅ Thêm tin nhắn mới từ user
+    # Thêm tin nhắn mới từ user
     recent_messages.append(f"👤 {msg.message}")
 
     # Giữ lại tối đa 6 dòng gần nhất (3 cặp user-bot)
     recent_messages = recent_messages[-6:]
 
-    # Lưu lại vào session
-    session_data["recent_messages"] = recent_messages
+    # Tạo 2 danh sách riêng biệt
+    recent_user_messages = [m.replace("👤 ", "") for m in recent_messages if m.startswith("👤")]
+    recent_assistant_messages = [m.replace("🤖 ", "") for m in recent_messages if m.startswith("🤖")][-3:]
 
+    # Lưu vào session
+    session_data["recent_messages"] = recent_messages                   # Full hội thoại gần đây
+    session_data["recent_user_messages"] = recent_user_messages         # Chỉ tin nhắn user
+    session_data["recent_assistant_messages"] = recent_assistant_messages  # Chỉ tin nhắn bot
 
     # 🔁 Phát hiện intent
     last_intent = session_data.get("last_intent", None)
@@ -140,6 +144,8 @@ async def chat_stream(msg: Message = Body(...)):
                     user_message=msg.message,
                     stored_symptoms=stored_symptoms,
                     recent_messages=recent_messages,
+                    recent_user_messages=recent_user_messages,
+                    recent_assistant_messages=recent_assistant_messages,
                     session_key=msg.user_id or msg.session_id,
                     user_id=msg.user_id,
                     chat_id=getattr(msg, "chat_id", None)
