@@ -1,0 +1,18 @@
+[2025-06-16 15:07:44] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-16 15:07:44] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 50
+[2025-06-16 15:07:44] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 2, Cart Count: 1
+[2025-06-16 15:24:35] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-16 15:24:35] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 50
+[2025-06-16 15:24:35] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 1, Cart Count: 1
+[2025-06-16 15:51:59] [CART] [User: 7] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 9 | Quantity: 1
+[2025-06-16 15:51:59] [CART] [User: 7] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 9 | Quantity: 1 | Details: Name: Băng gạc y tế, Price: 35000, Stock: 200
+[2025-06-16 15:51:59] [CART] [User: 7] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 9 | Quantity: 1 | Details: Cart ID: 3, Cart Count: 1
+[2025-06-16 15:52:00] [CART] [User: 7] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 8 | Quantity: 1
+[2025-06-16 15:52:00] [CART] [User: 7] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 8 | Quantity: 1 | Details: Name: Dung dịch sát khuẩn, Price: 45000, Stock: 100
+[2025-06-16 15:52:00] [CART] [User: 7] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 8 | Quantity: 1 | Details: Cart ID: 3, Cart Count: 2
+[2025-06-16 15:52:01] [CART] [User: 7] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 7 | Quantity: 1
+[2025-06-16 15:52:01] [CART] [User: 7] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 7 | Quantity: 1 | Details: Name: Nhiệt kế điện tử, Price: 120000, Stock: 60
+[2025-06-16 15:52:01] [CART] [User: 7] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 7 | Quantity: 1 | Details: Cart ID: 3, Cart Count: 3
+[2025-06-16 15:52:03] [CART] [User: 7] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 6 | Quantity: 1
+[2025-06-16 15:52:03] [CART] [User: 7] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 6 | Quantity: 1 | Details: Name: Máy đo huyết áp Omron, Price: 1250000, Stock: 30
+[2025-06-16 15:52:03] [CART] [User: 7] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 6 | Quantity: 1 | Details: Cart ID: 3, Cart Count: 4

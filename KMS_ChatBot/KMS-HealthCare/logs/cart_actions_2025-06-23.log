@@ -1,0 +1,66 @@
+[2025-06-23 19:02:38] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-23 19:02:38] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 44
+[2025-06-23 19:02:38] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 1, Cart Count: 1
+[2025-06-23 19:02:48] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-06-23 19:02:48] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Paracetamol 500mg, Price: 25000, Stock: 199
+[2025-06-23 19:02:48] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 1, Cart Count: 1
+[2025-06-23 19:09:05] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-23 19:09:05] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 44
+[2025-06-23 19:09:05] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 10, Cart Count: 1
+[2025-06-23 19:12:15] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-06-23 19:12:15] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Paracetamol 500mg, Price: 25000, Stock: 199
+[2025-06-23 19:12:15] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-06-23 19:13:32] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-23 19:13:32] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 43
+[2025-06-23 19:13:32] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 12, Cart Count: 1
+[2025-06-23 19:17:08] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-23 19:17:08] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 42
+[2025-06-23 19:17:08] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 13, Cart Count: 1
+[2025-06-23 19:19:24] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-23 19:19:24] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 41
+[2025-06-23 19:19:24] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 14, Cart Count: 1
+[2025-06-23 19:20:23] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-23 19:20:23] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 40
+[2025-06-23 19:20:23] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 15, Cart Count: 1
+[2025-06-23 19:35:40] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 9 | Quantity: 1
+[2025-06-23 19:35:40] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 9 | Quantity: 1 | Details: Name: Băng gạc y tế, Price: 35000, Stock: 200
+[2025-06-23 19:35:40] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 9 | Quantity: 1 | Details: Cart ID: 16, Cart Count: 1
+[2025-06-23 19:38:09] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-06-23 19:38:09] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 40
+[2025-06-23 19:38:09] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 1
+[2025-06-23 19:38:15] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-06-23 19:38:15] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Paracetamol 500mg, Price: 25000, Stock: 197
+[2025-06-23 19:38:15] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 2
+[2025-06-23 19:38:17] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 7 | Quantity: 1
+[2025-06-23 19:38:17] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 7 | Quantity: 1 | Details: Name: Nhiệt kế điện tử, Price: 120000, Stock: 60
+[2025-06-23 19:38:17] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 7 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 3
+[2025-06-23 19:38:20] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 9 | Quantity: 1
+[2025-06-23 19:38:20] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 9 | Quantity: 1 | Details: Name: Băng gạc y tế, Price: 35000, Stock: 199
+[2025-06-23 19:38:20] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 9 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 4
+[2025-06-23 19:39:21] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 7 | Quantity: 1
+[2025-06-23 19:39:21] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 7 | Quantity: 1 | Details: Name: Nhiệt kế điện tử, Price: 120000, Stock: 60
+[2025-06-23 19:39:21] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 7 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 5
+[2025-06-23 19:41:01] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 7 | Quantity: 1
+[2025-06-23 19:41:01] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 7 | Quantity: 1 | Details: Name: Nhiệt kế điện tử, Price: 120000, Stock: 60
+[2025-06-23 19:41:01] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 7 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 6
+[2025-06-23 19:41:01] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 7 | Quantity: 1
+[2025-06-23 19:41:01] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 7 | Quantity: 1 | Details: Name: Nhiệt kế điện tử, Price: 120000, Stock: 60
+[2025-06-23 19:41:01] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 7 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 7
+[2025-06-23 19:41:08] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 7 | Quantity: 1
+[2025-06-23 19:41:08] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 7 | Quantity: 1 | Details: Name: Nhiệt kế điện tử, Price: 120000, Stock: 60
+[2025-06-23 19:41:08] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 7 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 8
+[2025-06-23 19:42:57] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 7 | Quantity: 1
+[2025-06-23 19:42:57] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 7 | Quantity: 1 | Details: Name: Nhiệt kế điện tử, Price: 120000, Stock: 60
+[2025-06-23 19:42:57] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 7 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 9
+[2025-06-23 19:44:23] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-06-23 19:44:23] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Paracetamol 500mg, Price: 25000, Stock: 197
+[2025-06-23 19:44:23] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 10
+[2025-06-23 19:44:32] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 7 | Quantity: 1
+[2025-06-23 19:44:32] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 7 | Quantity: 1 | Details: Name: Nhiệt kế điện tử, Price: 120000, Stock: 60
+[2025-06-23 19:44:32] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 7 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 11
+[2025-06-23 19:45:11] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-06-23 19:45:11] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Paracetamol 500mg, Price: 25000, Stock: 197
+[2025-06-23 19:45:11] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 12
+[2025-06-23 19:45:18] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-06-23 19:45:18] [CART] [User: 4] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Paracetamol 500mg, Price: 25000, Stock: 197
+[2025-06-23 19:45:18] [CART] [User: 4] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 17, Cart Count: 13

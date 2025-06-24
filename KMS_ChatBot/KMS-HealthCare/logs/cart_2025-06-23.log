@@ -1,0 +1,61 @@
+[2025-06-23 19:02:31] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:02:31] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 33, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:02:33] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 0 cart items for user 4
+[2025-06-23 19:02:39] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:02:39] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 50, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:02:43] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 0 cart items for user 4
+[2025-06-23 19:02:49] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:02:49] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 51, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-06-23 19:03:24] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:03:24] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 51, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-06-23 19:09:00] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-06-23 19:09:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-06-23 19:09:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 52, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:12:16] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-06-23 19:12:16] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 53, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-06-23 19:13:27] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-06-23 19:13:27] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-06-23 19:13:33] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-06-23 19:13:33] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 54, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:17:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-06-23 19:17:09] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-06-23 19:17:09] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 55, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:18:42] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-06-23 19:19:25] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-06-23 19:19:25] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 56, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:20:18] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-06-23 19:20:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-06-23 19:20:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 57, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:26:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-06-23 19:26:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 57, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:31:50] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-06-23 19:31:50] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 57, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:33:44] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:33:44] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 51, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-06-23 19:36:11] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:36:11] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 58, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-06-23 19:36:50] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:36:50] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 58, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-06-23 19:36:58] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:36:58] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 58, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-06-23 19:44:19] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 4 cart items for user 4
+[2025-06-23 19:44:19] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-06-23 19:44:19] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 61, ProductID: 7, Name: 'Nhiệt kế điện tử', Price: 120000, UnitPrice: 108000, Qty: 6
+[2025-06-23 19:44:19] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 60, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-06-23 19:44:19] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 3 - ItemID: 59, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:45:26] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 4 cart items for user 4
+[2025-06-23 19:45:26] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-06-23 19:45:26] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 61, ProductID: 7, Name: 'Nhiệt kế điện tử', Price: 120000, UnitPrice: 108000, Qty: 7
+[2025-06-23 19:45:26] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 60, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 4
+[2025-06-23 19:45:26] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 3 - ItemID: 59, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:45:28] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 3 cart items for user 4
+[2025-06-23 19:45:28] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 61, ProductID: 7, Name: 'Nhiệt kế điện tử', Price: 120000, UnitPrice: 108000, Qty: 7
+[2025-06-23 19:45:28] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 60, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 4
+[2025-06-23 19:45:28] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 59, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:45:30] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 2 cart items for user 4
+[2025-06-23 19:45:30] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 60, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 4
+[2025-06-23 19:45:30] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 59, ProductID: 2, Name: 'Omega 3 Fish Oil', Price: 580000, UnitPrice: 522000, Qty: 1
+[2025-06-23 19:45:31] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:45:31] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 60, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 4
+[2025-06-23 19:45:50] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Found 1 cart items for user 4
+[2025-06-23 19:45:50] [INFO] [User: 4] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 60, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 4
