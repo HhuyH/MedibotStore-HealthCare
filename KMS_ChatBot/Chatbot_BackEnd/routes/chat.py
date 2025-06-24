@@ -124,6 +124,7 @@ async def chat_stream(msg: Message = Body(...)):
                     content = getattr(delta, "content", None)
 
                     if content:
+                        logger.info(f"[STREAM] 🌊 Đang stream ra: {repr(content)}")  # 👈 Thêm dòng này để log từng mẩu
                         buffer += content
 
                         if intent not in ["sql_query", "product_query"]:
@@ -211,12 +212,6 @@ async def chat_stream(msg: Message = Body(...)):
 
     return StreamingResponse(event_generator(), media_type="text/event-stream; charset=utf-8")
 
-async def stream_response_text(text: str):
-    for line in text.split("\n"):
-        if line.strip():
-            yield f"data: {json.dumps({'natural_text': line.strip()})}\n\n"
-            await asyncio.sleep(0.01)
-
 
 @router.post("/chat/reset")
 async def reset_session(data: ResetRequest):
@@ -244,7 +239,7 @@ async def reset_session(data: ResetRequest):
 
 
 
-
+async def not_use():
             # # --- Step 2: GPT điều phối health_talk ---
             # elif step == "health_talk":
             #     result = await gpt_health_talk(
@@ -274,3 +269,10 @@ async def reset_session(data: ResetRequest):
 
             #     yield "data: [DONE]\n\n"
             #     return
+
+            # async def stream_response_text(text: str):
+            #     for line in text.split("\n"):
+            #         if line.strip():
+            #             yield f"data: {json.dumps({'natural_text': line.strip()})}\n\n"
+            #             await asyncio.sleep(0.01)
+    return

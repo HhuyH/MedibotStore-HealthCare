@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 17, 2025 at 05:28 PM
+-- Generation Time: Jun 24, 2025 at 07:49 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -166,6 +166,61 @@ INSERT INTO `appointments` (`appointment_id`, `user_id`, `guest_id`, `doctor_id`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `blog_authors`
+--
+
+CREATE TABLE `blog_authors` (
+  `author_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `name` varchar(100) NOT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `bio` text DEFAULT NULL,
+  `title` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `blog_categories`
+--
+
+CREATE TABLE `blog_categories` (
+  `category_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `blog_posts`
+--
+
+CREATE TABLE `blog_posts` (
+  `post_id` int(11) NOT NULL,
+  `author_id` int(11) DEFAULT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `excerpt` text DEFAULT NULL,
+  `featured_image` varchar(255) DEFAULT NULL,
+  `status` enum('draft','published','archived') DEFAULT 'draft',
+  `is_featured` tinyint(1) DEFAULT 0,
+  `view_count` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `published_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `chatbot_knowledge_base`
 --
 
@@ -254,6 +309,7 @@ CREATE TABLE `diseases` (
   `name` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
   `treatment_guidelines` text DEFAULT NULL,
+  `severity` enum('nhẹ','trung bình','nghiêm trọng') DEFAULT 'trung bình',
   `category_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -263,18 +319,34 @@ CREATE TABLE `diseases` (
 -- Dumping data for table `diseases`
 --
 
-INSERT INTO `diseases` (`disease_id`, `name`, `description`, `treatment_guidelines`, `category_id`, `created_at`, `updated_at`) VALUES
-(1, 'Tăng huyết áp', 'Huyết áp cao mãn tính', 'Theo dõi huyết áp thường xuyên, dùng thuốc hạ áp', 1, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(2, 'Đột quỵ', 'Rối loạn tuần hoàn não nghiêm trọng', 'Can thiệp y tế khẩn cấp, phục hồi chức năng', 1, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(3, 'Hen suyễn', 'Bệnh mãn tính ảnh hưởng đến đường thở', 'Sử dụng thuốc giãn phế quản và kiểm soát dị ứng', 2, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(4, 'Viêm phổi', 'Nhiễm trùng phổi do vi khuẩn hoặc virus', 'Kháng sinh, nghỉ ngơi và điều trị hỗ trợ', 2, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(5, 'Viêm dạ dày', 'Viêm lớp niêm mạc dạ dày', 'Tránh thức ăn cay, dùng thuốc kháng acid', 3, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(6, 'Xơ gan', 'Tổn thương gan mạn tính', 'Kiểm soát nguyên nhân, chế độ ăn và theo dõi y tế', 3, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(7, 'Động kinh', 'Rối loạn thần kinh gây co giật lặp lại', 'Dùng thuốc chống động kinh, theo dõi điện não đồ', 4, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(8, 'Trầm cảm', 'Rối loạn tâm trạng kéo dài', 'Liệu pháp tâm lý và thuốc chống trầm cảm', 4, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(9, 'Viêm da cơ địa', 'Bệnh da mãn tính gây ngứa và phát ban', 'Dưỡng ẩm, thuốc bôi chống viêm', 5, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(10, 'Nấm da', 'Nhiễm trùng da do nấm', 'Thuốc kháng nấm dạng bôi hoặc uống', 5, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
-(11, 'Viêm đa cơ', 'Bệnh tự miễn ảnh hưởng đến cơ', 'Dùng thuốc ức chế miễn dịch, vật lý trị liệu', 4, '2025-06-12 13:32:50', '2025-06-12 20:32:50');
+INSERT INTO `diseases` (`disease_id`, `name`, `description`, `treatment_guidelines`, `severity`, `category_id`, `created_at`, `updated_at`) VALUES
+(-1, 'Chưa rõ', 'Dự đoán từ GPT nhưng chưa có trong cơ sở dữ liệu', NULL, 'trung bình', NULL, '2025-06-24 10:52:01', '2025-06-24 17:52:01'),
+(1, 'Tăng huyết áp', 'Huyết áp cao mãn tính', 'Theo dõi huyết áp thường xuyên, dùng thuốc hạ áp', 'trung bình', 1, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
+(2, 'Đột quỵ', 'Rối loạn tuần hoàn não nghiêm trọng', 'Can thiệp y tế khẩn cấp, phục hồi chức năng', 'nghiêm trọng', 1, '2025-06-10 07:34:39', '2025-06-18 20:53:17'),
+(3, 'Hen suyễn', 'Bệnh mãn tính ảnh hưởng đến đường thở', 'Sử dụng thuốc giãn phế quản và kiểm soát dị ứng', 'trung bình', 2, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
+(4, 'Viêm phổi', 'Nhiễm trùng phổi do vi khuẩn hoặc virus', 'Kháng sinh, nghỉ ngơi và điều trị hỗ trợ', 'nghiêm trọng', 2, '2025-06-10 07:34:39', '2025-06-18 20:53:17'),
+(5, 'Viêm dạ dày', 'Viêm lớp niêm mạc dạ dày', 'Tránh thức ăn cay, dùng thuốc kháng acid', 'nhẹ', 3, '2025-06-10 07:34:39', '2025-06-18 20:53:17'),
+(6, 'Xơ gan', 'Tổn thương gan mạn tính', 'Kiểm soát nguyên nhân, chế độ ăn và theo dõi y tế', 'nghiêm trọng', 3, '2025-06-10 07:34:39', '2025-06-18 20:53:17'),
+(7, 'Động kinh', 'Rối loạn thần kinh gây co giật lặp lại', 'Dùng thuốc chống động kinh, theo dõi điện não đồ', 'nghiêm trọng', 4, '2025-06-10 07:34:39', '2025-06-18 20:53:17'),
+(8, 'Trầm cảm', 'Rối loạn tâm trạng kéo dài', 'Liệu pháp tâm lý và thuốc chống trầm cảm', 'trung bình', 4, '2025-06-10 07:34:39', '2025-06-10 14:34:39'),
+(9, 'Viêm da cơ địa', 'Bệnh da mãn tính gây ngứa và phát ban', 'Dưỡng ẩm, thuốc bôi chống viêm', 'nhẹ', 5, '2025-06-10 07:34:39', '2025-06-18 20:53:17'),
+(10, 'Nấm da', 'Nhiễm trùng da do nấm', 'Thuốc kháng nấm dạng bôi hoặc uống', 'nhẹ', 5, '2025-06-10 07:34:39', '2025-06-18 20:53:17'),
+(11, 'Viêm đa cơ', 'Bệnh tự miễn ảnh hưởng đến cơ', 'Dùng thuốc ức chế miễn dịch, vật lý trị liệu', 'trung bình', 4, '2025-06-12 13:32:50', '2025-06-12 20:32:50'),
+(12, 'Tiểu đường tuýp 2', 'Tình trạng rối loạn chuyển hóa đường máu mạn tính', 'Kiểm soát chế độ ăn, tập luyện, dùng thuốc hạ đường huyết', 'trung bình', 1, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(13, 'Suy tim', 'Tình trạng tim không bơm đủ máu cho cơ thể', 'Dùng thuốc lợi tiểu, ức chế men chuyển, theo dõi sát', 'nghiêm trọng', 1, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(14, 'Viêm phế quản', 'Tình trạng viêm đường thở lớn (phế quản)', 'Nghỉ ngơi, dùng thuốc giảm viêm và long đờm', 'trung bình', 2, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(15, 'Viêm họng cấp', 'Viêm niêm mạc họng do virus hoặc vi khuẩn', 'Súc miệng nước muối, thuốc giảm đau, kháng sinh nếu cần', 'nhẹ', 2, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(16, 'Loét dạ dày tá tràng', 'Tổn thương niêm mạc dạ dày hoặc tá tràng', 'Thuốc ức chế acid, tránh rượu bia, stress', 'trung bình', 3, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(17, 'Viêm gan B mạn tính', 'Nhiễm HBV kéo dài, gây tổn thương gan', 'Theo dõi chức năng gan, dùng thuốc kháng virus nếu cần', 'trung bình', 3, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(18, 'Thiếu máu', 'Giảm số lượng hồng cầu hoặc hemoglobin', 'Bổ sung sắt, acid folic hoặc điều trị nguyên nhân nền', 'nhẹ', 1, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(19, 'Gút', 'Tình trạng viêm khớp do tinh thể urat', 'Dùng colchicine, allopurinol, hạn chế đạm', 'trung bình', 4, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(20, 'Viêm khớp dạng thấp', 'Bệnh tự miễn gây viêm nhiều khớp', 'Dùng DMARDs, thuốc chống viêm và vật lý trị liệu', 'nghiêm trọng', 4, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(21, 'Trào ngược dạ dày thực quản', 'Dịch dạ dày trào lên thực quản gây kích ứng', 'Nâng đầu giường, hạn chế ăn đêm, dùng thuốc PPI', 'nhẹ', 3, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(22, 'Rối loạn lo âu', 'Tình trạng tâm lý gây lo lắng kéo dài', 'Liệu pháp hành vi nhận thức, thuốc chống lo âu', 'trung bình', 4, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(23, 'Cảm cúm', 'Nhiễm virus cúm gây mệt, sốt, đau họng', 'Nghỉ ngơi, hạ sốt, uống nhiều nước', 'nhẹ', 2, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(24, 'Đau thần kinh tọa', 'Đau do chèn ép dây thần kinh hông lớn', 'Dùng thuốc giảm đau, vật lý trị liệu, nghỉ ngơi', 'trung bình', 4, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(25, 'Viêm kết mạc', 'Viêm màng mắt ngoài do vi khuẩn, virus hoặc dị ứng', 'Thuốc nhỏ mắt kháng sinh hoặc chống dị ứng', 'nhẹ', 5, '2025-06-18 14:01:47', '2025-06-18 21:01:47'),
+(26, 'Chàm (eczema)', 'Bệnh da mãn tính gây ngứa, khô và viêm', 'Dưỡng ẩm, thuốc bôi corticoid, tránh dị nguyên', 'nhẹ', 5, '2025-06-18 14:01:47', '2025-06-18 21:01:47');
 
 -- --------------------------------------------------------
 
@@ -332,7 +404,53 @@ INSERT INTO `disease_symptoms` (`disease_id`, `symptom_id`) VALUES
 (9, 9),
 (10, 8),
 (10, 9),
-(11, 29);
+(11, 29),
+(12, 6),
+(12, 10),
+(12, 35),
+(13, 2),
+(13, 5),
+(13, 6),
+(13, 24),
+(14, 4),
+(14, 11),
+(14, 14),
+(15, 12),
+(15, 13),
+(15, 14),
+(16, 3),
+(16, 16),
+(16, 27),
+(16, 32),
+(17, 6),
+(17, 10),
+(17, 16),
+(17, 33),
+(18, 6),
+(18, 25),
+(18, 26),
+(19, 16),
+(19, 36),
+(20, 16),
+(20, 29),
+(20, 37),
+(21, 3),
+(21, 16),
+(21, 32),
+(22, 6),
+(22, 22),
+(22, 34),
+(23, 4),
+(23, 11),
+(23, 12),
+(23, 13),
+(24, 16),
+(24, 25),
+(24, 40),
+(25, 13),
+(25, 38),
+(26, 8),
+(26, 9);
 
 -- --------------------------------------------------------
 
@@ -450,7 +568,24 @@ INSERT INTO `health_predictions` (`prediction_id`, `user_id`, `record_id`, `chat
 (16, 4, 16, NULL, '2025-06-17 10:51:30', 1, '{\"symptoms\": [\"Ho\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
 (17, 4, 17, NULL, '2025-06-17 10:54:56', 1, '{\"symptoms\": [\"Ho\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
 (18, 4, 18, NULL, '2025-06-17 10:58:08', 1, '{\"symptoms\": [\"Ho\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
-(19, 4, 19, NULL, '2025-06-17 11:05:37', 1, '{\"symptoms\": [\"Ho\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}');
+(19, 4, 19, NULL, '2025-06-17 11:05:37', 1, '{\"symptoms\": [\"Ho\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(20, 4, 20, NULL, '2025-06-18 07:54:11', 1, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(21, 4, 21, NULL, '2025-06-18 07:55:57', 1, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(22, 4, 22, NULL, '2025-06-18 08:11:41', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(23, 4, 23, NULL, '2025-06-18 08:17:35', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(24, 4, 24, NULL, '2025-06-18 08:21:07', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(25, 4, 25, NULL, '2025-06-18 08:25:56', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(26, 4, 26, NULL, '2025-06-18 08:32:07', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(27, 4, 27, NULL, '2025-06-18 08:36:56', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(28, 4, 28, NULL, '2025-06-18 08:41:53', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(29, 4, 29, NULL, '2025-06-18 08:46:16', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(30, 4, 30, NULL, '2025-06-18 08:47:43', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"Tim \\u0111\\u1eadp nhanh\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(31, 4, 31, NULL, '2025-06-18 08:57:45', 0.19, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(32, 4, 32, NULL, '2025-06-18 08:59:40', 0.38, '{\"symptoms\": [\"Hoa m\\u1eaft ch\\u00f3ng m\\u1eb7t\", \"M\\u1ec7t m\\u1ecfi\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(33, 4, 33, NULL, '2025-06-18 13:35:47', 0.19, '{\"symptoms\": [\"Ch\\u00f3ng m\\u1eb7t\", \"Ch\\u00f3ng m\\u1eb7t\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(34, 4, 34, NULL, '2025-06-18 16:42:23', 0.3, '{\"symptoms\": [\"Ch\\u00f3ng m\\u1eb7t\", \"\\u0110au \\u0111\\u1ea7u\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(35, 4, 35, NULL, '2025-06-19 08:37:33', 0.3, '{\"symptoms\": [\"Ch\\u00f3ng m\\u1eb7t\", \"\\u0110au \\u0111\\u1ea7u\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}'),
+(36, 4, 36, NULL, '2025-06-19 08:39:46', 0.38, '{\"symptoms\": [\"Ho\", \"Ch\\u1ea3y n\\u01b0\\u1edbc m\\u0169i\"], \"summary\": \"AI predicted diseases based on reported symptoms\"}');
 
 -- --------------------------------------------------------
 
@@ -493,7 +628,24 @@ INSERT INTO `health_records` (`record_id`, `user_id`, `record_date`, `weight`, `
 (16, 4, '2025-06-17', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Ho', '2025-06-17 10:51:30', '2025-06-17 17:51:30'),
 (17, 4, '2025-06-17', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Ho', '2025-06-17 10:54:56', '2025-06-17 17:54:56'),
 (18, 4, '2025-06-17', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Ho', '2025-06-17 10:58:08', '2025-06-17 17:58:08'),
-(19, 4, '2025-06-17', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Ho', '2025-06-17 11:05:36', '2025-06-17 18:05:36');
+(19, 4, '2025-06-17', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Ho', '2025-06-17 11:05:36', '2025-06-17 18:05:36'),
+(20, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 07:54:11', '2025-06-18 14:54:11'),
+(21, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 07:55:57', '2025-06-18 14:55:57'),
+(22, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:11:41', '2025-06-18 15:11:41'),
+(23, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:17:35', '2025-06-18 15:17:35'),
+(24, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:21:07', '2025-06-18 15:21:07'),
+(25, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:25:56', '2025-06-18 15:25:56'),
+(26, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:32:07', '2025-06-18 15:32:07'),
+(27, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:36:56', '2025-06-18 15:36:56'),
+(28, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:41:53', '2025-06-18 15:41:53'),
+(29, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:46:16', '2025-06-18 15:46:16'),
+(30, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Tim đập nhanh', '2025-06-18 08:47:43', '2025-06-18 15:47:43'),
+(31, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt', '2025-06-18 08:57:45', '2025-06-18 15:57:45'),
+(32, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Hoa mắt chóng mặt, Mệt mỏi', '2025-06-18 08:59:40', '2025-06-18 15:59:40'),
+(33, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Chóng mặt, Chóng mặt', '2025-06-18 13:35:47', '2025-06-18 20:35:47'),
+(34, 4, '2025-06-18', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Chóng mặt, Đau đầu', '2025-06-18 16:42:23', '2025-06-18 23:42:23'),
+(35, 4, '2025-06-19', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Chóng mặt, Đau đầu', '2025-06-19 08:37:33', '2025-06-19 15:37:33'),
+(36, 4, '2025-06-19', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Ho, Chảy nước mũi', '2025-06-19 08:39:46', '2025-06-19 15:39:46');
 
 -- --------------------------------------------------------
 
@@ -675,6 +827,7 @@ CREATE TABLE `prediction_diseases` (
   `id` int(11) NOT NULL,
   `prediction_id` int(11) NOT NULL,
   `disease_id` int(11) NOT NULL,
+  `disease_name_raw` varchar(255) DEFAULT NULL,
   `confidence` float DEFAULT NULL CHECK (`confidence` between 0 and 1)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -682,49 +835,102 @@ CREATE TABLE `prediction_diseases` (
 -- Dumping data for table `prediction_diseases`
 --
 
-INSERT INTO `prediction_diseases` (`id`, `prediction_id`, `disease_id`, `confidence`) VALUES
-(12, 6, 2, 1),
-(13, 6, 7, 0.67),
-(14, 6, 1, 0.33),
-(15, 6, 6, 0.33),
-(16, 6, 8, 0.33),
-(17, 7, 2, 1),
-(18, 7, 7, 1),
-(19, 7, 6, 0.5),
-(20, 7, 8, 0.5),
-(21, 8, 2, 1),
-(22, 8, 7, 1),
-(23, 8, 6, 0.5),
-(24, 8, 8, 0.5),
-(25, 9, 2, 1),
-(26, 9, 7, 1),
-(27, 9, 6, 0.5),
-(28, 9, 8, 0.5),
-(29, 10, 2, 1),
-(30, 10, 7, 1),
-(31, 11, 2, 1),
-(32, 11, 7, 1),
-(33, 11, 8, 1),
-(34, 12, 3, 1),
-(35, 12, 4, 1),
-(36, 12, 2, 0.5),
-(37, 12, 6, 0.5),
-(38, 12, 7, 0.5),
-(39, 12, 8, 0.5),
-(40, 13, 3, 1),
-(41, 13, 4, 1),
-(42, 14, 3, 1),
-(43, 14, 4, 1),
-(44, 15, 3, 1),
-(45, 15, 4, 1),
-(46, 16, 3, 1),
-(47, 16, 4, 1),
-(48, 17, 3, 1),
-(49, 17, 4, 1),
-(50, 18, 3, 1),
-(51, 18, 4, 1),
-(52, 19, 3, 1),
-(53, 19, 4, 1);
+INSERT INTO `prediction_diseases` (`id`, `prediction_id`, `disease_id`, `disease_name_raw`, `confidence`) VALUES
+(12, 6, 2, NULL, 1),
+(13, 6, 7, NULL, 0.67),
+(14, 6, 1, NULL, 0.33),
+(15, 6, 6, NULL, 0.33),
+(16, 6, 8, NULL, 0.33),
+(17, 7, 2, NULL, 1),
+(18, 7, 7, NULL, 1),
+(19, 7, 6, NULL, 0.5),
+(20, 7, 8, NULL, 0.5),
+(21, 8, 2, NULL, 1),
+(22, 8, 7, NULL, 1),
+(23, 8, 6, NULL, 0.5),
+(24, 8, 8, NULL, 0.5),
+(25, 9, 2, NULL, 1),
+(26, 9, 7, NULL, 1),
+(27, 9, 6, NULL, 0.5),
+(28, 9, 8, NULL, 0.5),
+(29, 10, 2, NULL, 1),
+(30, 10, 7, NULL, 1),
+(31, 11, 2, NULL, 1),
+(32, 11, 7, NULL, 1),
+(33, 11, 8, NULL, 1),
+(34, 12, 3, NULL, 1),
+(35, 12, 4, NULL, 1),
+(36, 12, 2, NULL, 0.5),
+(37, 12, 6, NULL, 0.5),
+(38, 12, 7, NULL, 0.5),
+(39, 12, 8, NULL, 0.5),
+(40, 13, 3, NULL, 1),
+(41, 13, 4, NULL, 1),
+(42, 14, 3, NULL, 1),
+(43, 14, 4, NULL, 1),
+(44, 15, 3, NULL, 1),
+(45, 15, 4, NULL, 1),
+(46, 16, 3, NULL, 1),
+(47, 16, 4, NULL, 1),
+(48, 17, 3, NULL, 1),
+(49, 17, 4, NULL, 1),
+(50, 18, 3, NULL, 1),
+(51, 18, 4, NULL, 1),
+(52, 19, 3, NULL, 1),
+(53, 19, 4, NULL, 1),
+(54, 20, 2, NULL, 1),
+(55, 20, 7, NULL, 1),
+(56, 20, 1, NULL, 1),
+(57, 21, 2, NULL, 1),
+(58, 21, 7, NULL, 1),
+(59, 21, 1, NULL, 1),
+(60, 22, 7, NULL, 0.19),
+(61, 22, 1, NULL, 0.15),
+(62, 22, 2, NULL, 0.15),
+(63, 23, 7, NULL, 0.19),
+(64, 23, 1, NULL, 0.15),
+(65, 23, 2, NULL, 0.15),
+(66, 24, 7, NULL, 0.19),
+(67, 24, 1, NULL, 0.15),
+(68, 24, 2, NULL, 0.15),
+(69, 25, 7, NULL, 0.19),
+(70, 25, 1, NULL, 0.15),
+(71, 25, 2, NULL, 0.15),
+(72, 26, 7, NULL, 0.19),
+(73, 26, 1, NULL, 0.15),
+(74, 26, 2, NULL, 0.15),
+(75, 27, 7, NULL, 0.19),
+(76, 27, 1, NULL, 0.15),
+(77, 27, 2, NULL, 0.15),
+(78, 28, 7, NULL, 0.19),
+(79, 28, 1, NULL, 0.15),
+(80, 28, 2, NULL, 0.15),
+(81, 29, 7, NULL, 0.19),
+(82, 29, 1, NULL, 0.15),
+(83, 29, 2, NULL, 0.15),
+(84, 30, 7, NULL, 0.19),
+(85, 30, 1, NULL, 0.15),
+(86, 30, 2, NULL, 0.15),
+(87, 31, 7, NULL, 0.19),
+(88, 31, 2, NULL, 0.15),
+(89, 32, 7, NULL, 0.38),
+(90, 32, 2, NULL, 0.3),
+(91, 32, 6, NULL, 0.19),
+(92, 32, 8, NULL, 0.19),
+(93, 33, 7, NULL, 0.19),
+(94, 33, 2, NULL, 0.15),
+(95, 34, 2, NULL, 0.3),
+(96, 34, 7, NULL, 0.19),
+(97, 34, 1, NULL, 0.15),
+(98, 35, 2, NULL, 0.3),
+(99, 35, 7, NULL, 0.19),
+(100, 35, 1, NULL, 0.15),
+(101, 36, 3, NULL, 0.38),
+(102, 36, 23, NULL, 0.38),
+(103, 36, 25, NULL, 0.38),
+(104, 36, 14, NULL, 0.25),
+(105, 36, 15, NULL, 0.25),
+(106, 36, 4, NULL, 0.15);
 
 -- --------------------------------------------------------
 
@@ -1057,10 +1263,10 @@ CREATE TABLE `symptoms` (
 INSERT INTO `symptoms` (`symptom_id`, `name`, `alias`, `description`, `followup_question`, `created_at`, `updated_at`) VALUES
 (1, 'Đau đầu', 'đau đầu,căng đầu,nhức đầu', 'Cảm giác đau ở vùng đầu hoặc cổ', 'Cơn đau đầu xuất hiện vào lúc nào trong ngày (sáng, trưa, tối)? Mức độ đau từ nhẹ đến dữ dội ra sao?', '2025-06-10 07:34:51', '2025-06-12 20:25:04'),
 (2, 'Khó thở', 'khó hít thở,ngộp thở,thở không ra hơi', 'Khó khăn trong việc hít thở bình thường', 'Bạn thấy khó thở khi nghỉ ngơi, khi vận động hay vào ban đêm?', '2025-06-10 07:34:51', '2025-06-12 20:15:07'),
-(3, 'Buồn nôn', 'muốn ói,nôn nao,ói mửa,khó chịu bụng', 'Cảm giác muốn nôn mửa', 'Bạn cảm thấy buồn nôn vào thời điểm nào trong ngày? Có thường xảy ra sau khi ăn hoặc khi ngửi mùi mạnh không?', '2025-06-10 07:34:51', '2025-06-12 20:25:04'),
+(3, 'Buồn nôn', 'muốn ói,nôn nao,ói mửa,khó chịu bụng, muốn nôn', 'Cảm giác muốn nôn mửa', 'Bạn cảm thấy buồn nôn vào thời điểm nào trong ngày? Có thường xảy ra sau khi ăn hoặc khi ngửi mùi mạnh không?', '2025-06-10 07:34:51', '2025-06-20 19:21:18'),
 (4, 'Sốt', 'nóng sốt,sốt cao,sốt nhẹ,thân nhiệt cao', 'Nhiệt độ cơ thể cao hơn bình thường', 'Bạn bị sốt liên tục hay theo từng cơn? Nhiệt độ cao nhất bạn đo được là bao nhiêu?', '2025-06-10 07:34:51', '2025-06-12 20:16:02'),
 (5, 'Tức ngực', 'đau ngực,nặng ngực,ép ngực', 'Cảm giác đau hoặc áp lực ở ngực', 'Bạn cảm thấy tức ngực vào lúc nào? Có thay đổi theo tư thế hoặc khi gắng sức không?', '2025-06-10 07:34:51', '2025-06-12 20:25:04'),
-(6, 'Mệt mỏi', 'mệt,uể oải,đuối sức,yếu người', 'Cảm giác kiệt sức, thiếu năng lượng', 'Bạn thường thấy mệt mỏi vào thời điểm nào trong ngày? Cảm giác này kéo dài bao lâu và ảnh hưởng đến sinh hoạt thế nào?', '2025-06-10 07:34:51', '2025-06-12 20:25:04'),
+(6, 'Mệt mỏi', 'mệt,uể oải,đuối sức,yếu người', 'Cảm giác kiệt sức, thiếu năng lượng', 'Bạn cảm thấy mệt theo kiểu uể oải, buồn ngủ, hay kiệt sức sau khi làm gì đó? Tình trạng này kéo dài bao lâu rồi?', '2025-06-10 07:34:51', '2025-06-23 14:49:17'),
 (7, 'Co giật', 'giật cơ,co rút,co cứng', 'Chuyển động không kiểm soát của cơ', 'Cơn co giật xảy ra đột ngột hay có dấu hiệu báo trước? Kéo dài bao lâu và có kèm mất ý thức không?', '2025-06-10 07:34:51', '2025-06-12 18:49:23'),
 (8, 'Ngứa da', 'ngứa,ngứa ngáy,muốn gãi', 'Cảm giác châm chích khiến muốn gãi', 'Bạn bị ngứa ở vùng nào trên cơ thể (tay, chân, lưng…)? Có kèm nổi mẩn đỏ, bong tróc da hoặc lan rộng không?', '2025-06-10 07:34:51', '2025-06-12 18:49:23'),
 (9, 'Phát ban', 'mẩn đỏ,nổi mẩn,da dị ứng', 'Vùng da bị nổi mẩn đỏ hoặc sưng', 'Phát ban xuất hiện lần đầu vào thời điểm nào? Có ngứa, đau hay lan rộng sang vùng da khác không?', '2025-06-10 07:34:51', '2025-06-12 18:49:23'),
@@ -1073,17 +1279,28 @@ INSERT INTO `symptoms` (`symptom_id`, `name`, `alias`, `description`, `followup_
 (16, 'Đau bụng', 'đầy bụng,đau bụng dưới,đau bụng trên', 'Cảm giác khó chịu hoặc đau ở vùng bụng', 'Bạn đau bụng ở vùng nào (trên, dưới, bên trái, bên phải)? Cơn đau có lan sang nơi khác hoặc liên tục không?', '2025-06-10 07:34:51', '2025-06-12 18:49:23'),
 (17, 'Tiêu chảy', 'tiêu lỏng,phân lỏng,đi cầu nhiều', 'Đi ngoài phân lỏng, thường xuyên', 'Bạn bị tiêu chảy bao nhiêu lần mỗi ngày? Phân có lẫn máu, chất nhầy hoặc có mùi bất thường không?', '2025-06-10 07:34:51', '2025-06-12 18:49:23'),
 (18, 'Táo bón', 'bón,khó đi ngoài,ít đi cầu, khó đi cầu', 'Đi đại tiện khó khăn hoặc không thường xuyên', 'Bạn bị táo bón trong bao lâu? Có cảm thấy đau khi đi ngoài hoặc phân khô cứng không?', '2025-06-10 07:34:51', '2025-06-12 23:00:50'),
-(19, 'Hoa mắt chóng mặt', 'chóng mặt,hoa mắt,quay cuồng,mất thăng bằng', 'Cảm giác quay cuồng hoặc mất thăng bằng', 'Bạn cảm thấy chóng mặt vào thời điểm nào? Có xuất hiện khi thay đổi tư thế hoặc khi đứng lâu không?', '2025-06-10 07:34:51', '2025-06-12 20:25:05'),
+(19, 'Chóng mặt', 'chóng mặt,quay cuồng,mất thăng bằng,đầu quay', 'Cảm giác quay cuồng, mất thăng bằng hoặc như đang bị xoay vòng, thường kèm cảm giác muốn ngã.', 'Bạn cảm thấy chóng mặt vào thời điểm nào? Có xuất hiện khi thay đổi tư thế, đứng lâu, hoặc sau khi ngủ dậy không?', '2025-06-10 07:34:51', '2025-06-18 20:32:25'),
 (20, 'Đổ mồ hôi nhiều', 'ra mồ hôi,nhiều mồ hôi,ướt người, Đổ mồ hôi nhiều', 'Ra mồ hôi quá mức, không do vận động', 'Bạn đổ mồ hôi nhiều vào thời điểm nào? Tình trạng này có lặp đi lặp lại không?', '2025-06-10 07:34:51', '2025-06-16 23:22:35'),
 (21, 'Run tay chân', 'tay chân run,rung người,run rẩy', 'Chuyển động không tự chủ ở tay hoặc chân', 'Tay chân bạn run khi nghỉ ngơi, khi thực hiện việc gì đó hay cả hai? Run có tăng khi lo lắng không?', '2025-06-10 07:34:51', '2025-06-12 18:49:23'),
 (22, 'Khó ngủ', 'mất ngủ,khó ngủ,khó chợp mắt', 'Gặp vấn đề khi ngủ hoặc ngủ không ngon giấc', 'Bạn khó ngủ vì lý do gì (lo lắng, đau nhức, không rõ lý do)? Tình trạng này kéo dài bao lâu rồi?', '2025-06-10 07:34:51', '2025-06-12 18:49:23'),
 (23, 'Thở gấp', 'thở nhanh,thở gấp,gấp gáp', 'Hơi thở nhanh, ngắn do thiếu oxy', 'Bạn cảm thấy thở gấp trong hoàn cảnh nào? Có xảy ra khi vận động hoặc khi hồi hộp không?', '2025-06-10 07:34:51', '2025-06-12 20:25:05'),
 (24, 'Tim đập nhanh', 'tim nhanh,đánh trống ngực,tim đập mạnh', 'Nhịp tim tăng bất thường, có thể do lo âu hoặc bệnh lý', 'Bạn thường cảm nhận tim đập nhanh vào thời điểm nào trong ngày? Tình trạng kéo dài bao lâu?', '2025-06-10 07:34:51', '2025-06-12 20:25:05'),
 (25, 'Tê tay chân', 'tê bì,châm chích,mất cảm giác tay chân', 'Mất cảm giác hoặc cảm giác châm chích ở tay hoặc chân', 'Bạn cảm thấy tê tay chân ở vùng nào? Có lan rộng ra các khu vực khác không?', '2025-06-10 07:34:51', '2025-06-12 20:25:05'),
-(26, 'Hoa mắt', 'hoa mắt,choáng nhẹ', 'Cảm giác mờ mắt thoáng qua hoặc không nhìn rõ trong chốc lát', 'Bạn cảm thấy hoa mắt vào lúc nào? Có kèm theo mất tập trung hoặc mệt mỏi không?', '2025-06-12 13:25:47', '2025-06-12 20:25:47'),
+(26, 'Hoa mắt', 'hoa mắt,choáng nhẹ,thoáng mờ mắt,mắt tối sầm', 'Cảm giác mờ mắt thoáng qua, mắt tối sầm hoặc mất thị lực tạm thời trong vài giây, thường liên quan đến huyết áp hoặc thiếu máu.', 'Bạn cảm thấy hoa mắt vào lúc nào? Có kèm theo mất tập trung, mệt mỏi, hoặc sau khi thay đổi tư thế không?', '2025-06-12 13:25:47', '2025-06-18 20:32:25'),
 (27, 'Nôn mửa', 'nôn ói,nôn nhiều', 'Hành động đẩy mạnh chất trong dạ dày ra ngoài qua đường miệng', 'Bạn nôn mửa bao nhiêu lần trong ngày? Có liên quan đến bữa ăn hay mùi vị nào không?', '2025-06-12 13:25:47', '2025-06-12 20:25:47'),
 (28, 'Khàn giọng', 'giọng khàn,khó nói', 'Sự thay đổi trong giọng nói, thường trở nên trầm và khô', 'Bạn bị khàn giọng trong bao lâu? Có ảnh hưởng đến việc nói chuyện hàng ngày không?', '2025-06-12 13:25:47', '2025-06-12 20:25:47'),
-(29, 'Yếu cơ', 'yếu sức,yếu cơ,bại cơ', 'Giảm khả năng vận động hoặc sức mạnh cơ bắp', 'Bạn cảm thấy yếu ở tay, chân hay toàn thân? Có trở ngại khi làm các hoạt động thường ngày không?', '2025-06-12 13:25:47', '2025-06-12 20:25:47');
+(29, 'Yếu cơ', 'yếu sức,yếu cơ,bại cơ', 'Giảm khả năng vận động hoặc sức mạnh cơ bắp', 'Bạn cảm thấy yếu ở tay, chân hay toàn thân? Có trở ngại khi làm các hoạt động thường ngày không?', '2025-06-12 13:25:47', '2025-06-12 20:25:47'),
+(30, 'Chóng mặt khi đứng dậy', 'choáng khi đứng,chóng mặt tư thế', 'Cảm giác choáng váng khi thay đổi tư thế đứng lên', 'Bạn thường cảm thấy choáng khi đứng dậy hay ngồi dậy đột ngột không?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(31, 'Khò khè', 'thở rít,khò khè', 'Âm thanh rít khi thở, thường gặp khi đường thở bị hẹp', 'Bạn nghe tiếng khò khè vào lúc nào trong ngày hoặc khi làm gì?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(32, 'Ợ nóng', 'nóng rát ngực,ợ chua', 'Cảm giác nóng rát từ dạ dày lên cổ họng, thường sau ăn', 'Bạn có cảm thấy nóng rát ở ngực sau khi ăn không? Có bị vào ban đêm không?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(33, 'Vàng da', 'vàng da,vàng mắt', 'Da và mắt có màu vàng do rối loạn chức năng gan', 'Bạn có nhận thấy da hoặc lòng trắng mắt chuyển vàng trong thời gian gần đây không?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(34, 'Cảm giác vô vọng', 'chán nản,vô vọng', 'Tâm trạng tiêu cực kéo dài, mất niềm tin vào tương lai', 'Bạn có thường cảm thấy mọi thứ đều vô ích hoặc không có lối thoát không?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(35, 'Khát nước liên tục', 'khát nhiều,uống nhiều nước', 'Cảm giác khát nước kéo dài không rõ lý do', 'Bạn cảm thấy khát thường xuyên dù đã uống đủ nước chưa?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(36, 'Đau khớp đột ngột', 'đau khớp ngón chân,cơn gút', 'Đau dữ dội và sưng ở khớp, thường là ngón chân cái', 'Cơn đau bắt đầu ở khớp nào? Có sưng đỏ và đau nhiều vào ban đêm không?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(37, 'Cứng khớp buổi sáng', 'khớp cứng,khó cử động', 'Khó cử động khớp vào buổi sáng hoặc sau khi nghỉ ngơi', 'Bạn có bị cứng khớp vào sáng sớm không? Tình trạng kéo dài bao lâu?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(38, 'Đỏ mắt', 'mắt đỏ,viêm mắt', 'Mắt bị đỏ do giãn mạch máu kết mạc', 'Bạn bị đỏ mắt một bên hay hai bên? Có chảy ghèn hoặc cảm giác xốn cộm không?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(39, 'Đau cơ', 'đau bắp thịt,đau cơ', 'Cảm giác đau ở cơ bắp, đặc biệt khi vận động', 'Bạn đau cơ ở vùng nào? Cơn đau có giảm khi nghỉ ngơi không?', '2025-06-18 14:19:11', '2025-06-18 21:19:11'),
+(40, 'Đau lan từ lưng xuống chân', 'đau lưng lan chân,thần kinh tọa', 'Cơn đau bắt nguồn từ lưng dưới và lan theo dây thần kinh xuống chân', 'Cơn đau có lan xuống mông, đùi, hoặc gót chân không? Có tê hay yếu cơ kèm theo không?', '2025-06-18 14:19:11', '2025-06-18 21:19:11');
 
 -- --------------------------------------------------------
 
@@ -1213,7 +1430,45 @@ INSERT INTO `user_symptom_history` (`id`, `user_id`, `symptom_id`, `record_date`
 (48, 4, 11, '2025-06-17', 'Người dùng bị ho và cảm thấy triệu chứng tệ hơn khi nằm xuống. Thời gian bắt đầu và nguyên nhân cụ thể không rõ ràng.'),
 (49, 4, 11, '2025-06-17', 'Người dùng bị ho, và triệu chứng trở nên tệ hơn khi nằm xuống. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
 (50, 4, 11, '2025-06-17', 'Người dùng bị ho và cảm thấy triệu chứng tệ hơn khi nằm xuống. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
-(51, 4, 11, '2025-06-17', 'Người dùng bị ho, nhưng không rõ nguyên nhân và không đề cập đến thời gian bắt đầu hay các yếu tố kích thích.');
+(51, 4, 11, '2025-06-17', 'Người dùng bị ho, nhưng không rõ nguyên nhân và không đề cập đến thời gian bắt đầu hay các yếu tố kích thích.'),
+(52, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi chóng mặt khi đứng dậy và thỉnh thoảng có cảm giác tim đập nhanh. Người dùng không rõ nguyên nhân gây ra triệu chứng này.'),
+(53, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi chóng mặt khi đứng dậy và thỉnh thoảng có cảm giác tim đập nhanh. Người dùng không rõ nguyên nhân gây ra triệu chứng này.'),
+(54, 4, 19, '2025-06-18', 'Người dùng thỉnh thoảng cảm thấy hơi lảo đảo nhẹ và không chắc có phải do tim đập nhanh hay không.'),
+(55, 4, 24, '2025-06-18', 'Người dùng thỉnh thoảng cảm thấy hơi lảo đảo nhẹ và không chắc có phải do tim đập nhanh hay không.'),
+(56, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(57, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(58, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian và nguyên nhân cụ thể không được rõ ràng.'),
+(59, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian và nguyên nhân cụ thể không được rõ ràng.'),
+(60, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian và nguyên nhân cụ thể không rõ ràng.'),
+(61, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian và nguyên nhân cụ thể không rõ ràng.'),
+(62, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường, nhưng không rõ nguyên nhân cụ thể.'),
+(63, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường, nhưng không rõ nguyên nhân cụ thể.'),
+(64, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(65, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(66, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(67, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(68, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Người dùng không rõ nguyên nhân cụ thể gây ra triệu chứng này.'),
+(69, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Người dùng không rõ nguyên nhân cụ thể gây ra triệu chứng này.'),
+(70, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian bắt đầu và nguyên nhân cụ thể không rõ ràng.'),
+(71, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian bắt đầu và nguyên nhân cụ thể không rõ ràng.'),
+(72, 4, 19, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian xuất hiện các triệu chứng này không rõ ràng.'),
+(73, 4, 24, '2025-06-18', 'Người dùng cảm thấy hơi lảo đảo khi đứng dậy và có lúc tim đập nhanh bất thường. Thời gian xuất hiện các triệu chứng này không rõ ràng.'),
+(74, 4, 19, '2025-06-18', 'Người dùng cảm thấy chóng mặt. Thông tin về thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(75, 4, 19, '2025-06-18', 'Người dùng cảm thấy chóng mặt và mệt mỏi, đặc biệt là khi thay đổi tư thế nằm. Họ không rõ nguyên nhân cụ thể gây ra triệu chứng này.'),
+(76, 4, 6, '2025-06-18', 'Người dùng cảm thấy chóng mặt và mệt mỏi, đặc biệt là khi thay đổi tư thế nằm. Họ không rõ nguyên nhân cụ thể gây ra triệu chứng này.'),
+(77, 4, 6, '2025-06-18', 'Người dùng cảm thấy không khỏe, nhưng không rõ nguyên nhân cụ thể.'),
+(78, 4, 1, '2025-06-18', 'Người dùng cảm thấy không khỏe và bị đau đầu. Thời gian bắt đầu và nguyên nhân cụ thể không rõ ràng.'),
+(79, 4, 19, '2025-06-18', 'Người dùng cảm thấy đau đầu và chóng mặt khi vừa đứng dậy. Triệu chứng này xuất hiện đột ngột và không rõ nguyên nhân.'),
+(80, 4, 19, '2025-06-18', 'Người dùng cảm thấy đau đầu và chóng mặt khi vừa đứng dậy. Triệu chứng này xuất hiện đột ngột và không rõ nguyên nhân.'),
+(81, 4, 19, '2025-06-18', 'Người dùng cho biết bị chóng mặt và nhức đầu. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(82, 4, 1, '2025-06-18', 'Người dùng cho biết bị chóng mặt và nhức đầu. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(83, 4, 19, '2025-06-19', 'Người dùng bị chóng mặt và nhức đầu, nhưng không rõ nguyên nhân và thời điểm bắt đầu.'),
+(84, 4, 1, '2025-06-19', 'Người dùng bị chóng mặt và nhức đầu, nhưng không rõ nguyên nhân và thời điểm bắt đầu.'),
+(85, 4, 11, '2025-06-19', 'Người dùng bị ho và chảy nước mũi. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(86, 4, 13, '2025-06-19', 'Người dùng bị ho và chảy nước mũi. Thời gian bắt đầu và nguyên nhân không rõ ràng.'),
+(87, 4, 25, '2025-06-24', 'Người dùng không báo cáo triệu chứng cụ thể nào, chỉ cho biết không có thêm cảm giác nào khác như chóng mặt hay mệt mỏi.'),
+(88, 4, 29, '2025-06-24', 'Người dùng không báo cáo triệu chứng cụ thể nào, chỉ cho biết không có thêm cảm giác nào khác như chóng mặt hay mệt mỏi.'),
+(89, 4, 1, '2025-06-24', 'Người dùng không báo cáo triệu chứng cụ thể nào, chỉ cho biết không có thêm cảm giác nào khác như chóng mặt hay mệt mỏi.');
 
 --
 -- Indexes for dumped tables
@@ -1228,6 +1483,29 @@ ALTER TABLE `appointments`
   ADD KEY `guest_id` (`guest_id`),
   ADD KEY `doctor_id` (`doctor_id`),
   ADD KEY `clinic_id` (`clinic_id`);
+
+--
+-- Indexes for table `blog_authors`
+--
+ALTER TABLE `blog_authors`
+  ADD PRIMARY KEY (`author_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `blog_categories`
+--
+ALTER TABLE `blog_categories`
+  ADD PRIMARY KEY (`category_id`),
+  ADD UNIQUE KEY `slug` (`slug`);
+
+--
+-- Indexes for table `blog_posts`
+--
+ALTER TABLE `blog_posts`
+  ADD PRIMARY KEY (`post_id`),
+  ADD UNIQUE KEY `slug` (`slug`),
+  ADD KEY `author_id` (`author_id`),
+  ADD KEY `category_id` (`category_id`);
 
 --
 -- Indexes for table `chatbot_knowledge_base`
@@ -1503,6 +1781,24 @@ ALTER TABLE `appointments`
   MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `blog_authors`
+--
+ALTER TABLE `blog_authors`
+  MODIFY `author_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `blog_categories`
+--
+ALTER TABLE `blog_categories`
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `blog_posts`
+--
+ALTER TABLE `blog_posts`
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `chatbot_knowledge_base`
 --
 ALTER TABLE `chatbot_knowledge_base`
@@ -1524,7 +1820,7 @@ ALTER TABLE `clinics`
 -- AUTO_INCREMENT for table `diseases`
 --
 ALTER TABLE `diseases`
-  MODIFY `disease_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `disease_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `doctors`
@@ -1554,7 +1850,7 @@ ALTER TABLE `health_predictions`
 -- AUTO_INCREMENT for table `health_records`
 --
 ALTER TABLE `health_records`
-  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `medical_categories`
@@ -1602,7 +1898,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
 -- AUTO_INCREMENT for table `prescriptions`
@@ -1674,7 +1970,7 @@ ALTER TABLE `specialties`
 -- AUTO_INCREMENT for table `symptoms`
 --
 ALTER TABLE `symptoms`
-  MODIFY `symptom_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `symptom_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -1704,7 +2000,7 @@ ALTER TABLE `user_notifications`
 -- AUTO_INCREMENT for table `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
 
 --
 -- Constraints for dumped tables
@@ -1718,6 +2014,19 @@ ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_2` FOREIGN KEY (`guest_id`) REFERENCES `guest_users` (`guest_id`),
   ADD CONSTRAINT `appointments_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`),
   ADD CONSTRAINT `appointments_ibfk_4` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`);
+
+--
+-- Constraints for table `blog_authors`
+--
+ALTER TABLE `blog_authors`
+  ADD CONSTRAINT `blog_authors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `blog_posts`
+--
+ALTER TABLE `blog_posts`
+  ADD CONSTRAINT `blog_posts_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `blog_authors` (`author_id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `blog_posts_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `blog_categories` (`category_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `chat_logs`
