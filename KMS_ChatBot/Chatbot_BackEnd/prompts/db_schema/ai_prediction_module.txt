@@ -33,6 +33,9 @@
 - prediction_id (INT, FK → health_predictions.prediction_id): dự đoán liên quan.
 - disease_id (INT, FK → diseases.disease_id): bệnh được dự đoán.
 - confidence (FLOAT): độ tin cậy (0–1) cho mỗi bệnh.
+- disease_name_raw (VARCHAR): Chứa tên bệnh được phỏng đoán từ GPT nếu như trong danh sách bệnh không có
+- disease_summary (TEXT): Mô tả tóm tắt bệnh do GPT sinh ra
+- disease_care (TEXT): Gợi ý chăm sóc nhẹ nhàng do GPT đề xuất
 
 24. chatbot_knowledge_base
 - kb_id (INT, PK): mã mục kiến thức.

@@ -57,13 +57,13 @@ function showTyping() {
 
     typingIndicator = document.createElement('div');
     typingIndicator.className = 'message bot typing-indicator'; // ✅ Bubble ngoài cùng
-
+    
     const avatar = document.createElement('div');
     avatar.className = 'message-avatar';
     avatar.innerHTML = '<i class="fas fa-robot"></i>';
 
     const content = document.createElement('div');
-    content.className = 'message-content'; // ✅ Bubble hiển thị nội dung chính
+    content.className = 'message-content typing'; // ✅ Bubble hiển thị nội dung chính
 
     // 👇 Chỉ có 1 lớp .message-content chứa 3 chấm
     content.innerHTML = `
@@ -92,10 +92,9 @@ function hideTyping() {
 
 
 function normalizeMarkdown(input) {
-  // Tự động thêm dòng trống trước các 📌 nếu cần
-  const formatted = input.replace(/(?<!^)(📌)/g, "\n\n$1");  
-  return formatted;
+return input;
 }
+
 
 
 
@@ -277,117 +276,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 await sendChatStream(payload, (text) => {
-                    // parse và render như bạn đã có
                     let parsed;
                     try {
-                        parsed = JSON.parse(text);
-                    } catch (e) {
+                        parsed = typeof text === "string" ? JSON.parse(text) : text;
+                    } catch {
                         parsed = null;
                     }
 
-                    if (parsed && parsed.natural_text) {
-                        fullBotReply += parsed.natural_text;
+                    const delta = typeof parsed?.natural_text === "string" ? parsed.natural_text : "";
 
-                        // 👇 Ép mỗi xuống dòng thành 2 để markdown hiểu là tách đoạn
-                        const markdownText = normalizeMarkdown(fullBotReply).replace(/\n/g, "\n\n");
-                        
-                        const html = marked.parse(markdownText);
+                    fullBotReply += delta;
 
-                        // ✅ Gỡ typing style chỉ 1 lần (nếu còn tồn tại)
-                        if (typingIndicator?.classList.contains("typing-indicator")) {
-                            typingIndicator.classList.remove("typing-indicator");
-                        }
+                    const markdownText = normalizeMarkdown(fullBotReply).replace(/\n/g, "\n\n");
+                    const html = marked.parse(markdownText)
+                        .replace(/<p>\s*<\/p>/g, "")
+                        .replace(/<p>(&nbsp;|\s)*<\/p>/g, "");
 
-                        // ✅ Gán lại nội dung cho bubble
-                        typingIndicator.innerHTML = ""; // clear content
-                        const avatar = document.createElement("div");
-                        avatar.className = "message-avatar";
-                        avatar.innerHTML = '<i class="fas fa-robot"></i>';
-
-                        const content = document.createElement("div");
+                    let content = typingIndicator.querySelector(".message-content");
+                    if (!content) {
+                        content = document.createElement("div");
                         content.className = "message-content";
-                        content.innerHTML = marked.parse(markdownText);
-
-                        typingIndicator.appendChild(avatar);
                         typingIndicator.appendChild(content);
+                    }
 
-                        
-                        if (parsed.table && Array.isArray(parsed.table) && parsed.table.length > 0) {
-                            let content = typingIndicator.querySelector(".message-content");
+                    // ✅ Cập nhật nội dung text trước
+                    content.innerHTML = html;
 
-                            // Nếu chưa có .message-content thì tạo mới
-                            if (!content) {
-                                content = document.createElement("div");
-                                content.className = "message-content";
-                                typingIndicator.appendChild(content);
-                            }
+                    // ✅ Nếu có bảng và chưa gắn bảng → tạo bảng
+                    if (parsed?.table && Array.isArray(parsed.table) && parsed.table.length > 0 && !content.querySelector("table")) {
+                        const table = document.createElement("table");
+                        table.className = "chat-result-table";
 
-                            // 👉 Tạo bảng
-                            const table = document.createElement("table");
-                            table.className = "chat-result-table";
+                        const headers = Object.keys(parsed.table[0]);
+                        const thead = document.createElement("thead");
+                        const trHead = document.createElement("tr");
+                        headers.forEach(h => {
+                            const th = document.createElement("th");
+                            th.textContent = h;
+                            trHead.appendChild(th);
+                        });
+                        thead.appendChild(trHead);
+                        table.appendChild(thead);
 
-                            const headers = Object.keys(parsed.table[0]);
-                            const thead = document.createElement("thead");
-                            const trHead = document.createElement("tr");
+                        const tbody = document.createElement("tbody");
+                        parsed.table.forEach(row => {
+                            const tr = document.createElement("tr");
                             headers.forEach(h => {
-                                const th = document.createElement("th");
-                                th.textContent = h;
-                                trHead.appendChild(th);
+                                const td = document.createElement("td");
+                                td.textContent = row[h];
+                                tr.appendChild(td);
                             });
-                            thead.appendChild(trHead);
-                            table.appendChild(thead);
+                            tbody.appendChild(tr);
+                        });
+                        table.appendChild(tbody);
 
-                            const tbody = document.createElement("tbody");
-                            parsed.table.forEach(row => {
-                                const tr = document.createElement("tr");
-                                headers.forEach(h => {
-                                    const td = document.createElement("td");
-                                    td.textContent = row[h];
-                                    tr.appendChild(td);
-                                });
-                                tbody.appendChild(tr);
-                            });
-                            table.appendChild(tbody);
+                        const tableWrapper = document.createElement("div");
+                        tableWrapper.className = "chat-table-wrapper";
+                        tableWrapper.appendChild(table);
+                        content.appendChild(tableWrapper);
 
-                            content.appendChild(table);
-                        }
+                    }
 
-                        // 👉 Thêm SQL vào dưới bảng (nếu có)
-                        if (parsed.sql_query) {
-                            let content = typingIndicator.querySelector(".message-content");
-                            if (!content) {
-                                content = document.createElement("div");
-                                content.className = "message-content";
-                                typingIndicator.appendChild(content);
-                            }
-
-                            const sqlDiv = document.createElement("pre");
-                            sqlDiv.textContent = "[SQL nội bộ]\n" + parsed.sql_query;
-                            sqlDiv.className = "chat-sql-text";
-                            content.appendChild(sqlDiv);
-                        }
-                        
-                        scrollToBottom();
-
-                    } else {
-                        fullBotReply += parsed.natural_text;
-
-                        // 👇 Ép mỗi xuống dòng thành 2 để markdown hiểu là tách đoạn
-                        const markdownText = normalizeMarkdown(fullBotReply).replace(/\n/g, "\n\n");
-
-                        const html = marked.parse(markdownText);
-                        typingIndicator.classList.remove("typing-indicator"); // ✅ Đổi từ typing → normal bubble
-                        typingIndicator.innerHTML = ""; // clear content
-                        const avatar = document.createElement("div");
-                        avatar.className = "message-avatar";
-                        avatar.innerHTML = '<i class="fas fa-robot"></i>';
-
-                        const content = document.createElement("div");
-                        content.className = "message-content";
-                        content.innerHTML = marked.parse(markdownText);
-
-                        typingIndicator.appendChild(avatar);
-                        typingIndicator.appendChild(content);
+                    // ✅ Nếu có SQL và chưa gắn → thêm khối SQL vào cuối
+                    if (parsed?.sql_query && !content.querySelector(".chat-sql-text")) {
+                        const sqlDiv = document.createElement("pre");
+                        sqlDiv.textContent = "[SQL nội bộ]\n" + parsed.sql_query;
+                        sqlDiv.className = "chat-sql-text";
+                        content.appendChild(sqlDiv);
                     }
 
                     scrollToBottom();
@@ -411,6 +366,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+function updateTypingBubble(text) {
+    // console.log("🔄 Gọi update bubble với:", text); // ✅ Log kiểm tra
+
+    const markdownText = normalizeMarkdown(text).replace(/\n/g, "\n\n");
+    // console.log("📄 markdownText:", markdownText);
+
+    const html = marked.parse(markdownText)
+        .replace(/<p>\s*<\/p>/g, "")            // loại bỏ <p>    </p>
+        .replace(/<p>(&nbsp;|\s)*<\/p>/g, "");  // loại bỏ <p>&nbsp;</p>
+    // console.log("📦 html:", html);
+
+    let content = typingIndicator.querySelector(".message-content");
+    if (!content) {
+        content = document.createElement("div");
+        content.className = "message-content";
+        typingIndicator.appendChild(content);
+    }
+
+    // Xoá toàn bộ nội dung cũ
+    content.innerHTML = "";
+
+    // Tạo wrapper để gom văn bản đầu ra
+    const wrapper = document.createElement("div");
+    wrapper.className = "message-body-wrapper";
+    wrapper.innerHTML = html;
+    content.appendChild(wrapper);
+
+}
+
+
 
 const resetBtn = document.getElementById("reset-chat");
 

@@ -9,12 +9,11 @@ import hashlib
 logger = logging.getLogger(__name__)
 from config.config import DB_CONFIG
 from utils.openai_utils import stream_gpt_tokens
-from utils.openai_client import chat_completion, chat_stream, chat_stream_health
-from utils.symptom_utils import get_symptom_list, extract_symptoms_gpt, generate_related_symptom_question, save_symptoms_to_db
+from utils.openai_client import chat_completion
+from utils.symptom_utils import get_symptom_list, extract_symptoms_gpt, generate_related_symptom_question, save_symptoms_to_db, get_related_symptoms_by_disease
 from prompts.prompts import build_diagnosis_controller_prompt, build_KMS_prompt
 from utils.text_utils import normalize_text
-from utils.session_store import get_followed_up_symptom_ids, hash_question, mark_followup_asked, save_symptoms_to_session, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys, get_followed_up_question_hashes
-
+from utils.session_store import save_session_data, get_session_data, get_followed_up_symptom_ids, mark_followup_asked, save_symptoms_to_session, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys
 
 def extract_json(content: str) -> str:
     """
@@ -34,6 +33,8 @@ async def health_talk(
     user_id=None,
     chat_id=None,
 ):
+    session_data = await get_session_data(session_key)
+
     # Step 1: Trích triệu chứng mới
     new_symptoms, fallback_message = extract_symptoms_gpt(
         user_message,
@@ -49,23 +50,27 @@ async def health_talk(
         save_symptoms_to_session(session_key, stored_symptoms)
 
     # Step 2: Lấy related symptom + câu hỏi followup
-    inputs = await decide_KMS_prompt_inputs(
-        session_key=session_key,
-        user_message=user_message,
-        recent_messages=recent_messages
-    )
+    inputs = await decide_KMS_prompt_inputs(session_key=session_key)
+
+    # ✅ In log triệu chứng đã hỏi follow-up
+    asked = await get_followed_up_symptom_ids(session_key)
+    logger.info("📌 Đã hỏi follow-up các triệu chứng có ID: %s", asked)
+
+    logger.info("📌 related_asked = %s", session_data.get("related_asked", False))
 
     # Step 3: Xây prompt tổng hợp
     prompt = build_KMS_prompt(
         SYMPTOM_LIST=get_symptom_list(),
         user_message=user_message,
         stored_symptoms_name=[s["name"] for s in stored_symptoms],
+        symptoms_to_ask=inputs["symptoms_to_ask"],
         recent_messages=recent_messages,
         recent_user_messages=recent_user_messages,
         recent_assistant_messages=recent_assistant_messages,
         related_symptom_names=inputs["related_symptom_names"],
-        raw_followup_question=inputs["raw_followup_question"]
+        related_asked = session_data.get("related_asked", False)
     )
+
 
     # Step 4: Gọi GPT (non-stream)
     completion = chat_completion(messages=[{"role": "user", "content": prompt}], temperature=0.3)
@@ -86,7 +91,20 @@ async def health_talk(
 
     # Step 5: Điều phối logic từ parsed JSON
     message = parsed.get("message", fallback_message or "Bạn có thể nói rõ hơn về tình trạng của mình không?")
-    action = parsed.get("action", "followup")
+
+    action = parsed.get("action")
+
+    if action == "related":
+        session_data["related_asked"] = True
+        save_session_data(session_key, session_data)
+
+
+    target_followup_id = inputs.get("target_followup_id")
+
+    if action == "followup" and target_followup_id:
+        logger.info("✅ Đánh dấu đã hỏi follow-up triệu chứng ID: %s", target_followup_id)
+        await mark_followup_asked(session_key, [target_followup_id])
+
     end = parsed.get("end", False)
 
     # Log các biến phụ trợ
@@ -104,6 +122,16 @@ async def health_talk(
 
         logger.info("📝 Đã lưu chẩn đoán và triệu chứng vào DB")
 
+        # ✅ Lấy danh sách bệnh từ GPT
+        diseases = parsed.get("diseases", [])
+        if diseases:
+            save_prediction_to_db(
+                user_id=user_id,
+                symptoms=stored_symptoms,
+                diseases=diseases,
+                chat_id=chat_id
+            )
+
     # Step 6: Nếu cần, clear session
     if end:
         logger.info("🛑 GPT yêu cầu kết thúc session.")
@@ -119,40 +147,62 @@ async def health_talk(
 # - stored_symptoms
 # - raw_followup_question: danh sách triệu chứng kèm câu hỏi follow-up
 # - related_symptom_names: tên các triệu chứng liên quan nếu không còn follow-up
-async def decide_KMS_prompt_inputs(session_key: str, user_message: str, recent_messages: list[str]):
+async def decide_KMS_prompt_inputs(session_key: str):
     stored_symptoms = await get_symptoms_from_session(session_key)
-    symptom_ids = [s['id'] for s in stored_symptoms]
+    next_symptom = await get_next_symptom_to_followup(session_key, stored_symptoms)
 
-    raw_followup_question = await get_followup_question_fromDB(symptom_ids, session_key=session_key)
+    symptoms_to_ask = [next_symptom["name"]] if next_symptom else []
+
+    logger.info("📭 symptoms_to_ask: %s", symptoms_to_ask)
 
     related_symptom_names = []
-    if not raw_followup_question:
-        related = get_related_symptoms_by_disease(symptom_ids)
-        stored_names = [s["name"] for s in stored_symptoms]
-        related_names = [s["name"] for s in related if s["name"] not in stored_names]
-        related_symptom_names = list(set(related_names))[:10]
+
+    symptom_ids = [s['id'] for s in stored_symptoms]
+    related = get_related_symptoms_by_disease(symptom_ids)
+    stored_names = [s["name"] for s in stored_symptoms]
+    related_names = [s["name"] for s in related if s["name"] not in stored_names]
+    related_symptom_names = list(set(related_names))[:10]
 
     return {
-        "raw_followup_question": raw_followup_question or None,
-        "related_symptom_names": related_symptom_names or None
+        "symptoms_to_ask": symptoms_to_ask,
+        "raw_followup_question": None,  # không dùng nữa
+        "related_symptom_names": related_symptom_names or None,
+        "target_followup_id": next_symptom["id"] if next_symptom else None
     }
+
+# Chọn đúng 1 triệu chứng chưa hỏi follow-up, sau đó truyền vào GPT để nó tự hỏi theo kiểu tinh tế từng bước
+async def get_next_symptom_to_followup(session_key: str, stored_symptoms: list[dict]) -> dict | None:
+    """
+    Trả về dict dạng: {"name": "Tên triệu chứng chưa hỏi follow-up"}
+    hoặc None nếu không còn triệu chứng nào cần hỏi.
+    """
+    if not stored_symptoms:
+        return None
+
+    # Lấy danh sách ID đã hỏi follow-up từ session
+    already_asked_ids = set(await get_followed_up_symptom_ids(session_key))
+    
+    # Tìm triệu chứng chưa hỏi follow-up
+    for s in stored_symptoms:
+        if s["id"] not in already_asked_ids:
+            return {"name": s["name"], "id": s["id"]}
+
+    return None
 
 # Lấy những câu hỏi liên quan tới triệu chứng từ DB
 async def get_followup_question_fromDB(symptom_ids: list[int], session_key: str = None) -> dict | None:
-
     if not symptom_ids:
         return None
-
     # Lấy danh sách symptom_id đã hỏi từ session
     already_asked = set()
     if session_key:
         already_asked = set(await get_followed_up_symptom_ids(session_key))
-    print(await get_followed_up_symptom_ids(session_key))
+
     # Lọc ra những symptom_id chưa hỏi
     ids_to_ask = [sid for sid in symptom_ids if sid not in already_asked]
     if not ids_to_ask:
         return None
-    
+
     # Truy vấn DB để lấy câu hỏi follow-up
     conn = pymysql.connect(**DB_CONFIG)
     try:
@@ -167,13 +217,16 @@ async def get_followup_question_fromDB(symptom_ids: list[int], session_key: str 
     finally:
         conn.close()
 
-    # Chọn duy nhất 1 câu để hỏi
+    # Trả về duy nhất 1 câu hỏi (chưa đánh dấu là đã hỏi)
     for symptom_id, name, question in results:
         if not question:
             continue
-        if session_key:
-            await mark_followup_asked(session_key, [symptom_id])
-        return {"name": name, "followup_question": question.strip()}
+        logger.info(f"🔎 Follow-up chưa hỏi → chọn hỏi thêm về: {name} (ID: {symptom_id})")
+        return {
+            "id": symptom_id,
+            "name": name,
+            "followup_question": question.strip()
+        }
 
     return None
 
@@ -217,39 +270,66 @@ def get_related_symptoms_by_disease(symptom_ids: list[int]) -> list[dict]:
     return related_symptoms
 
 # lưu phỏng đoán bệnh vào database lưu vào health_records user_symptom_history khi đang thực hiện chẩn đoán kết quả
-def save_prediction_to_db(user_id: int, symptoms: list[dict], diseases: list[dict], chat_id: int = None):
+def save_prediction_to_db(
+    user_id: int,
+    symptoms: list[dict],
+    diseases: list[dict],
+    chat_id: int = None
+):
+    """
+    Lưu kết quả chẩn đoán gồm nhiều bệnh do GPT dự đoán:
+    - Ghi vào health_records, health_predictions, prediction_diseases
+    """
     conn = pymysql.connect(**DB_CONFIG)
     try:
         with conn.cursor() as cursor:
-            # Ghi nhận health_records đơn giản với notes mô tả triệu chứng
             note = "Triệu chứng ghi nhận: " + ", ".join([s['name'] for s in symptoms])
             record_date = date.today()
 
+            # Ghi health_records
             cursor.execute("""
                 INSERT INTO health_records (user_id, record_date, notes)
                 VALUES (%s, %s, %s)
             """, (user_id, record_date, note))
             record_id = cursor.lastrowid
 
-            # Ghi vào bảng health_predictions
-            confidence_score = max([d["confidence"] for d in diseases], default=0.0)
+            # Ghi health_predictions
+            confidence_score = max([d.get("confidence", 0.0) for d in diseases], default=0.0)
             prediction_details = {
-                "symptoms": [s['name'] for s in symptoms],
-                "summary": "AI predicted diseases based on reported symptoms"
+                "symptoms": [s["name"] for s in symptoms],
+                "diseases": diseases  # giữ nguyên toàn bộ list từ GPT
             }
 
             cursor.execute("""
                 INSERT INTO health_predictions (user_id, record_id, chat_id, confidence_score, details)
                 VALUES (%s, %s, %s, %s, %s)
-            """, (user_id, record_id, chat_id, confidence_score, json.dumps(prediction_details)))
+            """, (user_id, record_id, chat_id, confidence_score, json.dumps(prediction_details, ensure_ascii=False)))
             prediction_id = cursor.lastrowid
 
-            # Ghi từng bệnh dự đoán vào bảng prediction_diseases
+            # Ghi từng dòng prediction_diseases
             for d in diseases:
+                name = d.get("name")
+                confidence = d.get("confidence", 0.0)
+
+                # Tìm trong bảng diseases
+                cursor.execute("SELECT disease_id FROM diseases WHERE name = %s", (name,))
+                row = cursor.fetchone()
+                summary = d.get("summary", "")
+                care = d.get("care", "")
+
+                if row:
+                    disease_id = row[0]
+                    disease_name_raw = None
+                else:
+                    disease_id = -1
+                    disease_name_raw = name
+
                 cursor.execute("""
-                    INSERT INTO prediction_diseases (prediction_id, disease_id, confidence)
-                    VALUES (%s, %s, %s)
-                """, (prediction_id, d["disease_id"], d["confidence"]))
+                    INSERT INTO prediction_diseases (
+                        prediction_id, disease_id, confidence, disease_name_raw,
+                        disease_summary, disease_care
+                    ) VALUES (%s, %s, %s, %s, %s, %s)
+                """, (prediction_id, disease_id, confidence, disease_name_raw, summary, care))
 
         conn.commit()
     finally:

@@ -6,30 +6,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 from models import Message,ResetRequest
-from config.intents import INTENT_MAPPING, INTENT_PIPELINES
+from config.intents import INTENT_PIPELINES
 from utils.auth_utils import has_permission, normalize_role
-from utils.session_store import get_session_data, save_session_data, save_symptoms_to_session, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys
-from utils.intent_utils import detect_intent, build_system_message, generate_next_health_action
+from utils.session_store import get_session_data, save_session_data, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys
+from utils.intent_utils import detect_intent, build_system_message
 from utils.symptom_utils import (
-    extract_symptoms_gpt,
-    save_symptoms_to_db,
-    generate_friendly_followup_question,
-    generate_related_symptom_question,
     get_symptom_list,
-    get_related_symptoms_by_disease,
-    should_attempt_symptom_extraction,
-    gpt_detect_symptom_intent
 )
 from utils.limit_history import limit_history_by_tokens, refresh_system_context
 from utils.openai_utils import stream_chat
 from utils.sql_executor import run_sql_query
 from utils.health_care import (
     health_talk,
-    gpt_health_talk,
-    generate_symptom_note,
-    predict_disease_based_on_symptoms,
-    save_prediction_to_db,
-    generate_diagnosis_summary,
 )
 
 router = APIRouter()
@@ -124,7 +112,7 @@ async def chat_stream(msg: Message = Body(...)):
                     content = getattr(delta, "content", None)
 
                     if content:
-                        logger.info(f"[STREAM] 🌊 Đang stream ra: {repr(content)}")  # 👈 Thêm dòng này để log từng mẩu
+                        # logger.info(f"[STREAM] 🌊 Đang stream ra: {repr(content)}")  # 👈 Thêm dòng này để log từng mẩu
                         buffer += content
 
                         if intent not in ["sql_query", "product_query"]:

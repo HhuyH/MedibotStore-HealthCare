@@ -341,10 +341,12 @@ CREATE TABLE prediction_diseases (
     id INT AUTO_INCREMENT PRIMARY KEY,
     prediction_id INT NOT NULL,                         -- Khóa ngoại đến health_predictions
     disease_id INT NOT NULL,                            -- Khóa ngoại đến diseases
-    disease_name_raw VARCHAR(255) DEFAULT NULL          -- Chứa tên bệnh được phỏng đoán từ GPT nếu như trong danh sách bệnh không có
+    disease_name_raw VARCHAR(255) DEFAULT NULL,         -- Chứa tên bệnh được phỏng đoán từ GPT nếu như trong danh sách bệnh không có
     confidence FLOAT CHECK (confidence BETWEEN 0 AND 1),-- Độ tin cậy (0–1) 0 nghĩa là rất không chắc chắn.
                                                         -- 1 nghĩa là rất chắc chắn. --Tôi nghĩ bệnh này là A (90%), bệnh B (70%), còn lại là C (30%)
                                                         -- sẽ không có bất ký lệnh nào chac chan se la bệnh đó 
+    disease_summary TEXT,                               -- Mô tả tóm tắt bệnh do GPT sinh ra
+    disease_care TEXT,                                  -- Gợi ý chăm sóc nhẹ nhàng do GPT đề xuất
     FOREIGN KEY (prediction_id) REFERENCES health_predictions(prediction_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (disease_id) REFERENCES diseases(disease_id)

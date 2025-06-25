@@ -19,7 +19,8 @@ async def stream_chat(message, history, system_message_dict):
 COMMON_HEALTH_EMOJIS = set([
     "🌿", "😌", "💭", "😴", "🤒", "🤕", "🤧", "😷",
     "🥴", "🤢", "🤮", "🧘‍♂️", "📌", "💦", "😮‍💨",
-    "❤️", "✅", "🔄", "❌", "⚠️", "🌀","😵‍💫", ""
+    "❤️", "✅", "🔄", "❌", "⚠️", "🌀","😵‍💫", "💧",
+    "😴", "☕", "🌞"
 ])
 
 def is_possible_emoji(token_id, enc):
@@ -70,7 +71,7 @@ def stream_gpt_tokens(text: str, model: str = "gpt-4o"):
             if is_emoji:
                 # Kích hoạt giữ token nếu thấy emoji
                 hold_mode = True
-                post_emoji_hold = 6  # giữ thêm 6 token sau emoji
+                post_emoji_hold = 8  # giữ thêm 6 token sau emoji
 
                 # Lưu lại 2 token trước emoji (nếu có)
                 pre_emoji_buffer = buffer[-2:] if len(buffer) >= 2 else buffer[:]

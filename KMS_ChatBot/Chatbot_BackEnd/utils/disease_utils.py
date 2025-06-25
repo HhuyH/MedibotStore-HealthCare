@@ -2,6 +2,8 @@ import json
 import pymysql
 from config.config import DB_CONFIG
 from datetime import date
+import logging
+logger = logging.getLogger(__name__)
 
 # Dự đoán bệnh dựa trên list triệu chứng
 # Trả về danh sách các bệnh với độ phù hợp (confidence 0-1) danh sách bệnh gồm: id, tên, độ phù hợp, mô tả, hướng dẫn điều trị.
@@ -50,11 +52,24 @@ def predict_disease_based_on_symptoms(symptoms: list[dict]) -> list[dict]:
         conn.close()
 
 # lưu phỏng đoán bệnh vào database lưu vào health_records user_symptom_history khi đang thực hiện chẩn đoán kết quả
-def save_prediction_to_db(user_id: int, symptoms: list[dict], diseases: list[dict], chat_id: int = None):
+def save_prediction_to_db(
+    user_id: int,
+    symptoms: list[dict],
+    name: str,
+    confidence: float,
+    prediction_details: dict,
+    chat_id: int = None
+):
+    """
+    Lưu kết quả dự đoán 1 bệnh (từ GPT):
+    - health_records
+    - health_predictions
+    - prediction_diseases (1 dòng duy nhất)
+    """
     conn = pymysql.connect(**DB_CONFIG)
     try:
         with conn.cursor() as cursor:
-            # Ghi nhận health_records đơn giản với notes mô tả triệu chứng
+            # 🔹 Ghi health_records
             note = "Triệu chứng ghi nhận: " + ", ".join([s['name'] for s in symptoms])
             record_date = date.today()
 
@@ -64,25 +79,42 @@ def save_prediction_to_db(user_id: int, symptoms: list[dict], diseases: list[dic
             """, (user_id, record_date, note))
             record_id = cursor.lastrowid
 
-            # Ghi vào bảng health_predictions
-            confidence_score = max([d["confidence"] for d in diseases], default=0.0)
-            prediction_details = {
-                "symptoms": [s['name'] for s in symptoms],
-                "summary": "AI predicted diseases based on reported symptoms"
-            }
-
+            # 🔹 Ghi health_predictions
             cursor.execute("""
                 INSERT INTO health_predictions (user_id, record_id, chat_id, confidence_score, details)
                 VALUES (%s, %s, %s, %s, %s)
-            """, (user_id, record_id, chat_id, confidence_score, json.dumps(prediction_details)))
+            """, (
+                user_id,
+                record_id,
+                chat_id,
+                confidence,
+                json.dumps({
+                    "symptoms": [s["name"] for s in symptoms],
+                    "disease": {
+                        "name": name,
+                        "confidence": confidence,
+                        **prediction_details  # gộp thêm các key khác (nếu có)
+                    }
+                })
+            ))
+
             prediction_id = cursor.lastrowid
 
-            # Ghi từng bệnh dự đoán vào bảng prediction_diseases
-            for d in diseases:
-                cursor.execute("""
-                    INSERT INTO prediction_diseases (prediction_id, disease_id, confidence)
-                    VALUES (%s, %s, %s)
-                """, (prediction_id, d["disease_id"], d["confidence"]))
+            # 🔹 Tìm disease_id
+            cursor.execute("SELECT disease_id FROM diseases WHERE name = %s", (name,))
+            row = cursor.fetchone()
+            if row:
+                disease_id = row[0]
+                disease_name_raw = None
+            else:
+                disease_id = -1
+                disease_name_raw = name
+
+            # 🔹 Lưu vào prediction_diseases
+            cursor.execute("""
+                INSERT INTO prediction_diseases (prediction_id, disease_id, confidence, disease_name_raw)
+                VALUES (%s, %s, %s, %s)
+            """, (prediction_id, disease_id, confidence, disease_name_raw))
 
         conn.commit()
     finally:
