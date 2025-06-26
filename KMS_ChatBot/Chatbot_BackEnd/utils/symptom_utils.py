@@ -93,62 +93,76 @@ def extract_symptoms(text):
 def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=None, session_key=None, debug=False):
     symptom_lines = []
     name_to_symptom = {}
+    recent_text = "\n".join(f"- {msg}" for msg in recent_messages[-3:]) if recent_messages else f'- User: {user_message}'
 
     for s in SYMPTOM_LIST:
-        line = f"- {s['name']}: {s['aliases']}"
+        aliases = s["aliases"]
+        if isinstance(aliases, str):
+            aliases = [a.strip() for a in aliases.split(",")]
+
+        line = f"- {s['name']}: {', '.join(aliases)}"
         symptom_lines.append(line)
+
+        # Map tên chính thức
         name_to_symptom[normalize_text(s["name"])] = s
 
-        prompt = f"""
-            You are a smart and careful medical assistant.
+        # Map cả alias luôn
+        for alias in aliases:
+            name_to_symptom[normalize_text(alias)] = s
 
-            Below is a list of known health symptoms, each with informal ways users might describe them (Vietnamese aliases):
 
-            {chr(10).join(symptom_lines)}
+    prompt = f"""
+        You are a smart and careful medical assistant.
 
-            Now read the conversation below. Your task:
+        Below is a list of known health symptoms, each with informal ways users might describe them (Vietnamese aliases):
 
-            - Identify which symptom **names** the user is directly describing or clearly implying.
-            - Be careful:
-                - Only extract a symptom if it is clearly mentioned or strongly suggested as something the user is **personally experiencing**.
-                - Do **NOT** guess based on vague expressions like `"lan"`, `"kéo dài"`, `"râm ran"`, `"lạ"` — these are too ambiguous.
-                - Only extract if the user clearly says keywords like `"đau"`, `"nhức"`, `"mỏi"`, `"tê"` or other **specific symptom terms**.
+        {chr(10).join(symptom_lines)}
 
-                    For example:
-                    - `"Tê tay lan lên cánh tay"` → ✅ `["Tê tay chân"]`
-                    - ⛔ **NOT** `"Tê tay lan lên cánh tay"` → `["Tê tay chân", "Đau cơ"]`
+        Now read the conversation below. Your task:
 
-            - Do NOT infer based on cause/effect (e.g. "tim đập nhanh khi hít thở mạnh" ≠ "khó thở").
-            - If you are unsure (e.g., message is vague), return an empty list [].
+        - Identify which symptom **names** the user is directly describing or clearly implying.
+        - Be careful:
+            - Only extract a symptom if it is clearly mentioned or strongly suggested as something the user is **personally experiencing**.
+            - Do **NOT** guess based on vague expressions like `"lan"`, `"kéo dài"`, `"râm ran"`, `"lạ"` — these are too ambiguous.
+            - Only extract if the user clearly says keywords like `"đau"`, `"nhức"`, `"mỏi"`, `"tê"` or other **specific symptom terms**.
 
-            Examples of valid symptom extraction:
-            - "Tôi thấy hơi chóng mặt và đau đầu" → ["Chóng mặt", "Đau đầu"]
-            - "Mình cảm thấy không khỏe mấy" → []
-        """.strip()
+                For example:
+                - `"Tê tay lan lên cánh tay"` → ✅ `["Tê tay chân"]`
+                - ⛔ **NOT** `"Tê tay lan lên cánh tay"` → `["Tê tay chân", "Đau cơ"]`
 
-        if stored_symptoms_name:
-            prompt += f"""
+        - Do NOT infer based on cause/effect (e.g. "tim đập nhanh khi hít thở mạnh" ≠ "khó thở").
+        - If you are unsure (e.g., message is vague), return an empty list [].
 
-            ⚠️ VERY IMPORTANT:
-            - The user has already reported these symptoms earlier: {stored_symptoms_name}
-            - You must NOT include them again in your extraction.
-            - Only return new, additional symptoms if clearly mentioned.
+        Examples of valid symptom extraction:
+        - "Tôi thấy hơi chóng mặt và đau đầu" → ["Chóng mặt", "Đau đầu"]
+        - "Mình cảm thấy không khỏe mấy" → []
+    """.strip()
 
-            For example:
-            - If "Mệt mỏi" was already stored and the user just said "vẫn mệt như hôm qua" → return []
-            - If the user now says "đau bụng nữa" → return ["Đau bụng"]
-            """
-
+    if stored_symptoms_name:
         prompt += f"""
 
-            ---
+        ⚠️ VERY IMPORTANT:
+        - The user has already reported these symptoms earlier: {stored_symptoms_name}
+        - You must NOT include them again in your extraction.
+        - Only return new, additional symptoms if clearly mentioned.
 
-            Sentence:
-            "{user_message}"
-
-            Return a list of names in Vietnamese. Example: ["Mệt mỏi", "Đau đầu"]
+        For example:
+        - If "Mệt mỏi" was already stored and the user just said "vẫn mệt như hôm qua" → return []
+        - If the user now says "đau bụng nữa" → return ["Đau bụng"]
         """
-        
+
+    prompt += f"""
+
+    ---
+
+    Conversation so far:
+    {user_message}
+
+    Now return a list of **symptom names** (from the list above) that the user is clearly experiencing.
+
+    Only return names. Example: ["Mệt mỏi", "Đau đầu"]
+    """
+    
     try:
         reply = chat_completion(
             [{"role": "user", "content": prompt}],
@@ -160,8 +174,8 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
         # Cleanup if GPT wraps in ```json
         if content.startswith("```json"):
             content = content.replace("```json", "").replace("```", "").strip()
-        elif not content.startswith("["):
-            content = "[" + content.split("[")[-1]
+        if not content.startswith("[") or "[" not in content:
+            return [], "Xin lỗi, mình chưa rõ bạn đang cảm thấy gì."
 
         names = json.loads(content)
         if not isinstance(names, list):

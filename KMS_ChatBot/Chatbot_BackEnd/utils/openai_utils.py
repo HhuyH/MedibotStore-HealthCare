@@ -2,6 +2,7 @@ from config.config import MODEL
 from .openai_client import chat_completion, chat_stream
 import tiktoken
 import re
+
 def chat(message, history, system_message_dict):
     messages = [system_message_dict] + history + [{"role": "user", "content": message}]
     response = chat_completion(messages=messages)
@@ -20,7 +21,7 @@ COMMON_HEALTH_EMOJIS = set([
     "🌿", "😌", "💭", "😴", "🤒", "🤕", "🤧", "😷",
     "🥴", "🤢", "🤮", "🧘‍♂️", "📌", "💦", "😮‍💨",
     "❤️", "✅", "🔄", "❌", "⚠️", "🌀","😵‍💫", "💧",
-    "😴", "☕", "🌞"
+    "😴", "☕", "🌞","🍵"
 ])
 
 def is_possible_emoji(token_id, enc):

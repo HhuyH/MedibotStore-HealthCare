@@ -1,16 +1,13 @@
 
-import openai
-import unidecode
 import sys
 import os
-import asyncio
+import logging
+logger = logging.getLogger(__name__)
 
 # Thêm đường dẫn thư mục cha vào sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from prompts.db_schema.load_schema import user_core_schema, schema_modules
 from prompts.prompts import build_system_prompt
-from utils.symptom_utils import gpt_detect_symptom_intent
-from utils.health_care import gpt_looks_like_symptom_followup_uncertain, looks_like_followup_with_gpt
 from prompts.prompts import system_prompt_sql, build_diagnosis_controller_prompt
 from utils.openai_client import chat_completion
 from utils.text_utils import normalize_text
@@ -73,24 +70,87 @@ def get_combined_schema_for_intent(intent: str) -> str:
     return "\n".join(schema_parts)
 
 # Phạt hiện đang là sử dụng chức nắng nào là chat bình thường hay là phát hiện và dự đoán bệnh
-async def detect_intent(user_message: str, session_key: str = None, last_intent: str = None, recent_messages: list[str] = []) -> str:
-    # Lấy câu trước (nếu có) để tạo context
-    previous_msg = recent_messages[-1] if recent_messages else ""
+async def detect_intent(
+    user_message: str,
+    session_key: str = None,
+    last_intent: str = None,
+    recent_messages: list[str] = [],
+    recent_user_messages: list[str] = [],
+    recent_assistant_messages: list[str] = []
+) -> str:
+    # Sử dụng trực tiếp message đã tách
+    last_bot_msg = recent_assistant_messages[-1] if recent_assistant_messages else ""
+    last_user_msg = recent_user_messages[-1] if recent_user_messages else ""
 
     prompt = f"""
-    Classify the user's intent in a chatbot conversation.
+        Classify the user's intent in a chatbot conversation.
 
-    Previous user intent: "{last_intent or 'unknown'}"
-    Previous message: "{previous_msg}"
-    Current message: "{user_message}"
+        Last detected intent: "{last_intent or 'unknown'}"
+        
+        Previous bot message (usually a follow-up question):  
+        "{last_bot_msg}"
 
-    Valid intents: {", ".join(VALID_INTENTS)}
+        Current user message:  
+        "{last_user_msg}"
 
-    Instructions:
-    - If the previous intent was "symptom_query", and the user's current message is vague, uncertain, or negative (e.g. "không", "không rõ", "not sure", "no idea"), then assume they are still replying to a symptom-related follow-up — not starting a new topic.
-    - Do NOT switch to "general_chat" too quickly unless it's clearly off-topic or small talk.
-    - If the message sounds like a follow-up, continuation, or clarification — keep the same intent.
-    - Only choose ONE valid intent. Do not explain your reasoning. Do not include extra words.
+        Valid intents: {", ".join(VALID_INTENTS)}
+
+        Instructions:
+
+        - If the last intent was "symptom_query" and the user's current message clearly answers a previous follow-up (e.g., gives timing, severity, or symptom detail), then KEEP "symptom_query".
+
+        - If the user is asking for general advice on how to deal with a symptom (e.g., how to sleep better, what to eat for energy), or wants wellness guidance (e.g., chăm sóc sức khỏe, tăng sức đề kháng), classify as "health_advice".
+
+        - Only use "symptom_query" if the user is directly describing symptoms they are experiencing.
+
+        - Use "general_chat" if the message is unrelated small talk, jokes, greetings, or off-topic.
+
+        - If unsure, prefer to keep the previous intent (if valid).
+        - If the user message sounds like a **data query or admin command** (e.g., "lấy danh sách người dùng", "xem danh sách đơn hàng", "tìm bệnh nhân"), then classify as `"sql_query"` (or appropriate admin intent).
+        - If the user is asking to view a patient's health data (e.g., “xem thông tin bệnh nhân”, “hồ sơ bệnh nhân”, “tình trạng bệnh nhân”, “tình hình của bệnh nhân”, “cho tôi xem bệnh nhân tên...”) → classify as "patient_summary_request"
+        - Only use `"general_chat"` if the user is making small talk, asking about the bot, or saying unrelated casual things.
+        - Do NOT misclassify structured or technical requests as casual chat.
+        - If unsure, prefer a more specific intent over `"general_chat"`.
+        - If the previous assistant message was a follow-up question about a symptom, and the user responds with something vague or approximate (e.g. “chắc 5-10 phút”, “khoảng sáng tới giờ”, “tầm chiều hôm qua”), you MUST assume this is a continuation of the symptom discussion → KEEP "symptom_query".
+        - If user says “không biết”, “chắc vậy”, “khó nói”, "không rõ", but it’s still in reply to a symptom follow-up → KEEP "symptom_query"
+
+        Always return only ONE valid intent from the list.
+        Do NOT explain your reasoning.
+        Do NOT include any other words — only return the intent.
+
+        Examples:
+        - Bot: “Cảm giác đau đầu của bạn thường xuất hiện vào lúc nào?”  
+          User: “Mình cũng không rõ lắm” → ✅ → intent = `symptom_query`
+
+        - Bot: “Bạn bị bỏng vào lúc nào?”  
+          User: “Hình như hôm qua” → ✅ → intent = `symptom_query`
+
+        - Bot: “Cảm giác đau đầu của bạn kéo dài bao lâu?”  
+          User: “Tầm 10 phút thôi” → ✅ → intent = `symptom_query`
+
+        - Bot: “Bạn bị chóng mặt khi nào?”  
+          User: “Giờ mấy giờ rồi ta?” → ❌ → intent = `general_chat`
+
+        - Bot: “Bạn thấy mệt như thế nào?”  
+          User: “Chắc do nắng nóng quá” → ✅ → intent = `symptom_query`
+
+        - Bot: “Cơn đau đầu của bạn thường kéo dài bao lâu vậy?”  
+          User: “tầm 5 10 phút gì đó” → ✅ → intent = `symptom_query`
+
+        - User: “Làm sao để đỡ đau bụng?” → ✅ → intent = `health_advice`
+        - User: “Ăn gì để dễ ngủ hơn?” → ✅ → intent = `health_advice`
+        - User: “lấy danh sách người dùng” → ✅ → intent = `sql_query`
+        - User: “cho mình xem đơn hàng gần đây nhất” → ✅ → intent = `sql_query`
+        - User: “hôm nay trời đẹp ghê” → ✅ → intent = `general_chat`
+
+        - User: “Cho tôi xem hồ sơ bệnh nhân Nguyễn Văn A” → ✅ → intent = `patient_summary_request`
+        - User: “Xem tình hình bệnh nhân có sđt 0909...” → ✅ → intent = `patient_summary_request`
+        - User: “Bệnh nhân đó dạo này sao rồi?” → ✅ → intent = `patient_summary_request`
+
+
+
+
+        → What is the current intent?
     """
 
     try:
@@ -111,39 +171,21 @@ async def detect_intent(user_message: str, session_key: str = None, last_intent:
             print(f"🎯 Intent phát hiện cuối cùng: {mapped_intent}")
             return mapped_intent
 
-        # ❓ Nếu không rõ intent → fallback
-        # if not raw_intent or mapped_intent not in VALID_INTENTS:
-        #     if gpt_detect_symptom_intent(user_message):
-        #         print("🩺 GPT nhận đây là mô tả triệu chứng mới → intent = 'symptom_query'")
-        #         return "symptom_query"
-
-        #     if last_intent == "symptom_query":
-        #         is_followup = await asyncio.to_thread(looks_like_followup_with_gpt, user_message, previous_msg)
-        #         is_uncertain = await asyncio.to_thread(gpt_looks_like_symptom_followup_uncertain, user_message)
-
-        #         if is_followup:
-        #             print("🔁 GPT xác định đây là follow-up triệu chứng → giữ intent 'symptom_query'")
-        #             return "symptom_query"
-
-        #         if is_uncertain:
-        #             print("🤔 GPT xác định đây là câu trả lời mơ hồ tiếp tục chẩn đoán → giữ intent 'symptom_query'")
-        #             return "symptom_query"
-
         # 🔁 Nếu không xác định được rõ → giữ intent cũ nếu có
         if mapped_intent not in INTENT_MAPPING.values():
             if last_intent in INTENT_MAPPING:
-                print(f"🔁 Fallback giữ intent cũ → {last_intent}")
+                logger.info(f"🔁 Fallback giữ intent cũ → {last_intent}")
                 return last_intent
             else:
-                print("❓ Không detect được intent hợp lệ → Trả về 'general_chat'")
+                logger.warning("❓ Không detect được intent hợp lệ → Trả về 'general_chat'")
                 return "general_chat"
 
         # ✅ Cuối cùng: return intent hợp lệ
-        print(f"🎯 Intent phát hiện cuối cùng: {mapped_intent}")
+        logger.info(f"🎯 Intent phát hiện cuối cùng: {mapped_intent}")
         return mapped_intent
 
     except Exception as e:
-        print("❌ Lỗi khi detect intent:", str(e))
+        logger.error(f"❌ Lỗi khi detect intent: {str(e)}")
         return "general_chat"
 
 

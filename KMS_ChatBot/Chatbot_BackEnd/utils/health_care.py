@@ -56,7 +56,7 @@ async def health_talk(
     asked = await get_followed_up_symptom_ids(session_key)
     logger.info("📌 Đã hỏi follow-up các triệu chứng có ID: %s", asked)
 
-    logger.info("📌 related_asked = %s", session_data.get("related_asked", False))
+    # logger.info("📌 related_asked = %s", session_data.get("related_asked", False))
 
     # Step 3: Xây prompt tổng hợp
     prompt = build_KMS_prompt(
@@ -73,7 +73,7 @@ async def health_talk(
 
 
     # Step 4: Gọi GPT (non-stream)
-    completion = chat_completion(messages=[{"role": "user", "content": prompt}], temperature=0.3)
+    completion = chat_completion(messages=[{"role": "user", "content": prompt}], temperature=0.7)
 
     content = completion.choices[0].message.content.strip()
     logger.debug("🔎 Raw content từ GPT:\n%s", content)
@@ -94,9 +94,9 @@ async def health_talk(
 
     action = parsed.get("action")
 
-    if action == "related":
-        session_data["related_asked"] = True
-        save_session_data(session_key, session_data)
+    # if action == "related":
+    #     session_data["related_asked"] = True
+    #     save_session_data(session_key, session_data)
 
 
     target_followup_id = inputs.get("target_followup_id")

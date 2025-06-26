@@ -1,8 +1,12 @@
 # Danh sách intent cho phép
 VALID_INTENTS = [
-    # --- Triệu chứng & chẩn đoán ---
+    # --- Triệu chứng & chẩn  & chăm sóc sức khỏe ---
     "medical_history",
     "health_query",
+    "health_advice",
+
+    # --- Truy vấn hồ sơ bệnh nhân ---
+    "patient_summary_request",
 
     # --- Truy vấn dữ liệu có cấu trúc (SQL) ---
     "user_profile",
@@ -32,8 +36,16 @@ VALID_INTENTS = [
 
 # Mapping từ client intent → pipeline key
 INTENT_MAPPING = {
+
+    # Xem thông tin phỏng đoán bệnh từ AI
+    "patient_summary_request": "patient_summary_request",
+
     # Ý định cần trích xuất triệu chứng & hội thoại chẩn đoán
-    "health_query":          "symptom_query",     # vẫn giữ vì đây là trò chuyện về triệu chứng
+    "health_query":          "symptom_query",
+    
+    # Tư vấn sức khỏe
+    "health_advice":         "health_advice",
+    
     # Truy vấn dữ liệu thương mại / dịch vụ
     "products":              "product_query",
     "order_items_details":   "product_query",
@@ -62,6 +74,9 @@ INTENT_MAPPING = {
 INTENT_PIPELINES = {
     # Toàn bộ các intent liên quan sức khỏe → dùng GPT lead
     "symptom_query": ["health_talk"],
+    "health_advice": ["health_advice"],
+
+    "patient_summary_request": ["patient_summary"],
 
     # Các intent truy vấn dữ liệu có cấu trúc → SQL
     "product_query": ["chat", "sql"],
