@@ -9,115 +9,137 @@ from config.config import DB_CONFIG
 from datetime import datetime, timedelta
 
 def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
-    """
-    Trả về:
-    - markdown: nội dung tóm tắt hiển thị
-    - summary_data: số lượng triệu chứng, dự đoán, các mốc ngày → để GPT quyết định hành động
-    - raw_data: dữ liệu gốc (optional)
-    """
     conn = pymysql.connect(**DB_CONFIG)
     symptom_rows = []
-    prediction_data = None
-    prediction_count = 0
+    prediction_rows = []
+    prediction_date = None
+
     try:
         with conn.cursor() as cursor:
-            # 📅 Chuẩn hóa ngày nếu có
-            date_filter = ""
+            # 1️⃣ Load triệu chứng
             values = [user_id]
+            date_filter = ""
             if for_date:
                 try:
                     date_obj = datetime.strptime(for_date, "%d/%m/%Y").date()
                     date_filter = "AND h.record_date = %s"
                     values.append(date_obj)
                 except:
-                    print("⚠️ Ngày không hợp lệ. Bỏ qua lọc ngày.")
                     date_obj = None
             else:
                 date_obj = None
 
-            # 🔍 Lấy triệu chứng
             cursor.execute(f"""
                 SELECT s.name, h.record_date, h.notes
                 FROM user_symptom_history h
                 JOIN symptoms s ON h.symptom_id = s.symptom_id
                 WHERE h.user_id = %s {date_filter}
                 ORDER BY h.record_date DESC
-                LIMIT 10
+                LIMIT 20
             """, tuple(values))
             symptom_rows = cursor.fetchall()
 
-            # 🔍 Dự đoán AI
+            # 2️⃣ Load dự đoán bệnh
             pred_query = """
-                SELECT prediction_date, details
-                FROM health_predictions
-                WHERE user_id = %s
+                SELECT p.prediction_date, d.disease_name_raw, d.confidence, d.disease_summary, d.disease_care
+                FROM health_predictions p
+                JOIN prediction_diseases d ON p.prediction_id = d.prediction_id
+                WHERE p.user_id = %s
             """
             pred_params = [user_id]
-
             if date_obj:
-                pred_query += " AND DATE(prediction_date) = %s"
+                pred_query += " AND DATE(p.prediction_date) = %s"
                 pred_params.append(date_obj)
-
-            pred_query += " ORDER BY prediction_date DESC"
+            pred_query += " ORDER BY p.prediction_date DESC"
             cursor.execute(pred_query, tuple(pred_params))
-            pred_results = cursor.fetchall()
+            prediction_rows = cursor.fetchall()
 
-            if pred_results:
-                prediction_count = len(pred_results)
-                row = pred_results[0]
-                prediction_data = {
-                    "prediction_date": row[0].strftime("%d/%m/%Y"),
-                    "details": json.loads(row[1])
-                }
+            if prediction_rows:
+                prediction_date = prediction_rows[0][0].strftime("%d/%m/%Y")
 
     finally:
         conn.close()
 
-    # 📦 Chuẩn bị metadata
-    symptom_dates = list({d[1].strftime("%d/%m/%Y") for d in symptom_rows})
-    latest_pred_date = prediction_data["prediction_date"] if prediction_data else None
+    # ✍️ Chuẩn bị dữ liệu cho prompt
+    symptom_lines = []
+    for name, date, note in symptom_rows:
+        line = f"- {name} ({date.strftime('%d/%m/%Y')})"
+        if note:
+            line += f": {note.strip()}"
+        symptom_lines.append(line)
+
+    disease_lines = []
+    for _, name, conf, summary, care in prediction_rows:
+        percent = int(conf * 100)
+        icon = "🔴" if conf >= 0.85 else "🟠" if conf >= 0.6 else "🟡"
+        name_text = name.title() if name else "Không rõ"
+        summary_text = summary.strip() if summary else "Không có mô tả."
+        
+        disease_block = f"{icon} <strong>{name_text}</strong><br>— {summary_text}"
+        if care:
+            disease_block += f"<br>→ Gợi ý: {care.strip()}"
+        disease_lines.append(disease_block)
+
+
+    # 💡 Prompt yêu cầu HTML đẹp
+    gpt_prompt = f"""
+    You are a medical assistant helping summarize a patient's health history for a Vietnamese doctor.
+
+    Below is the recent health data of the patient:
+
+    🩺 Reported symptoms:
+    {chr(10).join(symptom_lines) if symptom_lines else "(No recent symptoms reported)"}
+
+    🧠 AI-predicted possible conditions:
+    {chr(10).join(disease_lines) if disease_lines else "(No AI predictions available)"}
+
+        Your task:
+        - Write a fluent and clear summary in Vietnamese.
+        - Format the output as HTML using:
+            • <strong> for bold text (disease names and symptom names)
+            • <br> for line breaks
+            • Emoji to indicate AI confidence (🔴 / 🟠 / 🟡)
+        - Only in the symptom summary paragraph, use <strong> to highlight each symptom name.
+        - Do not highlight symptom names again in the disease descriptions below.
+        - Start with a paragraph that summarizes all symptoms and dates.
+        - Then present each AI-predicted condition as a separate HTML block:
+            • Start with emoji + disease name in <strong>, followed by <br>
+            • Then describe the condition in natural Vietnamese
+            • If care advice exists, write it as a continuation of the same paragraph
+        - Do not use symbols like "—" or "→"
+        - Begin any care advice with the phrase "Gợi ý:" in Vietnamese.
+        - Instead, embed care advice naturally in the explanation (e.g., "Bạn nên nghỉ ngơi và theo dõi thêm nếu cần.")
+
+        Output must be in HTML and written in warm, natural Vietnamese.
+        """
+
+    try:
+        reply = chat_completion(
+            [{"role": "user", "content": gpt_prompt}],
+            temperature=0.4,
+            max_tokens=700
+        )
+        summary_html = reply.choices[0].message.content.strip()
+
+        summary_html = re.sub(r"^```html|```$", "", summary_html).strip()
+
+        # print("🧪 GPT raw output:\n", reply.choices[0].message.content)
+    except Exception as e:
+        summary_html = "⚠️ Không thể tạo tóm tắt. GPT gặp lỗi hoặc dữ liệu không đủ."
 
     summary_data = {
         "symptom_count": len(symptom_rows),
-        "prediction_count": prediction_count,
-        "symptom_dates": symptom_dates,
-        "latest_prediction_date": latest_pred_date or "N/A"
+        "prediction_count": len(prediction_rows),
+        "symptom_dates": list({d[1].strftime("%d/%m/%Y") for d in symptom_rows}),
+        "latest_prediction_date": prediction_date or "N/A"
     }
 
-    # 📝 Format Markdown
-    lines = ["## 🧾 Hồ sơ tóm tắt bệnh nhân"]
-
-    if symptom_rows:
-        lines.append("\n🩺 **Triệu chứng đã ghi nhận:**")
-        for name, date, note in symptom_rows:
-            date_str = date.strftime("%d/%m/%Y")
-            note_part = f" ({note.strip()})" if note else ""
-            lines.append(f"- {name} — {date_str}{note_part}")
-    else:
-        lines.append("\n🩺 **Triệu chứng đã ghi nhận:** (không có dữ liệu gần đây)")
-
-    if prediction_data:
-        lines.append(f"\n🤖 **Dự đoán gần nhất từ AI** ({prediction_data['prediction_date']}):")
-        diseases = prediction_data["details"].get("diseases", [])
-        for d in diseases:
-            name = d.get("name", "Không rõ")
-            conf = int(d.get("confidence", 0.0) * 100)
-            summary = d.get("summary", "").strip()
-            care = d.get("care", "").strip()
-            lines.append(f"- **{name}** (~{conf}%): {summary}")
-            if care:
-                lines.append(f"  → Gợi ý: {care}")
-    else:
-        lines.append("\n🤖 **Dự đoán gần nhất từ AI:** (chưa có dữ liệu)")
-
-    lines.append("\n📌 Nếu triệu chứng trở nặng, hãy tư vấn thêm với bác sĩ hoặc đi khám ngay.")
-
     return {
-        "markdown": "\n".join(lines),
+        "markdown": summary_html,  # Dù là HTML, frontend vẫn dùng key này
         "summary_data": summary_data,
         "raw_data": {
             "symptoms": symptom_rows,
-            "prediction": prediction_data
+            "prediction_diseases": prediction_rows
         }
     }
 
@@ -149,9 +171,19 @@ def gpt_decide_patient_summary_action(user_message: str, summary_data: dict) -> 
         - "ask_for_user_info": if identifying information seems missing or too vague
 
         Instructions:
-        - If the number of symptoms is more than 5, or there are multiple predictions, and the user did not specify a date, you should prefer "ask_for_date".
-        - Only use "show_all" if the amount of information is small, or if the user clearly asked for the latest summary.
-        - If the user message is vague or you can't identify which patient they mean, choose "ask_for_user_info".
+
+        - If the number of symptoms is more than 5, or there are multiple predictions, and the user did not specify a date, you should normally prefer "ask_for_date".
+
+        - ❗BUT — if the user explicitly requests to view everything (e.g., “xem toàn bộ”, “cho tôi toàn bộ”, “toàn bộ tình hình”, “xem chi tiết hết”, “xem tất cả”, “full thông tin”, “toàn bộ phỏng đoán”, “tổng thể”),  
+        then you **must return "show_all"** regardless of data size or missing date.
+
+        - Also use "show_all" if the user asks to see the latest summary (e.g., “mới nhất”, “gần nhất”).
+
+        - Use "ask_for_user_info" only if the user’s message is too vague or lacks identifying information.
+        - If you detect the user's intent is to see the full or complete patient summary, you MUST return `"action": "show_all"` without exception.
+
+
+
 
         Return only a JSON object in this format:
         ```json

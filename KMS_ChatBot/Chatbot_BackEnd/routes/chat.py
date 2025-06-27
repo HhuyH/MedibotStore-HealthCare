@@ -4,16 +4,19 @@ import json
 import asyncio
 import logging
 logger = logging.getLogger(__name__)
+from datetime import datetime
 
 from models import Message,ResetRequest
 from config.intents import INTENT_PIPELINES
+
+from utils.limit_history import limit_history_by_tokens, refresh_system_context
 from utils.auth_utils import has_permission, normalize_role
 from utils.session_store import get_session_data, save_session_data, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys
 from utils.intent_utils import detect_intent, build_system_message
 from utils.symptom_utils import (
     get_symptom_list,
+    has_diagnosis_today,
 )
-from utils.limit_history import limit_history_by_tokens, refresh_system_context
 from utils.openai_utils import stream_chat
 from utils.sql_executor import run_sql_query
 from utils.health_care import (
@@ -24,10 +27,7 @@ from utils.openai_utils import stream_gpt_tokens
 from utils.patient_summary import (
     generate_patient_summary,
     gpt_decide_patient_summary_action,
-    find_user_id_by_info,
-    extract_name_email_phone,
     extract_date_from_text,
-    extract_name_email_phone_gpt,
     resolve_user_id_from_message
 )
 
@@ -48,8 +48,32 @@ async def chat_stream(msg: Message = Body(...)):
         return StreamingResponse(denied_stream(), media_type="text/event-stream; charset=utf-8")
 
     # ✅ Load session data trước
-    session_data = await get_session_data(msg.session_id)
+    session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
+
+    # Ngày hôm nay
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    # Lấy ngày hoạt động gần nhất
+    last_active_date = session_data.get("active_date")
+
+    # Nếu khác ngày → reset session (nhưng không trả lời ngay)
+    if last_active_date and last_active_date != today:
+        logger.info(f"🔄 Reset session vì đã qua ngày: {last_active_date} → {today}")
+        
+        # Gọi hàm reset
+        await reset_session(data=ResetRequest(session_id=msg.session_id, user_id=msg.user_id or None))
+        
+        
+        # Tải lại session sau khi reset
+        session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
+
+    # Luôn cập nhật ngày hoạt động sau mỗi message
+    session_data["active_date"] = today
     
+    is_same_day = session_data.get("active_date") == today
+    diagnosed_today = has_diagnosis_today(user_id=msg.user_id) if msg.user_id else False
+
+
     recent_messages = list(session_data.get("recent_messages") or [])
 
     # Gộp bot reply gần nhất nếu có
@@ -76,7 +100,7 @@ async def chat_stream(msg: Message = Body(...)):
     last_intent = session_data.get("last_intent", None)
     intent = await detect_intent(
         user_message=msg.message,
-        session_key=msg.session_id,
+        session_id=msg.session_id,
         last_intent=last_intent,
         recent_messages=recent_messages,
         recent_user_messages=recent_user_messages,
@@ -103,12 +127,11 @@ async def chat_stream(msg: Message = Body(...)):
         buffer = ""
         is_json_mode = True
 
-        nonlocal symptoms, suggestion, updated_session_data
+        nonlocal symptoms, suggestion, updated_session_data, session_data
         sql_query = None
         natural_text = ""
 
-        session_key = msg.user_id or msg.session_id
-        stored_symptoms = await get_symptoms_from_session(session_key)
+        stored_symptoms = await get_symptoms_from_session(session_id=msg.session_id, user_id=msg.user_id)
 
 
         for step in pipeline:
@@ -150,9 +173,13 @@ async def chat_stream(msg: Message = Body(...)):
                     recent_messages=recent_messages,
                     recent_user_messages=recent_user_messages,
                     recent_assistant_messages=recent_assistant_messages,
-                    session_key=msg.user_id or msg.session_id,
+                    session_id=msg.session_id,
                     user_id=msg.user_id,
-                    chat_id=getattr(msg, "chat_id", None)
+                    chat_id=getattr(msg, "chat_id", None),
+                    session_context={
+                        "is_same_day": is_same_day,
+                        "diagnosed_today": diagnosed_today
+                    }
                 ):
                     chunks.append(chunk)
                     yield f"data: {json.dumps({'natural_text': chunk}, ensure_ascii=False)}\n\n"
@@ -189,7 +216,7 @@ async def chat_stream(msg: Message = Body(...)):
 
             # --- Step 2.2: GPT điều phối xem tổng quất triệu chứng và phỏng đoán từ AI cho bác sĩ ---
             elif step == "patient_summary":
-                session_data = await get_session_data(msg.session_id)
+                session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
                 user_id_for_summary = session_data.get("current_summary_user_id")
 
                 # 1️⃣ Nếu chưa có user_id thì cố gắng extract từ câu hỏi
@@ -292,7 +319,7 @@ async def chat_stream(msg: Message = Body(...)):
 
         yield "data: [DONE]\n\n"
     
-
+    save_session_data(msg.session_id, session_data)
     return StreamingResponse(event_generator(), media_type="text/event-stream; charset=utf-8")
 
 
@@ -314,13 +341,9 @@ async def reset_session(data: ResetRequest):
     await clear_followup_asked_all_keys(user_id=user_id, session_id=session_id)
 
     logger.info(f"✅ Đã reset session cho user_id={user_id}, session_id={session_id}")
-    logger.debug(await get_session_data(session_id))  # Log lại để xác nhận
+    logger.debug(await get_session_data(user_id, session_id))  # Log lại để xác nhận
 
     return {"status": "success", "message": "Đã reset session!"}
-
-
-
-
 
 async def not_use():
             # # --- Step 2: GPT điều phối health_talk ---

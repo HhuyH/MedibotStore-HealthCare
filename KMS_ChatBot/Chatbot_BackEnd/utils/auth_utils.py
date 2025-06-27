@@ -2,7 +2,7 @@ ROLE_PERMISSIONS = {
     "Admin": ["chat", "view_all", "manage_users"],
     "Doctor": ["chat", "view_patients"],
     "Patient": ["chat"],
-    "Guest": []  # Khách chưa đăng nhập
+    "Guest": ["chat"]  # Khách chưa đăng nhập
 }
 
 def normalize_role(role):

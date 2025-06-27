@@ -3,14 +3,12 @@ import pymysql
 from datetime import date
 import logging
 import re
-import random, asyncio
-import hashlib
-
+import asyncio
 logger = logging.getLogger(__name__)
 from config.config import DB_CONFIG
 from utils.openai_utils import stream_gpt_tokens
 from utils.openai_client import chat_completion
-from utils.symptom_utils import get_symptom_list, extract_symptoms_gpt, generate_related_symptom_question, save_symptoms_to_db, get_related_symptoms_by_disease
+from utils.symptom_utils import get_symptom_list, extract_symptoms_gpt, generate_related_symptom_question, save_symptoms_to_db, get_related_symptoms_by_disease, generate_symptom_note, update_symptom_note
 from prompts.prompts import build_diagnosis_controller_prompt, build_KMS_prompt
 from utils.text_utils import normalize_text
 from utils.session_store import save_session_data, get_session_data, get_followed_up_symptom_ids, mark_followup_asked, save_symptoms_to_session, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys
@@ -29,16 +27,17 @@ async def health_talk(
     recent_messages: list[str],
     recent_user_messages: list[str], 
     recent_assistant_messages: list[str],
-    session_key=None,
+    session_id=None,
     user_id=None,
     chat_id=None,
+    session_context: dict = None
 ):
-    session_data = await get_session_data(session_key)
+    session_data = await get_session_data(user_id=user_id, session_id=session_id)
+    followup_after_conclusion_used = session_data.get("followup_after_conclusion_used", False)
 
     # Step 1: Trích triệu chứng mới
     new_symptoms, fallback_message = extract_symptoms_gpt(
         user_message,
-        session_key=session_key,
         recent_messages=recent_messages
     )
     logger.info("🌿 Triệu chứng trích được: %s", new_symptoms)
@@ -47,17 +46,23 @@ async def health_talk(
         stored_symptoms += [
             s for s in new_symptoms if s["name"] not in {sym["name"] for sym in stored_symptoms}
         ]
-        save_symptoms_to_session(session_key, stored_symptoms)
+        save_symptoms_to_session(user_id, session_id, stored_symptoms)
+        stored_symptoms = await get_symptoms_from_session(user_id, session_id)
 
     # Step 2: Lấy related symptom + câu hỏi followup
-    inputs = await decide_KMS_prompt_inputs(session_key=session_key)
+    inputs = await decide_KMS_prompt_inputs(session_id=session_id, user_id=user_id)
 
     # ✅ In log triệu chứng đã hỏi follow-up
-    asked = await get_followed_up_symptom_ids(session_key)
+    asked = await get_followed_up_symptom_ids(session_id=session_id, user_id=user_id)
     logger.info("📌 Đã hỏi follow-up các triệu chứng có ID: %s", asked)
 
     # logger.info("📌 related_asked = %s", session_data.get("related_asked", False))
+    session_data = await get_session_data(user_id=user_id, session_id=session_id)
 
+    had_conclusion = (
+        session_data.get("had_conclusion", False)
+        and not followup_after_conclusion_used
+    )
     # Step 3: Xây prompt tổng hợp
     prompt = build_KMS_prompt(
         SYMPTOM_LIST=get_symptom_list(),
@@ -68,7 +73,9 @@ async def health_talk(
         recent_user_messages=recent_user_messages,
         recent_assistant_messages=recent_assistant_messages,
         related_symptom_names=inputs["related_symptom_names"],
-        related_asked = session_data.get("related_asked", False)
+        related_asked=session_data.get("related_asked", False),
+        session_context=session_context,
+        had_conclusion=had_conclusion
     )
 
 
@@ -96,14 +103,47 @@ async def health_talk(
 
     # if action == "related":
     #     session_data["related_asked"] = True
-    #     save_session_data(session_key, session_data)
+    #     save_session_data(session_id, session_data)
+
+    # Đặt cờ khi đã qua kết luận 1 lần để kiểm soát followup
+    if action in ["light_summary", "diagnosis"]:
+        session_data["had_conclusion"] = True
+        save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+
+    if parsed.get("action") == "followup" and had_conclusion:
+        logger.info("🔁 Đã cho phép follow-up sau kết luận. Tắt cờ had_conclusion.")
+        session_data["had_conclusion"] = False
+        session_data["followup_after_conclusion_used"] = True  # ✅ Đánh dấu đã dùng rồi
+        save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+
+
+    # 🔄 Nếu người dùng nói thêm về triệu chứng cũ → ghi chú lại vào user_symptom_history
+    updated_symptom = parsed.get("updated_symptom")
+    diagnosed_today = session_context.get("diagnosed_today", False) if session_context else False
+    logger.info(f"⚙️ diagnosed_today = {diagnosed_today}")
+
+    # Update note triệu chứng vào db nếu người dùng có bỏ sung thêm
+    if updated_symptom and diagnosed_today:
+        try:
+            success = update_symptom_note(
+                user_id=user_id,
+                symptom_name=updated_symptom,
+                user_message=user_message
+            )
+            if success:
+                logger.info(f"📝 Đã cập nhật ghi chú triệu chứng: {updated_symptom}")
+            else:
+                logger.warning(f"⚠️ Không thể ghi chú triệu chứng: {updated_symptom}")
+        except Exception as e:
+            logger.error(f"❌ Lỗi khi cập nhật ghi chú triệu chứng {updated_symptom}: {e}")
+
 
 
     target_followup_id = inputs.get("target_followup_id")
-
+    # Đặt cơ cho những triệu chứng tương ứng khi followup đã hỏi
     if action == "followup" and target_followup_id:
         logger.info("✅ Đánh dấu đã hỏi follow-up triệu chứng ID: %s", target_followup_id)
-        await mark_followup_asked(session_key, [target_followup_id])
+        await mark_followup_asked(session_id, user_id, [target_followup_id])
 
     end = parsed.get("end", False)
 
@@ -135,8 +175,8 @@ async def health_talk(
     # Step 6: Nếu cần, clear session
     if end:
         logger.info("🛑 GPT yêu cầu kết thúc session.")
-        await clear_symptoms_all_keys(user_id=user_id, session_id=session_key)
-        await clear_followup_asked_all_keys(user_id=user_id, session_id=session_key)
+        # await clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
+        # await clear_followup_asked_all_keys(user_id=user_id, session_id=session_id)
 
     # Step 7: Stream message từng đoạn ra ngoài
     for chunk in stream_gpt_tokens(message):
@@ -147,9 +187,9 @@ async def health_talk(
 # - stored_symptoms
 # - raw_followup_question: danh sách triệu chứng kèm câu hỏi follow-up
 # - related_symptom_names: tên các triệu chứng liên quan nếu không còn follow-up
-async def decide_KMS_prompt_inputs(session_key: str):
-    stored_symptoms = await get_symptoms_from_session(session_key)
-    next_symptom = await get_next_symptom_to_followup(session_key, stored_symptoms)
+async def decide_KMS_prompt_inputs(session_id: str, user_id: int):
+    stored_symptoms = await get_symptoms_from_session(user_id, session_id)
+    next_symptom = await get_next_symptom_to_followup(session_id, user_id, stored_symptoms)
 
     symptoms_to_ask = [next_symptom["name"]] if next_symptom else []
 
@@ -171,7 +211,7 @@ async def decide_KMS_prompt_inputs(session_key: str):
     }
 
 # Chọn đúng 1 triệu chứng chưa hỏi follow-up, sau đó truyền vào GPT để nó tự hỏi theo kiểu tinh tế từng bước
-async def get_next_symptom_to_followup(session_key: str, stored_symptoms: list[dict]) -> dict | None:
+async def get_next_symptom_to_followup(session_id: str, user_id: int, stored_symptoms: list[dict]) -> dict | None:
     """
     Trả về dict dạng: {"name": "Tên triệu chứng chưa hỏi follow-up"}
     hoặc None nếu không còn triệu chứng nào cần hỏi.
@@ -180,7 +220,7 @@ async def get_next_symptom_to_followup(session_key: str, stored_symptoms: list[d
         return None
 
     # Lấy danh sách ID đã hỏi follow-up từ session
-    already_asked_ids = set(await get_followed_up_symptom_ids(session_key))
+    already_asked_ids = set(await get_followed_up_symptom_ids(user_id=user_id, session_id=session_id))
     
     # Tìm triệu chứng chưa hỏi follow-up
     for s in stored_symptoms:
@@ -190,13 +230,13 @@ async def get_next_symptom_to_followup(session_key: str, stored_symptoms: list[d
     return None
 
 # Lấy những câu hỏi liên quan tới triệu chứng từ DB
-async def get_followup_question_fromDB(symptom_ids: list[int], session_key: str = None) -> dict | None:
+async def get_followup_question_fromDB(symptom_ids: list[int], user_id: int, session_id: str = None) -> dict | None:
     if not symptom_ids:
         return None
     # Lấy danh sách symptom_id đã hỏi từ session
     already_asked = set()
-    if session_key:
-        already_asked = set(await get_followed_up_symptom_ids(session_key))
+    if session_id:
+        already_asked = set(await get_followed_up_symptom_ids(user_id=user_id, session_id=session_id))
 
     # Lọc ra những symptom_id chưa hỏi
     ids_to_ask = [sid for sid in symptom_ids if sid not in already_asked]
@@ -297,7 +337,7 @@ def save_prediction_to_db(
             confidence_score = max([d.get("confidence", 0.0) for d in diseases], default=0.0)
             prediction_details = {
                 "symptoms": [s["name"] for s in symptoms],
-                "diseases": diseases  # giữ nguyên toàn bộ list từ GPT
+                "predicted_diseases": [d.get("name") for d in diseases if d.get("name")]
             }
 
             cursor.execute("""
@@ -310,12 +350,12 @@ def save_prediction_to_db(
             for d in diseases:
                 name = d.get("name")
                 confidence = d.get("confidence", 0.0)
+                summary = d.get("summary", "")
+                care = d.get("care", "")
 
                 # Tìm trong bảng diseases
                 cursor.execute("SELECT disease_id FROM diseases WHERE name = %s", (name,))
                 row = cursor.fetchone()
-                summary = d.get("summary", "")
-                care = d.get("care", "")
 
                 if row:
                     disease_id = row[0]
@@ -329,51 +369,12 @@ def save_prediction_to_db(
                         prediction_id, disease_id, confidence, disease_name_raw,
                         disease_summary, disease_care
                     ) VALUES (%s, %s, %s, %s, %s, %s)
-                """, (prediction_id, disease_id, confidence, disease_name_raw, summary, care))
+                """, (prediction_id, disease_id, confidence, disease_name_raw, summary, care
+                ))
 
         conn.commit()
     finally:
         conn.close()
-
-# Hàm tạo ghi chú cho triệu chứng khi thêm vào database
-def generate_symptom_note(recent_messages: list[str]) -> str:
-    if not recent_messages:
-        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
-
-    context = "\n".join(f"- {msg}" for msg in recent_messages[-5:])
-
-    prompt = f"""
-        You are a helpful AI assistant supporting medical documentation.
-
-        Below is a recent conversation with a user about their health concerns:
-
-        {context}
-
-        Write a short **symptom note** in **Vietnamese**, summarizing the user's main symptom(s) and any relevant context (e.g., when it started, what triggered it, how it felt).
-
-        Instructions:
-        - Your note must be in Vietnamese.
-        - Keep it short (1–2 sentences).
-        - Use natural, friendly, easy-to-understand language.
-        - Do not use medical jargon.
-        - Do not invent symptoms that were not clearly mentioned.
-        - If the user was vague, still reflect that (e.g., “người dùng không rõ nguyên nhân”).
-
-        Your output must be only the note. Do not include any explanation or format it as JSON.
-    """.strip()
-
-    try:
-        response = chat_completion([
-            {"role": "user", "content": prompt}
-        ], temperature=0.3, max_tokens=100)
-
-        return response.choices[0].message.content.strip()
-    except Exception:
-        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
-
-
-
-
 
 
 
@@ -456,10 +457,10 @@ def predict_disease_based_on_symptoms(symptoms: list[dict]) -> list[dict]:
         conn.close()
 
 # Hàm cũ dùng decide_health_action để quyết định hành động (có thể sẽ không dùng nữa Những chưa bỏ)
-async def gpt_health_talk(user_message: str, stored_symptoms: list[dict], recent_messages: list[str], session_key=None, user_id=None, chat_id=None) -> dict:
+async def gpt_health_talk(user_message: str, stored_symptoms: list[dict], recent_messages: list[str], session_id=None, user_id=None, chat_id=None) -> dict:
     
     # 1. Xác định các triệu chứng chưa follow-up và triệu chứng liên quan (ĐƯA LÊN TRƯỚC)
-    asked_ids = await get_followed_up_symptom_ids(session_key)
+    asked_ids = await get_followed_up_symptom_ids(user_id, session_id)
     remaining = [s["name"] for s in stored_symptoms if s["id"] not in asked_ids]
     symptom_ids = [s["id"] for s in stored_symptoms]
     related_symptoms = get_related_symptoms_by_disease(symptom_ids)
@@ -492,10 +493,10 @@ async def gpt_health_talk(user_message: str, stored_symptoms: list[dict], recent
         stored_symptoms = unique_symptoms
 
         # Lưu lại vào session
-        stored_symptoms = save_symptoms_to_session(session_key, stored_symptoms)
-        symptoms_saved = await get_symptoms_from_session(session_key)
+        stored_symptoms = save_symptoms_to_session(user_id, session_id, stored_symptoms)
+        symptoms_saved = await get_symptoms_from_session(user_id, session_id)
 
-        logger.info(f"[📝] Triệu chứng mới lưu vào session {session_key}: {[s['name'] for s in new_symptoms]}")
+        logger.info(f"[📝] Triệu chứng mới lưu vào session {session_id}: {[s['name'] for s in new_symptoms]}")
         logger.info(f"[📝] Tổng triệu chứng hiện có (đã loại trùng): {[s['name'] for s in symptoms_saved]}")
 
     # --- Block 1: Chẩn đoán chính thức ---
@@ -542,7 +543,7 @@ async def gpt_health_talk(user_message: str, stored_symptoms: list[dict], recent
         logger.info("⚡ GPT xác định câu hỏi followup")
 
         followup, targets = await generate_friendly_followup_question(
-            stored_symptoms, session_key, recent_messages, return_with_targets=True
+            stored_symptoms, session_id, recent_messages, return_with_targets=True
         )
 
         if targets:
@@ -784,7 +785,7 @@ FOLLOWUP_KEY = "followup_asked"
 # ✅ generate_friendly_followup_question trả về cả câu hỏi + danh sách triệu chứng chưa hỏi follow-up
 async def generate_friendly_followup_question(
     symptoms: list[dict], 
-    session_key: str = None, 
+    session_id: str = None, 
     recent_messages: list[str] = [],
     return_with_targets: bool = False
 ) -> str | tuple[str, list[dict]]:
@@ -794,8 +795,8 @@ async def generate_friendly_followup_question(
 
     # 📌 B1: Load các triệu chứng đã hỏi follow-up từ session
     already_asked = set()
-    if session_key:
-        already_asked = set(await get_followed_up_symptom_ids(session_key))
+    if session_id:
+        already_asked = set(await get_followed_up_symptom_ids(session_id))
 
     # 📌 B2: Lọc triệu chứng chưa hỏi
     symptoms_to_ask = [s for s in symptoms if s['id'] not in already_asked]
@@ -873,8 +874,8 @@ async def generate_friendly_followup_question(
         ], temperature=0.4, max_tokens=200)
 
         reply = response.choices[0].message.content.strip()
-        if session_key and just_asked_ids and reply:
-            await mark_followup_asked(session_key, just_asked_ids)
+        if session_id and just_asked_ids and reply:
+            await mark_followup_asked(session_id,  just_asked_ids)
 
         return (reply, symptoms_to_ask) if return_with_targets else reply
 

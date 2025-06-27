@@ -72,7 +72,7 @@ def get_combined_schema_for_intent(intent: str) -> str:
 # Phạt hiện đang là sử dụng chức nắng nào là chat bình thường hay là phát hiện và dự đoán bệnh
 async def detect_intent(
     user_message: str,
-    session_key: str = None,
+    session_id: str = None,
     last_intent: str = None,
     recent_messages: list[str] = [],
     recent_user_messages: list[str] = [],

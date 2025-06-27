@@ -2,7 +2,7 @@ import pymysql
 import logging
 logger = logging.getLogger(__name__)
 import json
-from datetime import date
+from datetime import date,datetime
 from rapidfuzz import fuzz, process
 import re
 from utils.openai_client import chat_completion
@@ -78,22 +78,9 @@ def refresh_symptom_list():
     SYMPTOM_LIST = []
     load_symptom_list()
 
-def extract_symptoms(text):
-    text_norm = normalize_text(text)
-    found = []
-    seen_ids = set()
-    for symptom in SYMPTOM_LIST:
-        for keyword in symptom["aliases"]:
-            if keyword in text_norm and symptom["id"] not in seen_ids:
-                found.append({"id": symptom["id"], "name": symptom["name"]})
-                seen_ids.add(symptom["id"])
-                break
-    return found
-
-def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=None, session_key=None, debug=False):
+def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=None, debug=False):
     symptom_lines = []
     name_to_symptom = {}
-    recent_text = "\n".join(f"- {msg}" for msg in recent_messages[-3:]) if recent_messages else f'- User: {user_message}'
 
     for s in SYMPTOM_LIST:
         aliases = s["aliases"]
@@ -449,4 +436,154 @@ def should_attempt_symptom_extraction(message: str, session_data: dict, stored_s
     except Exception as e:
         print("❌ should_attempt_symptom_extraction error:", e)
         return False
+
+
+def has_diagnosis_today(user_id: int) -> bool:
+    today_str = datetime.now().date().isoformat()
+    query = """
+        SELECT COUNT(*) as total FROM health_predictions
+        WHERE user_id = %s AND DATE(prediction_date) = %s
+    """
+    
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query, (user_id, today_str))
+            result = cursor.fetchone()
+            return result[0] > 0
+    finally:
+        conn.close()
+
+# Hàm tạo ghi chú cho triệu chứng khi thêm vào database
+def generate_symptom_note(recent_messages: list[str]) -> str:
+    if not recent_messages:
+        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+
+    context = "\n".join(f"- {msg}" for msg in recent_messages[-5:])
+
+    prompt = f"""
+        You are a helpful AI assistant supporting medical documentation.
+
+        Below is a recent conversation with a user about their health concerns:
+
+        {context}
+
+        Write a short **symptom note** in **Vietnamese**, summarizing the user's main symptom(s) and any relevant context (e.g., when it started, what triggered it, how it felt).
+
+        Instructions:
+        - Your note must be in Vietnamese.
+        - Keep it short (1–2 sentences).
+        - Use natural, friendly, easy-to-understand language.
+        - Do not use medical jargon.
+        - Do not invent symptoms that were not clearly mentioned.
+        - If the user was vague, still reflect that (e.g., “người dùng không rõ nguyên nhân”).
+
+        Your output must be only the note. Do not include any explanation or format it as JSON.
+    """.strip()
+
+    try:
+        response = chat_completion([
+            {"role": "user", "content": prompt}
+        ], temperature=0.3, max_tokens=100)
+
+        return response.choices[0].message.content.strip()
+    except Exception:
+        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+
+def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> bool:
+    today = datetime.now().date().isoformat()
+
+    # 1. Get symptom_id
+    symptom_id = None
+    query_symptom = "SELECT symptom_id FROM symptoms WHERE name = %s LIMIT 1"
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query_symptom, (symptom_name,))
+            result = cursor.fetchone()
+            if result:
+                symptom_id = result["id"]
+    finally:
+        conn.close()
+
+    if not symptom_id:
+        return False
+
+    # 2. Get existing note
+    old_note = ""
+    query_note = """
+        SELECT notes FROM user_symptom_history
+        WHERE user_id = %s AND symptom_id = %s AND record_date = %s
+        LIMIT 1
+    """
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query_note, (user_id, symptom_id, today))
+            result = cursor.fetchone()
+            if result:
+                old_note = result["notes"]
+    finally:
+        conn.close()
+
+    # 3. Build GPT prompt
+    prompt = f"""
+        You are an intelligent medical assistant helping to manage a patient's symptom history.
+
+        🩺 Symptom being tracked: **{symptom_name}**
+
+        Here is the previous note (if any):
+        ---
+        {old_note or "No prior note available."}
+
+        Here is the latest message from the user:
+        ---
+        {user_message}
+
+        Your task:
+        - Combine the previous note (if available) with the new user update
+        - Rewrite the updated symptom note in a clear, concise way as if documenting in a medical chart
+        - Be factual, consistent, and natural
+
+        ⚠️ Output the note **in Vietnamese only**, no English explanation or formatting.
+            """.strip()
+
+    # 4. Generate note via GPT
+    try:
+        response = chat_completion([
+            {"role": "user", "content": prompt}
+        ], temperature=0.3, max_tokens=100)
+        new_note = response.choices[0].message.content.strip()
+    except Exception:
+        new_note = "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+
+    # 5. Upsert to DB
+    query_check = """
+        SELECT id FROM user_symptom_history
+        WHERE user_id = %s AND symptom_id = %s AND record_date = %s
+        LIMIT 1
+    """
+    query_insert = """
+        INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes)
+        VALUES (%s, %s, %s, %s)
+    """
+    query_update = """
+        UPDATE user_symptom_history
+        SET notes = %s
+        WHERE user_id = %s AND symptom_id = %s AND record_date = %s
+    """
+
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(query_check, (user_id, symptom_id, today))
+            exists = cursor.fetchone()
+            if exists:
+                cursor.execute(query_update, (new_note, user_id, symptom_id, today))
+            else:
+                cursor.execute(query_insert, (user_id, symptom_id, today, new_note))
+            conn.commit()
+            return True
+    finally:
+        conn.close()
 
