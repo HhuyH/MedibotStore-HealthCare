@@ -82,6 +82,10 @@ async def detect_intent(
     last_bot_msg = recent_assistant_messages[-1] if recent_assistant_messages else ""
     last_user_msg = recent_user_messages[-1] if recent_user_messages else ""
 
+    logger.info(f"[Intent Debug] Message: {user_message}")
+    logger.info(f"[Intent Debug] Recent User: {last_user_msg}")
+    logger.info(f"[Intent Debug] Recent Bot: {last_bot_msg}")
+
     prompt = f"""
         Classify the user's intent in a chatbot conversation.
 
@@ -111,7 +115,7 @@ async def detect_intent(
         - Only use `"general_chat"` if the user is making small talk, asking about the bot, or saying unrelated casual things.
         - Do NOT misclassify structured or technical requests as casual chat.
         - If unsure, prefer a more specific intent over `"general_chat"`.
-        - If the previous assistant message was a follow-up question about a symptom, and the user responds with something vague or approximate (e.g. “chắc 5-10 phút”, “khoảng sáng tới giờ”, “tầm chiều hôm qua”), you MUST assume this is a continuation of the symptom discussion → KEEP "symptom_query".
+        - If the previous assistant message was a follow-up question about a symptom, and the user responds with something vague or approximate (e.g. “chắc 5-10 phút”, “khoảng sáng tới giờ”, “tầm chiều hôm qua”, "chắc tầm"), you SHOULD assume this is a continuation of the symptom discussion → prefer "symptom_query".
         - If user says “không biết”, “chắc vậy”, “khó nói”, "không rõ", but it’s still in reply to a symptom follow-up → KEEP "symptom_query"
 
         Always return only ONE valid intent from the list.
@@ -119,6 +123,9 @@ async def detect_intent(
         Do NOT include any other words — only return the intent.
 
         Examples:
+        - Bot: “Bạn thấy tê tay bắt đầu từ lúc nào?”  
+          User: “nó tự nhiên xuất hiện thôi” → ✅ → intent = `symptom_query`
+
         - Bot: “Cảm giác đau đầu của bạn thường xuất hiện vào lúc nào?”  
           User: “Mình cũng không rõ lắm” → ✅ → intent = `symptom_query`
 

@@ -137,3 +137,21 @@ async def clear_symptoms_all_keys(user_id: str = None, session_id: str = None):
     session[FOLLOWUP_KEY] = []
     save_session_data(key, session)
     logger.info(f"🧹 [SessionStore] Đã xoá SYMPTOM + followup cho key: {key}")
+
+# ---------------------------
+# CÁC HÀM LÀM VIỆC VỚI SYMPTOM_NOTE (ghi chú về triệu chứng của người dùng do bot tự tổng hộp từ chat)
+# ---------------------------
+SYMPTOM_NOTE_KEY = "symptom_notes"
+
+async def update_symptom_note_in_session(user_id: str = None, session_id: str = None, symptom_name: str = "", note: str = ""):
+    session_key = resolve_session_key(user_id, session_id)
+    session = await get_session_data(session_key)
+    notes = session.get(SYMPTOM_NOTE_KEY, {})
+    notes[symptom_name] = note
+    session[SYMPTOM_NOTE_KEY] = notes
+    save_session_data(session_key, session)
+
+async def get_symptom_notes_from_session(user_id: str = None, session_id: str = None) -> dict:
+    session_key = resolve_session_key(user_id, session_id)
+    session = await get_session_data(session_key)
+    return session.get(SYMPTOM_NOTE_KEY, {})

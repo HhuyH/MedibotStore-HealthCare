@@ -11,7 +11,13 @@ from config.intents import INTENT_PIPELINES
 
 from utils.limit_history import limit_history_by_tokens, refresh_system_context
 from utils.auth_utils import has_permission, normalize_role
-from utils.session_store import get_session_data, save_session_data, get_symptoms_from_session, clear_followup_asked_all_keys, clear_symptoms_all_keys
+from utils.session_store import (
+    get_session_data, 
+    save_session_data, 
+    get_symptoms_from_session, 
+    clear_followup_asked_all_keys, 
+    clear_symptoms_all_keys
+)
 from utils.intent_utils import detect_intent, build_system_message
 from utils.symptom_utils import (
     get_symptom_list,
@@ -73,28 +79,41 @@ async def chat_stream(msg: Message = Body(...)):
     is_same_day = session_data.get("active_date") == today
     diagnosed_today = has_diagnosis_today(user_id=msg.user_id) if msg.user_id else False
 
+    # Tạo recent_messages mới từ history
+    # logger.info(f"🧪 msg.history type: {[type(m) for m in msg.history]}")
+    # logger.info(f"🧪 msg.history raw: {msg.history}")
 
-    recent_messages = list(session_data.get("recent_messages") or [])
 
-    # Gộp bot reply gần nhất nếu có
-    last_bot_reply = session_data.get("last_bot_message", None)
-    if last_bot_reply:
-        recent_messages.append(f"🤖 {last_bot_reply}")
-
-    # Thêm tin nhắn mới từ user
-    recent_messages.append(f"👤 {msg.message}")
+    recent_messages = [f"👤 {m.content}" if m.role == "user" else f"🤖 {m.content}" for m in msg.history]
+    recent_messages = recent_messages[-6:]
 
     # Giữ lại tối đa 6 dòng gần nhất (3 cặp user-bot)
     recent_messages = recent_messages[-6:]
 
     # Tạo 2 danh sách riêng biệt
-    recent_user_messages = [m.replace("👤 ", "") for m in recent_messages if m.startswith("👤")]
-    recent_assistant_messages = [m.replace("🤖 ", "") for m in recent_messages if m.startswith("🤖")][-3:]
+    recent_user_messages = [m.content for m in msg.history if m.role == "user"]
+    recent_assistant_messages = [m.content for m in msg.history if m.role == "assistant"]
 
-    # Lưu vào session
-    session_data["recent_messages"] = recent_messages                   # Full hội thoại gần đây
-    session_data["recent_user_messages"] = recent_user_messages         # Chỉ tin nhắn user
-    session_data["recent_assistant_messages"] = recent_assistant_messages  # Chỉ tin nhắn bot
+    # Lưu lại tối đa 6 dòng gần nhất (3 cặp user-bot)
+    session_data["recent_messages"] = recent_messages[-6:]
+
+    # Tối đa 3 dòng user gần nhất
+    session_data["recent_user_messages"] = recent_user_messages[-3:]
+
+    # Tối đa 3 dòng assistant gần nhất (cực kỳ quan trọng cho step 2 - avoid repeat)
+    session_data["recent_assistant_messages"] = recent_assistant_messages[-3:]
+
+
+    # logger.info("🧾 recent_user_messages:")
+    # for i, user_msg in enumerate(session_data["recent_user_messages"], 1):
+    #     logger.info(f"👤 [{i}] {user_msg}")
+
+    # logger.info("📢 recent_assistant_messages:")
+    # for i, assistant_msg in enumerate(session_data["recent_assistant_messages"], 1):
+    #     logger.info(f"🤖 [{i}] {assistant_msg}")
+
+
+
 
     # 🔁 Phát hiện intent
     last_intent = session_data.get("last_intent", None)
@@ -333,7 +352,8 @@ async def reset_session(data: ResetRequest):
         "last_intent": None,
         "recent_messages": [],
         "symptoms": [],
-        "followup_asked": []
+        "followup_asked": [],
+        "symptom_notes": []
     })
 
     # 🧹 Reset luôn bộ nhớ symptom riêng nếu có
