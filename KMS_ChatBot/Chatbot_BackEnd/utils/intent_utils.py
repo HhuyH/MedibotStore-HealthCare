@@ -71,10 +71,7 @@ def get_combined_schema_for_intent(intent: str) -> str:
 
 # Phạt hiện đang là sử dụng chức nắng nào là chat bình thường hay là phát hiện và dự đoán bệnh
 async def detect_intent(
-    user_message: str,
-    session_id: str = None,
     last_intent: str = None,
-    recent_messages: list[str] = [],
     recent_user_messages: list[str] = [],
     recent_assistant_messages: list[str] = []
 ) -> str:
@@ -82,9 +79,8 @@ async def detect_intent(
     last_bot_msg = recent_assistant_messages[-1] if recent_assistant_messages else ""
     last_user_msg = recent_user_messages[-1] if recent_user_messages else ""
 
-    logger.info(f"[Intent Debug] Message: {user_message}")
-    logger.info(f"[Intent Debug] Recent User: {last_user_msg}")
-    logger.info(f"[Intent Debug] Recent Bot: {last_bot_msg}")
+    # logger.info(f"[Intent Debug] Recent User: {last_user_msg}")
+    # logger.info(f"[Intent Debug] Recent Bot: {last_bot_msg}")
 
     prompt = f"""
         Classify the user's intent in a chatbot conversation.
@@ -171,11 +167,10 @@ async def detect_intent(
         raw_intent = raw_intent.replace("intent:", "").replace("Intent:", "").strip().lower()
 
         mapped_intent = INTENT_MAPPING.get(raw_intent, raw_intent)
-        print(f"🧭 GPT intent: {raw_intent} → Pipeline intent: {mapped_intent}")
+        logger.info(f"🧭 GPT intent: {raw_intent} → Pipeline intent: {mapped_intent}")
 
         # ✅ Nếu intent hợp lệ → dùng
         if mapped_intent in VALID_INTENTS:
-            print(f"🎯 Intent phát hiện cuối cùng: {mapped_intent}")
             return mapped_intent
 
         # 🔁 Nếu không xác định được rõ → giữ intent cũ nếu có
@@ -188,7 +183,6 @@ async def detect_intent(
                 return "general_chat"
 
         # ✅ Cuối cùng: return intent hợp lệ
-        logger.info(f"🎯 Intent phát hiện cuối cùng: {mapped_intent}")
         return mapped_intent
 
     except Exception as e:

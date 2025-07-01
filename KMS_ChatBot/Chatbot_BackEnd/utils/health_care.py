@@ -15,7 +15,8 @@ from utils.symptom_utils import (
     save_symptoms_to_db, 
     get_related_symptoms_by_disease, 
     generate_symptom_note, 
-    update_symptom_note
+    update_symptom_note,
+    get_saved_symptom_ids
 )
 from prompts.prompts import build_diagnosis_controller_prompt, build_KMS_prompt
 from utils.text_utils import normalize_text
@@ -69,24 +70,22 @@ async def health_talk(
     asked = await get_followed_up_symptom_ids(session_id=session_id, user_id=user_id)
     logger.info("📌 Đã hỏi follow-up các triệu chứng có ID: %s", asked)
 
-    # logger.info("📌 related_asked = %s", session_data.get("related_asked", False))
     session_data = await get_session_data(user_id=user_id, session_id=session_id)
 
     had_conclusion = (
         session_data.get("had_conclusion", False)
         and not followup_after_conclusion_used
     )
+
     # Step 3: Xây prompt tổng hợp
     prompt = build_KMS_prompt(
         SYMPTOM_LIST=get_symptom_list(),
         user_message=user_message,
         stored_symptoms_name=[s["name"] for s in stored_symptoms],
         symptoms_to_ask=inputs["symptoms_to_ask"],
-        recent_messages=recent_messages,
         recent_user_messages=recent_user_messages,
         recent_assistant_messages=recent_assistant_messages,
         related_symptom_names=inputs["related_symptom_names"],
-        related_asked=session_data.get("related_asked", False),
         session_context=session_context,
         had_conclusion=had_conclusion
     )
@@ -113,10 +112,6 @@ async def health_talk(
     message = parsed.get("message", fallback_message or "Bạn có thể nói rõ hơn về tình trạng của mình không?")
 
     action = parsed.get("action")
-
-    # if action == "related":
-    #     session_data["related_asked"] = True
-    #     save_session_data(session_id, session_data)
 
     # Đặt cờ khi đã qua kết luận 1 lần để kiểm soát followup
     if action in ["light_summary", "diagnosis"]:
@@ -145,25 +140,12 @@ async def health_talk(
             )
             if success:
                 logger.info(f"📝 Đã cập nhật ghi chú triệu chứng: {updated_symptom}")
-            else:
-                logger.warning(f"⚠️ Không thể ghi chú triệu chứng: {updated_symptom}")
         except Exception as e:
             logger.error(f"❌ Lỗi khi cập nhật ghi chú triệu chứng {updated_symptom}: {e}")
 
     target_followup_id = inputs.get("target_followup_id")
     # Đặt cơ cho những triệu chứng tương ứng khi followup đã hỏi
     if action == "followup" and target_followup_id:
-        # Lấy tên triệu chứng đang follow-up
-        follow_symptom = next((s for s in stored_symptoms if s["id"] == target_followup_id), None)
-        if follow_symptom:
-            note = generate_symptom_note(recent_messages)
-            await update_symptom_note_in_session(
-                user_id=user_id,
-                session_id=session_id,
-                symptom_name=follow_symptom["name"],
-                note=note
-            )
-
         logger.info("✅ Đánh dấu đã hỏi follow-up triệu chứng ID: %s", target_followup_id)
         await mark_followup_asked(session_id, user_id, [target_followup_id])
 
@@ -171,19 +153,28 @@ async def health_talk(
 
     # Log các biến phụ trợ
     logger.info("🎯 Action: %s", action)
-    logger.debug("📌 Related: %s", "not null" if inputs.get("related_symptom_names") else "null")
-    logger.debug("📝 Raw follow-up: %s", "not null" if inputs.get("raw_followup_question") else "null")
+
+
 
     if action == "diagnosis":
         # ✅ Lưu triệu chứng mới nếu có
-        if new_symptoms:
-            # 🔁 Lấy tất cả notes từ session
-            symptom_notes = await get_symptom_notes_from_session(user_id=user_id, session_id=session_id)
+        saved_ids = get_saved_symptom_ids(user_id)
 
-            # 📝 Ghi từng triệu chứng vào DB kèm note tương ứng
-            for s in stored_symptoms:
-                note = symptom_notes.get(s["name"], "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện.")
-                save_symptoms_to_db(user_id=user_id, symptoms=[s], note=note)
+        # Gộp ID và note từ GPT
+        symptom_notes_list = await generate_symptom_note(stored_symptoms, recent_messages)
+
+        symptoms_to_save = []
+        for s in stored_symptoms:
+            if s["id"] not in saved_ids:
+                matching = next((item for item in symptom_notes_list if item["name"] == s["name"]), None)
+                symptoms_to_save.append({
+                    "id": s["id"],
+                    "note": matching["note"] if matching else "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+                })
+
+        if symptoms_to_save:
+            save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
+
 
         # ✅ Xử lý phần bệnh
         diseases = parsed.get("diseases", [])
@@ -205,7 +196,8 @@ async def health_talk(
                     prediction_id = row[0]
 
                     # 🧠 Lọc bệnh mới chưa có
-                    new_diseases = filter_new_predicted_diseases(prediction_id, diseases)
+                    new_diseases = filter_new_predicted_diseases(cursor, prediction_id, diseases)
+
 
                     if new_diseases:
                         for disease_id, d in new_diseases:

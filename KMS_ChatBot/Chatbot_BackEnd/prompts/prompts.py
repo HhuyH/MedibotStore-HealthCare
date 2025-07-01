@@ -3,6 +3,8 @@ from datetime import datetime
 import json
 current_year = datetime.now().year
 from utils.text_utils import normalize_text
+import logging
+logger = logging.getLogger(__name__)
 
 # Prompt chính
 def build_system_prompt(intent: str, symptom_names: list[str] = None) -> str:
@@ -170,12 +172,9 @@ def build_KMS_prompt(
     had_conclusion,
     stored_symptoms_name: list[str],
     symptoms_to_ask: list[str],
-    recent_messages: list[str],
     recent_user_messages: list[str], 
     recent_assistant_messages: list[str],
     related_symptom_names: list[str] = None,
-    related_asked: bool = False,
-    raw_followup_question: list[dict] = None,
     session_context: dict = None,
 ) -> str:
     prompt = ""
@@ -184,8 +183,12 @@ def build_KMS_prompt(
         line = f"- {s['name']}: {s['aliases']}"
         symptom_lines.append(line)
     
-    diagnosed_today = session_context.get("diagnosed_today") if session_context else False
-    is_same_day = session_context.get("is_same_day") if session_context else False
+   #  logger.info("========== GPT PROMPT CONTEXT ==========")
+   #  logger.info("🧠 Stored symptoms: %s", ", ".join(stored_symptoms_name))
+   #  logger.info("💬 Recent user messages:\n%s", "\n".join(recent_user_messages[-6:]))
+   #  logger.info("🤖 Recent assistant messages:\n%s", "\n".join(recent_assistant_messages[-6:]))
+   #  logger.info("=========================================")
+
     
     # Cho gpt biết cần làm gì
     prompt += f"""
@@ -275,18 +278,36 @@ def build_KMS_prompt(
          - Avoid checklist-style phrasing (e.g., “Bạn có thấy A, B, C… không?”)  
          - Use reflective, curious phrasing like:  
          • “Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không…”  
-         • “Đôi khi những cảm giác này sẽ đi kèm vài dấu hiệu khác đó…”  
+         • “Đôi khi những cảm giác này sẽ đi kèm vài dấu hiệu khác đó…” 
+
+         💬 Suggested phrasing:
+         - “Vậy còn…”
+         - “Còn cảm giác như… thì sao ta?”
+         - “Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không…”
 
       💡 Tone rules for `"followup"`
 
-      ✅ You may use alternative phrasing such as:
-         • “Cảm giác đó thường…”
-         • “Có khi nào bạn thấy…”
-         • “Bạn thường gặp tình trạng đó khi nào ha?”
-         • “Mình muốn hỏi thêm một chút về [triệu chứng] nè…” (use once only)
-         • “Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?”
-         • “Có khi nào bạn thấy đỡ hơn sau khi nghỉ ngơi không ha?”
-         • Or start mid-sentence without a soft intro if the context allows.
+         Below are **example sentence patterns** you can choose from — or feel free to write other natural-sounding variations.  
+         ⚠️ However, you are **not allowed to reuse any exact phrasing more than once per session.**
+
+         - Do NOT use template phrases more than once in a session.
+         - Encourage natural variation — rephrase creatively based on symptom context.
+
+            • “Cảm giác đó thường…”  
+            • “Có khi nào bạn thấy…”  
+            • “Bạn thường gặp tình trạng đó khi nào ha?”  
+            • “Mình muốn hỏi thêm một chút về [triệu chứng] nè…” (only allowed once)  
+            • “Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?”  
+            • “Có khi nào bạn thấy đỡ hơn sau khi nghỉ ngơi không ha?”  
+            • Or start mid-sentence without any soft intro if context allows
+
+         → Prioritize using the words and phrasing the user already used to describe their symptoms — avoid switching to medical jargon.
+
+         → Your final follow-up must be:
+         - A single, natural Vietnamese sentence
+         - Warm, empathetic, and personalized
+         - Focused on ONE aspect of ONE symptom that is still ambiguous
+
 
          → Use your judgment to ask the most useful question — not just default to “bao lâu”.
          → Whenever possible, give the user **2-3 soft options** to help them choose:
@@ -416,86 +437,58 @@ def build_KMS_prompt(
     prompt += f"""   
          🧩 STEP — 2. Create question for Related Symptoms:
 
-          🛑 STRICT LIMIT:
+         🛑 STRICT RULE: Related symptoms may only be asked **once per conversation**.
 
-            - You may ask about related symptoms only ONCE per conversation.
-            - You must NOT re-ask — even in reworded, softer, or partial form.
-            - You MUST scan `recent_assistant_messages` to avoid semantic duplication.
+         → You are allowed to ask about related symptoms only if:
+         - The main symptoms have already been explored (follow-up is done or skipped)
+         - There is no related symptom question already present in `recent_assistant_messages`
 
-            For example:
-               - If you already asked:  
-                  “Bạn có cảm thấy hoa mắt, chóng mặt gì không?”  
-               → then you MUST NOT ask:  
-                  “Vậy còn chóng mặt hay cảm giác quay cuồng gì không?”
+         ❌ If a related symptom question has already appeared — even with different words or softer phrasing — you MUST SKIP this step entirely.
 
-            → Even if words are different, if the meaning is the same, treat it as a duplicate and SKIP this step entirely.
-
-
-            Both mean the same. You MUST scan `recent_assistant_messages` and avoid semantic duplication.
-            Even if the words are different, if the meaning is the same, you must treat it as a repeat and SKIP this step.
-
-
-         You may consider asking about **related symptoms** from this list — but only if you feel the main reported symptoms have been clarified sufficiently.
-
-         → Do not ask related symptoms too early — wait until you've explored the current ones enough.
-
-         Examples:
-
-            - Bot: “Bạn có cảm thấy hoa mắt, chóng mặt gì không?”  
-            User: “Không có”  
-            → Do NOT ask again “Vậy còn chóng mặt hay cảm giác quay cuồng gì không?”
-
-            - Bot: “Bạn thấy nhức đầu kiểu này thường kéo dài bao lâu?”  
-            User: “Tầm 10 phút thôi”  
-            → ✅ Now you may continue to ask about related symptoms — but only ONCE.
-
-         🛑 Do NOT skip this step just because the current symptom seems clear or mild.
-
-         → You must attempt this step at least once per conversation (unless it was already done).
-         → Only skip if:
-            - You already asked about related symptoms
-            - Or the user clearly said they want to stop, or gave vague/negative responses
-
-         🧠 Use this step to gently explore symptoms that often co-occur with the user's reported ones — **but only once per conversation**.
+         ✅ Do NOT attempt to “clarify”, “soften”, or “revisit” related symptoms. Treat this as a strict one-time opportunity.
 
          For example:
-         - “Mình hỏi vậy vì đôi khi mệt mỏi kéo dài có thể đi kèm các triệu chứng như vậy.”
-         - “Thỉnh thoảng những cảm giác này sẽ đi cùng với những triệu chứng khác nữa đó, mình hỏi thêm để hiểu rõ hơn nè.”
+           - If the assistant previously asked:  
+             “Bạn có cảm thấy hoa mắt, chóng mặt gì không?”  
+           → Then you MUST NOT ask again:  
+             “Vậy còn chóng mặt hay cảm giác quay cuồng gì không?”
 
-         → Follow the Global Tone Guide above
+         → Even if words differ, if the meaning is the same, it is considered a duplication.
+
+         ⚠️ Once a related question has been asked, you must proceed to `"diagnosis"` or `"light_summary"` — depending on context.
+
+         → If the user replies vaguely or says things like “không có”, “không rõ”, “chắc không sao đâu”, etc.  
+         → Then you must **not retry this step** — move forward instead.
+
+         🔒 If uncertain:
+         - Prefer `"diagnosis"` if the user has described ≥2 symptoms with meaningful details
+         - Otherwise, choose `"light_summary"` as a gentle closing step
+
+         ➕ Example transitions (only if allowed):
+           - “Mình hỏi vậy vì đôi khi mệt mỏi kéo dài có thể đi kèm các triệu chứng như vậy.”
+           - “Thỉnh thoảng những cảm giác này sẽ đi cùng với những triệu chứng khác nữa đó…”
 
          → Related symptoms to consider: {', '.join(related_symptom_names or [])}
 
-         💬 Suggested phrasing:
-         - “Vậy còn…”
-         - “Còn cảm giác như… thì sao ta?”
-         - “Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không…”
+         🚫 FINAL WARNING:
 
-         🔚 If you have already:
-            - Asked about related symptoms (even once),
-            - AND no new significant symptoms are added from the user,
-            - AND you already know the key symptoms (at least 2–3 well-described ones),
+            If `recent_assistant_messages` contains **any sentence** that asks about related symptoms — even with different wording — you MUST SKIP this step completely.
 
-         ⚠️ If the user later repeats or hints at a related symptom you've already asked about —  
-            → You must **not re-ask** or bring it up again unless it's clearly described as a **new symptom**.
+            → This includes phrases like:
+            - “Mình đang nghĩ không biết bạn có thêm cảm giác nào khác…”
+            - “Đôi khi triệu chứng này đi kèm…”
+            - “Bạn có thấy thêm gì như chóng mặt, hoa mắt không…”
 
-            → Only proceed with `"related"` if the symptom is new **and** has not been previously explored.
+            ❗ Repeating or rephrasing a related symptom prompt — even once — is a **critical logic violation**.
 
-            This avoids repetition and keeps the conversation flowing naturally.
+            ⚠️ The system will reject your response and consider the assistant broken.
 
+            → Never attempt to "soften", "clarify", or "extend" a related question after it has already appeared.
 
-         → Then you MUST proceed to `"diagnosis"` or `"light_summary"` — depending on severity.
+            → This is an **absolute rule** — no exceptions.
 
-         🛑 Do NOT stall. Do NOT ask follow-up again.
+    """.strip()
 
-         👉 If uncertain, prefer `"light_summary"` — but NEVER repeat related symptoms or keep waiting.
-
-   """.strip()
-
-         # 🔁 Status: related_asked = {related_asked}
-
-         # 🛑 If `related_asked` is True, you MUST SKIP this step — even if you believe it might help
-    
     # "3. 🌿 Light Summary" — Tạo phản hồi nhẹ nhàng khi không cần chẩn đoán hoặc follow-up thêm
     prompt += f"""   
       STEP — 3. 🌿 Light Summary:
@@ -666,29 +659,43 @@ def build_KMS_prompt(
 
          This is called an “updated symptom”.
 
+         ⚠️ Do NOT set `"updated_symptom"` in the following cases:
+
+         1. The user only uses vague or uncertain expressions such as:
+            - “hình như”, “có vẻ”, “chắc là”, “mình nghĩ”, “không rõ”, “có thể”  
+            → and all similar expressions of approximation or uncertainty.
+
+         2. The user merely repeats or rementions the symptom (e.g., “mình vẫn chóng mặt”), **without adding new descriptive details**.
+
+         3. The assistant is the one asking about the symptom (e.g., follow-up question), and the user has **not yet replied**.  
+            → Do **NOT** assume an update just because the symptom was mentioned in the assistant’s message.
+
          ---
 
-         ❗ How to detect updated_symptom:
+         ✅ You may set `"updated_symptom"` **only if** the user **voluntarily** provides **concrete new details** (not just repeats, and not in response to a follow-up).
 
-         You may treat a user message as an update if:
-         - It contains comparative, evolving, or descriptive details for a previously reported symptom
-         - AND `stored_symptoms_name` includes that symptom
-         - AND the user is **not** describing an entirely new symptom
+         These new details must describe a **change, progression, or additional context** related to a previously reported symptom — such as timing, intensity, duration, or characteristics.
 
-         Examples of updates:
+         This is valid only if:
+         - The message contains clear comparative or descriptive information  
+         - AND `stored_symptoms_name` includes that symptom  
+         - AND the user is **not introducing a new symptom**
+
+         Examples of valid updates:
+         - “Hôm nay thấy chóng mặt kéo dài hơn” → update to “Chóng mặt”
+         - “Giờ thì cảm giác đó quay cuồng luôn rồi” → update to “Chóng mặt”
+         - “Lần này đau đầu kiểu khác lúc trước” → update to “Đau đầu”
          - “Giờ thì sổ mũi có đàm màu xanh rồi” → update to “Sổ mũi”
-         - “Cơn đau đầu kéo dài hơn trước” → update to “Đau đầu”
-         - “Lúc nãy chóng mặt nhẹ thôi, giờ thấy quay cuồng luôn rồi” → update to “Chóng mặt”
 
-         If you detect an update:
-         → Set `"updated_symptom": "Tên triệu chứng"`
-         → Also embed a soft acknowledgment in your `"message"` to reflect that you understood the update.
+         If you detect such an update:
+         → Set `"updated_symptom": "Tên triệu chứng"`  
+         → Also embed a soft acknowledgment in your `"message"` to reflect that you recognized this change (e.g., “Mình ghi nhận thêm rồi nè”).
 
          ---
 
          ✅ Good response examples (you can take inspiration from these, but do not reuse them exactly):
 
-         - “À, bot nè. Mình thấy triệu chứng đó có vẻ thay đổi chút rồi ha.”
+         - “À Mình thấy triệu chứng đó có vẻ thay đổi chút rồi ha.”
          - “Um, cảm ơn bạn nha. Nghe như là tình trạng đó đang tiến triển thêm chút rồi á.”
          - “Mình ghi nhận thông tin bạn vừa chia sẻ nha, để theo dõi kỹ hơn hen.”
          - “Hiểu rồi, có vẻ như triệu chứng này đang khác hơn chút so với lúc trước ha.”
@@ -719,7 +726,7 @@ def build_KMS_prompt(
 
 
     """
-    
+   
     # Rule set action
     prompt += f"""
 
@@ -727,18 +734,12 @@ def build_KMS_prompt(
          - Set only ONE action: "followup", "related", "light_summary" or "diagnosis"
          - Do NOT combine multiple actions.
          - If follow-up is still needed → set "followup": true.
-         - If follow-up is done and user seems open → you may ask about related symptoms.
 
          Your response must ONLY be a single JSON object — no explanations or formatting.
          → The `"message"` field must contain a fluent, caring message in Vietnamese only
       """.strip()
-
+    
     return prompt
-
-
-
-
-
 
 
 # Prompt quyết định hành động nên xữ lý những việc gì tiếp theo

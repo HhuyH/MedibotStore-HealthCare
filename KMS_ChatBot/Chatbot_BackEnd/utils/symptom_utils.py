@@ -185,7 +185,12 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
         return [], "Xin lỗi, mình chưa rõ bạn đang cảm thấy gì. Bạn có thể mô tả cụ thể hơn không?"
 
 # lưu triệu chứng vào database lưu vào user_symptom_history khi đang thực hiện chẩn đoán kết quả
-def save_symptoms_to_db(user_id: int, symptoms: list[dict], note: str = "") -> list[int]:
+def save_symptoms_to_db(user_id: int, symptoms: list[dict]) -> list[int]:
+    """
+    symptoms: list of dicts, each with:
+        - id: symptom_id
+        - note: optional note string (default empty)
+    """
     conn = pymysql.connect(**DB_CONFIG)
     saved_symptom_ids = []
 
@@ -193,8 +198,12 @@ def save_symptoms_to_db(user_id: int, symptoms: list[dict], note: str = "") -> l
         with conn.cursor() as cursor:
             for symptom in symptoms:
                 symptom_id = symptom.get("id")
+                note = symptom.get("note", "")
+
                 if not symptom_id:
-                    continue  # Bỏ qua nếu thiếu ID
+                    continue
+
+                logger.info(f"➡️ Lưu symptom_id={symptom_id}, note={note}")
 
                 cursor.execute("""
                     INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes)
@@ -208,6 +217,7 @@ def save_symptoms_to_db(user_id: int, symptoms: list[dict], note: str = "") -> l
         conn.close()
 
     return saved_symptom_ids
+
 
 # Tạo câu hỏi tiếp theo nhẹ nhàng, thân thiện, gợi ý người dùng chia sẻ thêm thông tin dựa trên các triệu chứng đã ghi nhận.
 def join_symptom_names_vietnamese(names: list[str]) -> str:
@@ -455,40 +465,51 @@ def has_diagnosis_today(user_id: int) -> bool:
         conn.close()
 
 # Hàm tạo ghi chú cho triệu chứng khi thêm vào database
-def generate_symptom_note(recent_messages: list[str]) -> str:
-    if not recent_messages:
-        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
-
-    context = "\n".join(f"- {msg}" for msg in recent_messages[-5:])
+async def generate_symptom_note(symptoms: list[dict], recent_messages: list[str]) -> list[dict]:
+    symptom_lines = "\n".join(f"- {s['name']}" for s in symptoms)
+    context = "\n".join(f"- {msg}" for msg in recent_messages[-6:])
 
     prompt = f"""
-        You are a helpful AI assistant supporting medical documentation.
+    You are a helpful assistant supporting health documentation.
 
-        Below is a recent conversation with a user about their health concerns:
+    Below is a conversation with a user and a list of symptoms they mentioned.
 
-        {context}
+    💬 Recent conversation:
+    {context}
 
-        Write a short **symptom note** in **Vietnamese**, summarizing the user's main symptom(s) and any relevant context (e.g., when it started, what triggered it, how it felt).
+    🧠 List of symptoms:
+    {symptom_lines}
 
-        Instructions:
-        - Your note must be in Vietnamese.
-        - Keep it short (1–2 sentences).
-        - Use natural, friendly, easy-to-understand language.
-        - Do not use medical jargon.
-        - Do not invent symptoms that were not clearly mentioned.
-        - If the user was vague, still reflect that (e.g., “người dùng không rõ nguyên nhân”).
+    👉 Your task:
+    For each symptom, write a short, natural note in Vietnamese summarizing what the user said about it — including any details like timing, severity, or triggers if available.
 
-        Your output must be only the note. Do not include any explanation or format it as JSON.
+    ⚠️ Instructions:
+    - You must return a list of JSON objects with `name` and `note` fields.
+    - Do NOT invent symptoms not mentioned.
+    - If there’s no clear info about a symptom, write a generic note.
+    - Do not include explanations, just the raw JSON.
+
+    Example output:
+    ```json
+    [
+      {{
+        "name": "Đau đầu",
+        "note": "Người dùng cảm thấy đau đầu xuất hiện khi mới ngủ dậy."
+      }},
+      ...
+    ]
+    ```
     """.strip()
 
     try:
-        response = chat_completion([
+        response = await chat_completion([
             {"role": "user", "content": prompt}
-        ], temperature=0.3, max_tokens=100)
+        ], temperature=0.4, max_tokens=400)
 
-        return response.choices[0].message.content.strip()
+        return json.loads(response.choices[0].message.content.strip())
     except Exception:
-        return "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+        # fallback nếu lỗi GPT
+        return [{"name": s["name"], "note": "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."} for s in symptoms]
 
 def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> bool:
     today = datetime.now().date().isoformat()
@@ -502,7 +523,7 @@ def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> b
             cursor.execute(query_symptom, (symptom_name,))
             result = cursor.fetchone()
             if result:
-                symptom_id = result["id"]
+                symptom_id = result[0]
     finally:
         conn.close()
 
@@ -522,7 +543,10 @@ def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> b
             cursor.execute(query_note, (user_id, symptom_id, today))
             result = cursor.fetchone()
             if result:
-                old_note = result["notes"]
+                old_note = result[0]
+            else:
+                logger.warning(f"⚠️ Không tìm thấy ghi chú nào cho triệu chứng {symptom_name} vào ngày {today}")
+                return False  # ❌ Không có record để cập nhật → dừng lại luôn
     finally:
         conn.close()
 
@@ -587,3 +611,15 @@ def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> b
     finally:
         conn.close()
 
+def get_saved_symptom_ids(user_id: int, record_date: date = date.today()) -> list[int]:
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT symptom_id
+                FROM user_symptom_history
+                WHERE user_id = %s AND record_date = %s
+            """, (user_id, record_date))
+            return [row[0] for row in cursor.fetchall()]
+    finally:
+        conn.close()

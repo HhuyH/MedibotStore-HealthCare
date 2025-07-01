@@ -495,7 +495,13 @@ body {
     font-size: 0.9rem;
     line-height: 1.6;
     position: relative;
+
+    /* ✅ Fix lỗi tràn & không xuống hàng */
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
+
 
 .message.user .message-content {
     background: var(--primary);

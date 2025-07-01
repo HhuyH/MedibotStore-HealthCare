@@ -91,7 +91,7 @@ async def mark_followup_asked(user_id: str = None, session_id: str = None, sympt
     already.update(symptom_ids)
     session[FOLLOWUP_KEY] = list(already)
     save_session_data(key, session)
-    logger.info(f"✅ [SessionStore] Ghi followup_asked vào key: {key}")
+    # logger.info(f"✅ [SessionStore] Ghi followup_asked vào key: {key}")
 
 async def clear_followup_asked_all_keys(user_id: str = None, session_id: str = None):
     key = resolve_session_key(user_id, session_id)
@@ -101,7 +101,7 @@ async def clear_followup_asked_all_keys(user_id: str = None, session_id: str = N
     session = await get_session_data(key)
     session[FOLLOWUP_KEY] = []
     save_session_data(key, session)
-    logger.info(f"🧹 [SessionStore] Đã xoá followup_asked cho key: {key}")
+    # logger.info(f"🧹 [SessionStore] Đã xoá followup_asked cho key: {key}")
 
 
 # ---------------------------
@@ -136,7 +136,7 @@ async def clear_symptoms_all_keys(user_id: str = None, session_id: str = None):
     session[SYMPTOM_KEY] = []
     session[FOLLOWUP_KEY] = []
     save_session_data(key, session)
-    logger.info(f"🧹 [SessionStore] Đã xoá SYMPTOM + followup cho key: {key}")
+    # logger.info(f"🧹 [SessionStore] Đã xoá SYMPTOM + followup cho key: {key}")
 
 # ---------------------------
 # CÁC HÀM LÀM VIỆC VỚI SYMPTOM_NOTE (ghi chú về triệu chứng của người dùng do bot tự tổng hộp từ chat)
@@ -155,3 +155,45 @@ async def get_symptom_notes_from_session(user_id: str = None, session_id: str = 
     session_key = resolve_session_key(user_id, session_id)
     session = await get_session_data(session_key)
     return session.get(SYMPTOM_NOTE_KEY, {})
+
+# ---------------------------
+# HÀM LƯU TRỮ TIN NHẮN
+# ---------------------------
+
+def update_chat_history_in_session(session_data, session_id, user_msg, bot_msg):
+    recent_messages = session_data.get("recent_messages", [])
+    recent_user_messages = session_data.get("recent_user_messages", [])
+    recent_assistant_messages = session_data.get("recent_assistant_messages", [])
+
+    recent_messages.append(f"👤 {user_msg}")
+    recent_messages.append(f"🤖 {bot_msg}")
+    recent_user_messages.append(user_msg)
+    recent_assistant_messages.append(bot_msg)
+
+    # ✨ Loại bỏ lặp lại liên tiếp
+    recent_user_messages = remove_consecutive_duplicates(recent_user_messages)
+    recent_assistant_messages = remove_consecutive_duplicates(recent_assistant_messages)
+
+    session_data["recent_messages"] = recent_messages[-12:]
+    session_data["recent_user_messages"] = recent_user_messages[-6:]
+    session_data["recent_assistant_messages"] = recent_assistant_messages[-6:]
+    save_session_data(session_id, session_data)
+    
+
+    # logger.info("🧾 recent_user_messages:")
+    # for i, user_msg in enumerate(session_data["recent_user_messages"], 1):
+    #     logger.info(f"👤 [{i}] {user_msg}")
+
+    # logger.info("📢 recent_assistant_messages:")
+    # for i, assistant_msg in enumerate(session_data["recent_assistant_messages"], 1):
+    #     logger.info(f"🤖 [{i}] {assistant_msg}")
+
+
+def remove_consecutive_duplicates(messages: list[str]) -> list[str]:
+    if not messages:
+        return []
+    result = [messages[0]]
+    for msg in messages[1:]:
+        if msg != result[-1]:
+            result.append(msg)
+    return result

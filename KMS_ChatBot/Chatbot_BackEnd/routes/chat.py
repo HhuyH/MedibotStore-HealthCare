@@ -16,7 +16,8 @@ from utils.session_store import (
     save_session_data, 
     get_symptoms_from_session, 
     clear_followup_asked_all_keys, 
-    clear_symptoms_all_keys
+    clear_symptoms_all_keys,
+    update_chat_history_in_session
 )
 from utils.intent_utils import detect_intent, build_system_message
 from utils.symptom_utils import (
@@ -36,6 +37,8 @@ from utils.patient_summary import (
     extract_date_from_text,
     resolve_user_id_from_message
 )
+import pymysql
+from config.config import DB_CONFIG
 
 router = APIRouter()
 
@@ -45,7 +48,7 @@ symptom_list = get_symptom_list()
 async def chat_stream(msg: Message = Body(...)):
     role = normalize_role(msg.role)
     # logger.info(f"ID: {msg.user_id} User: ({msg.username}) Session:({msg.session_id}) với vai trò {role} gửi: {msg.message}")
-    logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role} || Message: {msg.message}")
+    logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role}")
     if not has_permission(role, "chat"):
         async def denied_stream():
             yield "data: ⚠️ Bạn không được phép thực hiện chức năng này.\n\n"
@@ -79,60 +82,29 @@ async def chat_stream(msg: Message = Body(...)):
     is_same_day = session_data.get("active_date") == today
     diagnosed_today = has_diagnosis_today(user_id=msg.user_id) if msg.user_id else False
 
-    # Tạo recent_messages mới từ history
-    # logger.info(f"🧪 msg.history type: {[type(m) for m in msg.history]}")
-    # logger.info(f"🧪 msg.history raw: {msg.history}")
+    # Sau khi bot xử lý xong và đã có câu trả lời cuối cùng:
 
+    recent_messages = session_data.get("recent_messages", [])
+    recent_user_messages = session_data.get("recent_user_messages", [])
+    recent_assistant_messages = session_data.get("recent_assistant_messages", [])
 
-    recent_messages = [f"👤 {m.content}" if m.role == "user" else f"🤖 {m.content}" for m in msg.history]
-    recent_messages = recent_messages[-6:]
-
-    # Giữ lại tối đa 6 dòng gần nhất (3 cặp user-bot)
-    recent_messages = recent_messages[-6:]
-
-    # Tạo 2 danh sách riêng biệt
-    recent_user_messages = [m.content for m in msg.history if m.role == "user"]
-    recent_assistant_messages = [m.content for m in msg.history if m.role == "assistant"]
-
-    # Lưu lại tối đa 6 dòng gần nhất (3 cặp user-bot)
-    session_data["recent_messages"] = recent_messages[-6:]
-
-    # Tối đa 3 dòng user gần nhất
-    session_data["recent_user_messages"] = recent_user_messages[-3:]
-
-    # Tối đa 3 dòng assistant gần nhất (cực kỳ quan trọng cho step 2 - avoid repeat)
-    session_data["recent_assistant_messages"] = recent_assistant_messages[-3:]
-
-
-    # logger.info("🧾 recent_user_messages:")
-    # for i, user_msg in enumerate(session_data["recent_user_messages"], 1):
-    #     logger.info(f"👤 [{i}] {user_msg}")
-
-    # logger.info("📢 recent_assistant_messages:")
-    # for i, assistant_msg in enumerate(session_data["recent_assistant_messages"], 1):
-    #     logger.info(f"🤖 [{i}] {assistant_msg}")
-
-
-
+    # ➕ Thêm câu mới nhất (user vừa gửi)
+    recent_user_messages.append(msg.message)
+    recent_messages.append(f"👤 {msg.message}")
 
     # 🔁 Phát hiện intent
     last_intent = session_data.get("last_intent", None)
     intent = await detect_intent(
-        user_message=msg.message,
-        session_id=msg.session_id,
         last_intent=last_intent,
-        recent_messages=recent_messages,
         recent_user_messages=recent_user_messages,
         recent_assistant_messages=recent_assistant_messages
     )
-
 
     session_data["last_intent"] = intent
     save_session_data(msg.session_id, session_data)
 
     # Xác định mục tiêu người dùng để lấy chức năng phù hợp
     intent = intent.replace("intent:", "").strip()
-    logger.info(f"🎯 Intent phát hiện: {intent}")
 
     # Xác định các bước xử lý
     pipeline = INTENT_PIPELINES.get(intent, [])
@@ -145,7 +117,7 @@ async def chat_stream(msg: Message = Body(...)):
     async def event_generator():
         buffer = ""
         is_json_mode = True
-
+        final_bot_message = ""
         nonlocal symptoms, suggestion, updated_session_data, session_data
         sql_query = None
         natural_text = ""
@@ -181,7 +153,14 @@ async def chat_stream(msg: Message = Body(...)):
                         if not is_json_mode:
                             yield f"data: {json.dumps({'natural_text': content})}\n\n"
                             await asyncio.sleep(0.01)
+                final_bot_message = buffer.strip()
+                update_chat_history_in_session(session_data, msg.session_id, msg.message, final_bot_message)
 
+                # ✅ Lưu log hội thoại
+                save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
+
+                
             # --- Step 2: GPT điều phối health_talk ---
             elif step == "health_talk":
                 chunks = []
@@ -194,7 +173,7 @@ async def chat_stream(msg: Message = Body(...)):
                     recent_assistant_messages=recent_assistant_messages,
                     session_id=msg.session_id,
                     user_id=msg.user_id,
-                    chat_id=getattr(msg, "chat_id", None),
+                    chat_id=chat_id,
                     session_context={
                         "is_same_day": is_same_day,
                         "diagnosed_today": diagnosed_today
@@ -206,6 +185,13 @@ async def chat_stream(msg: Message = Body(...)):
                 full_message = "".join(chunks).strip()
 
                 final_message = full_message
+                final_bot_message = final_message
+
+                update_chat_history_in_session(session_data, msg.session_id, msg.message, final_bot_message)
+
+                # ✅ Lưu log hội thoại
+                save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
 
                 # ✅ Lưu message cuối của bot
                 session_data["last_bot_message"] = final_message
@@ -227,6 +213,13 @@ async def chat_stream(msg: Message = Body(...)):
                         await asyncio.sleep(0.02)
 
                 final_message = "".join(chunks).strip()
+                final_bot_message = final_message
+
+                update_chat_history_in_session(session_data, msg.session_id, msg.message, final_bot_message)
+                # ✅ Lưu log hội thoại
+                save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
+
                 session_data["last_bot_message"] = final_message
                 save_session_data(msg.session_id, session_data)
 
@@ -262,6 +255,7 @@ async def chat_stream(msg: Message = Body(...)):
 
                         yield f"data: {json.dumps({'natural_text': message})}\n\n"
                         yield "data: [DONE]\n\n"
+
                         return
 
                 # 2️⃣ Cố gắng trích ngày nếu có
@@ -271,6 +265,12 @@ async def chat_stream(msg: Message = Body(...)):
                 result = generate_patient_summary(user_id_for_summary, for_date=for_date)
                 markdown = result["markdown"]
                 summary_data = result["summary_data"]
+
+                final_bot_message = markdown
+                update_chat_history_in_session(session_data, msg.session_id, msg.message, final_bot_message)
+                # ✅ Lưu log hội thoại
+                save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
 
                 # Nếu không có ngày cụ thể, GPT quyết định có cần hỏi không
                 if not for_date:
@@ -360,10 +360,50 @@ async def reset_session(data: ResetRequest):
     await clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
     await clear_followup_asked_all_keys(user_id=user_id, session_id=session_id)
 
-    logger.info(f"✅ Đã reset session cho user_id={user_id}, session_id={session_id}")
+    # logger.info(f"✅ Đã reset session cho user_id={user_id}, session_id={session_id}")
     logger.debug(await get_session_data(user_id, session_id))  # Log lại để xác nhận
 
     return {"status": "success", "message": "Đã reset session!"}
+
+@router.get("/chat/history")
+async def get_chat_history(session_id: str, user_id: int = None):
+    session = await get_session_data(session_id=session_id, user_id=user_id)
+    return {
+        "recent_messages": session.get("recent_messages", [])
+    }
+
+@router.get("/chat/logs")
+def get_chat_logs(user_id: int = None, guest_id: int = None):
+    import pymysql
+    from config.config import DB_CONFIG
+
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT message, sender, sent_at
+                FROM chat_logs
+                WHERE user_id = %s OR guest_id = %s
+                ORDER BY sent_at ASC
+            """, (user_id, guest_id))
+            rows = cursor.fetchall()
+            return [{"message": m, "sender": s, "time": str(t)} for m, s, t in rows]
+    finally:
+        conn.close()
+
+def save_chat_log(user_id=None, guest_id=None, intent=None, message=None, sender='user'):
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                INSERT INTO chat_logs (user_id, guest_id, intent, message, sender)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (user_id, guest_id, intent, message, sender))
+            conn.commit()
+            return cursor.lastrowid  # 👉 trả về chat_id vừa insert
+    finally:
+        conn.close()
+
 
 async def not_use():
             # # --- Step 2: GPT điều phối health_talk ---

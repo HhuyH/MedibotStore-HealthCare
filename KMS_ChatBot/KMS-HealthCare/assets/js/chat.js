@@ -92,7 +92,8 @@ function hideTyping() {
 
 
 function normalizeMarkdown(input) {
-return input;
+    // ép thêm \n\n sau các icon nếu cần
+    return input.replace(/(🔴|🟠|🟡)(\s*)<strong>/g, "\n\n$1 $2<strong>");
 }
 
 
@@ -107,32 +108,12 @@ if (!userInfo.session_id) {
     localStorage.setItem("userInfo", JSON.stringify(userInfo));
 }
 
-// Gọi API chat không stream, trả về reply đầy đủ 1 lần
-async function sendChatMessage(message, history) {
-    const response = await fetch("http://127.0.0.1:8000/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            message,
-            history,
-            user_id: userInfo.user_id,
-            role: userInfo.role
-        }),
-    });
-
-
-    if (!response.ok) throw new Error("Lỗi khi kết nối server");
-    const data = await response.json();
-    return data.reply;
-}
-
-async function sendChatStream({ message, history }, onUpdate) {
+async function sendChatStream({ message}, onUpdate) {
     const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
     const { user_id, username, role, session_id} = userInfo;
 
     const payload = {
         message,
-        history,
         user_id,
         username,
         role,
@@ -188,7 +169,35 @@ async function sendChatStream({ message, history }, onUpdate) {
     }
 }
 
+// Hiển thị lại hội thoại cũ
+async function loadChatLogs() {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
+    const session_id = userInfo.session_id;
+    const user_id = userInfo.user_id;
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/chat/history?session_id=${session_id}&user_id=${user_id || ""}`);
+        const data = await response.json();
+        const logs = data.recent_messages || [];
+
+        for (const line of logs) {
+            if (typeof line === "string") {
+                if (line.startsWith("👤 ")) {
+                    appendMessage(line.slice(2), "user");
+                } else if (line.startsWith("🤖 ")) {
+                    appendMessage(line.slice(2), "bot");
+                }
+            }
+        }
+
+    } catch (error) {
+        console.error("❌ Không thể load chat cũ:", error);
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
+    loadChatLogs();
     const input = document.getElementById("userInput");
     
     input.addEventListener("keydown", function (e) {
@@ -218,151 +227,104 @@ document.addEventListener('DOMContentLoaded', () => {
         input.value = "";
         input.disabled = true;
 
-        const history = await fetch("get_history.php", {
-            credentials: "include"
-        }).then(res => res.json());
-
-        await fetch("update_history.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ role: "user", content: message }),
-            credentials: "include"
-        });
-
         // Tạo payload chung có thêm userInfo
         const payload = {
             message: message,
             user_id: userInfo.user_id || null,
             username: userInfo.username || null,
             role: role,
-            history: history // Nếu backend cần lịch sử luôn thì gửi kèm
+            session_id: userInfo.session_id
         };
 
-        const useStreaming = true; // hoặc false tùy bạn
+        showTyping(); // ✅ tạo bubble
 
-        if (!useStreaming) {
-            try {
-                // Gọi backend gửi chat, đính kèm payload
-                const res = await fetch('/api/chatbot_backend', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+        let fullBotReply = "";
 
-                const data = await res.json();
+        try {
+            await sendChatStream(payload, (text) => {
+                let parsed;
+                try {
+                    parsed = typeof text === "string" ? JSON.parse(text) : text;
+                } catch {
+                    parsed = null;
+                }
 
-                const reply = data.reply;
-                appendMessage(reply, "bot");
+                const delta = typeof parsed?.natural_text === "string" ? parsed.natural_text : "";
 
-                await fetch("update_history.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ role: "assistant", content: reply }),
-                    credentials: "include"
-                });
-            } catch (err) {
-                appendMessage("[Lỗi kết nối server]");
-                console.error(err);
-            } finally {
-                input.disabled = false;
-                input.focus();
-                typingIndicator = null;
-            }
-        } else {
-            
-            showTyping(); // ✅ tạo bubble
+                fullBotReply += delta;
 
-            let fullBotReply = "";
+                const markdownText = normalizeMarkdown(fullBotReply).replace(/\n/g, "\n\n");
+                const isHTML = markdownText.trim().startsWith("<");
 
-            try {
-                await sendChatStream(payload, (text) => {
-                    let parsed;
-                    try {
-                        parsed = typeof text === "string" ? JSON.parse(text) : text;
-                    } catch {
-                        parsed = null;
-                    }
-
-                    const delta = typeof parsed?.natural_text === "string" ? parsed.natural_text : "";
-
-                    fullBotReply += delta;
-
-                    const markdownText = normalizeMarkdown(fullBotReply).replace(/\n/g, "\n\n");
-                    const html = marked.parse(markdownText)
+                const html = isHTML
+                    ? markdownText // dùng trực tiếp HTML từ GPT
+                    : marked.parse(markdownText)
                         .replace(/<p>\s*<\/p>/g, "")
                         .replace(/<p>(&nbsp;|\s)*<\/p>/g, "");
 
-                    let content = typingIndicator.querySelector(".message-content");
-                    if (!content) {
-                        content = document.createElement("div");
-                        content.className = "message-content";
-                        typingIndicator.appendChild(content);
-                    }
+                let content = typingIndicator.querySelector(".message-content");
+                if (!content) {
+                    content = document.createElement("div");
+                    content.className = "message-content";
+                    typingIndicator.appendChild(content);
+                }
 
-                    // ✅ Cập nhật nội dung text trước
-                    content.innerHTML = html;
+                // ✅ Cập nhật nội dung text trước
+                content.innerHTML = html;
 
-                    // ✅ Nếu có bảng và chưa gắn bảng → tạo bảng
-                    if (parsed?.table && Array.isArray(parsed.table) && parsed.table.length > 0 && !content.querySelector("table")) {
-                        const table = document.createElement("table");
-                        table.className = "chat-result-table";
+                // ✅ Nếu có bảng và chưa gắn bảng → tạo bảng
+                if (parsed?.table && Array.isArray(parsed.table) && parsed.table.length > 0 && !content.querySelector("table")) {
+                    const table = document.createElement("table");
+                    table.className = "chat-result-table";
 
-                        const headers = Object.keys(parsed.table[0]);
-                        const thead = document.createElement("thead");
-                        const trHead = document.createElement("tr");
+                    const headers = Object.keys(parsed.table[0]);
+                    const thead = document.createElement("thead");
+                    const trHead = document.createElement("tr");
+                    headers.forEach(h => {
+                        const th = document.createElement("th");
+                        th.textContent = h;
+                        trHead.appendChild(th);
+                    });
+                    thead.appendChild(trHead);
+                    table.appendChild(thead);
+
+                    const tbody = document.createElement("tbody");
+                    parsed.table.forEach(row => {
+                        const tr = document.createElement("tr");
                         headers.forEach(h => {
-                            const th = document.createElement("th");
-                            th.textContent = h;
-                            trHead.appendChild(th);
+                            const td = document.createElement("td");
+                            td.textContent = row[h];
+                            tr.appendChild(td);
                         });
-                        thead.appendChild(trHead);
-                        table.appendChild(thead);
+                        tbody.appendChild(tr);
+                    });
+                    table.appendChild(tbody);
 
-                        const tbody = document.createElement("tbody");
-                        parsed.table.forEach(row => {
-                            const tr = document.createElement("tr");
-                            headers.forEach(h => {
-                                const td = document.createElement("td");
-                                td.textContent = row[h];
-                                tr.appendChild(td);
-                            });
-                            tbody.appendChild(tr);
-                        });
-                        table.appendChild(tbody);
+                    const tableWrapper = document.createElement("div");
+                    tableWrapper.className = "chat-table-wrapper";
+                    tableWrapper.appendChild(table);
+                    content.appendChild(tableWrapper);
 
-                        const tableWrapper = document.createElement("div");
-                        tableWrapper.className = "chat-table-wrapper";
-                        tableWrapper.appendChild(table);
-                        content.appendChild(tableWrapper);
+                }
 
-                    }
+                // ✅ Nếu có SQL và chưa gắn → thêm khối SQL vào cuối
+                if (parsed?.sql_query && !content.querySelector(".chat-sql-text")) {
+                    const sqlDiv = document.createElement("pre");
+                    sqlDiv.textContent = "[SQL nội bộ]\n" + parsed.sql_query;
+                    sqlDiv.className = "chat-sql-text";
+                    content.appendChild(sqlDiv);
+                }
 
-                    // ✅ Nếu có SQL và chưa gắn → thêm khối SQL vào cuối
-                    if (parsed?.sql_query && !content.querySelector(".chat-sql-text")) {
-                        const sqlDiv = document.createElement("pre");
-                        sqlDiv.textContent = "[SQL nội bộ]\n" + parsed.sql_query;
-                        sqlDiv.className = "chat-sql-text";
-                        content.appendChild(sqlDiv);
-                    }
+                scrollToBottom();
+            });
 
-                    scrollToBottom();
-                });
-
-                await fetch("update_history.php", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ role: "assistant", content: fullBotReply }),
-                    credentials: "include"
-                });
-
-            } catch (err) {
-                typingIndicator.textContent += "\n[Error xảy ra khi nhận dữ liệu]";
-                console.error(err);
-            } finally {
-                input.disabled = false;
-                input.focus();
-                typingIndicator = null;
-            }
+        } catch (err) {
+            typingIndicator.textContent += "\n[Error xảy ra khi nhận dữ liệu]";
+            console.error(err);
+        } finally {
+            input.disabled = false;
+            input.focus();
+            typingIndicator = null;
         }
     });
 });
@@ -373,9 +335,13 @@ function updateTypingBubble(text) {
     const markdownText = normalizeMarkdown(text).replace(/\n/g, "\n\n");
     // console.log("📄 markdownText:", markdownText);
 
-    const html = marked.parse(markdownText)
-        .replace(/<p>\s*<\/p>/g, "")            // loại bỏ <p>    </p>
-        .replace(/<p>(&nbsp;|\s)*<\/p>/g, "");  // loại bỏ <p>&nbsp;</p>
+    const isHTML = markdownText.trim().startsWith("<");
+
+    const html = isHTML
+        ? markdownText // dùng trực tiếp HTML từ GPT
+        : marked.parse(markdownText)
+            .replace(/<p>\s*<\/p>/g, "")
+            .replace(/<p>(&nbsp;|\s)*<\/p>/g, "");
     // console.log("📦 html:", html);
 
     let content = typingIndicator.querySelector(".message-content");
@@ -423,9 +389,6 @@ if (resetBtn) {
             if (response.ok && data.status === "success") {
                 // ✅ Xoá toàn bộ nội dung khung chat
                 document.getElementById("chat-box").innerHTML = "";
-
-                // ✅ Xoá lịch sử cục bộ nếu có
-                localStorage.removeItem("chatHistory");
 
                 // Gửi thông báo nếu muốn
                 // appendMessage("🔄 Cuộc hội thoại đã được đặt lại!", "bot");
