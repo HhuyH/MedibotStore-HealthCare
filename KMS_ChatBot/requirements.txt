@@ -8,3 +8,4 @@ Requests==2.32.4
 tiktoken==0.9.0
 Unidecode==1.4.0
 Uvicorn-0.34.3
+redis

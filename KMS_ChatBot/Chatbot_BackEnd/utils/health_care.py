@@ -25,7 +25,8 @@ from utils.session_store import (
     update_symptom_note_in_session, 
     save_session_data, get_session_data, 
     get_followed_up_symptom_ids, mark_followup_asked, 
-    save_symptoms_to_session, get_symptoms_from_session
+    save_symptoms_to_session, get_symptoms_from_session,
+    mark_related_symptom_asked
 )
 def extract_json(content: str) -> str:
     """
@@ -47,12 +48,13 @@ async def health_talk(
     session_context: dict = None
 ):
     session_data = await get_session_data(user_id=user_id, session_id=session_id)
-    followup_after_conclusion_used = session_data.get("followup_after_conclusion_used", False)
+    logger.debug("📦 Session ban đầu:\n%s", json.dumps(session_data, indent=2, ensure_ascii=False))
 
     # Step 1: Trích triệu chứng mới
     new_symptoms, fallback_message = extract_symptoms_gpt(
         user_message,
-        recent_messages=recent_messages
+        recent_messages=recent_messages,
+        recent_assistant_messages=recent_assistant_messages
     )
     logger.info("🌿 Triệu chứng trích được: %s", new_symptoms)
 
@@ -68,14 +70,11 @@ async def health_talk(
 
     # ✅ In log triệu chứng đã hỏi follow-up
     asked = await get_followed_up_symptom_ids(session_id=session_id, user_id=user_id)
-    logger.info("📌 Đã hỏi follow-up các triệu chứng có ID: %s", asked)
+    logger.info("📎 Follow-up IDs từ session: %s", asked)
 
-    session_data = await get_session_data(user_id=user_id, session_id=session_id)
 
-    had_conclusion = (
-        session_data.get("had_conclusion", False)
-        and not followup_after_conclusion_used
-    )
+
+    had_conclusion = session_data.get("had_conclusion", False)
 
     # Step 3: Xây prompt tổng hợp
     prompt = build_KMS_prompt(
@@ -90,6 +89,10 @@ async def health_talk(
         had_conclusion=had_conclusion
     )
 
+    # 🔒 Đánh dấu đã hỏi related symptom (chỉ 1 lần duy nhất)
+    if inputs.get("related_symptom_names"):
+        await mark_related_symptom_asked(session_id=session_id, user_id=user_id)
+        session_data = await get_session_data(user_id=user_id, session_id=session_id)
 
     # Step 4: Gọi GPT (non-stream)
     completion = chat_completion(messages=[{"role": "user", "content": prompt}], temperature=0.7)
@@ -113,17 +116,9 @@ async def health_talk(
 
     action = parsed.get("action")
 
-    # Đặt cờ khi đã qua kết luận 1 lần để kiểm soát followup
-    if action in ["light_summary", "diagnosis"]:
+    # ✅ Ghi nhận kết luận để đánh dấu đã chẩn đoán hôm nay
+    if action == "diagnosis":
         session_data["had_conclusion"] = True
-        save_session_data(user_id=user_id, session_id=session_id, data=session_data)
-
-    if parsed.get("action") == "followup" and had_conclusion:
-        logger.info("🔁 Đã cho phép follow-up sau kết luận. Tắt cờ had_conclusion.")
-        session_data["had_conclusion"] = False
-        session_data["followup_after_conclusion_used"] = True  # ✅ Đánh dấu đã dùng rồi
-        save_session_data(user_id=user_id, session_id=session_id, data=session_data)
-
 
     # 🔄 Nếu người dùng nói thêm về triệu chứng cũ → ghi chú lại vào user_symptom_history
     updated_symptom = parsed.get("updated_symptom")
@@ -147,34 +142,59 @@ async def health_talk(
     # Đặt cơ cho những triệu chứng tương ứng khi followup đã hỏi
     if action == "followup" and target_followup_id:
         logger.info("✅ Đánh dấu đã hỏi follow-up triệu chứng ID: %s", target_followup_id)
-        await mark_followup_asked(session_id, user_id, [target_followup_id])
+        await mark_followup_asked(user_id, session_id, [target_followup_id])
+        session_data = await get_session_data(user_id=user_id, session_id=session_id)
+        # logger.info("✅ Session sau khi đánh dấu follow-up:\n%s", json.dumps(session_data, indent=2, ensure_ascii=False))
+
 
     end = parsed.get("end", False)
 
     # Log các biến phụ trợ
     logger.info("🎯 Action: %s", action)
 
+    # Nếu không có chẩn đoán trước đó trong ngày thì sẽ tạo note dựa theo triệu chứng
+    if not diagnosed_today:
+        # 📋 Tạo note
+        # Step 1: lấy note cũ từ session
+        existing_notes = session_data.get("symptom_notes_list", [])
+
+        # Step 2: gọi GPT để lấy note mới (có thể chỉ 1-2 cái)
+        new_notes = await generate_symptom_note(
+            symptoms=stored_symptoms,
+            recent_messages=recent_messages,
+            existing_notes=existing_notes
+        )
+
+        # Step 3: gộp lại (override nếu có id trùng)
+        note_map = {n["id"]: n for n in existing_notes}
+        for n in new_notes:
+            note_map[n["id"]] = n  # override or add
+
+        symptom_notes_list = list(note_map.values())
+
+        # logger.debug("📋 Updated symptom_notes_list:\n%s", json.dumps(symptom_notes_list, indent=2, ensure_ascii=False))
+
+
+        # Step 4: lưu vào session
+        session_data["symptom_notes_list"] = symptom_notes_list
+        await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
 
 
     if action == "diagnosis":
-        # ✅ Lưu triệu chứng mới nếu có
-        saved_ids = get_saved_symptom_ids(user_id)
+        
+        #Lưu note đã được tạo trước đó vào db
+        if not diagnosed_today:
+            # ✅ Lưu triệu chứng mới nếu có
+            saved_ids = get_saved_symptom_ids(user_id)
 
-        # Gộp ID và note từ GPT
-        symptom_notes_list = await generate_symptom_note(stored_symptoms, recent_messages)
+            symptoms_to_save = [
+                {"id": note["id"], "note": note["note"]}
+                for note in symptom_notes_list
+                if note["id"] not in saved_ids
+            ]
 
-        symptoms_to_save = []
-        for s in stored_symptoms:
-            if s["id"] not in saved_ids:
-                matching = next((item for item in symptom_notes_list if item["name"] == s["name"]), None)
-                symptoms_to_save.append({
-                    "id": s["id"],
-                    "note": matching["note"] if matching else "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
-                })
-
-        if symptoms_to_save:
-            save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
-
+            if symptoms_to_save:
+                save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
 
         # ✅ Xử lý phần bệnh
         diseases = parsed.get("diseases", [])
@@ -266,21 +286,23 @@ async def decide_KMS_prompt_inputs(session_id: str, user_id: int):
     next_symptom = await get_next_symptom_to_followup(session_id, user_id, stored_symptoms)
 
     symptoms_to_ask = [next_symptom["name"]] if next_symptom else []
+    related_symptom_names = None  # ✅ Khởi tạo mặc định
 
     logger.info("📭 symptoms_to_ask: %s", symptoms_to_ask)
 
-    related_symptom_names = []
-
-    symptom_ids = [s['id'] for s in stored_symptoms]
-    related = get_related_symptoms_by_disease(symptom_ids)
-    stored_names = [s["name"] for s in stored_symptoms]
-    related_names = [s["name"] for s in related if s["name"] not in stored_names]
-    related_symptom_names = list(set(related_names))[:10]
+    if not symptoms_to_ask:
+        session = await get_session_data(session_id=session_id, user_id=user_id)
+        if not session.get("related_symptom_asked"):
+            symptom_ids = [s['id'] for s in stored_symptoms]
+            related = get_related_symptoms_by_disease(symptom_ids)
+            stored_names = [s["name"] for s in stored_symptoms]
+            related_names = [s["name"] for s in related if s["name"] not in stored_names]
+            related_symptom_names = list(set(related_names))[:10] or None  # None nếu không còn
 
     return {
         "symptoms_to_ask": symptoms_to_ask,
-        "raw_followup_question": None,  # không dùng nữa
-        "related_symptom_names": related_symptom_names or None,
+        "raw_followup_question": None,
+        "related_symptom_names": related_symptom_names,
         "target_followup_id": next_symptom["id"] if next_symptom else None
     }
 
@@ -484,8 +506,6 @@ def filter_new_predicted_diseases(cursor, prediction_id: int, new_diseases: list
             filtered.append((disease_id, d))
 
     return filtered
-
-
 
 
 #-------------- dưới đây là nhừng hàm được sử dung cho việc chia theo controller không tôt không lien mạch bot gần như ko quyết định chính xác việc cần thực hiện --------------------------------------------------

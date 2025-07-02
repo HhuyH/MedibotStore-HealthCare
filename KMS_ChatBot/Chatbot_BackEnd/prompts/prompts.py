@@ -232,7 +232,7 @@ def build_KMS_prompt(
 
          ```json
          {{
-            "action": one of ["ask_symptom_intro", "followup", "related", "light_summary", "diagnosis"]
+            "action": one of ["followup", "related", "light_summary", "diagnosis", "post-diagnosis"]
             "message": "Câu trả lời tự nhiên bằng tiếng Việt",
             "updated_symptom": "Ho",
             "end": true | false
@@ -327,167 +327,95 @@ def build_KMS_prompt(
 
     """.strip()
     
-    # "🩺 1. Create follow up question for symptom" Tạo câu hỏi để hỏi về chi tiết triệu chứng
-    prompt += f"""
-      🩺 STEP — 1. Create follow up question for symptom
+   # STEP 1 — Follow-up hoặc Skip nếu không đủ điều kiện
+    if symptoms_to_ask:
+      prompt += f"""
+         🩺 STEP — 1. Create Follow-Up Question
 
-      ❗ Follow-up symptom list (you may ask about **only these**):  
-      {json.dumps(symptoms_to_ask, ensure_ascii=False)}
+         ❗ Symptom(s) available for follow-up:  
+         {json.dumps(symptoms_to_ask, ensure_ascii=False)}
 
-      🔁 Follow-up allowance:
-      - had_conclusion = {"true" if had_conclusion else "false"}
+         🛑 Follow-Up Policy:
+         If `symptoms_to_ask` is not empty → you must enter follow-up mode first.
 
-      🛑 Follow-up Policy:
+         DO NOT skip to diagnosis unless all required follow-ups have been asked or clearly answered by user in free text.
 
-      You are ONLY allowed to set `"action": "followup"` if:
-      - `symptoms_to_ask` is not empty  
-      → This is the ONLY condition for triggering follow-up.
+         You are ONLY allowed to set `"action": "followup"` if:
+         - `symptoms_to_ask` is not empty  
+         → This is the ONLY condition to trigger follow-up.
 
-      🚫 In ALL other cases:
-      - You must SKIP STEP 1 entirely.
-      - Do NOT generate a follow-up question — even in reworded or softer form.
-      - Do NOT guess, infer, or rephrase questions for symptoms not explicitly listed.
+         Even if a symptom is in `stored_symptoms_name`, you are NOT allowed to follow up unless:
+         - It is in `symptoms_to_ask`,  
+         - OR the user clearly revisits it after a previous conclusion.
 
-      Even if a symptom appears in `stored_symptoms_name`, you are NOT allowed to follow up unless:
-      - It is in `symptoms_to_ask`,  
-      - OR the user clearly revisits it after a previous conclusion.
+         This is a strict rule. Any violation is considered a logic failure.
 
-      This is a strict rule. Any violation is considered a logic failure.
+         🚫 DO NOT:
+         - Repeat questions already asked (even if vaguely answered, like “about 5-10 minutes”, “I guess a few hours”)
+         - Reword or “double check” the same topic
+         - Mention any related symptoms or diseases
+         - Ask more than one question
 
-            
-      🚫 VERY IMPORTANT:
-         - If the user has ALREADY answered your previous follow-up — even in vague or brief form like:
-            • “Tầm 5-10 phút”
-            • “Cũng nhanh thôi”
-            • “Chắc vài tiếng”
-            • “Không nhớ rõ, chắc khoảng chiều”
-         → then you must NOT ask about the same aspect again (e.g., duration, intensity).
-
-         - Do NOT reword or “double check” the same topic — it breaks the conversational flow.
-
-      Examples:
-         - Bot: “Bạn thường bị đau đầu trong bao lâu?”  
-         User: “Tầm 5-10 phút”  
-         → ✅ User has answered → SKIP follow-up on duration
-
-      📌 If the symptom has already been followed up and no new details are emerging from the user,  
-         → you MUST NOT continue repeating similar follow-up questions.
-
-         In this case, you should either:
-         - Switch to `"related"` (if it hasn't been done), or  
-         - Proceed to `"light_summary"` if follow-up seems exhausted.
-
-         Do NOT ask variations of the same follow-up question unless the user introduced a new detail.
-
-      → Then, write ONE fluent, empathetic question in **Vietnamese** to clarify what’s missing.
-
-      → Your question should give the user multiple directions to reflect on, not just a single narrow angle.
-
-      → Do NOT just ask “Bạn thấy thế nào?” — that’s too vague. Instead, offer some soft examples inside the question itself.
-
-      → These gentle contrasts help users pick what feels right, without needing medical vocabulary.
-
-      ⚠️ DO NOT:
-      - Use any symptom not listed in `symptoms_to_ask`
-      - Repeat questions the user already answered (even vaguely)
-      - Ask more than one question
-      - Mention possible diseases
-
-      Instructions:
-      - Only ask about **that one symptom** — do NOT bring up new or related symptoms.
-      - 🚫 For example, if the symptom is “nhức đầu”, you must NOT ask whether the user also feels “mệt mỏi”, “buồn nôn”, or any other symptom.
-      - 🚫 You must also avoid phrases like:
-         • “Có kèm theo cảm giác… không?”
-         • “Có thêm triệu chứng gì khác không ha?”
-      - ✅ These are part of STEP 2 (related symptoms) and must not appear during follow-up.
-         → If you accidentally include related symptoms in your follow-up, the result will be rejected by the system.
-      - Do NOT repeat what the user already said (e.g., nếu họ nói “đau đầu từ sáng” thì đừng hỏi lại “bạn đau từ khi nào?”).
-      - Instead, dig deeper:
-      - Timing (kéo dài bao lâu, xuất hiện khi nào?)
-      - Severity (nặng dần, thoáng qua hay dai dẳng?)
-      - Triggers (xuất hiện khi làm gì?)
-      - Functional impact (cản trở sinh hoạt không?)
-
-      → Follow the Global Tone Guide above
-
-      💡 Before generating the follow-up, read `recent_user_messages` and `recent_assistant_messages` carefully.
-         → If the assistant has already asked about this symptom — even with different wording — you must skip it.
-
-      🔄 After finishing follow-up:
-
-         You must now choose ONE of the following next steps based on the user’s current information:
-
-         1. If symptoms are clear but you still want to enrich understanding → choose `"related"`  
-            → Ask about relevant symptoms that often co-occur.
-
-         2. If symptoms are mild, temporary, and don’t need further clarification → choose `"light_summary"`  
-            → Write a gentle summary and remind the user to keep monitoring.
-
-         3. If symptoms are clear and you can suggest possible causes → choose `"diagnosis"`  
-            → Write a friendly, informative explanation in Vietnamese.
-
-         ⛔ Do NOT continue looping or re-asking old questions.
-
-         ✅ Pick only ONE action from the list — never combine multiple.
-
-
+         ✅ Your task:
+         - Write ONE empathetic, specific question in Vietnamese  
+         - Focus only on the single symptom in `symptoms_to_ask`  
+         - Use soft contrast options to help the user answer  
+         - Follow the **Global Tone Guide**
       """.strip()
-    
-    # "🧩 2. Create question for Related Symptoms" Hỏi triệu chứng có thể liên quan 
-    prompt += f"""   
-         🧩 STEP — 2. Create question for Related Symptoms:
+    else:
+      prompt += """
+         🩺 STEP — 1. Skip Follow-Up
 
-         🛑 STRICT RULE: Related symptoms may only be asked **once per conversation**.
+         🚫 There are no more symptoms to follow up, and the user is not revisiting a previous one.
 
-         → You are allowed to ask about related symptoms only if:
-         - The main symptoms have already been explored (follow-up is done or skipped)
-         - There is no related symptom question already present in `recent_assistant_messages`
+         You MUST skip this step entirely.
 
-         ❌ If a related symptom question has already appeared — even with different words or softer phrasing — you MUST SKIP this step entirely.
+         👉 Choose ONE next step:
+         - `"related"` if applicable and not yet asked
+         - `"diagnosis"` if user has described ≥2 meaningful symptoms
+         - `"light_summary"` if symptoms seem mild or unclear
 
-         ✅ Do NOT attempt to “clarify”, “soften”, or “revisit” related symptoms. Treat this as a strict one-time opportunity.
+         ⚠️ DO NOT:
+         - Retry follow-up
+         - Reword old questions
+         - Ask about additional symptoms — that’s in STEP 2
+      """.strip()
 
-         For example:
-           - If the assistant previously asked:  
-             “Bạn có cảm thấy hoa mắt, chóng mặt gì không?”  
-           → Then you MUST NOT ask again:  
-             “Vậy còn chóng mặt hay cảm giác quay cuồng gì không?”
+   # "🧩 2. Create question for Related Symptoms" Hỏi triệu chứng có thể liên quan 
+    if related_symptom_names:
+            prompt += f"""
+               🧩 STEP — 2. Ask About Related Symptoms
 
-         → Even if words differ, if the meaning is the same, it is considered a duplication.
+               set `"action": "related"`
 
-         ⚠️ Once a related question has been asked, you must proceed to `"diagnosis"` or `"light_summary"` — depending on context.
+               👉 You may now ask about **possibly related symptoms** to complete the context.
+               
+               ⚠️ STRICT RULES:
+               - Only ask this once per session.
+               - Check that no similar question has already been asked.
+               - If any prior assistant message includes a prompt about “cảm giác khác”, “triệu chứng đi kèm”, etc → you must skip.
 
-         → If the user replies vaguely or says things like “không có”, “không rõ”, “chắc không sao đâu”, etc.  
-         → Then you must **not retry this step** — move forward instead.
+               → Related symptoms to consider: {', '.join(related_symptom_names)}
 
-         🔒 If uncertain:
-         - Prefer `"diagnosis"` if the user has described ≥2 symptoms with meaningful details
-         - Otherwise, choose `"light_summary"` as a gentle closing step
+               🎯 Write one natural follow-up message in Vietnamese that gently brings up these related symptoms.
+                  → Follow the Global Tone Guide above
+                  
+               ❌ Do not repeat, clarify, or revisit this once it’s been asked.
+            """.strip()
+    else:
+         prompt += """
+            🧩 STEP — 2. Skip Related Symptoms
 
-         ➕ Example transitions (only if allowed):
-           - “Mình hỏi vậy vì đôi khi mệt mỏi kéo dài có thể đi kèm các triệu chứng như vậy.”
-           - “Thỉnh thoảng những cảm giác này sẽ đi cùng với những triệu chứng khác nữa đó…”
+            🔍 There are no related symptoms to ask, or they have already been covered.
 
-         → Related symptoms to consider: {', '.join(related_symptom_names or [])}
+            👉 You must now **proceed directly** to the next logical step.
 
-         🚫 FINAL WARNING:
+            → If the user has described **2 or more meaningful symptoms**, move to `"diagnosis"`.
 
-            If `recent_assistant_messages` contains **any sentence** that asks about related symptoms — even with different wording — you MUST SKIP this step completely.
+            → Otherwise, use `"light_summary"` to gently summarize and transition out.
 
-            → This includes phrases like:
-            - “Mình đang nghĩ không biết bạn có thêm cảm giác nào khác…”
-            - “Đôi khi triệu chứng này đi kèm…”
-            - “Bạn có thấy thêm gì như chóng mặt, hoa mắt không…”
-
-            ❗ Repeating or rephrasing a related symptom prompt — even once — is a **critical logic violation**.
-
-            ⚠️ The system will reject your response and consider the assistant broken.
-
-            → Never attempt to "soften", "clarify", or "extend" a related question after it has already appeared.
-
-            → This is an **absolute rule** — no exceptions.
-
-    """.strip()
+            ⚠️ Do not retry any previous step. Move forward.
+         """.strip()
 
     # "3. 🌿 Light Summary" — Tạo phản hồi nhẹ nhàng khi không cần chẩn đoán hoặc follow-up thêm
     prompt += f"""   
@@ -651,82 +579,79 @@ def build_KMS_prompt(
                      → This score reflects AI reasoning — NOT a medical diagnosis.
     """.strip()
     
-    # "🆕 STEP — 5. Detect and Handle Updated Symptom" - xác định người dùng đang nói đến triệu chứng cũ và update
-    prompt += f"""
-      🆕 STEP — 5. Detect and Handle Updated Symptom
+    # "🆕 STEP — 5. Post-Diagnosis Updated Symptom (if had_conclusion = true)"
+    if had_conclusion and (not symptoms_to_ask) and (not related_symptom_names):
+      prompt += f"""
+      🆕 STEP — 5. Post-Diagnosis Updated Symptom
 
-         Your job in this step is to determine whether the user is describing a **change, progression, or additional detail** for a symptom they previously mentioned.
+      Your job in this step is to determine whether the user is describing a **change, progression, or additional detail** for a symptom they previously mentioned.
 
-         This is called an “updated symptom”.
+      set `"action": "post-diagnosis"`
 
-         ⚠️ Do NOT set `"updated_symptom"` in the following cases:
+      ---
 
-         1. The user only uses vague or uncertain expressions such as:
-            - “hình như”, “có vẻ”, “chắc là”, “mình nghĩ”, “không rõ”, “có thể”  
-            → and all similar expressions of approximation or uncertainty.
+      🔍 You must carefully scan:
+      - `recent_user_messages`: to detect any new descriptive information
+      - `stored_symptoms_name`: to match it to a known symptom
 
-         2. The user merely repeats or rementions the symptom (e.g., “mình vẫn chóng mặt”), **without adding new descriptive details**.
+      This step applies in both of the following cases:
+      - The user adds more detail **after** a diagnosis (`had_conclusion = true`)
 
-         3. The assistant is the one asking about the symptom (e.g., follow-up question), and the user has **not yet replied**.  
-            → Do **NOT** assume an update just because the symptom was mentioned in the assistant’s message.
+      ---
 
-         ---
+      🚫 DO NOT set `"updated_symptom"` in the following cases:
+      - The user uses vague or uncertain expressions like “hình như”, “có vẻ”, “chắc là”, “không rõ”
+      - The user repeats the symptom without adding new information
+      - The assistant is the one asking, and the user hasn’t responded yet
 
-         ✅ You may set `"updated_symptom"` **only if** the user **voluntarily** provides **concrete new details** (not just repeats, and not in response to a follow-up).
+      ---
 
-         These new details must describe a **change, progression, or additional context** related to a previously reported symptom — such as timing, intensity, duration, or characteristics.
+      ✅ You may set `"updated_symptom": "<name>"` **only if**:
+      - The user voluntarily provides new, descriptive info (not prompted)
+      - It describes timing, intensity, duration, or other characteristics
+      - The symptom exists in `stored_symptoms_name`
 
-         This is valid only if:
-         - The message contains clear comparative or descriptive information  
-         - AND `stored_symptoms_name` includes that symptom  
-         - AND the user is **not introducing a new symptom**
+      Examples of valid updates:
+      - “Hôm nay thấy chóng mặt kéo dài hơn” → update to “Chóng mặt”
+      - “Lần này đau đầu kiểu khác lúc trước” → update to “Đau đầu”
+      - “Giờ thì sổ mũi có đàm màu xanh rồi” → update to “Sổ mũi”
 
-         Examples of valid updates:
-         - “Hôm nay thấy chóng mặt kéo dài hơn” → update to “Chóng mặt”
-         - “Giờ thì cảm giác đó quay cuồng luôn rồi” → update to “Chóng mặt”
-         - “Lần này đau đầu kiểu khác lúc trước” → update to “Đau đầu”
-         - “Giờ thì sổ mũi có đàm màu xanh rồi” → update to “Sổ mũi”
+      ---
 
-         If you detect such an update:
-         → Set `"updated_symptom": "Tên triệu chứng"`  
-         → Also embed a soft acknowledgment in your `"message"` to reflect that you recognized this change (e.g., “Mình ghi nhận thêm rồi nè”).
+      🎯 Response logic:
 
-         ---
+      → Always embed a soft acknowledgment in your `"message"` when setting `"updated_symptom"`
 
-         ✅ Good response examples (you can take inspiration from these, but do not reuse them exactly):
+      ✅ Example acknowledgments (rephrase freely, but keep the warm tone):
+      - “À, có vẻ như triệu chứng đó đang nặng hơn chút rồi ha…”
+      - “Hiểu rồi nhen, lần này cảm giác đó nghe có vẻ khác hơn trước á.”
+      - “Cảm ơn bạn, mình sẽ ghi chú thêm để theo dõi kỹ hơn nha.”
+      - “Mình thấy bạn mô tả rõ hơn rồi, để mình lưu lại thêm nghen.”
+      - “Mình ghi nhận thông tin bạn vừa chia sẻ nha, để theo dõi sát hơn ha.”
 
-         - “À Mình thấy triệu chứng đó có vẻ thay đổi chút rồi ha.”
-         - “Um, cảm ơn bạn nha. Nghe như là tình trạng đó đang tiến triển thêm chút rồi á.”
-         - “Mình ghi nhận thông tin bạn vừa chia sẻ nha, để theo dõi kỹ hơn hen.”
-         - “Hiểu rồi, có vẻ như triệu chứng này đang khác hơn chút so với lúc trước ha.”
-         - “Bạn mô tả thêm rõ hơn rồi, mình sẽ lưu lại để xem xét cẩn thận hơn nữa nha.”
+      → Follow the **Global Tone Guide**.
 
-         👉 These are just reference styles — make your response feel like a gentle conversation, not a script.
+      ---
 
+      ⚖️ Action logic:
 
-         ---
+      - If `had_conclusion = true`:
+         → Set `"action": "post-diagnosis"`  
+         → Then choose either `"light_summary"` or `"diagnosis"` as the next step depending on severity
 
+      - If `had_conclusion = false`:
+         → Do NOT set `"post-diagnosis"`
+         → Choose `"light_summary"` if mild  
+         → Choose `"diagnosis"` if the detail adds meaningful insight
 
-         ⚖️ Choose the right action:
+      ---
 
-         - If the update sounds **mild or non-concerning** → set `action = "light_summary"`
-         - If the update clearly suggests a **specific condition** or raises concern  
-            (e.g., máu, tím, liệt, bất thường nặng) → set `action = "diagnosis"`
+      📌 Summary:
+      - Always set `"updated_symptom"` if appropriate
+      - Embed a gentle, human message
+      - Route accordingly using `"light_summary"` or `"diagnosis"`
+      """.strip()
 
-         ✅ Do NOT use "related" unless you are also asking about other symptoms.
-         ❌ Do NOT reuse old questions.
-
-         ---
-
-         📌 Summary:
-
-         - Always set `"updated_symptom"` if relevant.
-         - Choose between `"light_summary"` or `"diagnosis"` depending on severity.
-         - Only escalate to `"diagnosis"` if the new info is potentially medically significant
-
-
-    """
-   
     # Rule set action
     prompt += f"""
 

@@ -78,7 +78,8 @@ def refresh_symptom_list():
     SYMPTOM_LIST = []
     load_symptom_list()
 
-def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=None, debug=False):
+def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=None, recent_assistant_messages=None, debug=False):
+
     symptom_lines = []
     name_to_symptom = {}
 
@@ -97,6 +98,10 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
         for alias in aliases:
             name_to_symptom[normalize_text(alias)] = s
 
+    if recent_assistant_messages:
+        assistant_context = " ".join(recent_assistant_messages[-2:])
+    else:
+        assistant_context = "..."
 
     prompt = f"""
         You are a smart and careful medical assistant.
@@ -142,10 +147,16 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
 
     ---
 
-    Conversation so far:
-    {user_message}
+    🧠 Conversation context:
+    - The assistant just asked: "{assistant_context}"
+    - The user responded: "{user_message}"
 
-    Now return a list of **symptom names** (from the list above) that the user is clearly experiencing.
+    ⚠️ VERY IMPORTANT:
+    - Only extract symptoms mentioned in the **user's message**.
+    - Do **NOT** extract symptoms based on the assistant's question.
+    - The assistant message is provided only for context — not for extraction.
+
+    Return a list of **symptom names** (from the list above) that the user is clearly experiencing.
 
     Only return names. Example: ["Mệt mỏi", "Đau đầu"]
     """
@@ -183,41 +194,6 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
         if debug:
             print("❌ GPT symptom extraction failed:", str(e))
         return [], "Xin lỗi, mình chưa rõ bạn đang cảm thấy gì. Bạn có thể mô tả cụ thể hơn không?"
-
-# lưu triệu chứng vào database lưu vào user_symptom_history khi đang thực hiện chẩn đoán kết quả
-def save_symptoms_to_db(user_id: int, symptoms: list[dict]) -> list[int]:
-    """
-    symptoms: list of dicts, each with:
-        - id: symptom_id
-        - note: optional note string (default empty)
-    """
-    conn = pymysql.connect(**DB_CONFIG)
-    saved_symptom_ids = []
-
-    try:
-        with conn.cursor() as cursor:
-            for symptom in symptoms:
-                symptom_id = symptom.get("id")
-                note = symptom.get("note", "")
-
-                if not symptom_id:
-                    continue
-
-                logger.info(f"➡️ Lưu symptom_id={symptom_id}, note={note}")
-
-                cursor.execute("""
-                    INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes)
-                    VALUES (%s, %s, %s, %s)
-                """, (user_id, symptom_id, date.today(), note))
-                
-                saved_symptom_ids.append(symptom_id)
-
-        conn.commit()
-    finally:
-        conn.close()
-
-    return saved_symptom_ids
-
 
 # Tạo câu hỏi tiếp theo nhẹ nhàng, thân thiện, gợi ý người dùng chia sẻ thêm thông tin dựa trên các triệu chứng đã ghi nhận.
 def join_symptom_names_vietnamese(names: list[str]) -> str:
@@ -465,51 +441,119 @@ def has_diagnosis_today(user_id: int) -> bool:
         conn.close()
 
 # Hàm tạo ghi chú cho triệu chứng khi thêm vào database
-async def generate_symptom_note(symptoms: list[dict], recent_messages: list[str]) -> list[dict]:
+async def generate_symptom_note(
+    symptoms: list[dict],
+    recent_messages: list[str],
+    existing_notes: list[dict] = None
+) -> list[dict]:
     symptom_lines = "\n".join(f"- {s['name']}" for s in symptoms)
-    context = "\n".join(f"- {msg}" for msg in recent_messages[-6:])
+    context = "\n".join(f"- {msg}" for msg in recent_messages[-2:])
+
+    # Build existing note text if provided
+    existing_notes_text = ""
+    if existing_notes:
+        existing_notes_text = "\n".join(f"- {n['name']}: {n['note']}" for n in existing_notes)
 
     prompt = f"""
-    You are a helpful assistant supporting health documentation.
+        You are a helpful assistant supporting health documentation.
 
-    Below is a conversation with a user and a list of symptoms they mentioned.
+        Below is a list of symptoms the user may be experiencing — but they may not have described all of them yet.
 
-    💬 Recent conversation:
-    {context}
+        Your task is:
+        👉 Only create a note for a symptom if the user clearly mentioned or described it in the recent conversation.
+        👉 If the user added new detail for a symptom that already has a note, you MUST override and rewrite the note with updated info.
 
-    🧠 List of symptoms:
-    {symptom_lines}
+        💬 Recent conversation:
+        {context}
 
-    👉 Your task:
-    For each symptom, write a short, natural note in Vietnamese summarizing what the user said about it — including any details like timing, severity, or triggers if available.
+        📌 List of possible symptoms:
+        {symptom_lines}
 
-    ⚠️ Instructions:
-    - You must return a list of JSON objects with `name` and `note` fields.
-    - Do NOT invent symptoms not mentioned.
-    - If there’s no clear info about a symptom, write a generic note.
-    - Do not include explanations, just the raw JSON.
+        📄 Existing notes (if any):
+        {existing_notes_text or "None"}
 
-    Example output:
-    ```json
-    [
-      {{
-        "name": "Đau đầu",
-        "note": "Người dùng cảm thấy đau đầu xuất hiện khi mới ngủ dậy."
-      }},
-      ...
-    ]
-    ```
-    """.strip()
+        ⚠️ Output instructions:
+        - Return a JSON list, each item must have `id`, `name`, and `note`.
+        - Only include symptoms mentioned in the current conversation.
+        - For existing notes: only update if there is **new information**.
+        - Do NOT return notes for symptoms that are not clearly referenced.
+
+        ✅ Example output:
+        ```json
+        [
+        {{
+            "id": 1,
+            "name": "Đau đầu",
+            "note": "Người dùng bị đau đầu ngay sau khi ngủ dậy và nói rằng cơn đau kéo dài hơn 4 tiếng."
+        }}
+        ]
+""".strip()
+    try:
+        # Gọi GPT (không dùng await vì đây là hàm sync)
+        response = chat_completion(
+            [{"role": "user", "content": prompt}],
+            temperature=0.4,
+            max_tokens=400
+        )
+
+        content = response.choices[0].message.content if response.choices else ""
+        # logger.info(f"📤 GPT symptom note raw repr:\n{response.choices[0].message.content if response.choices else ""}")
+
+        # Clean markdown block if any
+        if content.startswith("```json"):
+            content = content.replace("```json", "").replace("```", "").strip()
+
+        parsed = json.loads(content)
+
+        # Validate format
+        if not isinstance(parsed, list):
+            raise ValueError("GPT returned non-list")
+
+        for item in parsed:
+            if not all(k in item for k in ["id", "name", "note"]):
+                raise ValueError("Missing fields in GPT output")
+
+        return parsed
+
+    except Exception as e:
+        logger.warning(f"⚠️ GPT fallback (note): {e}")
+        return [{"name": s["name"], "note": "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."} for s in symptoms]
+
+
+# lưu triệu chứng vào database lưu vào user_symptom_history khi đang thực hiện chẩn đoán kết quả
+def save_symptoms_to_db(user_id: int, symptoms: list[dict]) -> list[int]:
+    """
+    symptoms: list of dicts, each with:
+        - id: symptom_id
+        - note: optional note string (default empty)
+    """
+    conn = pymysql.connect(**DB_CONFIG)
+    saved_symptom_ids = []
 
     try:
-        response = await chat_completion([
-            {"role": "user", "content": prompt}
-        ], temperature=0.4, max_tokens=400)
+        with conn.cursor() as cursor:
+            for symptom in symptoms:
+                symptom_id = symptom.get("id")
+                note = symptom.get("note", "")
 
-        return json.loads(response.choices[0].message.content.strip())
-    except Exception:
-        # fallback nếu lỗi GPT
-        return [{"name": s["name"], "note": "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."} for s in symptoms]
+                if not symptom_id:
+                    continue
+
+                # logger.info(f"➡️ Lưu symptom_id={symptom_id}, note={note}")
+
+                cursor.execute("""
+                    INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes)
+                    VALUES (%s, %s, %s, %s)
+                """, (user_id, symptom_id, date.today(), note))
+                
+                saved_symptom_ids.append(symptom_id)
+
+        conn.commit()
+    finally:
+        conn.close()
+
+    return saved_symptom_ids
+
 
 def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> bool:
     today = datetime.now().date().isoformat()

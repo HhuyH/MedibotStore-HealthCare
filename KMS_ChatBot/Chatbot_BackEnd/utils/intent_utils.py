@@ -73,12 +73,13 @@ def get_combined_schema_for_intent(intent: str) -> str:
 async def detect_intent(
     last_intent: str = None,
     recent_user_messages: list[str] = [],
-    recent_assistant_messages: list[str] = []
+    recent_assistant_messages: list[str] = [],
+    diagnosed_today: bool = False  # ✅ thêm dòng này
 ) -> str:
     # Sử dụng trực tiếp message đã tách
     last_bot_msg = recent_assistant_messages[-1] if recent_assistant_messages else ""
     last_user_msg = recent_user_messages[-1] if recent_user_messages else ""
-
+    diagnosed_today_flag = "True" if diagnosed_today else "False"
     # logger.info(f"[Intent Debug] Recent User: {last_user_msg}")
     # logger.info(f"[Intent Debug] Recent Bot: {last_bot_msg}")
 
@@ -94,6 +95,8 @@ async def detect_intent(
         "{last_user_msg}"
 
         Valid intents: {", ".join(VALID_INTENTS)}
+
+        Diagnosed today: {diagnosed_today_flag}
 
         Instructions:
 
@@ -113,12 +116,18 @@ async def detect_intent(
         - If unsure, prefer a more specific intent over `"general_chat"`.
         - If the previous assistant message was a follow-up question about a symptom, and the user responds with something vague or approximate (e.g. “chắc 5-10 phút”, “khoảng sáng tới giờ”, “tầm chiều hôm qua”, "chắc tầm"), you SHOULD assume this is a continuation of the symptom discussion → prefer "symptom_query".
         - If user says “không biết”, “chắc vậy”, “khó nói”, "không rõ", but it’s still in reply to a symptom follow-up → KEEP "symptom_query"
+        - If Diagnosed today = True and the user message sounds like explaining the cause or context of symptoms → KEEP "symptom_query".
 
         Always return only ONE valid intent from the list.
         Do NOT explain your reasoning.
         Do NOT include any other words — only return the intent.
 
         Examples:
+        - Diagnosed today = True
+          User: "à hình như mình hiểu tại sao mình cảm thấy chống mặt rồi" → ✅ → intent = `symptom_query`
+          User: "chắc là do hôm qua mình ăn linh tinh" → ✅ → intent = `symptom_query`
+          User: "giờ mình mới nhớ ra, hôm qua bị trúng mưa" → ✅ → intent = `symptom_query`
+          
         - Bot: “Bạn thấy tê tay bắt đầu từ lúc nào?”  
           User: “nó tự nhiên xuất hiện thôi” → ✅ → intent = `symptom_query`
 
