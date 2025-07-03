@@ -47,6 +47,7 @@ async def health_talk(
     chat_id=None,
     session_context: dict = None
 ):
+    symptom_notes_list = []
     session_data = await get_session_data(user_id=user_id, session_id=session_id)
     logger.debug("📦 Session ban đầu:\n%s", json.dumps(session_data, indent=2, ensure_ascii=False))
 
@@ -71,8 +72,6 @@ async def health_talk(
     # ✅ In log triệu chứng đã hỏi follow-up
     asked = await get_followed_up_symptom_ids(session_id=session_id, user_id=user_id)
     logger.info("📎 Follow-up IDs từ session: %s", asked)
-
-
 
     had_conclusion = session_data.get("had_conclusion", False)
 
@@ -115,7 +114,7 @@ async def health_talk(
     message = parsed.get("message", fallback_message or "Bạn có thể nói rõ hơn về tình trạng của mình không?")
 
     action = parsed.get("action")
-
+    next_action = parsed.get("next_action")
     # ✅ Ghi nhận kết luận để đánh dấu đã chẩn đoán hôm nay
     if action == "diagnosis":
         session_data["had_conclusion"] = True
@@ -127,6 +126,7 @@ async def health_talk(
 
     # Update note triệu chứng vào db nếu người dùng có bỏ sung thêm
     if updated_symptom and diagnosed_today:
+        logger.info(f"Updated symptom = {updated_symptom}")
         try:
             success = update_symptom_note(
                 user_id=user_id,
@@ -153,6 +153,7 @@ async def health_talk(
     logger.info("🎯 Action: %s", action)
 
     # Nếu không có chẩn đoán trước đó trong ngày thì sẽ tạo note dựa theo triệu chứng
+    # nếu đã chẩn đoán thì sẽ không tạo note mới
     if not diagnosed_today:
         # 📋 Tạo note
         # Step 1: lấy note cũ từ session
@@ -179,100 +180,58 @@ async def health_talk(
         session_data["symptom_notes_list"] = symptom_notes_list
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
 
+    # Nếu action là chẩn đoán thì sẽ lưu kết quả vào DB
+    # Và gọi hàm update_prediction_today_if_exists để cập nhật dự đoán bệnh hôm nay
+    if action == "diagnosis" or parsed.get("next_action") == "diagnosis":
+        # logger.info("🩺 Action là diagnosis hoặc next_action là diagnosis → lưu kết quả chẩn đoán.")
+        update_prediction_today_if_exists(
+            user_id=user_id,
+            stored_symptoms=stored_symptoms,
+            diseases=parsed.get("diseases", []),
+            symptom_notes_list=symptom_notes_list,
+            diagnosed_today=diagnosed_today,
+            chat_id=chat_id
+        )
+    
+    logger.info("🎯 Next Action: %s", next_action)
 
-    if action == "diagnosis":
-        
-        #Lưu note đã được tạo trước đó vào db
-        if not diagnosed_today:
-            # ✅ Lưu triệu chứng mới nếu có
-            saved_ids = get_saved_symptom_ids(user_id)
+    # nếu action là post-diagnosis và next_action là diagnosis
+    # thì sẽ tách message tại điểm DIAGNOSIS_SPLIT
+    # nếu không có thì sẽ stream message bình thường
+    if action == "post-diagnosis" and parsed.get("next_action") == "diagnosis":
+        # Step 1: Lấy message đầy đủ
+        full_message = parsed.get("message", "")
 
-            symptoms_to_save = [
-                {"id": note["id"], "note": note["note"]}
-                for note in symptom_notes_list
-                if note["id"] not in saved_ids
-            ]
+        logger.info("Raw message before split: %s", full_message)
 
-            if symptoms_to_save:
-                save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
-
-        # ✅ Xử lý phần bệnh
-        diseases = parsed.get("diseases", [])
-        if not diseases:
-            logger.warning("⚠️ Không có bệnh nào trong kết quả chẩn đoán.")
-            return
-
-        conn = pymysql.connect(**DB_CONFIG)
-        try:
-            with conn.cursor() as cursor:
-                today_str = date.today().strftime("%Y-%m-%d")
-                cursor.execute("""
-                    SELECT prediction_id FROM health_predictions
-                    WHERE user_id = %s AND DATE(prediction_date) = %s
-                """, (user_id, today_str))
-                row = cursor.fetchone()
-
-                if row:
-                    prediction_id = row[0]
-
-                    # 🧠 Lọc bệnh mới chưa có
-                    new_diseases = filter_new_predicted_diseases(cursor, prediction_id, diseases)
+        # 🔍 Tách tại điểm đánh dấu DIAGNOSIS_SPLIT
+        split_point = full_message.find("DIAGNOSIS_SPLIT")
 
 
-                    if new_diseases:
-                        for disease_id, d in new_diseases:
-                            cursor.execute("""
-                                INSERT INTO prediction_diseases (
-                                    prediction_id, disease_id, confidence, disease_name_raw,
-                                    disease_summary, disease_care
-                                ) VALUES (%s, %s, %s, %s, %s, %s)
-                            """, (
-                                prediction_id,
-                                disease_id,
-                                d.get("confidence", 0.0),
-                                None if disease_id else d["name"],
-                                d.get("summary", ""),
-                                d.get("care", "")
-                            ))
+        if split_point != -1:
+            message_1 = full_message[:split_point].strip()
+            message_2 = full_message[split_point + len("DIAGNOSIS_SPLIT"):].strip()
 
-                        # ✅ Cập nhật lại field details
-                        cursor.execute("""
-                            UPDATE health_predictions
-                            SET details = %s
-                            WHERE prediction_id = %s
-                        """, (
-                            json.dumps({
-                                "symptoms": [s["name"] for s in stored_symptoms],
-                                "predicted_diseases": [d["name"] for d in diseases]
-                            }, ensure_ascii=False),
-                            prediction_id
-                        ))
+            # Stream phần đầu
+            for chunk in stream_gpt_tokens(message_1):
+                yield chunk
+                await asyncio.sleep(0.03)
 
-                        conn.commit()
-                        logger.info(f"🆕 Đã thêm {len(new_diseases)} bệnh mới và cập nhật lại details.")
-                    else:
-                        logger.info("✅ Không có bệnh mới để thêm vào hôm nay.")
+            # Chờ như người suy nghĩ
+            await asyncio.sleep(1.2)
 
-                else:
-                    # 🆕 Chưa có chẩn đoán hôm nay → tạo mới hoàn toàn
-                    logger.info("🆕 Chưa có chẩn đoán hôm nay → tạo mới.")
-                    save_prediction_to_db(
-                        user_id=user_id,
-                        symptoms=stored_symptoms,
-                        diseases=diseases,
-                        chat_id=chat_id
-                    )
+            # Stream phần sau
+            for chunk in stream_gpt_tokens(message_2):
+                yield chunk
+                await asyncio.sleep(0.03)
 
-        finally:
-            conn.close()
+            # ✅ Sau đó xử lý tiếp phần bệnh nếu có
+            # ... (giữ nguyên đoạn diagnosis bạn đã có)
 
-    # Step 6: Nếu cần, clear session
-    if end:
-        logger.info("🛑 GPT yêu cầu kết thúc session.")
-        # await clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
-        # await clear_followup_asked_all_keys(user_id=user_id, session_id=session_id)
+            return  # dừng tại đây không cần yield tiếp nữa
 
-    # Step 7: Stream message từng đoạn ra ngoài
+
+    # Step 6: Stream message từng đoạn ra ngoài
     for chunk in stream_gpt_tokens(message):
         yield chunk 
         await asyncio.sleep(0.05)
@@ -472,6 +431,7 @@ def save_prediction_to_db(
     finally:
         conn.close()
 
+# Lọc ra những bệnh mới chưa từng được lưu trong prediction_diseases của prediction_id
 def filter_new_predicted_diseases(cursor, prediction_id: int, new_diseases: list[dict]) -> list[tuple[int, dict]]:
     """
     Lọc ra những bệnh mới chưa từng được lưu trong prediction_diseases của prediction_id.
@@ -507,6 +467,100 @@ def filter_new_predicted_diseases(cursor, prediction_id: int, new_diseases: list
 
     return filtered
 
+# Cập nhật dự đoán bệnh hôm nay nếu đã có chẩn đoán trước đó
+# Nếu chưa có thì sẽ tạo mới
+# - Lưu triệu chứng mới nếu có
+# - Lọc bệnh mới chưa có trong prediction_diseases
+# - Cập nhật lại details trong health_predictions
+# nếu có bệnh mới
+# - Nếu không có bệnh mới thì không làm gì cả
+# nếu có bệnh mới thì sẽ thêm vào prediction_diseases
+def update_prediction_today_if_exists(
+    user_id: int,
+    stored_symptoms: list[dict],
+    diseases: list[dict],
+    symptom_notes_list: list[dict],
+    diagnosed_today: bool,
+    chat_id: str
+) -> None:
+    if not diseases:
+        logger.warning("⚠️ Không có bệnh nào trong kết quả chẩn đoán.")
+        return
+
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            today_str = date.today().strftime("%Y-%m-%d")
+            cursor.execute("""
+                SELECT prediction_id FROM health_predictions
+                WHERE user_id = %s AND DATE(prediction_date) = %s
+            """, (user_id, today_str))
+            row = cursor.fetchone()
+
+            if row:
+                prediction_id = row[0]
+
+                # ✅ Lưu triệu chứng mới nếu có
+                if not diagnosed_today:
+                    saved_ids = get_saved_symptom_ids(user_id)
+                    symptoms_to_save = [
+                        {"id": note["id"], "note": note["note"]}
+                        for note in symptom_notes_list
+                        if note["id"] not in saved_ids
+                    ]
+                    if symptoms_to_save:
+                        save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
+
+                # 🧠 Lọc bệnh mới chưa có
+                new_diseases = filter_new_predicted_diseases(cursor, prediction_id, diseases)
+                if new_diseases:
+                    for disease_id, d in new_diseases:
+                        if disease_id is None:
+                            disease_id = -1
+                            disease_name_raw = d.get("name")
+                        else:
+                            disease_name_raw = None
+
+                        cursor.execute("""
+                            INSERT INTO prediction_diseases (
+                                prediction_id, disease_id, confidence, disease_name_raw,
+                                disease_summary, disease_care
+                            ) VALUES (%s, %s, %s, %s, %s, %s)
+                        """, (
+                            prediction_id,
+                            disease_id,
+                            d.get("confidence", 0.0),
+                            disease_name_raw,
+                            d.get("summary", ""),
+                            d.get("care", "")
+                        ))
+
+                    cursor.execute("""
+                        UPDATE health_predictions
+                        SET details = %s
+                        WHERE prediction_id = %s
+                    """, (
+                        json.dumps({
+                            "symptoms": [s["name"] for s in stored_symptoms],
+                            "predicted_diseases": [d["name"] for d in diseases]
+                        }, ensure_ascii=False),
+                        prediction_id
+                    ))
+                    logger.info(f"🆕 Đã thêm {len(new_diseases)} bệnh mới và cập nhật lại details.")
+                else:
+                    logger.info("✅ Không có bệnh mới để thêm vào hôm nay.")
+                conn.commit()
+            else:
+                logger.info("🆕 Chưa có chẩn đoán hôm nay → tạo mới.")
+                save_prediction_to_db(
+                    user_id=user_id,
+                    symptoms=stored_symptoms,
+                    diseases=diseases,
+                    chat_id=chat_id
+                )
+
+    finally:
+        conn.close()
 
 #-------------- dưới đây là nhừng hàm được sử dung cho việc chia theo controller không tôt không lien mạch bot gần như ko quyết định chính xác việc cần thực hiện --------------------------------------------------
 

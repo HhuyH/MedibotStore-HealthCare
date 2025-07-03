@@ -182,6 +182,12 @@ def build_KMS_prompt(
     for s in SYMPTOM_LIST:
         line = f"- {s['name']}: {s['aliases']}"
         symptom_lines.append(line)
+
+   #  logger.info("🧭 [build_KMS_prompt] had_conclusion = %s | symptoms_to_ask = %s | related = %s",
+   #      had_conclusion,
+   #      symptoms_to_ask,
+   #      related_symptom_names
+   #  )
     
    #  logger.info("========== GPT PROMPT CONTEXT ==========")
    #  logger.info("🧠 Stored symptoms: %s", ", ".join(stored_symptoms_name))
@@ -233,6 +239,7 @@ def build_KMS_prompt(
          ```json
          {{
             "action": one of ["followup", "related", "light_summary", "diagnosis", "post-diagnosis"]
+            "next_action": one of ["light_summary", "diagnosis"]
             "message": "Câu trả lời tự nhiên bằng tiếng Việt",
             "updated_symptom": "Ho",
             "end": true | false
@@ -265,9 +272,10 @@ def build_KMS_prompt(
       - Suggested emojis: 😌, 💭, 🌿, 😴, ☕, 🌞
       - Avoid repeating the same emoji (like 🌿) too often — vary based on symptom context
 
-      🖍️ Markdown formatting:
-      - You may bold key symptoms using Markdown (**[Triệu chứng]**) — but only if it feels natural
-      - Never bold entire sentences or instructions
+      🖍️ Symptoms mentioned:
+      - Prioritize using the words and phrasing the user already used to describe their symptoms — avoid switching to medical jargon.
+      - Whenever you mention a known symptom name (e.g., "Đau đầu", "Buồn nôn", "Chóng mặt"), always bold it using Markdown (**Đau đầu**).
+      - Do not bold entire sentences — only the symptom names.
 
       ✅ Apply this tone consistently across all actions: followup, related, light_summary, and diagnosis.
 
@@ -300,9 +308,7 @@ def build_KMS_prompt(
             • “Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?”  
             • “Có khi nào bạn thấy đỡ hơn sau khi nghỉ ngơi không ha?”  
             • Or start mid-sentence without any soft intro if context allows
-
-         → Prioritize using the words and phrasing the user already used to describe their symptoms — avoid switching to medical jargon.
-
+            
          → Your final follow-up must be:
          - A single, natural Vietnamese sentence
          - Warm, empathetic, and personalized
@@ -327,6 +333,172 @@ def build_KMS_prompt(
 
     """.strip()
     
+    # 🆕 STEP — Post-Diagnosis Updated Symptom
+    if had_conclusion and (not symptoms_to_ask) and (not related_symptom_names):
+     prompt += f"""
+      🆕 STEP — Post-Diagnosis Updated Symptom
+
+      Your job in this step is to determine whether the user is describing a **change, progression, or additional detail** for a symptom they previously mentioned.
+
+      set `"action": "post-diagnosis"`
+
+      ---
+
+      🔍 You must carefully scan:
+      - `recent_user_messages`: to detect any new descriptive information
+      - `stored_symptoms_name`: to match it to a known symptom
+
+      This step applies in both of the following cases:
+      - The user adds more detail **after** a diagnosis (`had_conclusion = true`)
+
+      ---
+
+      🚫 DO NOT set `"updated_symptom"` or `"next_action"` in the following cases:
+
+      If the user's message contains vague, hypothetical, or reflective expressions such as:
+      - “hình như”
+      - “có vẻ”
+      - “chắc là”
+      - “không rõ”
+      - “mình đoán…”
+      - “à mình hiểu rồi…”
+
+      → Then you MUST:
+      - Only set `"action": "post-diagnosis"`
+      - Do NOT set `"updated_symptom"`  
+      - Do NOT set `"next_action"`
+      - Simply respond politely with a soft acknowledgment message.
+
+      ✅ For example:
+         > “Vậy là bạn đang suy nghĩ thêm về tình trạng của mình rồi nè. Nếu cần mình hỗ trợ thêm, cứ nói nha!”
+
+      ---
+
+      ✅ You may set `"updated_symptom": "<name>"` **only if**:
+      - The user voluntarily provides new, descriptive info (not prompted)
+      - It describes timing, intensity, duration, or other characteristics
+      - The symptom exists in `stored_symptoms_name`
+
+      Examples of valid updates:
+      - “Hôm nay thấy chóng mặt kéo dài hơn” → update to “Chóng mặt”
+      - “Lần này đau đầu kiểu khác lúc trước” → update to “Đau đầu”
+      - “Giờ thì sổ mũi có đàm màu xanh rồi” → update to “Sổ mũi”
+
+      ---
+
+      🔒 IMPORTANT: If the user's message only reflects or acknowledges a past symptom — such as:
+      - “à mình hiểu rồi”
+      - “vậy chắc là do...”
+      - “mình nghĩ chắc không sao đâu...”
+      
+      → Then you MUST set: `"action": "post-diagnosis"`
+      → DO NOT set `"updated_symptom"` or `"diagnosis"`
+
+      🎯 Response logic:
+      → Always embed a soft acknowledgment in your `"message"` when setting `"updated_symptom"`
+         ✅ Examples:
+         - “Mình thấy bạn mô tả rõ hơn rồi, để mình lưu lại thêm nghen.”
+         - “Mình ghi nhận thông tin bạn vừa chia sẻ nha, để theo dõi sát hơn ha.”
+
+      → Follow the **Global Tone Guide**.
+
+      ---
+
+      ⚖️ Action logic:
+
+      - `had_conclusion = true`:
+         → Set `"action": "post-diagnosis"`
+         → Then decide if a follow-up `"next_action"` is needed
+         - Do NOT switch to `"action": "diagnosis"` directly.  
+            • You must stay in `"post-diagnosis"` and use `"next_action"` instead.
+         🧭 If appropriate, add a field `"next_action"`:
+         - If the user clearly describes **symptom severity increasing**, **longer duration**, or **significant discomfort**, you MUST set `"next_action": "diagnosis"`
+         - Only choose `"light_summary"` if the update is mild or vague
+         - If unsure → do NOT include `"next_action"`
+
+         ⚠️ IMPORTANT:
+         The following rules apply ONLY if you choose `"next_action": "light_summary"` — they DO NOT apply to `"diagnosis"`.
+         📎 If you choose `"next_action": "light_summary"`:
+
+            → The user's update must:
+            - Be mild, general, or not very diagnostic
+            - Add some info or reasoning, but not enough to justify a full diagnosis
+            - Still match a known symptom in `stored_symptoms_name`
+
+            → In this case:
+            - Do NOT use `"DIAGNOSIS_SPLIT"`
+            - You should include a natural explanation in the `"message"` that:
+               • Acknowledges the user's update
+               • Suggests a likely cause based on their input
+               • Gently adds other possible mild causes (like tiredness, weather, etc.)
+               • Ends with a polite tone of support or tracking
+            - You do NOT need to include a `"diseases"` field
+            - Do NOT copy the example message content.Your explanation in `"message"` should follow the structure and tone rules from `STEP — 3. 🌿 Light Summary`
+
+            ✅ Example:
+            ```json
+            {{
+               "action": "post-diagnosis",
+               "message": "Mình thấy bạn mô tả rõ hơn rồi, có thể là do bạn chưa ăn gì từ sáng nên thấy chóng mặt. Nhưng cũng có thể là do bạn thiếu ngủ, cơ thể mệt hoặc thời tiết thay đổi nữa. Mình sẽ ghi chú lại thêm để theo dõi ha."
+               "updated_symptom": "Chóng mặt",
+               "next_action": "light_summary"
+            }}
+            ```
+         ⚠️ IMPORTANT:
+         The following rules apply ONLY if you choose `"next_action": "diagnosis"` — they DO NOT apply to `"light_summary"`.
+         🧨 MUST FOLLOW IF YOU SET `"next_action": "diagnosis"`
+
+            If you set `"next_action": "diagnosis"`, you MUST do ALL of the following:
+            
+            "DIAGNOSIS_SPLIT" is required in "message" if you choose "next_action": "diagnosis"
+               ⚠️ Otherwise, your output will be rejected.
+
+            1. Set `"action": "post-diagnosis"` (NOT `"diagnosis"`)
+            2. In the `"message"`, add the token `"DIAGNOSIS_SPLIT"` to separate the two parts:
+               - Before `DIAGNOSIS_SPLIT`: a soft, polite acknowledgment like “Mình thấy bạn mô tả rõ hơn rồi…”
+               - After `DIAGNOSIS_SPLIT`: a full explanation using the rules from STEP — 4 (diagnosis)
+
+            3. Also include the `"diseases"` field with full JSON structure — same as STEP — 4.
+
+            🚫 If you forget `DIAGNOSIS_SPLIT`, your output will be rejected.
+
+            → You MUST also include the full `"diseases"` field like this:
+
+            ✅ Example:
+            ```json
+            {{
+               "action": "post-diagnosis",
+               "message": "Mình thấy bạn mô tả rõ hơn rồi, để mình lưu lại thêm nghen. DIAGNOSIS_SPLIT Bạn đã nói là chưa ăn gì từ sáng, nên cảm giác **chóng mặt** có thể...",
+               "updated_symptom": "Chóng mặt",
+               "next_action": "diagnosis",
+               "diseases": [
+                  {{
+                     "name": "Huyết áp thấp",
+                     "confidence": 0.85,
+                     "summary": "Tình trạng huyết áp thấp thường gây cảm giác chóng mặt, đặc biệt khi bạn chưa ăn gì.",
+                     "care": "Bạn nên nghỉ ngơi, uống nước và ăn nhẹ để ổn định lại."
+                  }},
+                  {{
+                     "name": "Thiếu năng lượng nhẹ",
+                     "confidence": 0.65,
+                     "summary": "Cơ thể bị hạ đường huyết tạm thời nếu nhịn ăn lâu.",
+                     "care": "Bạn có thể ăn nhẹ hoặc uống sữa để lấy lại sức."
+                  }}
+               ]
+            }}
+            ```
+
+            ⚠️ Do NOT use `"confidence": 1.0". Maximum allowed is 0.95.
+
+      ---
+
+      📌 Summary:
+      - Always set `"updated_symptom"` if user describes a change
+      - Use `"next_action"` only if new info is clear
+      - Use `"DIAGNOSIS_SPLIT"` in message if `"next_action": "diagnosis"`
+      - Follow all structure and formatting from `STEP — 4`
+      """.strip()
+
    # STEP 1 — Follow-up hoặc Skip nếu không đủ điều kiện
     if symptoms_to_ask:
       prompt += f"""
@@ -353,8 +525,9 @@ def build_KMS_prompt(
          🚫 DO NOT:
          - Repeat questions already asked (even if vaguely answered, like “about 5-10 minutes”, “I guess a few hours”)
          - Reword or “double check” the same topic
-         - Mention any related symptoms or diseases
-         - Ask more than one question
+         - DO NOT mention any other symptoms not already reported
+         - DO NOT ask if the symptom goes with other symptoms (that is considered related)
+
 
          ✅ Your task:
          - Write ONE empathetic, specific question in Vietnamese  
@@ -466,192 +639,182 @@ def build_KMS_prompt(
 
             → You must analyze `recent_user_messages` to understand the full symptom pattern, especially if the most recent user message is brief or ambiguous.
                
-               🚨 Before you choose `"diagnosis"`, ask yourself:
+            🚨 Before you choose `"diagnosis"`, ask yourself:
 
-               **🔎 Are the symptoms clearly serious, prolonged, or interfering with the user's daily life?**
+            **🔎 Are the symptoms clearly serious, prolonged, or interfering with the user's daily life?**
 
-               ⚠️ Do NOT default to `"light_summary"` just because symptoms seem mild.  
-               → If the user has reported **multiple symptoms with clear details**, you **must choose `"diagnosis"`**, even if the symptoms are not severe.
+            ⚠️ Do NOT default to `"light_summary"` just because symptoms seem mild.  
+            → If the user has reported **multiple symptoms with clear details**, you **must choose `"diagnosis"`**, even if the symptoms are not severe.
 
-               Only choose `"light_summary"` when:
-               - The user's responses are vague, uncertain, or minimal
-               - The symptoms lack useful detail for analysis
-               - OR you believe a diagnostic explanation would be pure guesswork
+            Only choose `"light_summary"` when:
+            - The user's responses are vague, uncertain, or minimal
+            - The symptoms lack useful detail for analysis
+            - OR you believe a diagnostic explanation would be pure guesswork
 
-               Use this if:
-                  - The user has reported at least 2–3 symptoms with clear details (e.g., duration, intensity, when it started)
-                  - The symptoms form a meaningful pattern — NOT just vague or generic complaints
-                  - You feel there is enough context to suggest **possible causes**, even if not conclusive
+            Use this if:
+               - The user has reported at least 2–3 symptoms with clear details (e.g., duration, intensity, when it started)
+               - The symptoms form a meaningful pattern — NOT just vague or generic complaints
+               - You feel there is enough context to suggest **possible causes**, even if not conclusive
 
-               🛑 Do NOT select `"diagnosis"` unless:
-                  - All follow-up questions have been asked AND
-                  - You have ALREADY attempted a **related symptom** inquiry
+            🛑 Do NOT select `"diagnosis"` unless:
 
-               🆘 Additionally, if the user's reported symptoms include any of the following warning signs, you MUST prioritize serious conditions in your explanation — and gently encourage the user to seek immediate medical attention.
-                  Critical symptom examples include:
-                  - Numbness or weakness on one side of the body
-                  - Trouble speaking or slurred speech
-                  - Sudden intense headaches
-                  - Chest pain or tightness
-                  - Shortness of breath
-                  - Irregular heartbeat
-                  - Vision loss or double vision
-                  - Seizures or fainting
+            - All follow-up questions have been asked AND
+            - You have ALREADY attempted a **related symptom** inquiry
+            - There is **enough detailed symptom information** to reasonably suggest possible causes
 
-               → If any of these signs are detected in the user message(s), your `"message"` must:
-                  - Include at least one serious possible condition that matches the symptoms.
-                  - Softly suggest that the user **go see a doctor as soon as possible**, not just “if it continues”.
-                  - Avoid suggesting only mild causes such as stress or vitamin deficiency.
+            🔓 EXCEPTION — When to allow re-evaluation:
 
-               → In that case, set: `"action": "diagnosis"`
+            → Even if `had_conclusion = true`, you may still set `"next_action": "diagnosis"` **in STEP — Post-Diagnosis Updated Symptom**,  
+               **but only if** the user provides a **clear and serious update** about their existing symptom.
 
-               🤖 Your job:
-                  Write a short, natural explanation in Vietnamese, helping the user understand what conditions might be involved — but without making them feel scared or overwhelmed.
+            You MUST meet all of the following:
 
-               Structure:
-                  1. **Gently introduce** the idea that their symptoms may relate to certain conditions.  
-                  Example: “Dựa trên những gì bạn chia sẻ…”
+            - The user's message describes:
+               • a significant worsening (e.g. “quay nhiều hơn”, “vẫn chưa hết”, “lúc ngồi xuống mà vẫn…”)
+               • OR a clear escalation (e.g. ảnh hưởng sinh hoạt, không cải thiện dù nghỉ ngơi)
 
-                  2. **For each possible condition** (max 3), present it as a bullet point with the following structure:
+            - The symptom is already stored in `stored_symptoms_name`
+            - The update shows meaningful new clinical insight
+            - You still set `"action": "post-diagnosis"` and route using `"next_action": "diagnosis"`
 
-               📌 **[Condition Name]**: A short, natural explanation in Vietnamese of what this condition is.  
-                  → Then gently suggest 1–2 care tips or daily habits to help with that condition.  
-                  → If it may be serious or recurring, suggest medical consultation (but softly, not alarming).
-
-                  - Use natural Markdown formatting (line breaks, bullets, bold).  
-                  - Avoid sounding like a doctor. Speak like a caring assistant.
-
-               3. **Optionally suggest a lighter explanation**, such as:
-                  - stress
-                  - thiếu ngủ
-                  - thay đổi thời tiết
-                  - tư thế sai  
-                  Example: “Cũng có thể chỉ là do bạn đang mệt hoặc thiếu ngủ gần đây 🌿”
-
-               4. **Provide 1–2 soft care suggestions**:
-                  - nghỉ ngơi
-                  - uống nước
-                  - thư giãn
-                  - theo dõi thêm
-
-               5. **Reassure the user**:
-                  - Remind them this is just a friendly explanation based on what they shared
-                  - Do NOT sound like a final medical decision
-
-               6. **Encourage medical consultation if needed**:
-                  - “Nếu triệu chứng vẫn kéo dài, bạn nên đến gặp bác sĩ để kiểm tra kỹ hơn nhé.”
-
-               🛑 IMPORTANT:
-               → If symptoms include dangerous signs (as defined above), you MUST:
-                  - Avoid using light tone, casual emojis, or reassuring phrases like "maybe just stress" unless you have clearly ruled out serious possibilities.
-                  - Avoid summarizing the situation as temporary or self-resolving.
-
-               📦 JSON structure for `"diseases"` field:
-
-                  After composing your Vietnamese explanation (`"message"`), you must also return a JSON field `"diseases"` to help the system save the prediction.
-
-                  It should be a list of possible conditions, each with the following fields:
+            ⚠️ DO NOT set `"action": "diagnosis"` directly. This is still prohibited if `had_conclusion = true`.
             
-                     ```json
-                     diseases = [
-                        {{
-                           "name": "Tên bệnh bằng tiếng Việt",
-                           "confidence": 0.85,
-                           "summary": "Tóm tắt ngắn gọn bằng tiếng Việt về bệnh này",
-                           "care": "Gợi ý chăm sóc nhẹ nhàng bằng tiếng Việt"
-                        }},
-                        ...
-                     ]
 
-                     - "name": Tên bệnh (viết bằng tiếng Việt)
-                     - "confidence": a float from 0.0 to 1.0 representing how likely the disease fits the user's symptoms, based on your reasoning.
 
-                     🔒 ABSOLUTE RULE:
-                     - You must NEVER use "confidence": 1.0
-                     - A value of 1.0 means absolute certainty — which is NOT allowed.
-                     - Even for very likely matches, use values like 0.9 or 0.95.
+            🆘 Additionally, if the user's reported symptoms include any of the following warning signs, you MUST prioritize serious conditions in your explanation — and gently encourage the user to seek immediate medical attention.
+               Critical symptom examples include:
+               - Numbness or weakness on one side of the body
+               - Trouble speaking or slurred speech
+               - Sudden intense headaches
+               - Chest pain or tightness
+               - Shortness of breath
+               - Irregular heartbeat
+               - Vision loss or double vision
+               - Seizures or fainting
 
-                     Suggested scale:
-                     - 0.9 → strong match based on clear symptoms
-                     - 0.6 → moderate match, some overlap
-                     - 0.3 → weak match, possibly related
+            → If any of these signs are detected in the user message(s), your `"message"` must:
+               - Include at least one serious possible condition that matches the symptoms.
+               - Softly suggest that the user **go see a doctor as soon as possible**, not just “if it continues”.
+               - Avoid suggesting only mild causes such as stress or vitamin deficiency.
 
-                     → This score reflects AI reasoning — NOT a medical diagnosis.
+            → In that case, set: `"action": "diagnosis"`
+
+            🤖 Your job:
+               Write a short, natural explanation in Vietnamese, helping the user understand what conditions might be involved — but without making them feel scared or overwhelmed.
+
+
+            🧠 Diagnosis — Expanded Behavior Rules
+
+            → Before suggesting possible conditions, always start with a short, friendly recap of the user's symptoms.
+
+            ✅ Use natural phrasing in Vietnamese like:
+            - “Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**...”
+
+            → Based on the user's symptom list, generate one markdown bullet point per symptom.
+            Each bullet should:
+            - Start with: **[symptom name]**
+            - Then briefly suggest a natural explanation and one care tip.
+            - Example:
+               - **Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.
+               - **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.
+
+            → After these, transition into the broader diagnostic list with:
+
+            - “Ngoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:”
+
+            → This helps the user feel understood and reminds them that you're reasoning from their input — not guessing randomly.
+
+            🔵 For each possible condition (maximum 3):
+
+            ✅ You MUST format each one as a separate block like this:
+
+            📌 **[Tên bệnh]**  
+            Mô tả ngắn gọn về tình trạng này bằng tiếng Việt (giữ tự nhiên, không y khoa).  
+            → Sau đó, gợi ý 1–2 cách chăm sóc phù hợp.  
+
+            🔁 Example:
+
+            📌 **Căng thẳng hoặc lo âu**  
+            Đôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  
+            → Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.
+
+            📌 **Mất nước hoặc thiếu dinh dưỡng**  
+            Nếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  
+            → Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.
+
+            📌 **Huyết áp thấp**  
+            Tình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  
+            → Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.
+
+            ❗ DO NOT merge all conditions into one paragraph. Each 📌 must start a new block with spacing.
+
+
+            🟢 Optionally suggest lighter explanations:
+            - stress, thiếu ngủ, thay đổi thời tiết, tư thế sai
+            - Example: “Cũng có thể chỉ là do bạn đang mệt hoặc thiếu ngủ gần đây 🌿”
+
+            🌱 Close with gentle reassurance and optional next step:
+            - Use friendly Vietnamese phrases like:
+               • “Nếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.”
+               • “Nếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.”
+
+            🔒 Additional mandatory tone rules:
+            - Always **bold** symptom names (e.g., **Đau đầu**) if you mention them again.
+            - Always reuse the user’s own words to describe symptoms — don’t switch to medical terms.
+            - Never sound too confident — this is just friendly reasoning, not a final medical opinion.
+
+            🛑 IMPORTANT:
+            → If symptoms include warning signs (e.g., mất ý thức, nói líu, đau ngực), you MUST:
+            - Avoid light tone, emojis, or vague reassurances like “maybe just stress”
+            - Mention at least one serious possible condition
+            - Softly encourage seeing a doctor soon
+
+
+
+            📦 JSON structure for `"diseases"` field:
+
+               After composing your Vietnamese explanation (`"message"`), you must also return a JSON field `"diseases"` to help the system save the prediction.
+
+               It should be a list of possible conditions, each with the following fields:
+         
+                  ```json
+                  diseases = [
+                     {{
+                        "name": "Tên bệnh bằng tiếng Việt",
+                        "confidence": 0.85,
+                        "summary": "Tóm tắt ngắn gọn bằng tiếng Việt về bệnh này",
+                        "care": "Gợi ý chăm sóc nhẹ nhàng bằng tiếng Việt"
+                     }},
+                     ...
+                  ]
+
+                  - "name": Tên bệnh (viết bằng tiếng Việt)
+                  - "confidence": a float from 0.0 to 1.0 representing how likely the disease fits the user's symptoms, based on your reasoning.
+
+                  🔒 ABSOLUTE RULE:
+                  - You must NEVER use "confidence": 1.0
+                  - A value of 1.0 means absolute certainty — which is NOT allowed.
+                  - Even for very likely matches, use values like 0.9 or 0.95.
+
+                  Suggested scale:
+                  - 0.9 → strong match based on clear symptoms
+                  - 0.6 → moderate match, some overlap
+                  - 0.3 → weak match, possibly related
+
+                  → This score reflects AI reasoning — NOT a medical diagnosis.
+            📦 Note for the assistant:
+
+            → Even when `had_conclusion = true`, you are still allowed to provide full diagnostic reasoning — as long as it is done **within the `"post-diagnosis"` step** using `"next_action": "diagnosis"`.
+
+            You do NOT need to worry about activating `"action": "diagnosis"` directly.
+
+            → Your diagnostic explanation and `"diseases"` list will still be processed and shown to the user normally.  
+            You are only changing how it is **routed**, not what is said.
+
+            This helps prevent repeating `"action": "diagnosis"` multiple times per day — while still allowing natural, useful re-evaluation.
+
     """.strip()
     
-    # "🆕 STEP — 5. Post-Diagnosis Updated Symptom (if had_conclusion = true)"
-    if had_conclusion and (not symptoms_to_ask) and (not related_symptom_names):
-      prompt += f"""
-      🆕 STEP — 5. Post-Diagnosis Updated Symptom
-
-      Your job in this step is to determine whether the user is describing a **change, progression, or additional detail** for a symptom they previously mentioned.
-
-      set `"action": "post-diagnosis"`
-
-      ---
-
-      🔍 You must carefully scan:
-      - `recent_user_messages`: to detect any new descriptive information
-      - `stored_symptoms_name`: to match it to a known symptom
-
-      This step applies in both of the following cases:
-      - The user adds more detail **after** a diagnosis (`had_conclusion = true`)
-
-      ---
-
-      🚫 DO NOT set `"updated_symptom"` in the following cases:
-      - The user uses vague or uncertain expressions like “hình như”, “có vẻ”, “chắc là”, “không rõ”
-      - The user repeats the symptom without adding new information
-      - The assistant is the one asking, and the user hasn’t responded yet
-
-      ---
-
-      ✅ You may set `"updated_symptom": "<name>"` **only if**:
-      - The user voluntarily provides new, descriptive info (not prompted)
-      - It describes timing, intensity, duration, or other characteristics
-      - The symptom exists in `stored_symptoms_name`
-
-      Examples of valid updates:
-      - “Hôm nay thấy chóng mặt kéo dài hơn” → update to “Chóng mặt”
-      - “Lần này đau đầu kiểu khác lúc trước” → update to “Đau đầu”
-      - “Giờ thì sổ mũi có đàm màu xanh rồi” → update to “Sổ mũi”
-
-      ---
-
-      🎯 Response logic:
-
-      → Always embed a soft acknowledgment in your `"message"` when setting `"updated_symptom"`
-
-      ✅ Example acknowledgments (rephrase freely, but keep the warm tone):
-      - “À, có vẻ như triệu chứng đó đang nặng hơn chút rồi ha…”
-      - “Hiểu rồi nhen, lần này cảm giác đó nghe có vẻ khác hơn trước á.”
-      - “Cảm ơn bạn, mình sẽ ghi chú thêm để theo dõi kỹ hơn nha.”
-      - “Mình thấy bạn mô tả rõ hơn rồi, để mình lưu lại thêm nghen.”
-      - “Mình ghi nhận thông tin bạn vừa chia sẻ nha, để theo dõi sát hơn ha.”
-
-      → Follow the **Global Tone Guide**.
-
-      ---
-
-      ⚖️ Action logic:
-
-      - If `had_conclusion = true`:
-         → Set `"action": "post-diagnosis"`  
-         → Then choose either `"light_summary"` or `"diagnosis"` as the next step depending on severity
-
-      - If `had_conclusion = false`:
-         → Do NOT set `"post-diagnosis"`
-         → Choose `"light_summary"` if mild  
-         → Choose `"diagnosis"` if the detail adds meaningful insight
-
-      ---
-
-      📌 Summary:
-      - Always set `"updated_symptom"` if appropriate
-      - Embed a gentle, human message
-      - Route accordingly using `"light_summary"` or `"diagnosis"`
-      """.strip()
-
     # Rule set action
     prompt += f"""
 

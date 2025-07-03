@@ -78,6 +78,7 @@ def refresh_symptom_list():
     SYMPTOM_LIST = []
     load_symptom_list()
 
+# Trích xuất triệu chứng từ tin nhắn người dùng bằng GPT
 def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=None, recent_assistant_messages=None, debug=False):
 
     symptom_lines = []
@@ -121,6 +122,23 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
                 For example:
                 - `"Tê tay lan lên cánh tay"` → ✅ `["Tê tay chân"]`
                 - ⛔ **NOT** `"Tê tay lan lên cánh tay"` → `["Tê tay chân", "Đau cơ"]`
+                
+            ⚠️ IMPORTANT: Avoid symptom inference from behavior or external actions.
+
+            - Do NOT extract symptoms based purely on:
+            - The user's actions or behavior (e.g., “chưa ăn”, “ngủ nhiều”, “không đi học được”)
+            - Indirect consequences or guesses (e.g., “mình đoán do...”, “chắc vì thế mà...”)
+
+            - Only extract if the symptom itself is **clearly described as something the user feels physically**.
+
+            Examples of what to avoid:
+            - “Chưa ăn gì từ sáng” → ⛔ do NOT infer `"Chán ăn"`
+            - “Uống nhiều nước hôm qua” → ⛔ do NOT infer `"Khát"`
+            - “Mình nằm suốt từ sáng tới giờ” → ⛔ do NOT infer `"Mệt mỏi"` unless fatigue is explicitly stated
+            - “Mình đoán chắc tại mình thiếu ngủ” → ⛔ do NOT extract `"Khó ngủ"` unless clearly mentioned
+
+            ✅ Only extract symptoms that are directly stated or strongly implied as physical experiences, **not logical guesses or circumstantial observations**.
+
 
         - Do NOT infer based on cause/effect (e.g. "tim đập nhanh khi hít thở mạnh" ≠ "khó thở").
         - If you are unsure (e.g., message is vague), return an empty list [].
@@ -156,6 +174,7 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
     - Do **NOT** extract symptoms based on the assistant's question.
     - The assistant message is provided only for context — not for extraction.
 
+    
     Return a list of **symptom names** (from the list above) that the user is clearly experiencing.
 
     Only return names. Example: ["Mệt mỏi", "Đau đầu"]
@@ -423,7 +442,8 @@ def should_attempt_symptom_extraction(message: str, session_data: dict, stored_s
         print("❌ should_attempt_symptom_extraction error:", e)
         return False
 
-
+# Kiểm tra xem người dùng đã có chẩn đoán trong ngày hôm nay chưa
+# Dựa vào bảng health_predictions theo user_id và ngày dự đoán
 def has_diagnosis_today(user_id: int) -> bool:
     today_str = datetime.now().date().isoformat()
     query = """
@@ -446,7 +466,7 @@ async def generate_symptom_note(
     recent_messages: list[str],
     existing_notes: list[dict] = None
 ) -> list[dict]:
-    symptom_lines = "\n".join(f"- {s['name']}" for s in symptoms)
+    symptom_lines = "\n".join(f"- ID {s['id']}: {s['name']}" for s in symptoms)
     context = "\n".join(f"- {msg}" for msg in recent_messages[-2:])
 
     # Build existing note text if provided
@@ -466,7 +486,7 @@ async def generate_symptom_note(
         💬 Recent conversation:
         {context}
 
-        📌 List of possible symptoms:
+        📌 List of possible symptoms (with their IDs):
         {symptom_lines}
 
         📄 Existing notes (if any):
@@ -477,6 +497,8 @@ async def generate_symptom_note(
         - Only include symptoms mentioned in the current conversation.
         - For existing notes: only update if there is **new information**.
         - Do NOT return notes for symptoms that are not clearly referenced.
+        - You MUST use the correct `id` as listed above — do NOT guess or invent ids.
+        - Write the note in Vietnamese, clear and concise, as if documenting in a medical chart.
 
         ✅ Example output:
         ```json
@@ -554,7 +576,8 @@ def save_symptoms_to_db(user_id: int, symptoms: list[dict]) -> list[int]:
 
     return saved_symptom_ids
 
-
+# Cập nhật ghi chú triệu chứng cho người dùng
+# Nếu đã có ghi chú thì sẽ cập nhật lại ghi chú mới
 def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> bool:
     today = datetime.now().date().isoformat()
 
@@ -655,6 +678,8 @@ def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> b
     finally:
         conn.close()
 
+# Lấy danh sách các symptom_id đã lưu của người dùng trong ngày record_date
+# Nếu không có record nào thì trả về danh sách rỗng
 def get_saved_symptom_ids(user_id: int, record_date: date = date.today()) -> list[int]:
     conn = pymysql.connect(**DB_CONFIG)
     try:

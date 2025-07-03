@@ -65,27 +65,14 @@ async def chat_stream(msg: Message = Body(...)):
     # ✅ Load session data trước
     session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
 
-    # Ngày hôm nay
+    # ✅ Đảm bảo active_date được cập nhật và reset session nếu cần
+    session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
+    session_data = await ensure_active_date_fresh(msg, session_data)
+
+    # Cập nhật active_date
     today = datetime.now().strftime("%Y-%m-%d")
-
-    # Lấy ngày hoạt động gần nhất
-    last_active_date = session_data.get("active_date")
-
-    # Nếu khác ngày → reset session (nhưng không trả lời ngay)
-    if last_active_date and last_active_date != today:
-        logger.info(f"🔄 Reset session vì đã qua ngày: {last_active_date} → {today}")
-        
-        # Gọi hàm reset
-        await reset_session(data=ResetRequest(session_id=msg.session_id, user_id=msg.user_id or None))
-        
-        
-        # Tải lại session sau khi reset
-        session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
-
-    # Luôn cập nhật ngày hoạt động sau mỗi message
-    session_data["active_date"] = today
-    
     is_same_day = session_data.get("active_date") == today
+
     diagnosed_today = has_diagnosis_today(user_id=msg.user_id) if msg.user_id else False
     
     # Sau khi bot xử lý xong và đã có câu trả lời cuối cùng:
@@ -98,13 +85,16 @@ async def chat_stream(msg: Message = Body(...)):
     recent_user_messages.append(msg.message)
     recent_messages.append(f"👤 {msg.message}")
 
+    stored_symptoms = [s["name"] for s in session_data.get("stored_symptoms", []) if "name" in s]
+
     # 🔁 Phát hiện intent
     last_intent = session_data.get("last_intent", None)
     intent = await detect_intent(
         last_intent=last_intent,
         recent_user_messages=recent_user_messages,
         recent_assistant_messages=recent_assistant_messages,
-        diagnosed_today=diagnosed_today
+        diagnosed_today=diagnosed_today,
+        stored_symptoms=stored_symptoms
     )
 
     session_data["last_intent"] = intent
@@ -403,6 +393,32 @@ async def get_chat_history(session_id: str, user_id: int = None):
     return {
         "recent_messages": session.get("recent_messages", [])
     }
+
+def get_today_str():
+    return datetime.now().strftime("%Y-%m-%d")
+
+async def ensure_active_date_fresh(msg, session_data):
+    today = get_today_str()
+    last_active_date = session_data.get("active_date")
+
+    # Nếu chưa có active_date → gán luôn
+    if not last_active_date:
+        logger.debug("📅 Lần đầu ghi nhận active_date → gán hôm nay")
+        session_data["active_date"] = today
+        return session_data
+
+    # Nếu đã qua ngày → reset
+    if last_active_date != today:
+        logger.info(f"🔄 Reset session vì đã qua ngày: {last_active_date} → {today}")
+        await reset_session(data=ResetRequest(session_id=msg.session_id, user_id=msg.user_id or None))
+        session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
+        session_data["active_date"] = today
+    else:
+        # ✅ Cập nhật lại nếu cùng ngày (đảm bảo đồng bộ)
+        session_data["active_date"] = today
+
+    return session_data
+
 
 @router.get("/chat/logs")
 def get_chat_logs(session_id: str = None, user_id: int = None, guest_id: int = None, limit: int = 30):

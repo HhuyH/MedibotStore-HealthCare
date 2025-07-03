@@ -74,7 +74,8 @@ async def detect_intent(
     last_intent: str = None,
     recent_user_messages: list[str] = [],
     recent_assistant_messages: list[str] = [],
-    diagnosed_today: bool = False  # ✅ thêm dòng này
+    diagnosed_today: bool = False,
+    stored_symptoms: list[str] = []
 ) -> str:
     # Sử dụng trực tiếp message đã tách
     last_bot_msg = recent_assistant_messages[-1] if recent_assistant_messages else ""
@@ -84,7 +85,7 @@ async def detect_intent(
     # logger.info(f"[Intent Debug] Recent Bot: {last_bot_msg}")
 
     prompt = f"""
-        Classify the user's intent in a chatbot conversation.
+        You are a medical assistant bot that classifies user intents based on their messages.
 
         Last detected intent: "{last_intent or 'unknown'}"
         
@@ -97,6 +98,10 @@ async def detect_intent(
         Valid intents: {", ".join(VALID_INTENTS)}
 
         Diagnosed today: {diagnosed_today_flag}
+
+        Previously stored symptoms: {", ".join(stored_symptoms) if stored_symptoms else "None"}
+
+        ----------------------------
 
         Instructions:
 
@@ -111,12 +116,15 @@ async def detect_intent(
         - If unsure, prefer to keep the previous intent (if valid).
         - If the user message sounds like a **data query or admin command** (e.g., "lấy danh sách người dùng", "xem danh sách đơn hàng", "tìm bệnh nhân"), then classify as `"sql_query"` (or appropriate admin intent).
         - If the user is asking to view a patient's health data (e.g., “xem thông tin bệnh nhân”, “hồ sơ bệnh nhân”, “tình trạng bệnh nhân”, “tình hình của bệnh nhân”, “cho tôi xem bệnh nhân tên...”) → classify as "patient_summary_request"
+        - If the user is asking for a specific patient's health data or status, classify as "patient_summary_request".
         - Only use `"general_chat"` if the user is making small talk, asking about the bot, or saying unrelated casual things.
         - Do NOT misclassify structured or technical requests as casual chat.
         - If unsure, prefer a more specific intent over `"general_chat"`.
         - If the previous assistant message was a follow-up question about a symptom, and the user responds with something vague or approximate (e.g. “chắc 5-10 phút”, “khoảng sáng tới giờ”, “tầm chiều hôm qua”, "chắc tầm"), you SHOULD assume this is a continuation of the symptom discussion → prefer "symptom_query".
         - If user says “không biết”, “chắc vậy”, “khó nói”, "không rõ", but it’s still in reply to a symptom follow-up → KEEP "symptom_query"
         - If Diagnosed today = True and the user message sounds like explaining the cause or context of symptoms → KEEP "symptom_query".
+        - If the user's message is short and dismissive like “không có”, “hết rồi”, “chỉ vậy thôi”, “không thêm gì nữa”, and it follows a bot's symptom-related question → KEEP "symptom_query"
+    
 
         Always return only ONE valid intent from the list.
         Do NOT explain your reasoning.
@@ -127,6 +135,8 @@ async def detect_intent(
           User: "à hình như mình hiểu tại sao mình cảm thấy chống mặt rồi" → ✅ → intent = `symptom_query`
           User: "chắc là do hôm qua mình ăn linh tinh" → ✅ → intent = `symptom_query`
           User: "giờ mình mới nhớ ra, hôm qua bị trúng mưa" → ✅ → intent = `symptom_query`
+          User: "Giờ mình mới nhớ là sáng giờ chưa ăn gì, chắc vậy mà chóng mặt" → ✅ if "Chóng mặt" is in stored_symptoms → intent = "symptom_query"
+          User: "Chắc do hôm qua mệt nên vậy" → ✅ if "Mệt" was previously mentioned → intent = "symptom_query"
           
         - Bot: “Bạn thấy tê tay bắt đầu từ lúc nào?”  
           User: “nó tự nhiên xuất hiện thôi” → ✅ → intent = `symptom_query`
