@@ -7,6 +7,7 @@ import re
 from utils.openai_client import chat_completion
 from config.config import DB_CONFIG
 from datetime import datetime, timedelta
+from utils.text_utils import normalize_text
 
 def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
     conn = pymysql.connect(**DB_CONFIG)
@@ -83,35 +84,49 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
 
     # 💡 Prompt yêu cầu HTML đẹp
     gpt_prompt = f"""
-    You are a medical assistant helping summarize a patient's health history for a Vietnamese doctor.
+        You are a medical assistant helping summarize a patient's clinical history for a Vietnamese doctor.
 
-    Below is the recent health data of the patient:
+        Below is the patient's recent health data:
 
-    🩺 Reported symptoms:
-    {chr(10).join(symptom_lines) if symptom_lines else "(No recent symptoms reported)"}
+        🩺 Triệu chứng được báo cáo:
+        {chr(10).join(symptom_lines) if symptom_lines else "(Không có triệu chứng gần đây)"}
 
-    🧠 AI-predicted possible conditions:
-    {chr(10).join(disease_lines) if disease_lines else "(No AI predictions available)"}
+        🧠 Dự đoán từ AI:
+        {chr(10).join(disease_lines) if disease_lines else "(Không có phỏng đoán nào từ AI)"}
 
         Your task:
-        - Write a fluent and clear summary in Vietnamese.
-        - Format the output as HTML using:
-            • <strong> for bold text (disease names and symptom names)
-            • <br> for line breaks
-            • Emoji to indicate AI confidence (🔴 / 🟠 / 🟡)
-        - Only in the symptom summary paragraph, use <strong> to highlight each symptom name.
-        - Do not highlight symptom names again in the disease descriptions below.
-        - Start with a paragraph that summarizes all symptoms and dates.
-        - Then present each AI-predicted condition as a separate HTML block:
-            • Start with emoji + disease name in <strong>, followed by <br>
-            • Then describe the condition in natural Vietnamese
-            • If care advice exists, write it as a continuation of the same paragraph
-        - Do not use symbols like "—" or "→"
-        - Begin any care advice with the phrase "Gợi ý:" in Vietnamese.
-        - Instead, embed care advice naturally in the explanation (e.g., "Bạn nên nghỉ ngơi và theo dõi thêm nếu cần.")
+        - Write a structured clinical summary in **Vietnamese**, targeting a medical professional.
+        - Use appropriate Vietnamese medical terminology when describing symptoms and diagnoses.
+        - Keep the tone factual, clear, and professional — not overly friendly.
 
-        Output must be in HTML and written in warm, natural Vietnamese.
-        """
+        Formatting requirements (HTML output):
+        - Use <strong> to highlight each symptom name and disease name.
+        - Use <br> for line breaks.
+        - Use emoji to indicate AI confidence:
+            • 🔴 for high confidence
+            • 🟠 for moderate confidence
+            • 🟡 for low confidence
+        - The summary should have two parts:
+            1. A paragraph listing all reported symptoms with dates.  
+            • Highlight each symptom using <strong>.  
+            • Include notes if available.
+
+            2. A set of blocks describing AI-predicted diseases:  
+            • Each block starts with emoji + <strong>disease name</strong> + <br>  
+            • Then a concise clinical description of the disease in Vietnamese  
+            • If available, continue with care advice in Vietnamese.
+
+        Additional style rules:
+        - Do not use symbols like "--" or "→".
+        - If care advice exists, embed it as a sentence beginning with **Gợi ý:**  
+        (e.g., "Gợi ý: Bệnh nhân nên đo huyết áp và theo dõi thêm.")
+        - Do not write in English. Output must be fully in Vietnamese.
+        - Do not include Markdown — only use valid HTML tags.
+
+        Final output:
+        - One HTML block in Vietnamese
+        - Well-structured, readable by doctors
+    """
 
     try:
         reply = chat_completion(
@@ -142,6 +157,7 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
             "prediction_diseases": prediction_rows
         }
     }
+
 
 def gpt_decide_patient_summary_action(user_message: str, summary_data: dict) -> dict:
     """
@@ -211,6 +227,47 @@ def gpt_decide_patient_summary_action(user_message: str, summary_data: dict) -> 
             "action": "show_all",
             "message": "Mình sẽ hiển thị toàn bộ thông tin gần nhất cho bác sĩ xem nha."
         }
+
+# Hàm này sẽ:
+# - Dựa vào nội dung bác sĩ hỏi và dữ liệu hồ sơ bệnh nhân,
+def patient_summary_action(user_message: str, summary_data: dict) -> dict:
+    normalized_msg = normalize_text(user_message)
+    symptom_count = summary_data.get("symptom_count", 0)
+    prediction_count = summary_data.get("prediction_count", 0)
+
+    # Các cụm từ gợi ý rõ ràng muốn xem toàn bộ
+    FULL_KEYWORDS = [
+        "xem toan bo", "toan bo tinh hinh", "xem tat ca", "full thong tin",
+        "xem chi tiet het", "toan bo thong tin", "xem het", "xem toan the",
+        "toan bo phong doan", "thong tin day du", "chi tiet nhat", "xem du lieu day du",
+        "tat ca", "du lieu day du"
+    ]
+    RECENT_KEYWORDS = [
+        "gan nhat", "moi nhat", "xem hom nay", "xem gan day", "xem lan cuoi", "xem lan gan nhat"
+    ]
+
+    if any(kw in normalized_msg for kw in RECENT_KEYWORDS):
+        return {
+            "action": "show_latest",
+            "message": "Mình sẽ hiển thị thông tin gần nhất cho bác sĩ xem nha."
+        }
+
+    if any(kw in normalized_msg for kw in FULL_KEYWORDS):
+        return {
+            "action": "show_all",
+            "message": "Mình sẽ hiển thị toàn bộ thông tin gần nhất cho bác sĩ xem nha."
+        }
+
+    if symptom_count > 5 or prediction_count > 2:
+        return {
+            "action": "ask_for_date",
+            "message": "Xin bác sĩ cho biết ngày cụ thể mà bác muốn xem thông tin bệnh án của người dùng này."
+        }
+
+    return {
+        "action": "show_all",
+        "message": "Mình sẽ hiển thị thông tin gần nhất nha."
+    }
 
 def find_user_id_by_info(name: str = None, email: str = None, phone: str = None) -> dict | None:
     """

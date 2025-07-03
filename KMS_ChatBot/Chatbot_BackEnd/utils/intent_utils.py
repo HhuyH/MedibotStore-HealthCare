@@ -169,6 +169,11 @@ async def detect_intent(
         - User: “Xem tình hình bệnh nhân có sđt 0909...” → ✅ → intent = `patient_summary_request`
         - User: “Bệnh nhân đó dạo này sao rồi?” → ✅ → intent = `patient_summary_request`
 
+        - User: “Cho tôi xem bệnh nhân tên Nguyễn Anh Tuấn”
+            → intent = `patient_summary_request`
+            - Bot: “Bạn muốn xem thông tin bệnh nhân Nguyễn Anh Tuấn vào ngày nào?”
+            - User: “ngày 25/3”
+            → ✅ → intent = `patient_summary_request`
 
 
 

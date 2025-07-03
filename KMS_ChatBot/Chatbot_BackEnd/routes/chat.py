@@ -40,6 +40,7 @@ from utils.openai_utils import stream_gpt_tokens
 from utils.patient_summary import (
     generate_patient_summary,
     gpt_decide_patient_summary_action,
+    patient_summary_action,
     extract_date_from_text,
     resolve_user_id_from_message
 )
@@ -156,7 +157,7 @@ async def chat_stream(msg: Message = Body(...)):
                 session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
                 updated_session_data = session_data
 
-                update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
+                await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
 
                 # ✅ Lưu log hội thoại
                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
@@ -237,6 +238,7 @@ async def chat_stream(msg: Message = Body(...)):
             # --- Step 2.2: GPT điều phối xem tổng quất triệu chứng và phỏng đoán từ AI cho bác sĩ ---
             elif step == "patient_summary":
                 session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
+                updated_session_data = session_data
                 user_id_for_summary = session_data.get("current_summary_user_id")
 
                 # 1️⃣ Nếu chưa có user_id thì cố gắng extract từ câu hỏi
@@ -269,39 +271,36 @@ async def chat_stream(msg: Message = Body(...)):
                 # 2️⃣ Cố gắng trích ngày nếu có
                 for_date = extract_date_from_text(msg.message)
 
-                # 3️⃣ Gọi hàm sinh tổng hợp hồ sơ
                 result = generate_patient_summary(user_id_for_summary, for_date=for_date)
                 markdown = result["markdown"]
                 summary_data = result["summary_data"]
 
-                final_bot_message = markdown
+                # Nếu không có ngày cụ thể, GPT quyết định có cần hỏi không
+                if not for_date:
+                    gpt_result = patient_summary_action(msg.message, summary_data)
+                    action = gpt_result.get("action")
+                    message = gpt_result.get("message", "Mình sẽ hiển thị thông tin gần nhất nha.")
 
-                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
-                session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
-                updated_session_data = session_data
+                    if action == "ask_for_date" or action == "ask_for_user_info":
+                        # ✅ Lưu lại cả message hỏi ngày/user info
+                        await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, message)
+                        save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                        save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=message, sender='bot')
+
+                        for chunk in stream_gpt_tokens(message):
+                            yield f"data: {json.dumps({'natural_text': chunk})}\n\n"
+                            await asyncio.sleep(0.03)
+                        yield "data: [DONE]\n\n"
+                        return
+                                # 3️⃣ Gọi hàm sinh tổng hợp hồ sơ
+
+                final_bot_message = markdown
 
                 await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
                 
                 # ✅ Lưu log hội thoại
                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
                 chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
-
-                # Nếu không có ngày cụ thể, GPT quyết định có cần hỏi không
-                if not for_date:
-                    gpt_result = gpt_decide_patient_summary_action(msg.message, summary_data)
-                    action = gpt_result.get("action")
-                    message = gpt_result.get("message", "Mình sẽ hiển thị thông tin gần nhất nha.")
-
-                    if action == "ask_for_date":
-                        for chunk in stream_gpt_tokens(message):
-                            yield f"data: {json.dumps({'natural_text': chunk})}\n\n"
-                            await asyncio.sleep(0.03)
-                        yield "data: [DONE]\n\n"
-                        return
-                    elif action == "ask_for_user_info":
-                        yield f"data: {json.dumps({'natural_text': message})}\n\n"
-                        yield "data: [DONE]\n\n"
-                        return
 
                 # 4️⃣ Hiển thị toàn bộ markdown
                 yield f"data: {json.dumps({'natural_text': markdown})}\n\n"

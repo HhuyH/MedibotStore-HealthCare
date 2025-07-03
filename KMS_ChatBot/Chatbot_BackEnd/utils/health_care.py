@@ -192,6 +192,10 @@ async def health_talk(
             diagnosed_today=diagnosed_today,
             chat_id=chat_id
         )
+        if parsed.get("next_action") == "diagnosis" and not action == "diagnosis":
+            update_prediction_details(
+                user_id=user_id,
+            )
     
     logger.info("🎯 Next Action: %s", next_action)
 
@@ -471,7 +475,6 @@ def filter_new_predicted_diseases(cursor, prediction_id: int, new_diseases: list
 # Nếu chưa có thì sẽ tạo mới
 # - Lưu triệu chứng mới nếu có
 # - Lọc bệnh mới chưa có trong prediction_diseases
-# - Cập nhật lại details trong health_predictions
 # nếu có bệnh mới
 # - Nếu không có bệnh mới thì không làm gì cả
 # nếu có bệnh mới thì sẽ thêm vào prediction_diseases
@@ -534,18 +537,6 @@ def update_prediction_today_if_exists(
                             d.get("summary", ""),
                             d.get("care", "")
                         ))
-
-                    cursor.execute("""
-                        UPDATE health_predictions
-                        SET details = %s
-                        WHERE prediction_id = %s
-                    """, (
-                        json.dumps({
-                            "symptoms": [s["name"] for s in stored_symptoms],
-                            "predicted_diseases": [d["name"] for d in diseases]
-                        }, ensure_ascii=False),
-                        prediction_id
-                    ))
                     logger.info(f"🆕 Đã thêm {len(new_diseases)} bệnh mới và cập nhật lại details.")
                 else:
                     logger.info("✅ Không có bệnh mới để thêm vào hôm nay.")
@@ -561,6 +552,67 @@ def update_prediction_today_if_exists(
 
     finally:
         conn.close()
+
+# Cập nhật lại trường details trong health_predictions nếu cần thiết
+# - Lấy triệu chứng từ user_symptom_history trong ngày hôm nay
+# - Lấy bệnh từ prediction_diseases của prediction_id hôm nay
+def update_prediction_details(user_id: int) -> bool:
+    from datetime import date
+    today_str = date.today().isoformat()
+
+    conn = pymysql.connect(**DB_CONFIG)
+    try:
+        with conn.cursor() as cursor:
+            # 1️⃣ Lấy prediction_id hôm nay
+            cursor.execute("""
+                SELECT prediction_id
+                FROM health_predictions
+                WHERE user_id = %s AND DATE(prediction_date) = %s
+                ORDER BY prediction_date DESC
+                LIMIT 1
+            """, (user_id, today_str))
+            row = cursor.fetchone()
+            if not row:
+                return False  # ❌ Không có prediction hôm nay
+
+            prediction_id = row[0]
+
+            # 2️⃣ Lấy danh sách triệu chứng từ user_symptom_history
+            cursor.execute("""
+                SELECT s.name
+                FROM user_symptom_history h
+                JOIN symptoms s ON h.symptom_id = s.symptom_id
+                WHERE h.user_id = %s AND h.record_date = %s
+            """, (user_id, today_str))
+            symptoms = [row[0] for row in cursor.fetchall()]
+
+            # 3️⃣ Lấy danh sách bệnh từ prediction_diseases
+            cursor.execute("""
+                SELECT COALESCE(d.name, pd.disease_name_raw)
+                FROM prediction_diseases pd
+                LEFT JOIN diseases d ON pd.disease_id = d.disease_id
+                WHERE pd.prediction_id = %s
+            """, (prediction_id,))
+            diseases = [row[0] for row in cursor.fetchall() if row[0]]
+
+            # 4️⃣ Cập nhật lại field details
+            new_details = {
+                "symptoms": symptoms,
+                "predicted_diseases": diseases
+            }
+
+            cursor.execute("""
+                UPDATE health_predictions
+                SET details = %s
+                WHERE prediction_id = %s
+            """, (json.dumps(new_details, ensure_ascii=False), prediction_id))
+
+            conn.commit()
+            return True
+    finally:
+        conn.close()
+
+
 
 #-------------- dưới đây là nhừng hàm được sử dung cho việc chia theo controller không tôt không lien mạch bot gần như ko quyết định chính xác việc cần thực hiện --------------------------------------------------
 
