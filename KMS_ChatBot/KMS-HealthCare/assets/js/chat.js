@@ -174,26 +174,46 @@ async function loadChatLogs() {
     const userInfo = JSON.parse(localStorage.getItem("userInfo")) || {};
     const session_id = userInfo.session_id;
     const user_id = userInfo.user_id;
+    const guest_id = userInfo.guest_id;
 
     try {
-        const response = await fetch(`http://127.0.0.1:8000/chat/history?session_id=${session_id}&user_id=${user_id || ""}`);
-        const data = await response.json();
-        const logs = data.recent_messages || [];
+        // 🧾 Ưu tiên lấy từ DB
+        const url = user_id
+            ? `http://127.0.0.1:8000/chat/logs?user_id=${user_id}&limit=30`
+            : `http://127.0.0.1:8000/chat/logs?guest_id=${guest_id}&limit=30`;
 
-        for (const line of logs) {
+        const response = await fetch(url);
+        const logs = await response.json();
+
+        if (Array.isArray(logs) && logs.length > 0) {
+            for (const log of logs) {
+                const sender = log.sender === "user" ? "user" : "bot";
+                appendMessage(log.message, sender);
+            }
+            return; // ✅ Không cần fallback nếu có log từ DB
+        }
+
+        // 🔁 Nếu không có gì từ DB → fallback sang session RAM
+        const fallbackRes = await fetch(`http://127.0.0.1:8000/chat/history?session_id=${session_id}&user_id=${user_id || ""}`);
+        const fallbackData = await fallbackRes.json();
+        const recent = fallbackData.recent_messages || [];
+
+        for (const line of recent) {
             if (typeof line === "string") {
                 if (line.startsWith("👤 ")) {
-                    appendMessage(line.slice(2), "user");
+                    appendMessage(line.slice(2).trim(), "user");  // Bỏ emoji user
                 } else if (line.startsWith("🤖 ")) {
-                    appendMessage(line.slice(2), "bot");
+                    appendMessage(line.slice(2).trim(), "bot");   // Bỏ emoji bot
                 }
             }
         }
 
     } catch (error) {
-        console.error("❌ Không thể load chat cũ:", error);
+        console.error("❌ Lỗi khi tải lại hội thoại:", error);
     }
 }
+
+
 
 
 document.addEventListener('DOMContentLoaded', () => {

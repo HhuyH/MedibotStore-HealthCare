@@ -34,11 +34,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         $query = "
-            SELECT u.user_id, u.username, u.email, u.password, u.phone_number, r.role_name, ui.full_name 
+            SELECT u.user_id, u.username, u.email, u.password, ui.phone, r.role_name, ui.full_name , r.role_id
             FROM users u
             JOIN roles r ON u.role_id = r.role_id
             LEFT JOIN users_info ui ON u.user_id = ui.user_id
-            WHERE u.username = ? OR u.email = ? OR u.phone_number = ?
+            WHERE u.username = ? OR u.email = ? OR ui.phone = ?
             LIMIT 1
         ";
 
@@ -65,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $row['user_id'];
                 $_SESSION['username'] = $row['username'];
                 $_SESSION['email'] = $row['email'];
+                $_SESSION['role_id'] = $row['role_id'];
                 $_SESSION['role_name'] = $row['role_name'];
                 $_SESSION['full_name'] = $row['full_name'];
 
@@ -92,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'user' => [
                         'user_id' => $row['user_id'],
                         'username' => $row['username'],
+                        'role_id' => $row['role_id'],
                         'role' => $row['role_name']
                     ]
                 ]);
@@ -973,10 +975,13 @@ if (isset($_GET['logout'])) {
 
                 if (result.status === "success") {
                     const u = result.user;
+                    console.log("User info:", u); // Debug log
+                    
                     localStorage.setItem("userInfo", JSON.stringify({
                         user_id: u.user_id,
                         username: u.username,
-                        role: u.role
+                        role: u.role,
+                        role_id: u.role_id
                     }));
                     
                     // Visual feedback cho success
@@ -987,18 +992,15 @@ if (isset($_GET['logout'])) {
                     loginMessage.innerHTML = '<i class="fas fa-check-circle"></i>' + result.message;
                     loginMessage.style.display = 'block';
                     
-                    // Redirect sau 1.5 giây
+                    // Redirect sau 1.5 giây - sử dụng cả role_id và role để chắc chắn
                     setTimeout(() => {
-                        switch(u.role) {
-                            case 'admin':
-                                window.location.href = "admin/dashboard.php";
-                                break;
-                            case 'doctor':
-                                window.location.href = "doctor/dashboard.php";
-                                break;
-                            default:
-                                window.location.href = "index.php";
-                                break;
+                        if (u.role === 'admin' || u.role_id == 1) {
+                            console.log("Redirecting to admin dashboard...");
+                            window.location.href = "admin/dashboard.php";
+                        } else {
+                            // Tất cả user khác (doctor, patient) đều về trang chính
+                            console.log("Redirecting to index...");
+                            window.location.href = "index.php";
                         }
                     }, 1500);
                 } else {
