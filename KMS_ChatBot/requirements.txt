@@ -1,11 +1,8 @@
-fastapi==0.115.12
-openai==1.86.0
-pydantic==2.11.5
-pymysql==1.1.1
-python-dotenv==1.1.0
+fastapi==0.115.14
+openai==1.93.0
+pydantic==2.11.7
+PyMySQL==1.1.1
+python-dotenv==1.1.1
 rapidfuzz==3.13.0
-Requests==2.32.4
+redis==6.2.0
 tiktoken==0.9.0
-Unidecode==1.4.0
-Uvicorn-0.34.3
-redis
