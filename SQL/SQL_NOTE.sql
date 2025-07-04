@@ -391,6 +391,7 @@ CREATE TABLE products (
     description TEXT,                                    -- Mô tả sản phẩm
     price DECIMAL(16, 0) NOT NULL,                       -- Giá
     stock INT DEFAULT 0,                                 -- Tồn kho
+    is_medicine BOOLEAN DEFAULT FALSE,                   -- Có phải là thuốc hay không
     image_url TEXT,                                      -- Ảnh sản phẩm (nếu có)
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -401,15 +402,18 @@ CREATE TABLE products (
 
 -- Bảng thông tin đơn thuốc
 CREATE TABLE medicines (
-    medicine_id INT PRIMARY KEY,                         -- Khóa chính, trùng với product_id
+    product_id INT PRIMARY KEY,                          -- Khóa ngoại, trùng với product_id
     active_ingredient VARCHAR(255),                      -- Hoạt chất chính
     dosage_form VARCHAR(100),                            -- Dạng bào chế (viên, ống, gói, ...)
     unit VARCHAR(50),                                    -- Đơn vị tính: viên, ml, ...
     usage_instructions TEXT,                             -- Hướng dẫn dùng thuốc
+    medicine_type ENUM('OTC', 'Kê đơn', 'Kháng sinh', 'Bổ sung') DEFAULT 'OTC', -- Loại thuốc: OTC, kê đơn, kháng sinh, bổ sung
+    side_effects TEXT,                                   -- Tác dụng phụ (nếu có)
+    contraindications TEXT,                               -- Chống chỉ định (nếu có)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (medicine_id) REFERENCES products(product_id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
 
 -- Bảng đơn thuốc liên kết với sản phẩm

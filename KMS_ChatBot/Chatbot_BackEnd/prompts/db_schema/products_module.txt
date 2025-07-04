@@ -17,14 +17,17 @@
 - created_at (TIMESTAMP): creation timestamp  
 - updated_at (DATETIME): last update timestamp  
 
-27. medicines  
-- medicine_id (INT, PK): primary key, foreign key to products.product_id  
-- active_ingredient (VARCHAR): main active ingredient  
-- dosage_form (VARCHAR): dosage form (tablet, vial, pack...)  
-- unit (VARCHAR): measurement unit (tablet, ml, etc.)  
-- usage_instructions (TEXT): instructions for use  
-- created_at (TIMESTAMP): creation timestamp  
-- updated_at (DATETIME): last update timestamp  
+27. medicines
+- product_id (INT, PK, FK): primary key, foreign key to `products.product_id`
+- active_ingredient (VARCHAR): main active ingredient (e.g., Paracetamol, Amoxicillin)
+- dosage_form (VARCHAR): dosage form (e.g., tablet, capsule, powder, syrup)
+- unit (VARCHAR): measurement unit (e.g., tablet, ml, gói)
+- usage_instructions (TEXT): instructions for proper use and dosage
+- medicine_type (ENUM): type of medicine – values include `'OTC'`, `'Kê đơn'`, `'Kháng sinh'`, `'Bổ sung'` (default: `'OTC'`)
+- side_effects (TEXT): possible side effects (e.g., nausea, dizziness, rash)
+- ontraindications (TEXT): contraindications (e.g., liver disease, allergy to penicillin)
+- created_at (TIMESTAMP): record creation timestamp (default: `CURRENT_TIMESTAMP`)
+- updated_at (DATETIME): last updated timestamp, auto-updated on changes
 
 28. prescription_products  
 - id (INT, PK): primary key  
