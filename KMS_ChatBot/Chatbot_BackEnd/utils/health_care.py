@@ -29,11 +29,12 @@ from utils.session_store import (
     mark_related_symptom_asked
 )
 def extract_json(content: str) -> str:
-    """
-    Trích JSON từ đoạn text có thể chứa rác GPT.
-    """
-    match = re.search(r"\{[\s\S]*\}", content)
-    return match.group(0).strip() if match else ""
+    matches = re.findall(r"\{[\s\S]*?\}", content)
+    if matches:
+        logger.debug(f"[extract_json] Found {len(matches)} JSON blocks. Using last.")
+        return matches[-1].strip()
+    logger.warning("[extract_json] ⚠️ No JSON found in content.")
+    return ""
 
 # Hàm mới dùng prompt tổng
 async def health_talk(
@@ -107,6 +108,19 @@ async def health_talk(
     except json.JSONDecodeError as e:
         logger.warning("⚠️ GPT trả về không phải JSON hợp lệ: %s", str(e))
         parsed = {}
+
+    # 🔍 Ghi lại flag gợi ý sản phẩm nếu có
+    if "should_suggest_product" in parsed and "suggest_type" in parsed and "suggest_product_target" in parsed:
+        session_data["should_suggest_product"] = parsed["should_suggest_product"]
+        session_data["suggest_type"] = parsed["suggest_type"]
+        session_data["suggest_product_target"] = parsed["suggest_product_target"]
+        # logger.info("💡 Đã lưu flag gợi ý sản phẩm:\n%s", json.dumps({
+        #     "should_suggest_product": parsed["should_suggest_product"],
+        #     "suggest_type": parsed["suggest_type"],
+        #     "suggest_product_target": parsed["suggest_product_target"]
+        # }, ensure_ascii=False))
+        await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+
 
     message = parsed.get("message", fallback_message or "Xin lỗi, mình chưa hiểu rõ lắm...")
 
@@ -238,7 +252,7 @@ async def health_talk(
     # Step 6: Stream message từng đoạn ra ngoài
     for chunk in stream_gpt_tokens(message):
         yield chunk 
-        await asyncio.sleep(0.05)
+        await asyncio.sleep(0.065)  # Giữ tốc độ stream mượt mà
 
 # Trả về các dữ liệu cần thiết để truyền vào build_KMS_prompt:
 # - stored_symptoms

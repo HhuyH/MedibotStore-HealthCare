@@ -880,13 +880,12 @@ def build_KMS_prompt(
     **only if** the user explicitly agrees in their next message.
 
     ----------------------------------------------------------------
-
     🧠 Internal planning (for system use):
 
     If you believe the user may benefit from product suggestions later,  
-    quietly include the following flags **(but do not act on them yet):**
+    you must quietly include the following JSON block — even if the user hasn’t asked yet.
 
-    ✅ Example flags:
+    ✅ Always include this block at the end:
     ```json
     {{
       "should_suggest_product": false,
@@ -895,16 +894,24 @@ def build_KMS_prompt(
     }}
     ```
 
-    ⚠️ Rules for `suggest_product_target`:
-    - Build this list from `stored_symptoms_name`
-    - Convert each symptom into a soft care goal:
-      - “Giảm đau đầu nhẹ”
-      - “Dịu cảm giác chóng mặt”
-      - “Hỗ trợ khản tiếng”
-    - Max 3 phrases, all in Vietnamese
-    - Do NOT repeat raw symptom names — always rephrase
+    ⚠️ Rules for suggest_product_target:
+    •	Build the list from stored_symptoms_name
+    •	Rephrase each symptom into a soft care goal using common patterns:
+      -	“Giảm cảm giác [symptom] nhẹ”
+      -	“Hỗ trợ làm dịu [symptom]”
+      -	“Tăng cảm giác dễ chịu ở [symptom area]”
+    •	Do NOT copy the symptom name directly
+    •	Use short, natural Vietnamese phrases (1–3 items max)
+    •	Do NOT use medical terms or jargon
+    
+    ⚠️ Other important rules:
+    •	Always set "should_suggest_product": false at this stage — the user has not agreed yet
+    •	Do NOT include brand names or product names
+    •	Do NOT mention this JSON in your "message"
+    
+    ✅ If the user confirms later (e.g. “Cho mình xem thử”),
+    the system will use these flags to trigger a suggest_product step.
 
-    ✅ Later, if the user confirms interest, the system will use these flags to trigger a dedicated product suggestion step.
     """.strip()
 
     return prompt

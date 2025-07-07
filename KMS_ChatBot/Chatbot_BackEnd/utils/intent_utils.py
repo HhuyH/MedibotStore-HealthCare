@@ -2,6 +2,7 @@
 import sys
 import os
 import logging
+import re
 logger = logging.getLogger(__name__)
 
 # Thêm đường dẫn thư mục cha vào sys.path
@@ -75,7 +76,8 @@ async def detect_intent(
     recent_user_messages: list[str] = [],
     recent_assistant_messages: list[str] = [],
     diagnosed_today: bool = False,
-    stored_symptoms: list[str] = []
+    stored_symptoms: list[str] = [],
+    should_suggest_product: bool = False,
 ) -> str:
     # Sử dụng trực tiếp message đã tách
     last_bot_msg = recent_assistant_messages[-1] if recent_assistant_messages else ""
@@ -103,16 +105,29 @@ async def detect_intent(
 
         ----------------------------
 
+        - If "{should_suggest_product}" = true`, then classify as `"suggest_product"`.
+
+        - If should_suggest_product = false:
+            - If the message sounds like a general wellness request (e.g., “có cách nào cải thiện?”, “làm sao để đỡ hơn?”, “ăn gì tốt cho da?”), classify as "health_advice"
+            - If the message explicitly asks for product suggestions (e.g., “có sản phẩm nào?”, “cho mình xem sản phẩm”, “thuốc nào hỗ trợ?”), classify as "suggest_product"
+            
+        - If the message is a data/admin request like “lấy danh sách sản phẩm”, “xem toàn bộ thuốc”, “liệt kê các gói dịch vụ” → classify as `"sql_query"`- If `should_suggest_product = false` but the user message sounds like they are asking for help with products (e.g., “có thuốc nào không?”, “cho mình xem thử sản phẩm hỗ trợ”, “gợi ý sản phẩm giúp mình với”), then also classify as `"suggest_product"`.
+
+        - Typical phrases that may indicate product interest include:
+            • “cho mình xem thử”
+            • “có thuốc nào không”
+            • “gợi ý sản phẩm”
+            • “có sản phẩm nào”
+            • “giúp mình với”
+            • “giảm triệu chứng”
+            • “hỗ trợ điều trị”
+            • “có gì làm đỡ hơn không”
+
         Instructions:
-
         - If the last intent was "symptom_query" and the user's current message clearly answers a previous follow-up (e.g., gives timing, severity, or symptom detail), then KEEP "symptom_query".
-
         - If the user is asking for general advice on how to deal with a symptom (e.g., how to sleep better, what to eat for energy), or wants wellness guidance (e.g., chăm sóc sức khỏe, tăng sức đề kháng), classify as "health_advice".
-
         - Only use "symptom_query" if the user is directly describing symptoms they are experiencing.
-
         - Use "general_chat" if the message is unrelated small talk, jokes, greetings, or off-topic.
-
         - If unsure, prefer to keep the previous intent (if valid).
         - If the user message sounds like a **data query or admin command** (e.g., "lấy danh sách người dùng", "xem danh sách đơn hàng", "tìm bệnh nhân"), then classify as `"sql_query"` (or appropriate admin intent).
         - If the user is asking to view a patient's health data (e.g., “xem thông tin bệnh nhân”, “hồ sơ bệnh nhân”, “tình trạng bệnh nhân”, “tình hình của bệnh nhân”, “cho tôi xem bệnh nhân tên...”) → classify as "patient_summary_request"
@@ -137,6 +152,9 @@ async def detect_intent(
           User: "giờ mình mới nhớ ra, hôm qua bị trúng mưa" → ✅ → intent = `symptom_query`
           User: "Giờ mình mới nhớ là sáng giờ chưa ăn gì, chắc vậy mà chóng mặt" → ✅ if "Chóng mặt" is in stored_symptoms → intent = "symptom_query"
           User: "Chắc do hôm qua mệt nên vậy" → ✅ if "Mệt" was previously mentioned → intent = "symptom_query"
+
+        - User: “lấy danh sách sản phẩm” → ✅ → intent = `sql_query`
+
           
         - Bot: “Bạn thấy tê tay bắt đầu từ lúc nào?”  
           User: “nó tự nhiên xuất hiện thôi” → ✅ → intent = `symptom_query`
@@ -175,7 +193,33 @@ async def detect_intent(
             - User: “ngày 25/3”
             → ✅ → intent = `patient_summary_request`
 
+        - should_suggest_product = true  
+        User: “Cho mình xem thử sản phẩm hỗ trợ nha”  
+        → ✅ → intent = `suggest_product`
 
+        - should_suggest_product = true  
+        User: “Bạn có thể gợi ý gì giúp giảm đau họng không?”  
+        → ✅ → intent = `suggest_product`
+
+        - should_suggest_product = false  
+        User: “Có thuốc nào giảm khàn tiếng không?”  
+        → ✅ → intent = `suggest_product`
+
+        - should_suggest_product = false  
+        User: “Cho em xem sản phẩm nào giúp dịu cổ họng nha”  
+        → ✅ → intent = `suggest_product`
+
+        - should_suggest_product = false  
+        User: “Bữa giờ mình ho nhiều quá, có sản phẩm nào giúp dễ chịu hơn không?”  
+        → ✅ → intent = `suggest_product`
+
+        - should_suggest_product = false  
+        User: “Bạn có thể gợi ý sản phẩm nào giúp giảm đau họng nhẹ không?”  
+        → ✅ → intent = `suggest_product`
+
+        - should_suggest_product = false  
+        User: “Mình bị khàn tiếng mấy hôm nay, có loại nào giúp giọng đỡ hơn không?”  
+        → ✅ → intent = `suggest_product`
 
         → What is the current intent?
     """
@@ -187,8 +231,10 @@ async def detect_intent(
             max_tokens=10,
             temperature=0
         )
-        raw_intent = response.choices[0].message.content.strip()
-        raw_intent = raw_intent.replace("intent:", "").replace("Intent:", "").strip().lower()
+
+        raw = response.choices[0].message.content.strip().lower()
+        match = re.search(r"(?:intent:)?\s*([\w_]+)", raw)
+        raw_intent = match.group(1).strip() if match else raw
 
         mapped_intent = INTENT_MAPPING.get(raw_intent, raw_intent)
         logger.info(f"🧭 GPT intent: {raw_intent} → Pipeline intent: {mapped_intent}")
@@ -212,7 +258,6 @@ async def detect_intent(
     except Exception as e:
         logger.error(f"❌ Lỗi khi detect intent: {str(e)}")
         return "general_chat"
-
 
 def get_sql_prompt_for_intent(intent: str) -> str:
     schema = get_combined_schema_for_intent(intent)

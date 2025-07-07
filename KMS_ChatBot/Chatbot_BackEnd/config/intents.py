@@ -22,6 +22,9 @@ VALID_INTENTS = [
     "services",
     "notifications",
 
+    # --- GỢI Ý SẢN PHẨM ---
+    "suggest_product",
+
     # --- Intent truy vấn dạng danh sách (list_*) ---
     # "list_diseases",
     # "list_symptoms",
@@ -45,6 +48,9 @@ INTENT_MAPPING = {
     
     # Tư vấn sức khỏe
     "health_advice":         "health_advice",
+
+    # gợi ý sản phẩm
+    "suggest_product":       "suggest_product",
     
     # Truy vấn dữ liệu thương mại / dịch vụ
     "products":              "product_query",
@@ -68,6 +74,7 @@ INTENT_MAPPING = {
     # medical_history: nếu dùng để hỏi triệu chứng quá khứ, giữ symptom_query
     # nếu dùng để xem lại dữ liệu trong DB thì nên map sang sql_query
     "medical_history":       "symptom_query"
+    
 }
 
 # Pipeline xử lý cho từng intent
@@ -76,7 +83,11 @@ INTENT_PIPELINES = {
     "symptom_query": ["health_talk"],
     "health_advice": ["health_advice"],
 
+    # Truy vấn hồ sơ bệnh nhân
     "patient_summary_request": ["patient_summary"],
+
+    # Truy vấn dữ liệu gợi ý sản phẩm
+    "suggest_product": ["suggest_product", "sql"],
 
     # Các intent truy vấn dữ liệu có cấu trúc → SQL
     "product_query": ["chat", "sql"],

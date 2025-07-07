@@ -163,7 +163,8 @@ async def get_symptom_notes_from_session(user_id: str = None, session_id: str = 
 # HÀM LƯU TRỮ TIN NHẮN
 # ---------------------------
 
-async def update_chat_history_in_session(user_id, session_data, session_id, user_msg, bot_msg):
+async def update_chat_history_in_session(user_id, session_data, session_id, user_msg, bot_msg, extra_data=None):
+
     recent_messages = session_data.get("recent_messages", [])
     recent_user_messages = session_data.get("recent_user_messages", [])
     recent_assistant_messages = session_data.get("recent_assistant_messages", [])
@@ -180,6 +181,9 @@ async def update_chat_history_in_session(user_id, session_data, session_id, user
     session_data["recent_messages"] = recent_messages[-12:]
     session_data["recent_user_messages"] = recent_user_messages[-6:]
     session_data["recent_assistant_messages"] = recent_assistant_messages[-6:]
+
+    
+
     await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
 
     

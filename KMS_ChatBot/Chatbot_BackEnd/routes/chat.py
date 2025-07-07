@@ -34,9 +34,11 @@ from utils.openai_utils import stream_chat
 from utils.sql_executor import run_sql_query
 from utils.health_care import (
     health_talk,
+    extract_json,
 )
 from utils.health_advice import health_advice
 from utils.openai_utils import stream_gpt_tokens
+from utils.product_suggester import suggest_product
 from utils.patient_summary import (
     generate_patient_summary,
     gpt_decide_patient_summary_action,
@@ -90,12 +92,16 @@ async def chat_stream(msg: Message = Body(...)):
 
     # 🔁 Phát hiện intent
     last_intent = session_data.get("last_intent", None)
+
+    should_suggest_product = session_data.get("should_suggest_product", False)
+
     intent = await detect_intent(
         last_intent=last_intent,
         recent_user_messages=recent_user_messages,
         recent_assistant_messages=recent_assistant_messages,
         diagnosed_today=diagnosed_today,
-        stored_symptoms=stored_symptoms
+        stored_symptoms=stored_symptoms,
+        should_suggest_product=should_suggest_product
     )
 
     session_data["last_intent"] = intent
@@ -139,7 +145,7 @@ async def chat_stream(msg: Message = Body(...)):
                     content = getattr(delta, "content", None)
 
                     if content:
-                        # logger.info(f"[STREAM] 🌊 Đang stream ra: {repr(content)}")  # 👈 Thêm dòng này để log từng mẩu
+                        # logger.info(f"[STREAM] 🌊 Đang stream ra: {repr(content)}") 
                         buffer += content
 
                         if intent not in ["sql_query", "product_query"]:
@@ -207,30 +213,31 @@ async def chat_stream(msg: Message = Body(...)):
 
             # --- Step 2.1: GPT điều phối tư vấn sức khỏe thông thường ---
             elif step == "health_advice":
+                result = await health_advice(msg.message, recent_messages)
 
-                chunks = []
-                async for chunk in health_advice(msg.message, recent_messages):
-                    delta = chunk.choices[0].delta
-                    content = getattr(delta, "content", None)
-                    if content:
-                        chunks.append(content)
-                        yield f"data: {json.dumps({'natural_text': content}, ensure_ascii=False)}\n\n"
-                        await asyncio.sleep(0.02)
+                # Stream message
+                for chunk in stream_gpt_tokens(result["natural_text"]):
+                    yield f"data: {json.dumps({'natural_text': chunk}, ensure_ascii=False)}\n\n"
+                    await asyncio.sleep(0.065)
 
-                final_message = "".join(chunks).strip()
-                final_bot_message = final_message
+                # Lưu flag
+                session_data["should_suggest_product"] = result.get("should_suggest_product", False)
+                session_data["suggest_type"] = result.get("suggest_type")
+                session_data["suggest_product_target"] = result.get("suggest_product_target", [])
 
-                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
-                session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
-                updated_session_data = session_data
+                logger.info("💡 [health_advice] Gợi ý sản phẩm:\n%s", json.dumps({
+                    "should_suggest_product": session_data["should_suggest_product"],
+                    "suggest_type": session_data["suggest_type"],
+                    "suggest_product_target": session_data["suggest_product_target"]
+                }, ensure_ascii=False))
 
+                await save_session_data(user_id=msg.user_id, session_id=msg.session_id, data=session_data)
+
+                # Lưu lịch sử hội thoại
+                final_bot_message = result["natural_text"].strip()
                 await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
-
-                # ✅ Lưu log hội thoại
                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
-                chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
-
-                session_data["last_bot_message"] = final_message
+                save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
 
                 yield "data: [DONE]\n\n"
                 return
@@ -307,8 +314,48 @@ async def chat_stream(msg: Message = Body(...)):
                 yield "data: [DONE]\n\n"
                 return
 
+            # --- Step 2.3: GPT điều phối gợi ý sản phẩm ---
+            elif step == "suggest_product":
+
+                suggest_type = session_data.get("suggest_type")
+                suggest_product_target = session_data.get("suggest_product_target", [])
+
+                logger.info("🧪 [GỢI Ý] suggest_product với:\n%s", json.dumps({
+                    "suggest_type": suggest_type,
+                    "suggest_product_target": suggest_product_target
+                }, ensure_ascii=False, indent=2))
+                
+                gpt_result = await suggest_product(
+                    suggest_type=suggest_type,
+                    suggest_product_target=suggest_product_target,
+                    recent_messages=recent_messages,
+                )
+
+                # ✅ Lưu lại natural_text để dùng cho lịch sử
+                full_message = gpt_result.get("natural_text", "📦 Đây là một số sản phẩm bạn có thể tham khảo.")
+                
+                # ✅ Lưu lịch sử hội thoại
+                await update_chat_history_in_session(
+                    msg.user_id, session_data, msg.session_id, msg.message, full_message
+                )
+                save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=full_message, sender='bot')
+
+                # ✅ Đóng gói vào buffer để bước `sql` xử lý
+                buffer = json.dumps({
+                    "natural_text": full_message,
+                    "sql_query": gpt_result.get("sql_query")
+                }, ensure_ascii=False)
+
+                
+            
             # --- Step 3: Xử lý SQL query nếu có ---
             elif step == "sql":
+                logger.debug(f"🧪 Step 'sql' nhận buffer:\n{buffer}")
+                if not buffer:
+                    yield "data: ⚠️ Không có dữ liệu để xử lý SQL.\n\n"
+                    yield "data: [DONE]\n\n"
+                    return
                 try:
                     logger.info(f"[DEBUG] Nội dung buffer để parse SQL: {buffer.strip()}")
 
@@ -333,6 +380,14 @@ async def chat_stream(msg: Message = Body(...)):
                         rows = result.get("data", [])
                         if rows:
                             result_text = natural_text
+
+                            final_bot_message = natural_text
+
+                            await update_chat_history_in_session(
+                                msg.user_id, session_data, msg.session_id, msg.message, final_bot_message
+                            )
+                            save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                            save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
                         else:
                             result_text = "📋 Không có dữ liệu phù hợp."
 
@@ -342,6 +397,10 @@ async def chat_stream(msg: Message = Body(...)):
                     else:
                         error_msg = result.get("error", "Lỗi không xác định.")
                         yield f"data: {json.dumps({'natural_text': f'⚠️ Lỗi SQL: {error_msg}'})}\n\n"
+
+                # ✅ Lưu lịch sử nếu có bảng kết quả và natural_text
+   
+
 
                 yield "data: [DONE]\n\n"
 

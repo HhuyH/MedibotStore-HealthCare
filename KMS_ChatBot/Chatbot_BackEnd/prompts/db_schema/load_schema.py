@@ -37,10 +37,10 @@ schema_modules = {
     # SẢN PHẨM & ĐƠN HÀNG
     # file schema chứa products, product_categories, medicines, prescription_products, product_reviews
     'products': load_schema('products_module'),
-
+    'suggest_product': load_schema('products_module'),
+    
     # file schema chứa orders, order_items, payments
     'orders': load_schema('ecommerce_orders_module'),
-
 
     # DỊCH VỤ Y TẾ
     # file schema chứa service_categories, services, service_features, service_packages, package_features
