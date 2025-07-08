@@ -21,18 +21,18 @@ def chat_completion(messages, **kwargs):
     sync_client = OpenAI(api_key=OPENAI_API_KEY)
     return sync_client.chat.completions.create(model=MODEL, messages=messages, **kwargs)
 
-async def chat_stream_health(*, model=None, messages, **kwargs):
-    if model is None:
-        model = MODEL
+# async def chat_stream_health(*, model=None, messages, **kwargs):
+#     if model is None:
+#         model = MODEL
 
-    stream = await client.chat.completions.create(
-        model=model,
-        messages=messages,
-        stream=True,
-        **kwargs
-    )
+#     stream = await client.chat.completions.create(
+#         model=model,
+#         messages=messages,
+#         stream=True,
+#         **kwargs
+#     )
 
-    async for chunk in stream:
-        delta = chunk.choices[0].delta
-        if "content" in delta:
-            yield delta["content"]
+#     async for chunk in stream:
+#         delta = chunk.choices[0].delta
+#         if "content" in delta:
+#             yield delta["content"]

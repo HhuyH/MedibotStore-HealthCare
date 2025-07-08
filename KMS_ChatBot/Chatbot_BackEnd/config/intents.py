@@ -87,7 +87,7 @@ INTENT_PIPELINES = {
     "patient_summary_request": ["patient_summary"],
 
     # Truy vấn dữ liệu gợi ý sản phẩm
-    "suggest_product": ["suggest_product", "sql"],
+    "suggest_product": ["suggest_product"],
 
     # Các intent truy vấn dữ liệu có cấu trúc → SQL
     "product_query": ["chat", "sql"],

@@ -17,9 +17,7 @@ async def health_advice(user_message: str, recent_messages: list[str] = []) -> d
         Based on the user's message and recent context, generate a friendly JSON reply in Vietnamese with:
 
         1. "natural_text": a supportive, casual message including 2–4 gentle suggestions the user can try at home to feel better
-        2. "should_suggest_product": false (always keep this value, but you **should** add** a gentle invitation at the end of `"natural_text"` if the advice seems to be related to lighter or more pleasant health care)
-        3. "suggest_type": either "wellness" or "relief_support"
-        4. "suggest_product_target": a list of 1–3 soft, natural wellness goals in Vietnamese (e.g. “Dưỡng ẩm da”, “Ngủ ngon hơn”)
+        2. "should_suggest_product": a boolean indicating if you should suggest gentle product support
 
         🗣️ Tone:
         - Keep the message warm, kind, and down-to-earth — like chatting with a caring friend
@@ -84,8 +82,6 @@ async def health_advice(user_message: str, recent_messages: list[str] = []) -> d
             {{
                 "natural_text": "Bạn thử dưỡng ẩm sau tắm khi da còn hơi ẩm nha 💧...",
                 "should_suggest_product": false,
-                "suggest_type": "wellness",
-                "suggest_product_target": ["Dưỡng ẩm da", "Giữ da mềm mịn"]
             }}    
     """.strip()
 

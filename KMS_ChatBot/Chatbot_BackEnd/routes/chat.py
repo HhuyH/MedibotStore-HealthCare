@@ -34,11 +34,10 @@ from utils.openai_utils import stream_chat
 from utils.sql_executor import run_sql_query
 from utils.health_care import (
     health_talk,
-    extract_json,
 )
 from utils.health_advice import health_advice
 from utils.openai_utils import stream_gpt_tokens
-from utils.product_suggester import suggest_product
+from utils.product_suggester import suggest_product, summarize_products
 from utils.patient_summary import (
     generate_patient_summary,
     gpt_decide_patient_summary_action,
@@ -222,13 +221,9 @@ async def chat_stream(msg: Message = Body(...)):
 
                 # Lưu flag
                 session_data["should_suggest_product"] = result.get("should_suggest_product", False)
-                session_data["suggest_type"] = result.get("suggest_type")
-                session_data["suggest_product_target"] = result.get("suggest_product_target", [])
 
                 logger.info("💡 [health_advice] Gợi ý sản phẩm:\n%s", json.dumps({
                     "should_suggest_product": session_data["should_suggest_product"],
-                    "suggest_type": session_data["suggest_type"],
-                    "suggest_product_target": session_data["suggest_product_target"]
                 }, ensure_ascii=False))
 
                 await save_session_data(user_id=msg.user_id, session_id=msg.session_id, data=session_data)
@@ -316,39 +311,51 @@ async def chat_stream(msg: Message = Body(...)):
 
             # --- Step 2.3: GPT điều phối gợi ý sản phẩm ---
             elif step == "suggest_product":
+                gpt_result = await suggest_product(recent_messages=recent_messages)
+                logger.info(f"[DEBUG] GPT result:\n{json.dumps(gpt_result, indent=2, ensure_ascii=False)}")
 
-                suggest_type = session_data.get("suggest_type")
-                suggest_product_target = session_data.get("suggest_product_target", [])
+                sql = gpt_result.get("sql_query")
+                suggest_type = gpt_result.get("suggest_type", "general")
 
-                logger.info("🧪 [GỢI Ý] suggest_product với:\n%s", json.dumps({
-                    "suggest_type": suggest_type,
-                    "suggest_product_target": suggest_product_target
-                }, ensure_ascii=False, indent=2))
-                
-                gpt_result = await suggest_product(
+                if not sql:
+                    logger.warning("⚠️ GPT không trả về SQL query nào.")
+                    yield f"data: 📋 Không tìm thấy sản phẩm phù hợp.\n\n"
+                    yield "data: [DONE]\n\n"
+                    return
+
+                sql_result = run_sql_query(sql)
+                logger.info(f"[SQL DEBUG] Kết quả truy vấn:\n{json.dumps(sql_result, ensure_ascii=False, indent=2, default=str)}")
+                rows = sql_result.get("data", []) if sql_result.get("status") == "success" else []
+
+                if not rows:
+                    yield f"data: 📋 Không tìm thấy sản phẩm phù hợp.\n\n"
+                    yield "data: [DONE]\n\n"
+                    return
+
+                # 👉 CHỈ GỌI summarize_products 1 LẦN với tất cả sản phẩm
+                full_message = ""
+                chunks = []
+
+                async for chunk in summarize_products(
                     suggest_type=suggest_type,
-                    suggest_product_target=suggest_product_target,
-                    recent_messages=recent_messages,
-                )
+                    products=rows,
+                    recent_messages=recent_messages
+                ):
+                    chunks.append(chunk)
+                    yield f"data: {json.dumps({'natural_text': chunk})}\n\n"
+                    await asyncio.sleep(0.01)
+                    full_message += chunk
 
-                # ✅ Lưu lại natural_text để dùng cho lịch sử
-                full_message = gpt_result.get("natural_text", "📦 Đây là một số sản phẩm bạn có thể tham khảo.")
-                
-                # ✅ Lưu lịch sử hội thoại
+                # ✅ Lưu lịch sử sau khi stream xong
                 await update_chat_history_in_session(
                     msg.user_id, session_data, msg.session_id, msg.message, full_message
                 )
                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=full_message, sender='bot')
 
-                # ✅ Đóng gói vào buffer để bước `sql` xử lý
-                buffer = json.dumps({
-                    "natural_text": full_message,
-                    "sql_query": gpt_result.get("sql_query")
-                }, ensure_ascii=False)
+                yield "data: [DONE]\n\n"
 
-                
-            
+
             # --- Step 3: Xử lý SQL query nếu có ---
             elif step == "sql":
                 logger.debug(f"🧪 Step 'sql' nhận buffer:\n{buffer}")

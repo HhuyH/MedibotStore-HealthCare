@@ -28,13 +28,28 @@ from utils.session_store import (
     save_symptoms_to_session, get_symptoms_from_session,
     mark_related_symptom_asked
 )
-def extract_json(content: str) -> str:
-    matches = re.findall(r"\{[\s\S]*?\}", content)
-    if matches:
-        logger.debug(f"[extract_json] Found {len(matches)} JSON blocks. Using last.")
-        return matches[-1].strip()
-    logger.warning("[extract_json] ⚠️ No JSON found in content.")
-    return ""
+
+
+import json
+
+def extract_json(text: str) -> str:
+    """
+    Tách block JSON đầu tiên hợp lệ từ một đoạn text (không dùng đệ quy regex).
+    """
+    start = text.find('{')
+    while start != -1:
+        for end in range(len(text) - 1, start, -1):
+            try:
+                candidate = text[start:end + 1]
+                parsed = json.loads(candidate)
+                return candidate  # ✅ JSON hợp lệ đầu tiên
+            except json.JSONDecodeError:
+                continue
+        start = text.find('{', start + 1)
+    return '{}'
+
+
+
 
 # Hàm mới dùng prompt tổng
 async def health_talk(
@@ -89,6 +104,7 @@ async def health_talk(
         had_conclusion=had_conclusion
     )
 
+
     # 🔒 Đánh dấu đã hỏi related symptom (chỉ 1 lần duy nhất)
     if inputs.get("related_symptom_names"):
         await mark_related_symptom_asked(session_id=session_id, user_id=user_id)
@@ -98,27 +114,23 @@ async def health_talk(
     completion = chat_completion(messages=[{"role": "user", "content": prompt}], temperature=0.7)
 
     content = completion.choices[0].message.content.strip()
-    logger.debug("🔎 Raw content từ GPT:\n%s", content)
+    # logger.info("🔎 Raw content từ GPT:\n%s", content)
 
     raw_json = extract_json(content)
 
     try:
         parsed = json.loads(raw_json)
-        logger.debug("🧾 JSON từ GPT:\n%s", json.dumps(parsed, indent=2, ensure_ascii=False))
+        # logger.info("🧾 JSON từ GPT:\n%s", json.dumps(parsed, indent=2, ensure_ascii=False))
     except json.JSONDecodeError as e:
         logger.warning("⚠️ GPT trả về không phải JSON hợp lệ: %s", str(e))
         parsed = {}
 
     # 🔍 Ghi lại flag gợi ý sản phẩm nếu có
-    if "should_suggest_product" in parsed and "suggest_type" in parsed and "suggest_product_target" in parsed:
+    if "should_suggest_product" in parsed:
         session_data["should_suggest_product"] = parsed["should_suggest_product"]
-        session_data["suggest_type"] = parsed["suggest_type"]
-        session_data["suggest_product_target"] = parsed["suggest_product_target"]
-        # logger.info("💡 Đã lưu flag gợi ý sản phẩm:\n%s", json.dumps({
-        #     "should_suggest_product": parsed["should_suggest_product"],
-        #     "suggest_type": parsed["suggest_type"],
-        #     "suggest_product_target": parsed["suggest_product_target"]
-        # }, ensure_ascii=False))
+        logger.info("💡 Đã lưu flag gợi ý sản phẩm:\n%s", json.dumps({
+            "should_suggest_product": parsed["should_suggest_product"],
+        }, ensure_ascii=False))
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
 
 
@@ -129,6 +141,13 @@ async def health_talk(
 
     action = parsed.get("action")
     next_action = parsed.get("next_action")
+
+    # ✅ Log theo logic thực tế đang xử lý
+    if action == "diagnosis" or next_action == "diagnosis":
+        logger.info("🎯 Action (effective): diagnosis")
+    else:
+        logger.info("🎯 Action: %s", action)
+
     # ✅ Ghi nhận kết luận để đánh dấu đã chẩn đoán hôm nay
     if action == "diagnosis":
         session_data["had_conclusion"] = True
@@ -162,9 +181,6 @@ async def health_talk(
 
 
     end = parsed.get("end", False)
-
-    # Log các biến phụ trợ
-    logger.info("🎯 Action: %s", action)
 
     # Nếu không có chẩn đoán trước đó trong ngày thì sẽ tạo note dựa theo triệu chứng
     # nếu đã chẩn đoán thì sẽ không tạo note mới
@@ -211,7 +227,6 @@ async def health_talk(
                 user_id=user_id,
             )
     
-    logger.info("🎯 Next Action: %s", next_action)
 
     # nếu action là post-diagnosis và next_action là diagnosis
     # thì sẽ tách message tại điểm DIAGNOSIS_SPLIT

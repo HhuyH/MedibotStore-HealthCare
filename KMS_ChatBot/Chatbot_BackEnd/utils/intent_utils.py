@@ -126,7 +126,8 @@ async def detect_intent(
         Instructions:
         - If the last intent was "symptom_query" and the user's current message clearly answers a previous follow-up (e.g., gives timing, severity, or symptom detail), then KEEP "symptom_query".
         - If the user is asking for general advice on how to deal with a symptom (e.g., how to sleep better, what to eat for energy), or wants wellness guidance (e.g., chăm sóc sức khỏe, tăng sức đề kháng), classify as "health_advice".
-        - Only use "symptom_query" if the user is directly describing symptoms they are experiencing.
+        - Use "symptom_query" if the user is describing a health symptom — even casually or in a vague way — such as “mình bị đau đầu quá”, “cảm thấy chóng mặt”, “đau nhức khắp người”.
+        - If the message contains common symptom phrases like “mình cảm thấy đau đầu”, “bị chóng mặt quá”, “mình nhức mỏi lắm”, “mình đau bụng quá” — even if not phrased formally — classify as "health_query"
         - Use "general_chat" if the message is unrelated small talk, jokes, greetings, or off-topic.
         - If unsure, prefer to keep the previous intent (if valid).
         - If the user message sounds like a **data query or admin command** (e.g., "lấy danh sách người dùng", "xem danh sách đơn hàng", "tìm bệnh nhân"), then classify as `"sql_query"` (or appropriate admin intent).
@@ -135,9 +136,16 @@ async def detect_intent(
         - Only use `"general_chat"` if the user is making small talk, asking about the bot, or saying unrelated casual things.
         - Do NOT misclassify structured or technical requests as casual chat.
         - If unsure, prefer a more specific intent over `"general_chat"`.
-        - If the previous assistant message was a follow-up question about a symptom, and the user responds with something vague or approximate (e.g. “chắc 5-10 phút”, “khoảng sáng tới giờ”, “tầm chiều hôm qua”, "chắc tầm"), you SHOULD assume this is a continuation of the symptom discussion → prefer "symptom_query".
-        - If user says “không biết”, “chắc vậy”, “khó nói”, "không rõ", but it’s still in reply to a symptom follow-up → KEEP "symptom_query"
-        - If Diagnosed today = True and the user message sounds like explaining the cause or context of symptoms → KEEP "symptom_query".
+        - If the previous assistant message was a follow-up question about a symptom, and the user replies with:
+            • vague timing like “tầm 5–10 phút”, “khoảng sáng nay”, “chắc tầm chiều qua”  
+            • contextual clues like “lúc hoạt động nhiều”, “khi nằm”, “vào buổi sáng”, “sau khi đứng dậy”  
+            • short confirmations like “đúng rồi”, “cũng có thể”, “hình như vậy”, “ờ ha”  
+        → KEEP "symptom_query"
+        - If the previous assistant message was a symptom-related follow-up, and the user replies vaguely or uncertainly (e.g. “mình không rõ”, “khó nói”, “cũng không chắc”, “chắc vậy”, “mình cũng không biết”) → KEEP "symptom_query"
+        - If the user's message sounds like a guess or personal explanation for a symptom (e.g., “chắc là do...”, “có lẽ vì...”, “hôm nay mình chưa ăn gì nên...”):
+            • If diagnosed_today = True → KEEP "symptom_query"
+            • If diagnosed_today = False AND symptom is in stored_symptoms → STILL KEEP "symptom_query"
+            • Otherwise → treat as a vague continuation, not "health_advice"
         - If the user's message is short and dismissive like “không có”, “hết rồi”, “chỉ vậy thôi”, “không thêm gì nữa”, and it follows a bot's symptom-related question → KEEP "symptom_query"
     
 

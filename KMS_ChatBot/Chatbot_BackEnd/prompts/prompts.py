@@ -182,19 +182,6 @@ def build_KMS_prompt(
     for s in SYMPTOM_LIST:
         line = f"- {s['name']}: {s['aliases']}"
         symptom_lines.append(line)
-
-   #  logger.info("🧭 [build_KMS_prompt] had_conclusion = %s | symptoms_to_ask = %s | related = %s",
-   #      had_conclusion,
-   #      symptoms_to_ask,
-   #      related_symptom_names
-   #  )
-    
-   #  logger.info("========== GPT PROMPT CONTEXT ==========")
-   #  logger.info("🧠 Stored symptoms: %s", ", ".join(stored_symptoms_name))
-   #  logger.info("💬 Recent user messages:\n%s", "\n".join(recent_user_messages[-6:]))
-   #  logger.info("🤖 Recent assistant messages:\n%s", "\n".join(recent_assistant_messages[-6:]))
-   #  logger.info("=========================================")
-
     
     # Cho gpt biết cần làm gì
     prompt += f"""
@@ -643,18 +630,12 @@ def build_KMS_prompt(
 
             **🔎 Are the symptoms clearly serious, prolonged, or interfering with the user's daily life?**
 
-            ⚠️ Do NOT default to `"light_summary"` just because symptoms seem mild.  
-            → If the user has reported **multiple symptoms with clear details**, you **must choose `"diagnosis"`**, even if the symptoms are not severe.
-
-            Only choose `"light_summary"` when:
-            - The user's responses are vague, uncertain, or minimal
-            - The symptoms lack useful detail for analysis
-            - OR you believe a diagnostic explanation would be pure guesswork
-
             Use this if:
                - The user has reported at least 2–3 symptoms with clear details (e.g., duration, intensity, when it started)
                - The symptoms form a meaningful pattern — NOT just vague or generic complaints
-               - You feel there is enough context to suggest **possible causes**, even if not conclusive
+               - You feel there is enough context to suggest **possible causes**, even if not 
+
+            → In that case, set: "action": "diagnosis"
 
             🛑 Do NOT select `"diagnosis"` unless:
 
@@ -662,46 +643,28 @@ def build_KMS_prompt(
             - You have ALREADY attempted a **related symptom** inquiry
             - There is **enough detailed symptom information** to reasonably suggest possible causes
 
-            🔓 EXCEPTION — When to allow re-evaluation:
+            🔓 EXCEPTION — When the user updates an existing symptom **after diagnosis**
 
-            → Even if `had_conclusion = true`, you may still set `"next_action": "diagnosis"` **in STEP — Post-Diagnosis Updated Symptom**,  
-               **but only if** the user provides a **clear and serious update** about their existing symptom.
+            → Even if `had_conclusion = true`, you may still set `"next_action": "diagnosis"` **within STEP — Post-Diagnosis Updated Symptom**,  
+            but only if the user provides a **clear and serious update** about a previously reported symptom.
 
-            You MUST meet all of the following:
-
+            ✅ Required conditions:
             - The user's message describes:
-               • a significant worsening (e.g. “quay nhiều hơn”, “vẫn chưa hết”, “lúc ngồi xuống mà vẫn…”)
-               • OR a clear escalation (e.g. ảnh hưởng sinh hoạt, không cải thiện dù nghỉ ngơi)
+               • significant worsening (e.g. “quay nhiều hơn”, “vẫn chưa hết”, “lúc ngồi xuống mà vẫn…”), OR  
+               • clear escalation (e.g. ảnh hưởng sinh hoạt, không cải thiện dù nghỉ ngơi)
+            - The symptom is already in `stored_symptoms_name`
+            - The update shows meaningful new insight
+            🚫 If `had_conclusion = false`, this logic MUST NOT be used.
+            → In that case, do NOT use "post-diagnosis" or "next_action". Go through the regular steps instead.
+            - You still set:
+               - `"action": "post-diagnosis"`
+               - `"next_action": "diagnosis"`
 
-            - The symptom is already stored in `stored_symptoms_name`
-            - The update shows meaningful new clinical insight
-            - You still set `"action": "post-diagnosis"` and route using `"next_action": "diagnosis"`
+            ⚠️ DO NOT set `"action": "diagnosis"` directly in this case.
 
-            ⚠️ DO NOT set `"action": "diagnosis"` directly. This is still prohibited if `had_conclusion = true`.
-            
-
-
-            🆘 Additionally, if the user's reported symptoms include any of the following warning signs, you MUST prioritize serious conditions in your explanation — and gently encourage the user to seek immediate medical attention.
-               Critical symptom examples include:
-               - Numbness or weakness on one side of the body
-               - Trouble speaking or slurred speech
-               - Sudden intense headaches
-               - Chest pain or tightness
-               - Shortness of breath
-               - Irregular heartbeat
-               - Vision loss or double vision
-               - Seizures or fainting
-
-            → If any of these signs are detected in the user message(s), your `"message"` must:
-               - Include at least one serious possible condition that matches the symptoms.
-               - Softly suggest that the user **go see a doctor as soon as possible**, not just “if it continues”.
-               - Avoid suggesting only mild causes such as stress or vitamin deficiency.
-
-            → In that case, set: `"action": "diagnosis"`
 
             🤖 Your job:
                Write a short, natural explanation in Vietnamese, helping the user understand what conditions might be involved — but without making them feel scared or overwhelmed.
-
 
             🧠 Diagnosis — Expanded Behavior Rules
 
@@ -758,17 +721,10 @@ def build_KMS_prompt(
                • “Nếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.”
                • “Nếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.”
 
-            🔒 Additional mandatory tone rules:
-            - Always **bold** symptom names (e.g., **Đau đầu**) if you mention them again.
-            - Always reuse the user’s own words to describe symptoms — don’t switch to medical terms.
-            - Never sound too confident — this is just friendly reasoning, not a final medical opinion.
-
-            🛑 IMPORTANT:
-            → If symptoms include warning signs (e.g., mất ý thức, nói líu, đau ngực), you MUST:
-            - Avoid light tone, emojis, or vague reassurances like “maybe just stress”
-            - Mention at least one serious possible condition
-            - Softly encourage seeing a doctor soon
-
+            🆘 If the user shows any critical warning signs (e.g., mất ý thức, nói líu, đau ngực...):
+            - Always prioritize serious conditions
+            - Softly suggest they go see a doctor soon — not “if it continues”
+            - Avoid mild guesses like stress or thiếu vitamin
 
 
             📦 JSON structure for `"diseases"` field:
@@ -826,94 +782,45 @@ def build_KMS_prompt(
          → The `"message"` field must contain a fluent, caring message in Vietnamese only
       """.strip()
     
-    # Suggest medical products
+   # Final message suggestion
     prompt += f"""
-    🛍️ Special Step — Product Suggestion Flags (Optional)
+      💬 Final message suggestion (embedded in `"message"`):
 
-    After writing your `"message"` for `"diagnosis"` or `"light_summary"`,  
-    consider whether it is appropriate to **gently invite** the user to view supporting medical products.
+      You may optionally add a short, soft sentence at the end of your reply — inviting the user to ask for product support if they’re interested.
 
-    🔍 Apply this logic only if:
-    - `"action"` is `"diagnosis"` or `"light_summary"`
-    - The condition appears mild, common, or manageable
-    - The user may benefit from OTC products (e.g. lozenges, vitamins, herbal tea...)
+      ✅ Example Vietnamese endings to embed:
+      - “Nếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿”
+      - “Bạn có muốn xem thêm vài sản phẩm có thể hỗ trợ giảm **[triệu chứng]** không?”
+      - “Mình có thể giới thiệu vài loại giúp dịu cảm giác **[triệu chứng]** nếu bạn cần nha.”
+      - “Nếu **[triệu chứng]** vẫn còn gây khó chịu, mình có thể gợi ý sản phẩm nhẹ nhàng phù hợp nha.”
 
-    ❗ DO NOT suggest products if:
-    - `"action"` is `"post-diagnosis"`, `"followup"`, or `"related"`
-    - Symptoms suggest serious, urgent, or unclear causes
-    - You are unsure about the user’s intent
+      ⚠️ Rules:
+      - Only add this line if it fits naturally
+      - Mention **one or two** common symptoms using words from `stored_symptoms_name`
+      - Keep tone caring, not promotional
+      - This sentence must be inside the `"message"` string (not separate)
 
-    ----------------------------------------------------------------
-
-    💬 Final message suggestion (embedded in `"message"`):
-
-    You may optionally add a short, soft sentence at the end of your reply — inviting the user to ask for product support if they’re interested.
-
-    ✅ Example Vietnamese endings to embed:
-    - “Nếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿”
-    - “Bạn có muốn xem thêm vài sản phẩm có thể hỗ trợ giảm **[triệu chứng]** không?”
-    - “Mình có thể giới thiệu vài loại giúp dịu cảm giác **[triệu chứng]** nếu bạn cần nha.”
-    - “Nếu **[triệu chứng]** vẫn còn gây khó chịu, mình có thể gợi ý sản phẩm nhẹ nhàng phù hợp nha.”
-
-    ⚠️ Rules:
-    - Only add this line if it fits naturally
-    - Mention **one or two** common symptoms using words from `stored_symptoms_name`
-    - Keep tone caring, not promotional
-    - This sentence must be inside the `"message"` string (not separate)
-
-    → If the user responds positively (e.g. “Cho mình xem thử”, “Có thuốc nào không?”),  
-    the system will automatically trigger a new intent: `suggest_product`.
-
-    ----------------------------------------------------------------
-
-    🔒 Flag behavior:
-
-    🚫 At this stage, do NOT set `"should_suggest_product": true`
-
-    → You must always return:
-    ```json
-    "should_suggest_product": false
-    ```
-    or simply omit the key.
-
-    ✅ The actual product suggestion step will happen later,  
-    **only if** the user explicitly agrees in their next message.
-
-    ----------------------------------------------------------------
-    🧠 Internal planning (for system use):
-
-    If you believe the user may benefit from product suggestions later,  
-    you must quietly include the following JSON block — even if the user hasn’t asked yet.
-
-    ✅ Always include this block at the end:
-    ```json
-    {{
-      "should_suggest_product": false,
-      "suggest_type": "relief_support",
-      "suggest_product_target": ["Hỗ trợ giảm đau họng nhẹ", "Dịu cổ họng", "Giảm cảm giác ngứa rát"]
-    }}
-    ```
-
-    ⚠️ Rules for suggest_product_target:
-    •	Build the list from stored_symptoms_name
-    •	Rephrase each symptom into a soft care goal using common patterns:
-      -	“Giảm cảm giác [symptom] nhẹ”
-      -	“Hỗ trợ làm dịu [symptom]”
-      -	“Tăng cảm giác dễ chịu ở [symptom area]”
-    •	Do NOT copy the symptom name directly
-    •	Use short, natural Vietnamese phrases (1–3 items max)
-    •	Do NOT use medical terms or jargon
-    
-    ⚠️ Other important rules:
-    •	Always set "should_suggest_product": false at this stage — the user has not agreed yet
-    •	Do NOT include brand names or product names
-    •	Do NOT mention this JSON in your "message"
-    
-    ✅ If the user confirms later (e.g. “Cho mình xem thử”),
-    the system will use these flags to trigger a suggest_product step.
+      → If the user responds positively (e.g. “Cho mình xem thử”, “Có thuốc nào không?”),  
+      the system will automatically trigger a new intent: `suggest_product`.
 
     """.strip()
 
+    prompt += f"""
+      🔚 FINAL BACKUP INSTRUCTION (⚠️ BẮT BUỘC DÙ TRONG TRƯỜNG HỢP NÀO):
+
+      Nếu bạn thấy không có hành động nào thật sự phù hợp (ví dụ: không có triệu chứng mới, không cần hỏi thêm, không rõ để chẩn đoán...), bạn PHẢI trả về JSON sau:
+
+      → You MUST return this:
+      {{
+         "action": "light_summary",
+         "message": "Mình hiểu rồi, có thể chỉ là dấu hiệu nhẹ thôi. Bạn theo dõi thêm ha 🌿",
+         "end": false
+      }}
+      ⚠️ Không được để trống. KHÔNG được để None.
+      """
+
+
+   #  logger.info("[build_KMS_prompt] 🚦 Prompt:\n" + prompt)
     return prompt
 
 
