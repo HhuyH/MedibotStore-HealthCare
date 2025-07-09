@@ -4,7 +4,8 @@ VALID_INTENTS = [
     "medical_history",
     "health_query",
     "health_advice",
-
+    "booking_request",
+    
     # --- Truy vấn hồ sơ bệnh nhân ---
     "patient_summary_request",
 
@@ -89,6 +90,9 @@ INTENT_PIPELINES = {
     # Truy vấn dữ liệu gợi ý sản phẩm
     "suggest_product": ["suggest_product"],
 
+    # yêu cầu đặt lịch hẹn
+    "booking_request": ["booking"],
+    
     # Các intent truy vấn dữ liệu có cấu trúc → SQL
     "product_query": ["chat", "sql"],
     "sql_query":     ["chat", "sql"], 

@@ -203,12 +203,13 @@ async def health_talk(
 
         symptom_notes_list = list(note_map.values())
 
-        # logger.debug("📋 Updated symptom_notes_list:\n%s", json.dumps(symptom_notes_list, indent=2, ensure_ascii=False))
-
+        logger.info("📋 Updated symptom_notes_list:\n%s", json.dumps(symptom_notes_list, indent=2, ensure_ascii=False))
 
         # Step 4: lưu vào session
         session_data["symptom_notes_list"] = symptom_notes_list
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+
+    # print("bệnh mới:", parsed.get("diseases", []))
 
     # Nếu action là chẩn đoán thì sẽ lưu kết quả vào DB
     # Và gọi hàm update_prediction_today_if_exists để cập nhật dự đoán bệnh hôm nay
@@ -532,16 +533,16 @@ def update_prediction_today_if_exists(
             if row:
                 prediction_id = row[0]
 
-                # ✅ Lưu triệu chứng mới nếu có
-                if not diagnosed_today:
-                    saved_ids = get_saved_symptom_ids(user_id)
-                    symptoms_to_save = [
-                        {"id": note["id"], "note": note["note"]}
-                        for note in symptom_notes_list
-                        if note["id"] not in saved_ids
-                    ]
-                    if symptoms_to_save:
-                        save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
+                # Lưu triệu chứng khác với những triệu chứng đã lưu trước đó trong này
+                saved_ids = get_saved_symptom_ids(user_id)
+                symptoms_to_save = [
+                    {"id": note["id"], "note": note["note"]}
+                    for note in symptom_notes_list
+                    if note["id"] not in saved_ids
+                ]
+                # logger.debug(f"[DEBUG] saved symptom_ids today: {saved_ids}")
+                if symptoms_to_save:
+                    save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
 
                 # 🧠 Lọc bệnh mới chưa có
                 new_diseases = filter_new_predicted_diseases(cursor, prediction_id, diseases)
@@ -572,6 +573,18 @@ def update_prediction_today_if_exists(
                 conn.commit()
             else:
                 logger.info("🆕 Chưa có chẩn đoán hôm nay → tạo mới.")
+
+                # lưu triệu chứng mới nếu có
+                saved_ids = get_saved_symptom_ids(user_id)
+                symptoms_to_save = [
+                    {"id": note["id"], "note": note["note"]}
+                    for note in symptom_notes_list
+                    if note["id"] not in saved_ids
+                ]
+                if symptoms_to_save:
+                    save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
+
+                # lưu phỏng đoán vào health_predictions
                 save_prediction_to_db(
                     user_id=user_id,
                     symptoms=stored_symptoms,

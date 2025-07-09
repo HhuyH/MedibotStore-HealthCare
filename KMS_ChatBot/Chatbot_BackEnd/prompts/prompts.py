@@ -7,7 +7,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Prompt chính
-def build_system_prompt(intent: str, symptom_names: list[str] = None) -> str:
+def build_system_prompt(
+   intent: str, 
+   symptom_names: list[str] = None,
+   recent_user_messages: list[str] = None,
+   recent_assistant_messages: list[str] = None
+) -> str:
+    
+    # Nếu không có danh sách triệu chứng, sử dụng danh sách rỗng
     symptom_note = ""
     if symptom_names:
         joined = ", ".join(symptom_names)
@@ -15,6 +22,18 @@ def build_system_prompt(intent: str, symptom_names: list[str] = None) -> str:
             f"\n\n🧠 The user has reported symptoms: {joined}. "
             "Please focus your advice around these symptoms — but avoid going too deep unless the user asks clearly."
         )
+    
+    # Lấy tin nhắn cuối của người dùng và trợ lý nếu không có thì rỗng
+    last_user_msg = (recent_user_messages or [])[-1] if recent_user_messages else ""
+    last_bot_msg = (recent_assistant_messages or [])[-1] if recent_assistant_messages else ""
+
+    last_bot_user_msg = f"""
+      🧩 The user has just responded with this message:
+      “{last_user_msg}”
+
+      And your previous message was:
+      “{last_bot_msg}”
+    """
 
     core_guidelines = """
       You are a friendly and professional virtual assistant working for KMS Health Care.
@@ -48,10 +67,25 @@ def build_system_prompt(intent: str, symptom_names: list[str] = None) -> str:
       - Listing multiple conditions or possibilities when not prompted
    """.strip()
 
+    clarification_prompt = f"""
+      Please read both message carefully.
+
+      If your last reply included multiple types of support (e.g., suggesting products and also offering to help schedule a medical appointment),
+      and the user’s reply is vague, short, or non-committal (e.g., “ok giúp mình đi”, “ừ cũng được”, “ok nha”, “được đó”),
+      → then **kindly ask for clarification**.
+
+      ✅ Example:
+      “Bạn muốn mình hỗ trợ gợi ý sản phẩm hay đặt lịch khám trước nhỉ?”
+
+      Keep the tone light, friendly, and give the user space to decide.
+    """.strip()
+    
     full_prompt = "\n\n".join([
+        last_bot_user_msg,
         core_guidelines,
         behavioral_notes,
-        symptom_note
+        symptom_note,
+        clarification_prompt
     ])
 
     return full_prompt
@@ -673,17 +707,30 @@ def build_KMS_prompt(
             ✅ Use natural phrasing in Vietnamese like:
             - “Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**...”
 
-            → Based on the user's symptom list, generate one markdown bullet point per symptom.
-            Each bullet should:
+            → Based on the user's symptom list, generate one line per symptom.
+            Each line should:
             - Start with: **[symptom name]**
             - Then briefly suggest a natural explanation and one care tip.
             - Example:
-               - **Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.
-               - **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.
+               -   **Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.
+               -   **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.
 
-            → After these, transition into the broader diagnostic list with:
+            → After listing the symptom explanations, insert **TWO newline characters** (`\\n\\n`) to create a full blank line.  
+            Then add this transition sentence on its own line:
 
-            - “Ngoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:”
+            “Ngoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:”
+
+            → After that, insert **another TWO newline characters** (`\\n\\n`) before the first condition block (📌)
+
+            ✅ This creates proper spacing and makes the structure visually clear.
+
+            → Then for each possible condition, **start a new paragraph** beginning with:
+
+            📌 **[Tên bệnh]**  
+            <summary>  
+            → <care suggestion>
+
+            ⚠️ You must add a line break between the transition and the first 📌 line.
 
             → This helps the user feel understood and reminds them that you're reasoning from their input — not guessing randomly.
 
@@ -711,21 +758,14 @@ def build_KMS_prompt(
 
             ❗ DO NOT merge all conditions into one paragraph. Each 📌 must start a new block with spacing.
 
-
             🟢 Optionally suggest lighter explanations:
             - stress, thiếu ngủ, thay đổi thời tiết, tư thế sai
             - Example: “Cũng có thể chỉ là do bạn đang mệt hoặc thiếu ngủ gần đây 🌿”
-
-            🌱 Close with gentle reassurance and optional next step:
-            - Use friendly Vietnamese phrases like:
-               • “Nếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.”
-               • “Nếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.”
 
             🆘 If the user shows any critical warning signs (e.g., mất ý thức, nói líu, đau ngực...):
             - Always prioritize serious conditions
             - Softly suggest they go see a doctor soon — not “if it continues”
             - Avoid mild guesses like stress or thiếu vitamin
-
 
             📦 JSON structure for `"diseases"` field:
 
@@ -782,42 +822,47 @@ def build_KMS_prompt(
          → The `"message"` field must contain a fluent, caring message in Vietnamese only
       """.strip()
     
-   # Final message suggestion
+    # Final message suggestion
     prompt += f"""
-      💬 Final message suggestion (embedded in `"message"`):
+         💬 Final message suggestion (embedded in `"message"`):
 
-      You may optionally add a short, soft sentence at the end of your reply — inviting the user to ask for product support if they’re interested.
+         You may optionally add the following **only if** one of these applies:
+         - `"action"` is `"light_summary"`  
+         - `"action"` is `"diagnosis"`  
+         - `"next_action"` is `"diagnosis"`
 
-      ✅ Example Vietnamese endings to embed:
-      - “Nếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿”
-      - “Bạn có muốn xem thêm vài sản phẩm có thể hỗ trợ giảm **[triệu chứng]** không?”
-      - “Mình có thể giới thiệu vài loại giúp dịu cảm giác **[triệu chứng]** nếu bạn cần nha.”
-      - “Nếu **[triệu chứng]** vẫn còn gây khó chịu, mình có thể gợi ý sản phẩm nhẹ nhàng phù hợp nha.”
+         --- 🧾 Placement and Structure ---
 
-      ⚠️ Rules:
-      - Only add this line if it fits naturally
-      - Mention **one or two** common symptoms using words from `stored_symptoms_name`
-      - Keep tone caring, not promotional
-      - This sentence must be inside the `"message"` string (not separate)
+         ➤ Add these lines at the **end of your `"message"`**, separated from the symptom explanation or diagnosis block.
 
-      → If the user responds positively (e.g. “Cho mình xem thử”, “Có thuốc nào không?”),  
-      the system will automatically trigger a new intent: `suggest_product`.
+         ➤ Use **line breaks** or a soft divider (`\n\n—\n\n`) before appending.
 
+         --- ✅ Part 1: Soft invitation to view product suggestions ---
+
+         ✅ Example endings:
+         - “Nếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿”
+         - “Bạn có muốn xem thêm vài sản phẩm có thể hỗ trợ giảm **[triệu chứng]** không?”
+         - “Mình có thể giới thiệu vài loại giúp dịu cảm giác **[triệu chứng]** nếu bạn cần nha.”
+
+         ⚠️ Rules:
+         - Mention 1–2 symptoms from `stored_symptoms_name`
+         - Keep tone natural, caring, not promotional
+         - Place after a visual break (`—` or empty line)
+         - Must stay inside the `"message"` string
+
+         --- ✅ Part 2: Invite to book appointment (final line) ---
+
+         ✅ Example endings:
+         - “Nếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.”
+         - “Nếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.”
+
+         ➤ Add this as the final sentence in the message, on a new line.
+         ➤ Keep it short, soft, and optional.
+
+         → If the user responds positively to product invitation (e.g. “Cho mình xem thử”),  
+         the system will trigger a new intent: `suggest_product`.
     """.strip()
 
-    prompt += f"""
-      🔚 FINAL BACKUP INSTRUCTION (⚠️ BẮT BUỘC DÙ TRONG TRƯỜNG HỢP NÀO):
-
-      Nếu bạn thấy không có hành động nào thật sự phù hợp (ví dụ: không có triệu chứng mới, không cần hỏi thêm, không rõ để chẩn đoán...), bạn PHẢI trả về JSON sau:
-
-      → You MUST return this:
-      {{
-         "action": "light_summary",
-         "message": "Mình hiểu rồi, có thể chỉ là dấu hiệu nhẹ thôi. Bạn theo dõi thêm ha 🌿",
-         "end": false
-      }}
-      ⚠️ Không được để trống. KHÔNG được để None.
-      """
 
 
    #  logger.info("[build_KMS_prompt] 🚦 Prompt:\n" + prompt)

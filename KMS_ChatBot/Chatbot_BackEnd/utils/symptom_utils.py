@@ -466,7 +466,8 @@ async def generate_symptom_note(
     recent_messages: list[str],
     existing_notes: list[dict] = None
 ) -> list[dict]:
-    symptom_lines = "\n".join(f"- ID {s['id']}: {s['name']}" for s in symptoms)
+    symptom_lines = json.dumps(symptoms, ensure_ascii=False, indent=2)
+
     context = "\n".join(f"- {msg}" for msg in recent_messages[-2:])
 
     # Build existing note text if provided
@@ -495,10 +496,9 @@ async def generate_symptom_note(
         ⚠️ Output instructions:
         - Return a JSON list, each item must have `id`, `name`, and `note`.
         - Only include symptoms mentioned in the current conversation.
-        - For existing notes: only update if there is **new information**.
-        - Do NOT return notes for symptoms that are not clearly referenced.
-        - You MUST use the correct `id` as listed above — do NOT guess or invent ids.
-        - Write the note in Vietnamese, clear and concise, as if documenting in a medical chart.
+        - Use the exact `id` from the list above — NEVER change or guess ids.
+        - Do NOT renumber or create new ids.
+        - Write each note in Vietnamese, concise and clinical like in a medical chart.
 
         ✅ Example output:
         ```json
@@ -539,8 +539,13 @@ async def generate_symptom_note(
 
     except Exception as e:
         logger.warning(f"⚠️ GPT fallback (note): {e}")
-        return [{"name": s["name"], "note": "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."} for s in symptoms]
-
+        return [
+            {
+                "id": s["id"],
+                "name": s["name"],
+                "note": "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+            } for s in symptoms
+        ]
 
 # lưu triệu chứng vào database lưu vào user_symptom_history khi đang thực hiện chẩn đoán kết quả
 def save_symptoms_to_db(user_id: int, symptoms: list[dict]) -> list[int]:

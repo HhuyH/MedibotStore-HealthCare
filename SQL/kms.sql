@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 08, 2025 at 10:29 AM
+-- Generation Time: Jul 09, 2025 at 04:08 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -705,7 +705,228 @@ INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, 
 (483, 4, NULL, 'suggest_product', 'co the goi y giup minh vai san pham ho tro ko?', 'user', '2025-07-07 16:27:22'),
 (484, 4, NULL, 'suggest_product', '📦 Dưới đây là một số sản phẩm giúp dưỡng ẩm cho da của bạn!', 'bot', '2025-07-07 16:27:22'),
 (485, 4, NULL, 'suggest_product', 'co the goi y giup minh vai san pham ho tro ko?', 'user', '2025-07-07 16:27:23'),
-(486, 4, NULL, 'suggest_product', '📦 Dưới đây là một số sản phẩm giúp dưỡng ẩm cho da của bạn!', 'bot', '2025-07-07 16:27:23');
+(486, 4, NULL, 'suggest_product', '📦 Dưới đây là một số sản phẩm giúp dưỡng ẩm cho da của bạn!', 'bot', '2025-07-07 16:27:23'),
+(487, 4, NULL, 'health_advice', 'Dạo gần đây da mình khô quá Có cách nào cải thiện không', 'user', '2025-07-08 09:01:51'),
+(488, 4, NULL, 'health_advice', 'Da khô đôi khi có thể do thời tiết hoặc thiếu nước đấy. Bạn thử uống đủ nước mỗi ngày nha, khoảng 2 lít nhé! 💧\n– Sau khi tắm, bạn có thể thoa kem dưỡng ẩm ngay khi da còn ẩm, điều này giúp giữ ẩm tốt hơn.\n– Nhiều khi cũng do không khí trong nhà quá khô, bạn có thể thử đặt một chậu nước trong phòng để làm ẩm không khí nữa.\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-07-08 09:01:52'),
+(489, 4, NULL, 'health_advice', 'Dạo gần đây da mình khô quá Có cách nào cải thiện không', 'user', '2025-07-08 09:08:20'),
+(490, 4, NULL, 'health_advice', 'Da khô có thể do nhiều nguyên nhân khác nhau, nhưng mình có vài gợi ý giúp bạn cải thiện tình trạng này nè. Bạn thử uống đủ nước mỗi ngày nha, khoảng 2 lít nhé! 💧\n– Sau khi tắm, thoa kem dưỡng ẩm ngay khi da còn ẩm để giúp giữ nước cho da tốt hơn.\n– Nếu không khí trong nhà khô quá, bạn có thể thử đặt một chậu nước trong phòng để làm ẩm không khí nữa.\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-07-08 09:08:20'),
+(491, 4, NULL, 'suggest_product', 'u goi y giup minh di', 'user', '2025-07-08 09:08:39'),
+(492, 4, NULL, 'suggest_product', '', 'bot', '2025-07-08 09:08:39'),
+(493, 4, NULL, 'health_advice', 'Dạo gần đây da mình khô quá Có cách nào cải thiện không', 'user', '2025-07-08 09:12:38'),
+(494, 4, NULL, 'health_advice', 'Khi da khô, bạn có thể thử một số cách sau để cải thiện nhé:\n– Uống đủ nước trong ngày để giữ cho da luôn đủ ẩm 💧\n– Dưỡng ẩm ngay sau khi tắm, lúc da còn ẩm, như vậy sẽ giúp khóa ẩm tốt hơn.\n– Thử dùng máy tạo độ ẩm trong phòng nếu không khí khô.\nNhiều khi cũng do thời tiết nữa, bạn thử xem sao nha.\n\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-07-08 09:12:38'),
+(495, 4, NULL, 'health_advice', 'Dạo gần đây da mình khô quá Có cách nào cải thiện không', 'user', '2025-07-08 09:12:51'),
+(496, 4, NULL, 'health_advice', 'Khi da khô, bạn có thể thử một vài cách sau để cải thiện nhé: \n– Uống đủ nước mỗi ngày để giữ cho da luôn đủ ẩm 💧\n– Dưỡng ẩm ngay sau khi tắm, lúc da còn ẩm để khóa độ ẩm tốt hơn. \n– Thử dùng một chút dầu dừa hoặc dầu ôliu để massage nhẹ da, mình thấy rất dễ chịu. \nNhiều khi cũng do thời tiết khô hanh nữa, bạn thử xem sao nha.', 'bot', '2025-07-08 09:12:51'),
+(497, 4, NULL, 'health_advice', 'u goi y giup minh di', 'user', '2025-07-08 09:13:16'),
+(498, 4, NULL, 'health_advice', 'Bạn có thể thử một số cách sau để cải thiện tình trạng da khô nhé: \n– Duy trì thói quen uống nước đều đặn mỗi ngày, điều này giúp da bạn luôn được cấp ẩm 💧\n– Sau khi tắm, bạn nên dùng kem dưỡng ẩm ngay khi da còn ẩm để giữ nước lại cho da.\n– Thỉnh thoảng, bạn có thể massage nhẹ nhàng với dầu dừa hoặc dầu ôliu, mình thấy rất thư giãn và da sẽ mềm hơn. \nNhiều khi, thời tiết cũng ảnh hưởng đến da của mình đó, nên nhớ chăm sóc thật kỹ nha!', 'bot', '2025-07-08 09:13:16'),
+(499, 4, NULL, 'health_advice', 'Dạo gần đây da mình khô quá Có cách nào cải thiện không', 'user', '2025-07-08 09:14:26');
+INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, `sender`, `sent_at`) VALUES
+(500, 4, NULL, 'health_advice', 'Da khô có thể do nhiều lý do lắm, bạn thử xem những cách này nha: \n– Uống đủ nước mỗi ngày để giữ ẩm cho da nhé 💧 \n– Dưỡng ẩm thường xuyên, nhất là sau khi tắm, lúc da còn ẩm sẽ hiệu quả hơn. \n– Nếu có thể, bạn hãy dùng máy phun sương trong phòng để tạo độ ẩm cho không khí. \nNhiều khi chỉ cần một chút thay đổi cũng giúp da dễ chịu hơn đó! \nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-07-08 09:14:26'),
+(501, 4, NULL, 'suggest_product', 'u goi y giup minh vai san pham di', 'user', '2025-07-08 09:14:40'),
+(502, 4, NULL, 'suggest_product', '', 'bot', '2025-07-08 09:14:40'),
+(503, 4, NULL, 'suggest_product', 'u goi y giup minh vai san pham di', 'user', '2025-07-08 09:15:51'),
+(504, 4, NULL, 'suggest_product', '', 'bot', '2025-07-08 09:15:51'),
+(505, 4, NULL, 'suggest_product', 'u goi y giup minh vai san pham di', 'user', '2025-07-08 09:20:32'),
+(506, 4, NULL, 'suggest_product', '', 'bot', '2025-07-08 09:20:32'),
+(507, 4, NULL, 'suggest_product', 'u goi y giup minh vai san pham di', 'user', '2025-07-08 09:23:16'),
+(508, 4, NULL, 'suggest_product', '', 'bot', '2025-07-08 09:23:16'),
+(509, 4, NULL, 'suggest_product', 'u goi y giup minh vai san pham di', 'user', '2025-07-08 09:23:58'),
+(510, 4, NULL, 'suggest_product', '', 'bot', '2025-07-08 09:23:58'),
+(511, 4, NULL, 'suggest_product', 'u goi y giup minh vai san pham di', 'user', '2025-07-08 09:27:45'),
+(512, 4, NULL, 'suggest_product', '', 'bot', '2025-07-08 09:27:45'),
+(513, 4, NULL, 'suggest_product', 'u goi y giup minh vai san pham di', 'user', '2025-07-08 09:28:51'),
+(514, 4, NULL, 'suggest_product', '🧴 *Kem dưỡng ẩm da nhạy cảm*\nPhục hồi và giữ ẩm cho da khô, kích ứng....\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/10)', 'bot', '2025-07-08 09:28:51'),
+(515, 4, NULL, 'suggest_product', 'u goi y giup minh vai san pham di', 'user', '2025-07-08 09:42:26'),
+(516, 4, NULL, 'suggest_product', '📌 *Sản phẩm 1*\n🧴 *Kem dưỡng ẩm da nhạy cảm*\nPhục hồi và giữ ẩm cho da khô, kích ứng....\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/10)\n\n', 'bot', '2025-07-08 09:42:26'),
+(517, 4, NULL, 'health_advice', 'Dạo gần đây da mình khô quá Có cách nào cải thiện không', 'user', '2025-07-08 10:01:05'),
+(518, 4, NULL, 'health_advice', 'Bạn thử uống đủ nước mỗi ngày nha, nhiều khi da khô cũng do cơ thể thiếu nước đó. Ngoài ra, bạn có thể dưỡng ẩm thường xuyên, nhất là sau khi tắm, để giữ ẩm cho da. Một chút dầu dừa hay dầu olive cũng có thể giúp da mềm mại hơn. Nếu có thời gian, bạn hãy thử đắp mặt nạ từ thiên nhiên như mật ong hay nha đam nữa nha 🌿\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-07-08 10:01:05'),
+(519, 4, NULL, 'suggest_product', 'um goi y cho minh vai san pham di', 'user', '2025-07-08 10:01:19'),
+(520, 4, NULL, 'suggest_product', '📌 *Sản phẩm 1*\n🧴 *Kem dưỡng ẩm da nhạy cảm*\nPhục hồi và giữ ẩm cho da khô, kích ứng....\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/10)\n\n', 'bot', '2025-07-08 10:01:19'),
+(521, 4, NULL, 'suggest_product', 'um goi y cho minh vai san pham di', 'user', '2025-07-08 10:06:08'),
+(522, 4, NULL, 'suggest_product', '📌 *Sản phẩm 1*\n🧴 *Kem dưỡng ẩm da nhạy cảm*\nPhục hồi và giữ ẩm cho da khô, kích ứng....\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/10)\n\n', 'bot', '2025-07-08 10:06:08'),
+(523, 4, NULL, 'suggest_product', 'um goi y cho minh vai san pham di', 'user', '2025-07-08 10:11:44'),
+(524, 4, NULL, 'suggest_product', '📌 *Sản phẩm 1*\n🧴 *Kem dưỡng ẩm da nhạy cảm*\nPhục hồi và giữ ẩm cho da khô, kích ứng....\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/10)\n\n', 'bot', '2025-07-08 10:11:44'),
+(525, 4, NULL, 'suggest_product', 'um goi y cho minh vai san pham di', 'user', '2025-07-08 10:14:37'),
+(526, 4, NULL, 'suggest_product', '📌 *Sản phẩm 1*\nDa bạn hay khô phải không? Mình có bí quyết nhỏ nè 💧 Kem dưỡng ẩm da nhạy cảm là một lựa chọn tuyệt vời để bảo vệ và giữ ẩm cho làn da của bạn. Sản phẩm này rất lý tưởng trong việc phục hồi sức sống cho làn da khô và kích ứng, giúp bạn cảm thấy dễ chịu hơn mỗi ngày. Hãy thử sử dụng sau khi rửa mặt để nuôi dưỡng da một cách tốt nhất nhé!\n\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/10)\n\n', 'bot', '2025-07-08 10:14:37'),
+(527, 4, NULL, 'health_advice', 'minh cam thay nhuc dau va chong mat qua', 'user', '2025-07-08 10:16:03'),
+(528, 4, NULL, 'health_advice', 'Khi thấy nhức đầu và chóng mặt, bạn có thể thử những cách nhẹ nhàng sau đây: \n– Uống nhiều nước để giữ cơ thể luôn đủ nước nha 💧\n– Nghỉ ngơi một chút ở nơi yên tĩnh, có thể nhắm mắt và hít thở sâu để thư giãn.\n– Nếu có thể, bạn thử chườm lạnh lên trán một chút, nhiều khi thấy dễ chịu hơn đó.\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-07-08 10:16:03'),
+(529, 4, NULL, 'symptom_query', 'minh cam thay nhuc dau va chong mat qua', 'user', '2025-07-08 10:19:44'),
+(530, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?', 'bot', '2025-07-08 10:19:44'),
+(531, 4, NULL, 'symptom_query', 'lut minh vua ngu day thi da co cam giac dau dau roi no keo dai tam 5-10p gi do', 'user', '2025-07-08 10:20:29'),
+(532, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có cảm giác **chóng mặt** khi đứng dậy hoặc thay đổi tư thế không nha? Hoặc có khi nào cảm giác này kéo dài lâu hơn một chút không?', 'bot', '2025-07-08 10:20:30'),
+(533, 4, NULL, 'symptom_query', 'um minh bi chong mat khi dung day', 'user', '2025-07-08 10:21:07'),
+(534, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có cảm giác như mệt mỏi, đổ mồ hôi nhiều hay tim đập nhanh không khi bị **chóng mặt** ha? Điều đó có thể giúp mình hiểu rõ hơn về tình trạng của bạn.', 'bot', '2025-07-08 10:21:07'),
+(535, 4, NULL, 'symptom_query', 'co lut do tim minh cung dap nhanh nua', 'user', '2025-07-08 10:21:40'),
+(536, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác tim đập nhanh của bạn nè. Bạn có thấy tình trạng này xảy ra khi bạn đang nghỉ ngơi hay lúc hoạt động nhiều, như khi đứng dậy hoặc đi lại không?', 'bot', '2025-07-08 10:21:40'),
+(537, 4, NULL, 'health_advice', 'lut hoat dong nhieu', 'user', '2025-07-08 10:23:19'),
+(538, 4, NULL, 'health_advice', 'Khi bạn hoạt động nhiều, có thể cơ thể cần thời gian để thích nghi. Bạn thử nghỉ ngơi một chút, hít thở sâu và uống nước thường xuyên nha. Thêm vào đó, nếu thấy thoải mái, bạn có thể thử thư giãn với một chút nhạc nhẹ hoặc tắm nước ấm sau khi hoạt động. Điều này có thể giúp tim bạn trở lại nhịp bình thường hơn đó! \nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-07-08 10:23:19'),
+(539, 4, NULL, 'symptom_query', 'minh cam thay nhuc dau va chong mat qua', 'user', '2025-07-08 10:26:36'),
+(540, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thấy cảm giác **đau đầu** này thường xuyên không, và nó kéo dài bao lâu mỗi lần bạn gặp phải vậy?', 'bot', '2025-07-08 10:26:37'),
+(541, 4, NULL, 'symptom_query', 'khi minh vua ngu day thi da dau dau roi', 'user', '2025-07-08 10:26:58'),
+(542, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **chóng mặt** nè. Bạn có thấy tình trạng này xảy ra khi nào, lúc đứng lên hay đang ngồi xuống thì dễ bị hơn không ha?', 'bot', '2025-07-08 10:26:58'),
+(543, 4, NULL, 'symptom_query', 'khi dang ngoi lau thi cam thay chong mat', 'user', '2025-07-08 10:27:16'),
+(544, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có cảm giác nào khác nữa không khi bị **chóng mặt** như mệt mỏi, đổ mồ hôi hay tim đập nhanh không nha? 😊', 'bot', '2025-07-08 10:27:16'),
+(545, 4, NULL, 'symptom_query', 'co do mo hoi va cam giac met moi nua', 'user', '2025-07-08 10:27:37'),
+(546, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **mệt mỏi** của bạn nè. Bạn có thấy tình trạng này kéo dài lâu không hay chỉ xảy ra trong một khoảng thời gian ngắn sau khi bạn hoạt động nhiều?', 'bot', '2025-07-08 10:27:37'),
+(547, 4, NULL, 'general_chat', 'minh cung ko ro', 'user', '2025-07-08 10:28:16'),
+(548, 4, NULL, 'general_chat', 'Um, mình hiểu rồi nè. Nếu bạn cần nói về điều gì khác hoặc có câu hỏi gì, cứ chia sẻ nhé!', 'bot', '2025-07-08 10:28:17'),
+(549, 4, NULL, 'symptom_query', 'minh cam thay nhuc dau va chong mat qua', 'user', '2025-07-08 10:29:43'),
+(550, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** nè, bạn thường cảm thấy nó kéo dài bao lâu mỗi lần vậy?', 'bot', '2025-07-08 10:29:43'),
+(551, 4, NULL, 'symptom_query', 'tam 5-10p gi do khi minh vua ngu day', 'user', '2025-07-08 10:30:08'),
+(552, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **chóng mặt** nè, bạn thường gặp tình trạng đó khi nào ha? Có hay xảy ra lúc bạn vừa đứng lên hay lúc đang ngồi không?', 'bot', '2025-07-08 10:30:08'),
+(553, 4, NULL, 'symptom_query', 'lut minh ngoi lau thi bi chong mat', 'user', '2025-07-08 10:31:30'),
+(554, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, như mệt mỏi, tức ngực hay tim đập nhanh không nhỉ? 😊', 'bot', '2025-07-08 10:31:30'),
+(555, 4, NULL, 'symptom_query', 'minh co cam giac tim dap nhanh nua', 'user', '2025-07-08 10:31:51'),
+(556, 4, NULL, 'symptom_query', 'Cảm giác **tim đập nhanh** của bạn thường xảy ra khi nào? Có khi nào bạn cảm thấy nó đi kèm với sự hồi hộp hay căng thẳng không nhỉ?', 'bot', '2025-07-08 10:31:51'),
+(557, 4, NULL, 'health_advice', 'um khi minh cam thay cang thang thi tim dap nhanh', 'user', '2025-07-08 10:32:19'),
+(558, 4, NULL, 'health_advice', 'Nhiều khi khi căng thẳng, cơ thể phản ứng lại bằng cách tim đập nhanh đó. Bạn thử hít thở sâu vài lần, mỗi lần hít vào thì đếm đến 4, giữ hơi trong 4 giây rồi thở ra nhé. Ngoài ra, đi dạo một chút ngoài trời hoặc nghe nhạc thư giãn cũng có thể giúp bạn cảm thấy dễ chịu hơn. Nếu có thể, hãy dành chút thời gian cho bản thân để thư giãn trước khi ngủ nữa nha! 😌\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-07-08 10:32:19'),
+(559, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa.', 'user', '2025-07-08 10:33:15'),
+(560, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Bạn thấy cảm giác này thường kéo dài bao lâu mỗi lần gặp phải vậy?', 'bot', '2025-07-08 10:33:15'),
+(561, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-08 10:33:30'),
+(562, 4, NULL, 'symptom_query', 'Khi bạn cảm thấy **chóng mặt**, có khi nào cảm giác này xảy ra ngay khi bạn đứng lên hoặc thay đổi vị trí không nhỉ?', 'bot', '2025-07-08 10:33:30'),
+(563, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi', 'user', '2025-07-08 10:33:46'),
+(564, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **buồn nôn** của bạn nè. Bạn có thấy cảm giác này thường kéo dài bao lâu mỗi lần gặp phải, hay có khi nào bạn cảm thấy dễ chịu hơn sau khi nghỉ ngơi không ha?', 'bot', '2025-07-08 10:33:46'),
+(565, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-08 10:34:00'),
+(566, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, như là tức ngực hay tim đập nhanh không nhỉ? Những cảm giác đó có thể giúp mình hiểu rõ hơn về tình trạng của bạn.', 'bot', '2025-07-08 10:34:00'),
+(567, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 10:34:23'),
+(568, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 10:34:23'),
+(569, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-08 11:11:41'),
+(570, 4, NULL, 'symptom_query', 'Cảm giác **đau đầu** của bạn có thường kéo dài bao lâu mỗi lần bạn gặp phải không ha?', 'bot', '2025-07-08 11:11:41'),
+(571, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-08 11:11:56'),
+(572, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **chóng mặt** của bạn nè, có khi nào bạn cảm thấy nó xảy ra nhiều hơn khi bạn đứng lên hay thay đổi tư thế không ha?', 'bot', '2025-07-08 11:11:56'),
+(573, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi', 'user', '2025-07-08 11:12:24'),
+(574, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết cảm giác **buồn nôn** của bạn có thường đi kèm với cảm giác mệt mỏi hay không ha? Hoặc có khi nào bạn cảm thấy nó kéo dài lâu hay chỉ thoáng qua thôi?', 'bot', '2025-07-08 11:12:24'),
+(575, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-08 11:16:50'),
+(576, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác không như **chán ăn**, **đau bụng**, hay có khi nào bạn thấy **nôn mửa** không nha? Điều đó có thể giúp mình hiểu rõ hơn về tình trạng của bạn.', 'bot', '2025-07-08 11:16:50'),
+(577, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:17:12'),
+(578, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:17:12'),
+(579, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:25:52'),
+(580, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:25:52'),
+(581, 4, NULL, 'health_advice', 'khong co trieu chung gi nua', 'user', '2025-07-08 11:26:33'),
+(582, 4, NULL, 'health_advice', 'Nhiều khi chỉ cần thư giãn một chút thôi cũng giúp ích nhiều lắm. Bạn thử dành thời gian đi dạo ngoài trời, hít thở không khí trong lành nha 🌿. Hoặc có thể thử ngồi thiền một vài phút mỗi ngày, để tâm trí được yên bình hơn. Nếu bạn thích, có thể thưởng thức một tách trà ấm để cảm thấy thoải mái hơn nữa.', 'bot', '2025-07-08 11:26:33'),
+(583, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa.', 'user', '2025-07-08 11:26:58'),
+(584, 4, NULL, 'symptom_query', 'Bạn có thể nói rõ hơn về tình trạng của mình không?', 'bot', '2025-07-08 11:26:58'),
+(585, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa.', 'user', '2025-07-08 11:27:12'),
+(586, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** nè. Bạn có thấy cơn đau này thường kéo dài bao lâu mỗi lần không? Hoặc có khi nào bạn cảm thấy đỡ hơn sau khi nghỉ ngơi không ha?', 'bot', '2025-07-08 11:27:12'),
+(587, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-08 11:27:24'),
+(588, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **chóng mặt** nè. Bạn có thấy cảm giác này thường xảy ra khi bạn đang ngồi hay khi vừa đứng lên không? 🌿', 'bot', '2025-07-08 11:27:24'),
+(589, 4, NULL, 'health_advice', 'co le la do hôm nay mình chưa ăn gì từ sáng, chắc vì thế mà chóng mặt', 'user', '2025-07-08 11:27:36'),
+(590, 4, NULL, 'health_advice', 'Mình thấy đó cũng có thể là lý do đấy. Bạn thử uống một chút nước hoặc ăn nhẹ gì đó nha, như trái cây hoặc bánh mì. Nhiều khi cơ thể cần chút năng lượng để hoạt động tốt hơn. Bạn cũng có thể ngồi nghỉ một chút ở nơi thoáng đãng để cảm thấy dễ chịu hơn. Nếu cần, hãy nhớ nghe theo cơ thể mình nhé! \nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn dễ chịu hơn nè 🌿', 'bot', '2025-07-08 11:27:36'),
+(591, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa.', 'user', '2025-07-08 11:31:05'),
+(592, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?', 'bot', '2025-07-08 11:31:06'),
+(593, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-08 11:31:18'),
+(594, 4, NULL, 'symptom_query', 'Cảm giác **chóng mặt** của bạn có thường xảy ra khi bạn thay đổi tư thế, như lúc đứng lên từ vị trí ngồi không? Hoặc có khi nào cảm giác đó kéo dài hơn một chút không?', 'bot', '2025-07-08 11:31:18'),
+(595, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi', 'user', '2025-07-08 11:31:32'),
+(596, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **buồn nôn** của bạn nè. Bạn có thấy cảm giác này xuất hiện khi nào? Có phải là sau khi ăn uống hay khi bạn cảm thấy căng thẳng không ha?', 'bot', '2025-07-08 11:31:33'),
+(597, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-08 11:31:46'),
+(598, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, như là mệt mỏi, tức ngực hay đổ mồ hôi không nhỉ? Những triệu chứng này có thể liên quan đến cảm giác **đau đầu**, **chóng mặt**, và **buồn nôn** bạn đang gặp phải.', 'bot', '2025-07-08 11:31:46'),
+(599, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:32:04'),
+(600, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:32:04'),
+(601, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:32:53'),
+(602, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:32:53'),
+(603, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:33:25'),
+(604, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:33:25'),
+(605, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:38:50'),
+(606, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:38:50'),
+(607, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:40:53'),
+(608, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:40:53'),
+(609, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa.', 'user', '2025-07-08 11:42:46'),
+(610, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** nè. Bạn thường gặp tình trạng này khi nào ha? Có khi nào bạn thấy đỡ hơn sau khi nghỉ ngơi không?', 'bot', '2025-07-08 11:42:46'),
+(611, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-08 11:42:59'),
+(612, 4, NULL, 'symptom_query', 'Khi bạn cảm thấy **chóng mặt**, có phải bạn thường gặp phải lúc ngồi dậy hay đứng lên không? Hoặc cảm giác này kéo dài bao lâu mỗi lần bạn gặp vậy?', 'bot', '2025-07-08 11:42:59'),
+(613, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi', 'user', '2025-07-08 11:43:35'),
+(614, 4, NULL, 'symptom_query', 'Cảm giác **buồn nôn** của bạn có thường xảy ra sau khi ăn uống gì không? Hoặc có khi nào bạn thấy buồn nôn kèm theo cảm giác mệt mỏi không ha?', 'bot', '2025-07-08 11:43:36'),
+(615, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-08 11:44:09'),
+(616, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác không, như là **đau bụng**, **mệt mỏi** hay **tim đập nhanh** không nhỉ? Những triệu chứng này có thể liên quan đến tình trạng của bạn đấy.', 'bot', '2025-07-08 11:44:09'),
+(617, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:44:28'),
+(618, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:44:28'),
+(619, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:45:49'),
+(620, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:45:49'),
+(621, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:51:41'),
+(622, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:51:41'),
+(623, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 11:55:30'),
+(624, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 11:55:30'),
+(625, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 12:01:12'),
+(626, 4, NULL, 'symptom_query', 'Bạn có thể mô tả rõ hơn bạn cảm thấy gì không?', 'bot', '2025-07-08 12:01:12'),
+(627, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 12:04:39'),
+(628, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể liên quan đến một số nguyên nhân như sau:\n\n- **Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n- **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n- **Buồn nôn** có thể xuất phát từ việc dạ dày không được thoải mái hoặc lo âu. Hãy thử ăn nhẹ và xem có đỡ hơn không nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-07-08 12:04:39'),
+(629, 4, NULL, 'suggest_product', 'ban co the gioi thieu giup minh vai san pham de tri may cai trieu chung do ko?', 'user', '2025-07-08 12:59:18'),
+(630, 4, NULL, 'suggest_product', '📌 *Sản phẩm 1*\nĐã buồn và khó chịu lắm phải không bạn? Mình có một gợi ý nhỏ cho bạn nè 💕. Paracetamol 500mg là một sự lựa chọn tuyệt vời giúp giảm đau và hạ sốt khi bạn đang cảm thấy không được khỏe. Bạn có thể dùng nó để làm dịu cơn đau hoặc hạ nhiệt khi cần thiết. \n\nHãy nhớ sử dụng theo liều lượng chỉ định và tránh dùng khi bạn đã có những bệnh lý đặc biệt mà bác sĩ không khuyên. Chúc bạn mau khỏe nhé! \n\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/1)\n\n📌 *Sản phẩm 2*\nĐã lâu bạn không được khỏe phải không? Đừng lo lắng, mình có một gợi ý mà có thể giúp bạn cảm thấy dễ chịu hơn. Bạn có thể thử dùng Ibuprofen 200mg, sản phẩm này rất hữu ích trong việc giảm đau và hạ sốt. Khi bạn cảm thấy khó chịu, chỉ cần dùng theo hướng dẫn là sẽ cảm thấy thoải mái hơn.\n\nHãy nhớ rằng, nếu bạn có bất kỳ triệu chứng nào kéo dài, hãy tham khảo ý kiến bác sĩ để được tư vấn kịp thời nhé. Chúc bạn mau khỏe!\n\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/6)\n\n📌 *Sản phẩm 3*\nĐã lâu không gặp, bạn có vẻ mệt mỏi và cần một giải pháp thư giãn cho giấc ngủ của mình phải không? Mình có một gợi ý nhẹ nhàng cho bạn: Trà ngủ ngon Hoa Cúc. Trà này nổi tiếng với khả năng giúp cải thiện giấc ngủ và mang lại cảm giác thư thái. Bạn hãy thử uống trước khi đi ngủ, để cơ thể được thư giãn, từ đó dễ dàng chìm vào giấc ngủ hơn nhé. Đừng quên tạo cho mình một không gian yên tĩnh và ấm cúng để giấc ngủ đạt hiệu quả tốt nhất nhé! \n\n👉 [Xem chi tiết tại đây](https://demo.site.vn/products/11)\n\n', 'bot', '2025-07-08 12:59:18'),
+(631, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa.', 'user', '2025-07-08 13:28:43'),
+(632, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết cơn **đau đầu** này thường kéo dài bao lâu mỗi lần bạn gặp phải không ha? Có khi nào bạn thấy đỡ hơn sau khi nghỉ ngơi không?', 'bot', '2025-07-08 13:28:43'),
+(633, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-08 13:28:57'),
+(634, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết cảm giác **chóng mặt** của bạn có thường xuất hiện khi bạn đang ngồi hay khi vừa đứng lên không? 🌿', 'bot', '2025-07-08 13:28:58'),
+(635, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi', 'user', '2025-07-08 13:29:24'),
+(636, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **buồn nôn** của bạn nè, có khi nào bạn thấy nó đi kèm với mệt mỏi hoặc chỉ đơn giản là cảm giác không thoải mái thôi không ha?', 'bot', '2025-07-08 13:29:24'),
+(637, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-08 13:29:41'),
+(638, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thấy thêm cảm giác nào khác nữa không, như mệt mỏi, tim đập nhanh hay buồn nôn nhiều hơn không nha? 🌿', 'bot', '2025-07-08 13:29:41'),
+(639, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-08 13:30:19'),
+(640, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể liên quan đến vài nguyên nhân khác nhau. \n- **Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha. \n- **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ. \n- **Buồn nôn** có thể đi kèm với tình trạng mệt mỏi hoặc lo âu. Hãy đảm bảo bạn ăn uống đầy đủ và nghỉ ngơi nhé. \nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.  \n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.  \n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.  \nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-07-08 13:30:19'),
+(641, 4, NULL, 'suggest_product', 'ban co the goi y minh vai san pham co the giam bot nhung trieu chung minh dang gap phai ko?', 'user', '2025-07-08 13:31:15'),
+(642, 4, NULL, 'suggest_product', 'Bạn đang cảm thấy khó chịu và cần một chút giúp đỡ để giảm bớt triệu chứng đúng không? Mình có một gợi ý rất hay cho bạn nè, đó là thuốc Paracetamol 500mg. Đây là một loại thuốc hạ sốt và giảm đau rất phổ biến, giúp bạn cảm thấy nhẹ nhõm hơn khi gặp phải cơn đau đầu hay cảm cúm. Chỉ cần dùng theo liều lượng khuyến cáo và bạn sẽ nhanh chóng thấy tình trạng sức khỏe được cải thiện. Hãy thử nhé! 👉 [Xem chi tiết tại đây](https://demo.site.vn/products/1)\n\nNgoài ra, bạn cũng có thể tham khảo Ibuprofen 200mg. Đây là loại thuốc không chỉ giảm đau mà còn có tác dụng kháng viêm và hạ sốt, rất phù hợp cho những ai đang trong tình trạng bị đau nhức hoặc sưng tấy. Hãy sử dụng khi cần thiết và tránh dùng quá liều để đảm bảo an toàn cho sức khỏe của bạn. Mong rằng bạn sớm cảm thấy dễ chịu hơn! 👉 [Xem chi tiết tại đây](https://demo.site.vn/products/6)', 'bot', '2025-07-08 13:31:16'),
+(643, 4, NULL, 'suggest_product', 'minh dang bi dau dau khong biet la shop ban co thuoc gi co the ho tro minh khong?', 'user', '2025-07-08 13:34:04'),
+(644, 4, NULL, 'suggest_product', 'Da bạn hay khô phải không? Mình có bí quyết nhỏ nè :droplet: Nếu bạn đang gặp phải những cơn đau đầu khó chịu, thì thuốc Paracetamol 500mg có thể là một lựa chọn tốt cho bạn. Đây là loại thuốc hạ sốt và giảm đau rất phổ biến, giúp bạn cảm thấy dễ chịu hơn trong những lúc không thoải mái. Bạn chỉ cần uống từ 1-2 viên mỗi 4-6 giờ nếu cần, nhưng nhớ không uống quá 8 viên mỗi ngày nhé! Hãy cẩn thận nếu bạn có tiền sử về gan hoặc nghiện rượu. 👉 [Xem chi tiết tại đây](https://demo.site.vn/products/1)\n\nNếu cần một sự lựa chọn khác, thuốc Ibuprofen 200mg cũng rất hữu ích trong việc giảm đau và kháng viêm, có thể giúp bạn xoa dịu cơn đau đầu một cách hiệu quả. Bạn nên uống sau bữa ăn, và người lớn có thể uống 1 viên mỗi 6-8 giờ nếu cần thiết, nhưng không nên vượt quá 6 viên trong một ngày. Lưu ý rằng nếu bạn có vấn đề về dạ dày hoặc suy gan/thận, thì nên tránh sử dụng thuốc này. Hy vọng bạn sẽ thấy dễ chịu hơn! 👉 [Xem chi tiết tại đây](https://demo.site.vn/products/6)', 'bot', '2025-07-08 13:34:04'),
+(645, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa.', 'user', '2025-07-09 07:06:24'),
+(646, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cơn **đau đầu** của bạn nè. Bạn có cảm thấy cơn đau này thường kéo dài bao lâu mỗi lần gặp không, hoặc có khi nào bạn thấy đỡ hơn sau khi nghỉ ngơi không ha?', 'bot', '2025-07-09 07:06:24'),
+(647, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-09 07:06:39'),
+(648, 4, NULL, 'symptom_query', 'Cảm giác **chóng mặt** của bạn thường xảy ra trong hoàn cảnh nào, ví dụ như khi ngồi hoặc khi vừa đứng lên không nhỉ?', 'bot', '2025-07-09 07:06:39'),
+(649, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi', 'user', '2025-07-09 07:06:52'),
+(650, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **buồn nôn** của bạn nè. Cảm giác này thường xảy ra sau khi bạn ăn hay không nhỉ?', 'bot', '2025-07-09 07:06:52'),
+(651, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-09 07:07:07'),
+(652, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, ví dụ như có thấy mệt mỏi, hay ra mồ hôi nhiều không nhỉ? 😊', 'bot', '2025-07-09 07:07:07'),
+(653, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-09 07:07:33'),
+(654, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể xuất phát từ một số nguyên nhân như sau:\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\n**Buồn nôn** có thể liên quan đến dạ dày hoặc căng thẳng. Bạn có thể thử ăn nhẹ và nghỉ ngơi một chút.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n\n�� **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-07-09 07:07:33'),
+(655, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-09 07:13:45'),
+(656, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?', 'bot', '2025-07-09 07:13:45'),
+(657, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-09 07:13:59'),
+(658, 4, NULL, 'symptom_query', 'Khi bạn cảm thấy **chóng mặt**, có khi nào cảm giác này xảy ra lúc bạn vừa đứng lên hay lúc đang ngồi không? Mình đang nghĩ không biết nó thường kéo dài bao lâu mỗi lần bạn gặp phải nhé.', 'bot', '2025-07-09 07:13:59'),
+(659, 4, NULL, 'general_chat', 'chat do sang h minh chua an gi', 'user', '2025-07-09 07:14:42'),
+(660, 4, NULL, 'general_chat', 'Um, mình hiểu rồi nè. Có vẻ như bạn cảm thấy không được thoải mái. Nếu bạn cần hỗ trợ hay có câu hỏi gì, cứ chia sẻ nhé!', 'bot', '2025-07-09 07:14:42'),
+(661, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-09 07:22:17'),
+(662, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?', 'bot', '2025-07-09 07:22:17'),
+(663, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-09 07:22:48'),
+(664, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**... Những triệu chứng này có thể liên quan đến một số nguyên nhân nhẹ nhàng như:\n\n- **Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n- **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n- **Buồn nôn** có thể do dạ dày không ổn định hoặc căng thẳng. Nếu có thể, hãy thử ăn một chút gì đó nhẹ nhàng nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\n\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-09 07:22:48'),
+(665, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-09 07:31:49'),
+(666, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. \n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n**Buồn nôn** có thể liên quan đến việc ăn uống không đều hoặc lo âu. Hãy thử ăn nhẹ và thư giãn một chút nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\n\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-09 07:31:49'),
+(667, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-09 07:45:01'),
+(668, 4, NULL, 'symptom_query', 'Cảm giác **đau đầu** của bạn có khi nào thấy nặng hơn khi bạn đứng lên hay thay đổi tư thế không? Mình muốn biết thêm để hỗ trợ bạn tốt hơn.', 'bot', '2025-07-09 07:45:01'),
+(669, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-09 07:45:13'),
+(670, 4, NULL, 'symptom_query', 'Mình đang thắc mắc không biết cảm giác **chóng mặt** của bạn có xảy ra khi đang ngồi hay khi vừa đứng lên không? Hoặc có khi nào bạn thấy cảm giác này kéo dài vài phút hay lâu hơn một chút không ha?', 'bot', '2025-07-09 07:45:13'),
+(671, 4, NULL, 'symptom_query', 'chat do sang h minh chua an gi', 'user', '2025-07-09 07:45:26'),
+(672, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **buồn nôn** của bạn nè. Có khi nào cảm giác này xảy ra ngay sau khi bạn chưa ăn gì không, hay nó xuất hiện một cách ngẫu nhiên ha?', 'bot', '2025-07-09 07:45:26'),
+(673, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-09 07:45:38'),
+(674, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác như mệt mỏi, đổ mồ hôi nhiều, hay có cảm giác tức ngực không nhé? Điều này có thể giúp mình hiểu rõ hơn về tình trạng của bạn.', 'bot', '2025-07-09 07:45:38'),
+(675, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-09 07:46:20'),
+(676, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. \n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha. \n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ. \n**Buồn nôn** có thể liên quan đến việc ăn uống không đều hoặc lo âu. Hãy thử ăn nhẹ và thư giãn một chút nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân. \n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày. \n\n�� **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha ��\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-09 07:46:20'),
+(677, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-09 07:48:20'),
+(678, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** nè. Bạn thường thấy cảm giác này xuất hiện lúc nào, lúc đang ngồi hay lúc vừa đứng lên?', 'bot', '2025-07-09 07:48:20'),
+(679, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-09 07:54:57'),
+(680, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cơn **đau đầu** của bạn nè. Cảm giác đó có thường kéo dài bao lâu mỗi lần bạn gặp không?', 'bot', '2025-07-09 07:54:57'),
+(681, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-09 08:04:00'),
+(682, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, như là **mệt mỏi**, **tim đập nhanh**, hay **đổ mồ hôi** không nhé? Những triệu chứng đó có thể giúp mình hiểu rõ hơn về tình trạng của bạn.', 'bot', '2025-07-09 08:04:00'),
+(683, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-09 08:04:39'),
+(684, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể do một số nguyên nhân như sau:\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n**Buồn nôn** có thể liên quan đến việc ăn không đúng bữa hoặc stress. Hãy thử ăn nhẹ và hít thở sâu để cảm thấy dễ chịu hơn.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Căng thẳng hoặc lo âu**  \nÁp lực trong cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-09 08:04:39'),
+(685, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-09 08:05:42'),
+(686, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **cảm giác và nôn** kéo dài khoảng 5-10 phút khi bạn nằm xuống. Điều này có thể do một số nguyên nhân như sau:\n\n**Căng thẳng hoặc lo âu** có thể gây ra cảm giác **nôn** và khó chịu trong cơ thể. Bạn có thể thử thư giãn hoặc hít thở sâu để cảm thấy dễ chịu hơn.  \n**Thiếu nước hoặc thiếu dinh dưỡng** có thể dẫn đến cảm giác **cảm giác** và mệt mỏi. Hãy đảm bảo bạn đang uống đủ nước và ăn uống đầy đủ.  \n**Huyết áp thấp** cũng có thể là nguyên nhân dẫn đến cảm giác **cảm giác** khi thay đổi tư thế. Bạn nên ngồi nghỉ và uống một chút nước từ từ.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **cảm giác** và **nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **cảm giác** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **cảm giác** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-09 08:05:42'),
+(687, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-09 08:06:42'),
+(688, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** này nha. Bạn có thường thấy khó chịu hơn khi đang làm gì đó, hay nó xuất hiện khi bạn vừa đứng lên hoặc thay đổi tư thế không?', 'bot', '2025-07-09 08:06:42'),
+(689, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-09 08:06:56'),
+(690, 4, NULL, 'symptom_query', 'Bạn có thấy cảm giác **chóng mặt** này thường xảy ra khi nào không? Ví dụ như lúc đang ngồi hay khi vừa đứng lên? 😊', 'bot', '2025-07-09 08:06:56'),
+(691, 4, NULL, 'symptom_query', 'chat do sang h minh chua an gi', 'user', '2025-07-09 08:07:10'),
+(692, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **buồn nôn** của bạn. Bạn có thấy nó thường đi kèm với các triệu chứng khác như **đau đầu** hay **chóng mặt** không, hay nó chỉ xảy ra riêng lẻ thôi?', 'bot', '2025-07-09 08:07:10'),
+(693, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-09 08:07:42'),
+(694, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **khó thở** của bạn nè. Bạn có thấy nó thường xảy ra khi bạn đang ngồi hay khi vừa đứng lên không? 😊', 'bot', '2025-07-09 08:07:42'),
+(695, 4, NULL, 'symptom_query', 'khong ro', 'user', '2025-07-09 08:08:37'),
+(696, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn** kéo dài khoảng 5-10 phút khi bạn nằm xuống. Những triệu chứng này có thể liên quan đến vài nguyên nhân như sau:\n\n**Đau đầu** có thể do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\n**Buồn nôn** có thể xảy ra khi cơ thể không được cung cấp đủ dinh dưỡng hoặc do lo âu. Hãy thử ăn nhẹ và thư giãn một chút nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-09 08:08:37'),
+(697, 4, NULL, 'symptom_query', 'minh cam giac dau dau qua', 'user', '2025-07-09 08:10:19'),
+(698, 4, NULL, 'symptom_query', 'Mình thấy bạn mô tả rõ hơn rồi, cảm giác **đau đầu** có thể do bạn chưa ăn gì từ sáng nên cảm thấy chóng mặt và buồn nôn. Nhưng cũng có thể là do bạn thiếu ngủ, cơ thể mệt hoặc thời tiết thay đổi nữa. Mình sẽ ghi chú lại thêm để theo dõi sát hơn ha.\n\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn chưa ăn gì.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n📌 **Thiếu năng lượng nhẹ**  \nCơ thể bị hạ đường huyết tạm thời nếu nhịn ăn lâu.  \n→ Bạn có thể ăn nhẹ hoặc uống sữa để lấy lại sức.\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-09 08:10:19'),
+(699, 4, NULL, 'symptom_query', 'minh cam giac dau dau qua', 'user', '2025-07-09 08:10:44'),
+(700, 4, NULL, 'symptom_query', 'Cảm giác **đau đầu** của bạn có thường kéo dài bao lâu mỗi lần gặp không? Nó có hay xảy ra khi bạn căng thẳng hay thiếu ngủ không?', 'bot', '2025-07-09 08:10:44'),
+(701, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-09 08:11:03'),
+(702, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, như **mệt mỏi**, **chóng mặt**, hay **tức ngực** không nhỉ? Những triệu chứng này có thể giúp mình hiểu rõ hơn về tình trạng của bạn.', 'bot', '2025-07-09 08:11:03'),
+(703, 4, NULL, 'symptom_query', 'minh cung co cam giac chong mat nua', 'user', '2025-07-09 08:11:24'),
+(704, 4, NULL, 'symptom_query', 'Mình đang muốn hỏi thêm chút về cảm giác **chóng mặt** của bạn. Bạn thường cảm thấy chóng mặt khi nào, như lúc vừa đứng dậy hay khi đang ngồi nghỉ ngơi?', 'bot', '2025-07-09 08:11:24'),
+(705, 4, NULL, 'symptom_query', 'lut minh vua dung day', 'user', '2025-07-09 08:12:02'),
+(706, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu** và **chóng mặt**. \n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-09 08:12:02');
 
 -- --------------------------------------------------------
 
@@ -734,6 +955,41 @@ INSERT INTO `clinics` (`clinic_id`, `name`, `address`, `phone`, `email`, `descri
 (3, 'Phòng khám Quốc tế Victoria Healthcare', '79 Điện Biên Phủ, Quận 1, TP.HCM', '02839101717', 'info@victoriavn.com', 'Dịch vụ khám chữa bệnh theo tiêu chuẩn quốc tế.', '2025-05-24 06:11:09', '2025-05-24 13:11:09'),
 (4, 'Bệnh viện Đại học Y Dược', '215 Hồng Bàng, Quận 5, TP.HCM', '02838552307', 'contact@umc.edu.vn', 'Bệnh viện trực thuộc Đại học Y Dược TP.HCM.', '2025-05-24 06:11:09', '2025-05-24 13:11:09'),
 (5, 'Phòng khám đa khoa Pasteur', '27 Nguyễn Thị Minh Khai, Quận 1, TP.HCM', '02838232299', 'pasteurclinic@vnmail.com', 'Chuyên nội tổng quát, tim mạch, tiêu hóa.', '2025-05-24 06:11:09', '2025-05-24 13:11:09');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `clinic_specialties`
+--
+
+CREATE TABLE `clinic_specialties` (
+  `clinic_id` int(11) NOT NULL,
+  `specialty_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `clinic_specialties`
+--
+
+INSERT INTO `clinic_specialties` (`clinic_id`, `specialty_id`) VALUES
+(1, 1),
+(1, 3),
+(1, 4),
+(1, 7),
+(2, 1),
+(2, 2),
+(2, 4),
+(2, 8),
+(3, 1),
+(3, 5),
+(3, 6),
+(4, 1),
+(4, 2),
+(4, 7),
+(4, 8),
+(5, 1),
+(5, 4),
+(5, 7);
 
 -- --------------------------------------------------------
 
@@ -997,7 +1253,9 @@ INSERT INTO `health_predictions` (`prediction_id`, `user_id`, `record_id`, `chat
 (45, 4, 45, NULL, '2025-06-27 17:15:49', 0.85, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\", \"Mệt mỏi\"], \"predicted_diseases\": [\"Chóng mặt\", \"Căng thẳng\", \"Thiếu ngủ\"]}'),
 (46, 4, 46, NULL, '2025-06-27 17:20:21', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\", \"Mệt mỏi\"], \"predicted_diseases\": [\"Migrain\", \"Thiếu nước\", \"Căng thẳng\"]}'),
 (53, 4, 53, NULL, '2025-07-01 16:04:23', 0.9, '{\"symptoms\": [\"Tê tay chân\", \"Khàn giọng\", \"Yếu cơ\", \"Đau đầu\"], \"predicted_diseases\": [\"Đột quỵ nhẹ\", \"Rối loạn thần kinh\", \"Thiếu máu\"]}'),
-(60, 4, 60, NULL, '2025-07-03 11:38:57', 0.9, '{\"symptoms\": [\"Chóng mặt\"], \"predicted_diseases\": [\"Huyết áp thấp\", \"Thiếu năng lượng nhẹ\", \"Căng thẳng hoặc lo âu\"]}');
+(60, 4, 60, NULL, '2025-07-03 11:38:57', 0.9, '{\"symptoms\": [\"Chóng mặt\"], \"predicted_diseases\": [\"Huyết áp thấp\", \"Thiếu năng lượng nhẹ\", \"Căng thẳng hoặc lo âu\"]}'),
+(62, 4, 62, NULL, '2025-07-08 13:30:10', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}'),
+(68, 4, 68, NULL, '2025-07-09 08:11:53', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}');
 
 -- --------------------------------------------------------
 
@@ -1081,7 +1339,15 @@ INSERT INTO `health_records` (`record_id`, `user_id`, `record_date`, `weight`, `
 (57, 4, '2025-07-02', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-02 13:32:53', '2025-07-02 20:32:53'),
 (58, 4, '2025-07-03', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-02 17:28:29', '2025-07-03 00:28:29'),
 (59, 4, '2025-07-03', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-03 08:33:55', '2025-07-03 15:33:55'),
-(60, 4, '2025-07-03', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-03 11:38:57', '2025-07-03 18:38:57');
+(60, 4, '2025-07-03', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-03 11:38:57', '2025-07-03 18:38:57'),
+(61, 4, '2025-07-08', NULL, NULL, NULL, 'Triệu chứng ghi nhận: ', '2025-07-08 12:04:29', '2025-07-08 19:04:29'),
+(62, 4, '2025-07-08', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-08 13:30:10', '2025-07-08 20:30:10'),
+(63, 4, '2025-07-09', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-09 07:22:38', '2025-07-09 14:22:38'),
+(64, 4, '2025-07-09', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-09 07:31:39', '2025-07-09 14:31:39'),
+(65, 4, '2025-07-09', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-09 07:46:11', '2025-07-09 14:46:11'),
+(66, 4, '2025-07-09', NULL, NULL, NULL, 'Triệu chứng ghi nhận: ', '2025-07-09 08:05:31', '2025-07-09 15:05:31'),
+(67, 4, '2025-07-09', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn, Khó thở', '2025-07-09 08:08:26', '2025-07-09 15:08:26'),
+(68, 4, '2025-07-09', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt', '2025-07-09 08:11:53', '2025-07-09 15:11:53');
 
 -- --------------------------------------------------------
 
@@ -1311,7 +1577,13 @@ INSERT INTO `prediction_diseases` (`id`, `prediction_id`, `disease_id`, `disease
 (172, 60, -1, 'Căng thẳng hoặc lo âu', 0.9, 'Áp lực công việc hoặc cuộc sống có thể gây ra cảm giác đau đầu và buồn nôn.', 'Thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.'),
 (173, 60, -1, 'Mất nước hoặc thiếu dinh dưỡng', 0.85, 'Thiếu nước hoặc năng lượng có thể dẫn đến chóng mặt và mệt mỏi.', 'Uống đủ nước và ăn uống đầy đủ trong ngày.'),
 (174, 60, -1, 'Huyết áp thấp', 0.8, 'Huyết áp thấp có thể gây chóng mặt khi thay đổi tư thế.', 'Ngồi nghỉ và uống nước từ từ.'),
-(175, 60, -1, 'Thiếu năng lượng nhẹ', 0.65, 'Cơ thể bị hạ đường huyết tạm thời nếu nhịn ăn lâu.', 'Bạn có thể ăn nhẹ hoặc uống sữa để lấy lại sức.');
+(175, 60, -1, 'Thiếu năng lượng nhẹ', 0.65, 'Cơ thể bị hạ đường huyết tạm thời nếu nhịn ăn lâu.', 'Bạn có thể ăn nhẹ hoặc uống sữa để lấy lại sức.'),
+(179, 62, -1, 'Căng thẳng hoặc lo âu', 0.9, 'Áp lực công việc hoặc cuộc sống có thể gây ra cảm giác đau đầu và buồn nôn.', 'Nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.'),
+(180, 62, -1, 'Mất nước hoặc thiếu dinh dưỡng', 0.85, 'Thiếu nước hoặc năng lượng có thể dẫn đến chóng mặt và mệt mỏi.', 'Uống đủ nước và ăn uống đầy đủ.'),
+(181, 62, -1, 'Huyết áp thấp', 0.75, 'Có thể gây chóng mặt khi thay đổi tư thế đột ngột.', 'Ngồi nghỉ và uống nước từ từ.'),
+(197, 68, -1, 'Căng thẳng hoặc lo âu', 0.85, 'Đôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác đau đầu và buồn nôn.', 'Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.'),
+(198, 68, -1, 'Mất nước hoặc thiếu dinh dưỡng', 0.9, 'Nếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy chóng mặt hoặc mệt mỏi.', 'Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.'),
+(199, 68, -1, 'Huyết áp thấp', 0.85, 'Tình trạng này có thể gây cảm giác chóng mặt nhẹ khi bạn thay đổi tư thế đột ngột.', 'Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.');
 
 -- --------------------------------------------------------
 
@@ -1832,7 +2104,9 @@ INSERT INTO `user_symptom_history` (`id`, `user_id`, `symptom_id`, `record_date`
 (136, 4, 1, '2025-07-01', 'Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện.'),
 (156, 4, 1, '2025-07-03', 'Người dùng bị đau đầu khi vừa nằm xuống, cơn đau kéo dài khoảng 5-10 phút.'),
 (157, 4, 19, '2025-07-03', 'Người dùng cảm thấy chóng mặt từ sáng tới giờ, triệu chứng không rõ nguyên nhân và xảy ra một cách tự nhiên. Hôm nay, người dùng chưa ăn gì từ sáng, có thể là nguyên nhân gây ra triệu chứng. Cảm giác chóng mặt lần này quay nhiều hơn bình thường, và dù đã ngồi xuống một lúc, người dùng vẫn cảm thấy lâng lâng. Triệu chứng vẫn chưa hết. Ngày 7/3.'),
-(158, 4, 3, '2025-07-03', 'Người dùng có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.');
+(158, 4, 3, '2025-07-03', 'Người dùng có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.'),
+(163, 4, 1, '2025-07-09', 'Người dùng cảm giác đau đầu kéo dài khoảng 5-10 phút khi vừa nằm xuống.'),
+(164, 4, 19, '2025-07-09', 'Người dùng có cảm giác chóng mặt khi vừa đứng dậy.');
 
 --
 -- Indexes for dumped tables
@@ -1890,6 +2164,13 @@ ALTER TABLE `chat_logs`
 --
 ALTER TABLE `clinics`
   ADD PRIMARY KEY (`clinic_id`);
+
+--
+-- Indexes for table `clinic_specialties`
+--
+ALTER TABLE `clinic_specialties`
+  ADD PRIMARY KEY (`clinic_id`,`specialty_id`),
+  ADD KEY `specialty_id` (`specialty_id`);
 
 --
 -- Indexes for table `diseases`
@@ -2214,7 +2495,7 @@ ALTER TABLE `health_predictions`
 -- AUTO_INCREMENT for table `health_records`
 --
 ALTER TABLE `health_records`
-  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `medical_categories`
@@ -2262,7 +2543,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=176;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=200;
 
 --
 -- AUTO_INCREMENT for table `prescriptions`
@@ -2364,7 +2645,7 @@ ALTER TABLE `user_notifications`
 -- AUTO_INCREMENT for table `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=159;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
 
 --
 -- Constraints for dumped tables
@@ -2398,6 +2679,13 @@ ALTER TABLE `blog_posts`
 ALTER TABLE `chat_logs`
   ADD CONSTRAINT `chat_logs_ibfk_1` FOREIGN KEY (`guest_id`) REFERENCES `guest_users` (`guest_id`),
   ADD CONSTRAINT `chat_logs_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `clinic_specialties`
+--
+ALTER TABLE `clinic_specialties`
+  ADD CONSTRAINT `clinic_specialties_ibfk_1` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `clinic_specialties_ibfk_2` FOREIGN KEY (`specialty_id`) REFERENCES `specialties` (`specialty_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `diseases`

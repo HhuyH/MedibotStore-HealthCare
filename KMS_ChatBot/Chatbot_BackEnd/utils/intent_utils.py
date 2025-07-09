@@ -91,7 +91,7 @@ async def detect_intent(
 
         Last detected intent: "{last_intent or 'unknown'}"
         
-        Previous bot message (usually a follow-up question):  
+        Previous bot message:
         "{last_bot_msg}"
 
         Current user message:  
@@ -147,7 +147,18 @@ async def detect_intent(
             • If diagnosed_today = False AND symptom is in stored_symptoms → STILL KEEP "symptom_query"
             • Otherwise → treat as a vague continuation, not "health_advice"
         - If the user's message is short and dismissive like “không có”, “hết rồi”, “chỉ vậy thôi”, “không thêm gì nữa”, and it follows a bot's symptom-related question → KEEP "symptom_query"
-    
+        
+        - If the user message contains phrases like “chưa ăn gì”, “vừa đứng lên”, “mới ngủ dậy”, “buổi sáng”, and the previous assistant message was a symptom-related question (e.g., “khi nào bạn thấy chóng mặt?”), then the user is likely providing context for their symptom.
+
+        → In this case, KEEP "symptom_query". Do NOT classify as "general_chat" even if the user message is short.
+
+        - If the user appears to be replying directly to the assistant's previous question (check `last_bot_msg`), especially about timing, context, or possible cause — then KEEP the previous intent unless there's a clear topic change.
+        
+        - If the previous assistant message offers multiple types of support (e.g., both suggesting health products and offering to help book a medical appointment),
+        and the user's reply is vague, short, or ambiguous (e.g., general confirmations, non-specific agreement, or unclear intent),
+        → classify as "general_chat", so the assistant can ask a follow-up question to clarify what the user needs help with.
+
+
 
         Always return only ONE valid intent from the list.
         Do NOT explain your reasoning.
@@ -273,9 +284,19 @@ def get_sql_prompt_for_intent(intent: str) -> str:
 
 # Tạo message hệ thống hoàn chỉnh dựa trên intent,
 # kết hợp medical prompt và SQL prompt có chèn schema phù hợp.
-def build_system_message(intent: str, symptoms: list[str] = None) -> dict:
+def build_system_message(
+    intent: str,
+    symptoms: list[str] = None,
+    recent_user_messages: list[str] = None,
+    recent_assistant_messages: list[str] = None
+) -> dict:
     sql_part = get_sql_prompt_for_intent(intent).strip()
-    medical_part = build_system_prompt(intent, symptoms).strip()
+    medical_part = build_system_prompt(
+        intent,
+        symptoms=symptoms,
+        recent_user_messages=recent_user_messages,
+        recent_assistant_messages=recent_assistant_messages
+    ).strip()
 
     full_content = f"{medical_part}\n\n{sql_part}"
 
@@ -283,6 +304,7 @@ def build_system_message(intent: str, symptoms: list[str] = None) -> dict:
         "role": "system",
         "content": full_content
     }
+
 
 # Xác định để chuẩn đoán bệnh
 async def should_trigger_diagnosis(user_message: str, collected_symptoms: list[dict], recent_messages: list[str] = []) -> bool:

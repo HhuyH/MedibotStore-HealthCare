@@ -46,6 +46,8 @@ from utils.patient_summary import (
     resolve_user_id_from_message
 )
 import pymysql
+from utils.booking import booking_appointment
+
 from config.config import DB_CONFIG
 
 router = APIRouter()
@@ -131,13 +133,22 @@ async def chat_stream(msg: Message = Body(...)):
         for step in pipeline:
             # --- Step 1: Chat tự nhiên ---
             if step == "chat":
+                # Hệ thống hiện có sử dụng hàm `limit_history_by_tokens()` để giới hạn số token 
+                # của lịch sử hội thoại khi gửi lên GPT (mặc định 1000 token). 
+                # Tuy nhiên, việc giới hạn này hiện **chỉ áp dụng ở một số chức năng cụ thể** như `chat`,
+                # chứ chưa áp dụng thống nhất cho toàn bộ các bước xử lý (e.g., health_talk, suggest_product).
+                # Có thể mở rộng trong tương lai nếu cần đảm bảo ổn định cho các prompt dài.
+
                 limited_history, _ = refresh_system_context(intent, stored_symptoms, msg.history)
                 symptoms = [s['name'] for s in stored_symptoms] if stored_symptoms else []
-                system_message_dict = build_system_message(intent, symptoms)
-                if stored_symptoms:
-                    system_message_dict.update(build_system_message(intent, [s['name'] for s in stored_symptoms]))
-                    limited_history.clear()
-                    limited_history.extend(limit_history_by_tokens(system_message_dict, msg.history))
+                system_message_dict = build_system_message(
+                    intent,
+                    symptoms,
+                    recent_user_messages=recent_user_messages,
+                    recent_assistant_messages=recent_assistant_messages
+                )
+                limited_history.clear()
+                limited_history.extend(limit_history_by_tokens(system_message_dict, msg.history))
 
                 async for chunk in stream_chat(msg.message, limited_history, system_message_dict):
                     delta = chunk.choices[0].delta
@@ -355,6 +366,44 @@ async def chat_stream(msg: Message = Body(...)):
 
                 yield "data: [DONE]\n\n"
 
+            # --- Step 2.4: GPT điều phối hỗ trợ đặt lịch ---
+            elif step == "booking":
+                
+                chunks = []
+                async for chunk in booking_appointment(
+                    user_message=msg.message,
+                    recent_messages=session_data.get("recent_messages", []),
+                    recent_user_messages=session_data.get("recent_user_messages", []),
+                    recent_assistant_messages=session_data.get("recent_assistant_messages", []),
+                    session_id=msg.session_id,
+                    user_id=msg.user_id
+                ):
+                        
+                    chunks.append(chunk)
+                    yield f"data: {json.dumps({'natural_text': chunk}, ensure_ascii=False)}\n\n"
+
+                full_message = "".join(chunks).strip()
+
+                final_message = full_message
+                final_bot_message = final_message
+
+                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
+                session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
+                updated_session_data = session_data
+
+                await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
+
+                # ✅ Lưu log hội thoại
+                save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
+
+                # ✅ Lưu message cuối của bot
+                session_data["last_bot_message"] = final_message
+
+                yield "data: [DONE]\n\n"
+                return
+
+                
 
             # --- Step 3: Xử lý SQL query nếu có ---
             elif step == "sql":

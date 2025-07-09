@@ -321,6 +321,41 @@ INSERT INTO specialties (name, description) VALUES
 ('Tiêu hóa', 'Chuyên về hệ tiêu hóa như dạ dày, gan, ruột.'),
 ('Thần kinh', 'Khám và điều trị các bệnh về hệ thần kinh trung ương và ngoại biên.');
 
+---------------------------------------------------------------------------------Liên kết Khoa và phòng khám--------------------------------------------------------------------------------------------------------------
+-- Phòng khám Đa khoa Hòa Hảo (clinic_id = 1)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(1, 1), -- Nội khoa
+(1, 3), -- Tai - Mũi - Họng
+(1, 4), -- Tim mạch
+(1, 7); -- Tiêu hóa
+
+-- Bệnh viện Chợ Rẫy (clinic_id = 2)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(2, 1), -- Nội khoa
+(2, 2), -- Ngoại khoa
+(2, 4), -- Tim mạch
+(2, 8); -- Thần kinh
+
+-- Phòng khám Quốc tế Victoria Healthcare (clinic_id = 3)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(3, 1), -- Nội khoa
+(3, 5), -- Nhi khoa
+(3, 6); -- Da liễu
+
+-- Bệnh viện Đại học Y Dược (clinic_id = 4)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(4, 1), -- Nội khoa
+(4, 2), -- Ngoại khoa
+(4, 7), -- Tiêu hóa
+(4, 8); -- Thần kinh
+
+-- Phòng khám đa khoa Pasteur (clinic_id = 5)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(5, 1), -- Nội khoa
+(5, 4), -- Tim mạch
+(5, 7); -- Tiêu hóa
+
+
 ---------------------------------------------------------------------------------Bác sĩ---------------------------------------------------------------------------------------------------------------------
 -- user_id = 3 là bác sĩ Nội khoa tại Phòng khám Đa khoa Hòa Hảo
 -- user_id = 6 là bác sĩ Tim mạch tại Bệnh viện Chợ Rẫy
