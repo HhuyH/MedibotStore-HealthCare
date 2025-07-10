@@ -379,10 +379,16 @@ async def chat_stream(msg: Message = Body(...)):
                     user_id=msg.user_id
                 ):
                         
-                    chunks.append(chunk)
-                    yield f"data: {json.dumps({'natural_text': chunk}, ensure_ascii=False)}\n\n"
+                    if isinstance(chunk, dict):
+                        msg_text = chunk.get("message", "")
+                    else:
+                        msg_text = str(chunk)
+                    
+                    chunks.append(msg_text)
+                    yield f"data: {json.dumps({'natural_text': msg_text}, ensure_ascii=False)}\n\n"
 
                 full_message = "".join(chunks).strip()
+
 
                 final_message = full_message
                 final_bot_message = final_message
@@ -402,9 +408,7 @@ async def chat_stream(msg: Message = Body(...)):
 
                 yield "data: [DONE]\n\n"
                 return
-
-                
-
+            
             # --- Step 3: Xử lý SQL query nếu có ---
             elif step == "sql":
                 logger.debug(f"🧪 Step 'sql' nhận buffer:\n{buffer}")
@@ -484,6 +488,8 @@ async def reset_session(data: ResetRequest):
             "symptoms": [],
             "followup_asked": [],
             "symptom_notes_list": [],
+            "booking_info": [],
+            "extracted_info": [],
             "related_symptom_asked": False
         }
     )

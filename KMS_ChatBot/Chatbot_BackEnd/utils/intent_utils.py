@@ -14,6 +14,7 @@ from utils.openai_client import chat_completion
 from utils.text_utils import normalize_text
 from config.intents import VALID_INTENTS, INTENT_MAPPING
 import json
+from unidecode import unidecode
 
 def get_combined_schema_for_intent(intent: str) -> str:
     intent = normalize_text(intent)  # chuẩn hóa không dấu, lowercase
@@ -70,6 +71,10 @@ def get_combined_schema_for_intent(intent: str) -> str:
 
     return "\n".join(schema_parts)
 
+def normalize(text: str) -> str:
+    return unidecode(text.lower())
+
+
 # Phạt hiện đang là sử dụng chức nắng nào là chat bình thường hay là phát hiện và dự đoán bệnh
 async def detect_intent(
     last_intent: str = None,
@@ -104,6 +109,86 @@ async def detect_intent(
         Previously stored symptoms: {", ".join(stored_symptoms) if stored_symptoms else "None"}
 
         ----------------------------
+        🛡️ CONTEXTUAL OVERRIDE RULES (high priority)
+
+        DO NOT change the intent in the following cases:
+
+        1. If `last_intent` == `booking_request`, and the user's message:
+        - Is a name (e.g., "Tôi tên là An")
+        - Is mentioned someone (e.g., "Bắc sĩ Minh")
+        - Is a phone number (e.g., "0901234567")
+        - Is a location or address (e.g., "TPHCM", "Quận 1", "ở đường X")
+        - Is a datetime (e.g., "ngày mai", "10h sáng", "Thứ 3")
+
+        → Then:
+        - DO NOT classify as `user_profile`, `sql_query`, or `general`.
+        - Always preserve intent as `booking_request`.
+
+        2. If the `last_bot_msg` contains confirmation questions like:
+        - "Bạn xác nhận đặt lịch này chứ"
+        - "Bạn có muốn xác nhận không"
+        - "Tôi sẽ đặt lịch khám như sau, bạn đồng ý chứ?"
+
+        → Then:
+        - Any short affirmative reply like "ok", "được", "đồng ý", "xác nhận", "yes", "chốt", "đặt luôn"
+        **must be interpreted as confirmation**, and intent **must remain** as `booking_request`.
+
+        🚫 NEVER change to `user_profile`, `general`, or `sql_query` in such cases.
+
+        ⚠️ If uncertain or ambiguous, default to previous intent and do NOT switch context.
+
+
+
+        🚫 INTENT GUARDRAIL: DO NOT MISCLASSIFY
+
+        If the user's previous interaction involves a booking flow 
+        (e.g., the assistant just asked about symptoms, specialty, clinic, full name, phone, or location),
+        → Then: Any simple reply such as a name, a phone number (e.g., "0901xxxxxx"), or a location (e.g., "TPHCM", "Quận 1") 
+        **MUST be treated as part of the current booking conversation.**
+
+        ❌ Absolutely FORBIDDEN to return the following intents in such cases:
+        - `user_profile`
+        - `sql_query`
+        - `general`
+
+        → These intents are NEVER valid unless the user explicitly says something like:
+            - "Tôi muốn cập nhật thông tin cá nhân"
+            - "Chạy truy vấn SQL"
+            - "Tôi muốn xem hồ sơ của tôi"
+            - "Tôi có câu hỏi khác"
+            - "Lấy danh sách..."
+
+        ✅ If the message is ambiguous, short, or just contains a number or location:
+        → Always assume it's a follow-up to the assistant's last question.
+        → Default to keeping the intent as `booking_request` if `last_intent` is `booking_request` or the previous `last_intent`.
+
+        ⚠️ Remember: misclassifying a booking reply as another intent may **break the flow** and lead to user confusion or data loss.
+
+
+        ---> INSTRUCTION: <---
+
+        First, analyze what kind of information the assistant was trying to elicit from the user in its last message, based on the combination of:
+
+        - `last_bot_msg` → what the assistant said last
+        - `last_intent` → what the current dialogue is about (e.g., booking, symptom_query, etc.)
+
+        Infer the **type of user reply expected**, such as:
+            - location
+            - symptom details (time, severity, context)
+            - confirmation
+            - product interest
+            - appointment type
+            - general agreement
+
+        Then compare the actual user reply (`last_user_msg`) to see if it fits that expected type.
+
+        → If it matches the expected type, and the topic has not changed, KEEP the `last_intent`.
+
+        Before classifying the current user message, always consider what kind of information the assistant was asking for in the `last_bot_msg`.
+
+        If the assistant's last message is a **follow-up request for information** to continue the current intent (e.g., asking for location, time, confirmation, symptom details, etc.), and the user's message provides the requested information (even vaguely):
+
+        → Then KEEP the current `last_intent`. Do NOT classify as a new intent.
 
         - If "{should_suggest_product}" = true`, then classify as `"suggest_product"`.
 
@@ -123,7 +208,6 @@ async def detect_intent(
             • “hỗ trợ điều trị”
             • “có gì làm đỡ hơn không”
 
-        Instructions:
         - If the last intent was "symptom_query" and the user's current message clearly answers a previous follow-up (e.g., gives timing, severity, or symptom detail), then KEEP "symptom_query".
         - If the user is asking for general advice on how to deal with a symptom (e.g., how to sleep better, what to eat for energy), or wants wellness guidance (e.g., chăm sóc sức khỏe, tăng sức đề kháng), classify as "health_advice".
         - Use "symptom_query" if the user is describing a health symptom — even casually or in a vague way — such as “mình bị đau đầu quá”, “cảm thấy chóng mặt”, “đau nhức khắp người”.
@@ -158,6 +242,19 @@ async def detect_intent(
         and the user's reply is vague, short, or ambiguous (e.g., general confirmations, non-specific agreement, or unclear intent),
         → classify as "general_chat", so the assistant can ask a follow-up question to clarify what the user needs help with.
 
+        - If the user message contains intent to **book a medical appointment**, such as:
+            • “cho mình đặt lịch khám”
+            • “muốn gặp bác sĩ”
+            • “đặt lịch khám với bác sĩ”
+            • “có lịch khám không”
+            • “tư vấn giúp mình đặt lịch”
+            • “mình muốn đi khám”
+            • “muốn đặt khám chỗ nào gần”
+            • “mình cần đặt lịch khám tổng quát”
+            • “tư vấn bác sĩ để mình đi khám”
+        → classify as `"booking"`
+
+        - Chỉ phân loại là `"booking"` nếu người dùng **thể hiện rõ mong muốn được đặt lịch khám bệnh**, không chỉ đơn thuần hỏi tư vấn triệu chứng.
 
 
         Always return only ONE valid intent from the list.
@@ -240,6 +337,12 @@ async def detect_intent(
         User: “Mình bị khàn tiếng mấy hôm nay, có loại nào giúp giọng đỡ hơn không?”  
         → ✅ → intent = `suggest_product`
 
+        - last_intent = "booking"
+        last_bot_msg = "Bạn muốn tìm phòng khám ở khu vực nào?"
+        user message = "mình sống ở TPHCM"
+        → ✅ intent = 'booking_request'
+
+
         → What is the current intent?
     """
 
@@ -270,6 +373,37 @@ async def detect_intent(
             else:
                 logger.warning("❓ Không detect được intent hợp lệ → Trả về 'general_chat'")
                 return "general_chat"
+
+        LOCATION_QUESTION_KEYWORDS = [
+            "khu vuc",
+            "dia chi",
+            "ban o dau",
+            "noi ban song",
+            "tim phong kham gan ban",
+            "muon kham o dau",
+            "khu vuc nao",
+            "tim gan ban",
+            "dia diem ban muon",
+            "o dau",
+        ]
+
+        TYPICAL_LOCATIONS_NO_ACCENT = [
+            "tphcm", "sai gon", "quan", "ha noi", "da nang", "binh thanh",
+            "go vap", "tan binh", "thu duc", "cau giay", "quan 1", "quan 2",
+            "minh o","minh song o", "minh gan", "minh song o tphcm"
+        ]
+
+        def looks_like_location(msg: str) -> bool:
+            msg = normalize(msg)
+            return any(loc in msg for loc in TYPICAL_LOCATIONS_NO_ACCENT)
+    
+        def bot_is_asking_for_location(bot_msg: str) -> bool:
+            msg = normalize(bot_msg)
+            return any(kw in msg for kw in LOCATION_QUESTION_KEYWORDS)
+
+        if last_intent == "booking_request" and bot_is_asking_for_location(last_bot_msg) and looks_like_location(last_user_msg):
+            # logger.info("📍 Detected location reply in booking context → Force intent = 'booking'")
+            return "booking"
 
         # ✅ Cuối cùng: return intent hợp lệ
         return mapped_intent
