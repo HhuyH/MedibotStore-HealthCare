@@ -1,8 +1,13 @@
 # Danh sách intent cho phép
 VALID_INTENTS = [
-    # --- Triệu chứng & chẩn đoán ---
+    # --- Triệu chứng & chẩn  & chăm sóc sức khỏe ---
     "medical_history",
     "health_query",
+    "health_advice",
+    "booking_request",
+    
+    # --- Truy vấn hồ sơ bệnh nhân ---
+    "patient_summary_request",
 
     # --- Truy vấn dữ liệu có cấu trúc (SQL) ---
     "user_profile",
@@ -18,6 +23,9 @@ VALID_INTENTS = [
     "services",
     "notifications",
 
+    # --- GỢI Ý SẢN PHẨM ---
+    "suggest_product",
+
     # --- Intent truy vấn dạng danh sách (list_*) ---
     # "list_diseases",
     # "list_symptoms",
@@ -32,8 +40,19 @@ VALID_INTENTS = [
 
 # Mapping từ client intent → pipeline key
 INTENT_MAPPING = {
+
+    # Xem thông tin phỏng đoán bệnh từ AI
+    "patient_summary_request": "patient_summary_request",
+
     # Ý định cần trích xuất triệu chứng & hội thoại chẩn đoán
-    "health_query":          "symptom_query",     # vẫn giữ vì đây là trò chuyện về triệu chứng
+    "health_query":          "symptom_query",
+    
+    # Tư vấn sức khỏe
+    "health_advice":         "health_advice",
+
+    # gợi ý sản phẩm
+    "suggest_product":       "suggest_product",
+    
     # Truy vấn dữ liệu thương mại / dịch vụ
     "products":              "product_query",
     "order_items_details":   "product_query",
@@ -56,13 +75,24 @@ INTENT_MAPPING = {
     # medical_history: nếu dùng để hỏi triệu chứng quá khứ, giữ symptom_query
     # nếu dùng để xem lại dữ liệu trong DB thì nên map sang sql_query
     "medical_history":       "symptom_query"
+    
 }
 
 # Pipeline xử lý cho từng intent
 INTENT_PIPELINES = {
     # Toàn bộ các intent liên quan sức khỏe → dùng GPT lead
     "symptom_query": ["health_talk"],
+    "health_advice": ["health_advice"],
 
+    # Truy vấn hồ sơ bệnh nhân
+    "patient_summary_request": ["patient_summary"],
+
+    # Truy vấn dữ liệu gợi ý sản phẩm
+    "suggest_product": ["suggest_product"],
+
+    # yêu cầu đặt lịch hẹn
+    "booking_request": ["booking"],
+    
     # Các intent truy vấn dữ liệu có cấu trúc → SQL
     "product_query": ["chat", "sql"],
     "sql_query":     ["chat", "sql"], 

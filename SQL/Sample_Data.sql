@@ -321,6 +321,41 @@ INSERT INTO specialties (name, description) VALUES
 ('Tiêu hóa', 'Chuyên về hệ tiêu hóa như dạ dày, gan, ruột.'),
 ('Thần kinh', 'Khám và điều trị các bệnh về hệ thần kinh trung ương và ngoại biên.');
 
+---------------------------------------------------------------------------------Liên kết Khoa và phòng khám--------------------------------------------------------------------------------------------------------------
+-- Phòng khám Đa khoa Hòa Hảo (clinic_id = 1)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(1, 1), -- Nội khoa
+(1, 3), -- Tai - Mũi - Họng
+(1, 4), -- Tim mạch
+(1, 7); -- Tiêu hóa
+
+-- Bệnh viện Chợ Rẫy (clinic_id = 2)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(2, 1), -- Nội khoa
+(2, 2), -- Ngoại khoa
+(2, 4), -- Tim mạch
+(2, 8); -- Thần kinh
+
+-- Phòng khám Quốc tế Victoria Healthcare (clinic_id = 3)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(3, 1), -- Nội khoa
+(3, 5), -- Nhi khoa
+(3, 6); -- Da liễu
+
+-- Bệnh viện Đại học Y Dược (clinic_id = 4)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(4, 1), -- Nội khoa
+(4, 2), -- Ngoại khoa
+(4, 7), -- Tiêu hóa
+(4, 8); -- Thần kinh
+
+-- Phòng khám đa khoa Pasteur (clinic_id = 5)
+INSERT INTO clinic_specialties (clinic_id, specialty_id) VALUES
+(5, 1), -- Nội khoa
+(5, 4), -- Tim mạch
+(5, 7); -- Tiêu hóa
+
+
 ---------------------------------------------------------------------------------Bác sĩ---------------------------------------------------------------------------------------------------------------------
 -- user_id = 3 là bác sĩ Nội khoa tại Phòng khám Đa khoa Hòa Hảo
 -- user_id = 6 là bác sĩ Tim mạch tại Bệnh viện Chợ Rẫy
@@ -407,6 +442,12 @@ INSERT INTO product_categories (name, description) VALUES
 ('Thực phẩm chức năng', 'Sản phẩm hỗ trợ tăng cường sức khỏe.'),
 ('Thiết bị y tế', 'Các thiết bị và dụng cụ y tế sử dụng trong chẩn đoán và điều trị.'),
 ('Vật tư tiêu hao', 'Găng tay, khẩu trang, bông băng,... sử dụng một lần.');
+INSERT INTO product_categories (name, description) VALUES
+('Chăm sóc da', 'Sản phẩm hỗ trợ điều trị và chăm sóc da.'),
+('Tiêu hóa', 'Sản phẩm hỗ trợ hệ tiêu hóa.'),
+('Miễn dịch', 'Sản phẩm tăng cường sức đề kháng.'),
+('Giấc ngủ & thư giãn', 'Giúp cải thiện giấc ngủ và thư giãn.');
+
 
 --📦 products: Danh sách sản phẩm
 INSERT INTO products (category_id, name, description, price, stock, image_url)
@@ -416,12 +457,52 @@ VALUES
 (2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 'https://example.com/images/vitaminC.jpg'),
 (3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 'https://example.com/images/blood_pressure_monitor.jpg'),
 (4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 'https://example.com/images/face_mask.jpg');
+-- Thuốc và thực phẩm chức năng
+INSERT INTO products (category_id, name, description, price, stock, image_url)
+VALUES
+(1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 'https://example.com/images/ibuprofen.jpg'),
+(2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 'https://example.com/images/zinc.jpg'),
+(2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 'https://example.com/images/probiotic.jpg'),
+(3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 'https://example.com/images/nebulizer.jpg'),
+(5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 'https://example.com/images/moisturizer.jpg'),
+(6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 'https://example.com/images/chamomile_tea.jpg');
+
+UPDATE products SET is_medicine = TRUE WHERE product_id IN (1, 2, 6, 7, 8, 3);
 
 ------------------------------------------------------------💊 medicines: Thông tin chi tiết thuốc (chỉ áp dụng với sản phẩm là thuốc)------------------------------------------------------------------------------------
-INSERT INTO medicines (medicine_id, active_ingredient, dosage_form, unit, usage_instructions)
-VALUES
-(1, 'Paracetamol', 'Viên nén', 'viên', 'Uống 1–2 viên mỗi 4–6 giờ nếu cần. Không dùng quá 8 viên/ngày.'),
-(2, 'Amoxicillin', 'Viên nang', 'viên', 'Uống 1 viên mỗi 8 giờ, duy trì trong 5–7 ngày.');
+INSERT INTO medicines (
+    product_id, active_ingredient, dosage_form, unit, medicine_type, usage_instructions, side_effects, contraindications
+) VALUES
+(1, 'Paracetamol', 'Viên nén', 'viên', 'OTC',
+ 'Uống 1–2 viên mỗi 4–6 giờ nếu cần. Không dùng quá 8 viên/ngày.',
+ 'Buồn nôn, phát ban nhẹ, rối loạn tiêu hoá (hiếm).',
+ 'Người bị bệnh gan, nghiện rượu nặng.'),
+
+(2, 'Amoxicillin', 'Viên nang', 'viên', 'Kê đơn',
+ 'Uống 1 viên mỗi 8 giờ, duy trì trong 5–7 ngày.',
+ 'Tiêu chảy, nổi mẩn da, dị ứng.',
+ 'Người dị ứng với penicillin hoặc cephalosporin.'),
+
+(3, 'Vitamin C', 'Viên nén sủi bọt', 'viên', 'Bổ sung',
+ 'Uống 1 viên mỗi ngày sau bữa ăn. Không dùng quá 2000mg/ngày.',
+ 'Buồn nôn, tiêu chảy nếu dùng liều cao.',
+ 'Người bị sỏi thận, thiếu men G6PD.'),
+
+(6, 'Ibuprofen', 'Viên nén bao phim', 'viên', 'OTC',
+ 'Uống sau ăn. Người lớn uống 1 viên mỗi 6–8 giờ nếu cần. Không quá 6 viên/ngày.',
+ 'Đau bụng, buồn nôn, chóng mặt, loét dạ dày nếu lạm dụng.',
+ 'Người bị loét dạ dày tá tràng, suy gan/thận nặng.'),
+
+(7, 'Zinc gluconate', 'Viên nén', 'viên', 'Bổ sung',
+ 'Uống 1 viên mỗi ngày sau bữa ăn. Không dùng quá 40mg kẽm/ngày.',
+ 'Buồn nôn, kích ứng tiêu hóa nhẹ.',
+ 'Không dùng đồng thời với tetracycline (kháng sinh)' ),
+
+(8, 'Bacillus clausii', 'Gói bột', 'gói', 'Bổ sung',
+ 'Uống 1–2 gói/ngày, pha với nước nguội. Không uống chung với kháng sinh.',
+ 'Rất hiếm: đầy hơi, rối loạn nhẹ đường tiêu hóa.',
+ 'Không dùng cho người bị suy giảm miễn dịch nghiêm trọng.');
+
 
 --------------------------------------------------- prescription_products: Sản phẩm thực tế được kê trong đơn thuốc------------------------------------------------------------------------------------
 -- Đơn thuốc 1 (của user_id = 4, appointment_id = 1)

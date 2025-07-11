@@ -1,6 +1,0 @@
-[2025-06-17 07:27:08] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
-[2025-06-17 07:27:08] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Omega 3 Fish Oil, Price: 580000, Stock: 50
-[2025-06-17 07:27:08] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 2, Cart Count: 1
-[2025-06-17 08:57:22] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
-[2025-06-17 08:57:22] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Paracetamol 500mg, Price: 25000, Stock: 200
-[2025-06-17 08:57:22] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 9, Cart Count: 1

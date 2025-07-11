@@ -1,13 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import chat
-import signal
-import sys
 from config.logging_config import configure_logging
+from contextlib import asynccontextmanager
 
 configure_logging()
 
-app = FastAPI()
+# 👉 Lifespan context manager
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Khởi tạo nếu cần
+    yield
+    # 🔁 Clean-up khi shutdown
+    print("🛑 Server is shutting down... clean up here.")
+
+app = FastAPI(lifespan=lifespan)
+
 # Cấu hình CORS
 origins = [
     "http://localhost",
@@ -25,10 +33,3 @@ app.add_middleware(
 
 app.include_router(chat.router)
 
-
-
-def handle_shutdown():
-    print("🛑 Server shutting down...")
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, lambda sig, frame: handle_shutdown())

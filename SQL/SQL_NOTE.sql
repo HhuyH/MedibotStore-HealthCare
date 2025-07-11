@@ -40,6 +40,7 @@ CREATE TABLE users_info (
 
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
 -- Thông tin người dùng có thể do chính người dùng nhập sau khi đăng ký
 -- hoặc là được AI chatbox thu nhập thông qua việc chat với người dùng lút ban đầu cần
 -- ví dụ nếu người dùng được AI yêu câu đi khám bác sĩ và người dùng chấp nhận thì
@@ -50,6 +51,8 @@ CREATE TABLE users_info (
 -- sẽ được tạo khi người dùng chưa có tài khoản và có nhu cầu đặt lịch khám thì 
 -- AI sẽ hỏi nhưng thông tin này và thực hiện đặt lịch khám khi đầy đủ thông tin cần thiết
 -- và xác nhận đặt
+
+------------------------- (BỎ)
 CREATE TABLE guest_users (
     guest_id INT AUTO_INCREMENT PRIMARY KEY,
     full_name VARCHAR(255),                                 -- Tên đầy đủ mục này của guest chỉ được nhập vào do chatbot làm khi người trả lời cung cấp đầy đủ
@@ -209,6 +212,16 @@ CREATE TABLE specialties (
         ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Bảng clinic_specialties: Liên kết giữa phòng khám và chuyên ngành
+CREATE TABLE clinic_specialties (
+    clinic_id INT NOT NULL,
+    specialty_id INT NOT NULL,
+    PRIMARY KEY (clinic_id, specialty_id),
+    FOREIGN KEY (clinic_id) REFERENCES clinics(clinic_id) ON DELETE CASCADE,
+    FOREIGN KEY (specialty_id) REFERENCES specialties(specialty_id) ON DELETE CASCADE
+);
+
+
 -- Bảng doctors: Thông tin bác sĩ
 CREATE TABLE doctors (
     doctor_id INT AUTO_INCREMENT PRIMARY KEY,           -- Khóa chính
@@ -259,7 +272,7 @@ CREATE TABLE appointments (
     FOREIGN KEY (clinic_id) REFERENCES clinics(clinic_id)
 );
 
--- Bảng prescriptions: Đơn thuốc sau khi khám
+-----------------Phần mở rộng... Bảng prescriptions: Đơn thuốc sau khi khám
 CREATE TABLE prescriptions (
     prescription_id INT AUTO_INCREMENT PRIMARY KEY,     -- Khóa chính
     appointment_id INT NOT NULL,                        -- Liên kết đến lịch hẹn
@@ -272,7 +285,7 @@ CREATE TABLE prescriptions (
     FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id)
 );
 
--- Bảng medical_records: Ghi chú khám của bác sĩ
+-----------------Phần mở rộng... Bảng medical_records: Ghi chú khám của bác sĩ
 CREATE TABLE medical_records (
     med_rec_id INT AUTO_INCREMENT PRIMARY KEY,             -- Khóa chính
     appointment_id INT NOT NULL,                        -- Liên kết đến cuộc hẹn
@@ -361,7 +374,7 @@ SET pd.disease_id = d.id
 WHERE pd.disease_id IS NULL;
 
 
--- Bảng lưu câu hỏi và câu trả lời để huấn luyện hoặc phục vụ chatbot
+------------------------- (BỎ) -- Bảng lưu câu hỏi và câu trả lời để huấn luyện hoặc phục vụ chatbot
 CREATE TABLE chatbot_knowledge_base (
     kb_id INT AUTO_INCREMENT PRIMARY KEY,
 	intent VARCHAR(100),                                 -- ý định
@@ -391,6 +404,7 @@ CREATE TABLE products (
     description TEXT,                                    -- Mô tả sản phẩm
     price DECIMAL(16, 0) NOT NULL,                       -- Giá
     stock INT DEFAULT 0,                                 -- Tồn kho
+    is_medicine BOOLEAN DEFAULT FALSE,                   -- Có phải là thuốc hay không
     image_url TEXT,                                      -- Ảnh sản phẩm (nếu có)
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -401,15 +415,18 @@ CREATE TABLE products (
 
 -- Bảng thông tin đơn thuốc
 CREATE TABLE medicines (
-    medicine_id INT PRIMARY KEY,                         -- Khóa chính, trùng với product_id
+    product_id INT PRIMARY KEY,                          -- Khóa ngoại, trùng với product_id
     active_ingredient VARCHAR(255),                      -- Hoạt chất chính
     dosage_form VARCHAR(100),                            -- Dạng bào chế (viên, ống, gói, ...)
     unit VARCHAR(50),                                    -- Đơn vị tính: viên, ml, ...
     usage_instructions TEXT,                             -- Hướng dẫn dùng thuốc
+    medicine_type ENUM('OTC', 'Kê đơn', 'Kháng sinh', 'Bổ sung') DEFAULT 'OTC', -- Loại thuốc: OTC, kê đơn, kháng sinh, bổ sung
+    side_effects TEXT,                                   -- Tác dụng phụ (nếu có)
+    contraindications TEXT,                               -- Chống chỉ định (nếu có)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (medicine_id) REFERENCES products(product_id) ON DELETE CASCADE
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
 
 -- Bảng đơn thuốc liên kết với sản phẩm
@@ -426,8 +443,6 @@ CREATE TABLE prescription_products (
     FOREIGN KEY (prescription_id) REFERENCES prescriptions(prescription_id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
-
-
 
 -- Bảng product_reviews: Người dùng đánh giá sản phẩm
 CREATE TABLE product_reviews (
@@ -461,7 +476,6 @@ CREATE TABLE orders (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (address_id) REFERENCES user_addresses(address_id)
 );
-
 
 -- Bảng order_items: Chi tiết từng sản phẩm trong đơn hàng
 CREATE TABLE order_items (
@@ -502,7 +516,6 @@ CREATE TABLE service_categories (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Thời gian cập nhật
 );
 
-
 -- Bảng dịch vụ chính
 CREATE TABLE services (
     id INT PRIMARY KEY AUTO_INCREMENT, -- Khóa chính
@@ -524,7 +537,6 @@ CREATE TABLE services (
     FOREIGN KEY (category_id) REFERENCES service_categories(id) -- Khóa ngoại đến danh mục
 );
 
-
 -- Bảng tính năng của dịch vụ
 CREATE TABLE service_features (
     id INT PRIMARY KEY AUTO_INCREMENT, -- Khóa chính
@@ -536,7 +548,6 @@ CREATE TABLE service_features (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày tạo
     FOREIGN KEY (service_id) REFERENCES services(id) -- Khóa ngoại đến bảng dịch vụ
 );
-
 
 -- Bảng gói dịch vụ
 CREATE TABLE service_packages (
@@ -552,7 +563,6 @@ CREATE TABLE service_packages (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày tạo
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Ngày cập nhật
 );
-
 
 -- Bảng chi tiết tính năng của gói dịch vụ
 CREATE TABLE package_features (
@@ -609,8 +619,6 @@ CREATE TABLE IF NOT EXISTS blog_posts (
     FOREIGN KEY (author_id) REFERENCES blog_authors(author_id) ON DELETE SET NULL,
     FOREIGN KEY (category_id) REFERENCES blog_categories(category_id) ON DELETE SET NULL
 );
-
-
 
 -- Tạo bảng categories (danh mục bài viết)
 CREATE TABLE IF NOT EXISTS blog_categories (
