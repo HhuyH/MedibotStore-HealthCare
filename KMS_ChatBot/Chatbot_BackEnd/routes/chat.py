@@ -58,7 +58,7 @@ symptom_list = get_symptom_list()
 async def chat_stream(msg: Message = Body(...)):
     role = normalize_role(msg.role)
     # logger.info(f"ID: {msg.user_id} User: ({msg.username}) Session:({msg.session_id}) với vai trò {role} gửi: {msg.message}")
-    logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role} || Role: {msg.message}")
+    logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role} || msg: {msg.message}")
     if not has_permission(role, "chat"):
         async def denied_stream():
             yield "data: ⚠️ Bạn không được phép thực hiện chức năng này.\n\n"
@@ -69,8 +69,6 @@ async def chat_stream(msg: Message = Body(...)):
     # ✅ Load session data trước
     session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
 
-    # ✅ Đảm bảo active_date được cập nhật và reset session nếu cần
-    session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
     session_data = await ensure_active_date_fresh(msg, session_data)
 
     # Cập nhật active_date
@@ -372,9 +370,9 @@ async def chat_stream(msg: Message = Body(...)):
                 chunks = []
                 async for chunk in booking_appointment(
                     user_message=msg.message,
-                    recent_messages=session_data.get("recent_messages", []),
-                    recent_user_messages=session_data.get("recent_user_messages", []),
-                    recent_assistant_messages=session_data.get("recent_assistant_messages", []),
+                    recent_messages=recent_messages,
+                    recent_user_messages=recent_user_messages,
+                    recent_assistant_messages=recent_assistant_messages,
                     session_id=msg.session_id,
                     user_id=msg.user_id
                 ):
