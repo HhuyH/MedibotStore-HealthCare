@@ -114,15 +114,20 @@ async def detect_intent(
         DO NOT change the intent in the following cases:
 
         1. If `last_intent` == `booking_request`, and the user's message:
-        - Is a name (e.g., "Tôi tên là An")
-        - Is mentioned someone (e.g., "Bắc sĩ Minh")
-        - Is a phone number (e.g., "0901234567")
-        - Is a location or address (e.g., "TPHCM", "Quận 1", "ở đường X")
-        - Is a datetime (e.g., "ngày mai", "10h sáng", "Thứ 3")
+
+        - Provides a **name** (e.g., "Tôi tên là An")
+        - Mentions a **person** (e.g., "Bác sĩ Minh")
+        - Includes a **phone number** (e.g., "0901234567")
+        - Contains a **location or address** (e.g., "TPHCM", "Quận 1", "ở đường X")
+        - Specifies a **date or time** (e.g., "ngày mai", "10h sáng", "Thứ 3")
+        - Mentions **a symptom** (e.g., "đau đầu", "sốt", "khó thở")
+        - Asks to **view doctor suggestions** (e.g., "cho mình xem danh sách bác sĩ", "có bác sĩ nào không", "gợi ý bác sĩ", "xem bác sĩ", "bác sĩ nào khám tim")
+        - Mentions **a medical specialty** or **a type of appointment** (e.g., "khám tim mạch", "khám da liễu", "khám nội tiết", "mình muốn khám tổng quát")
 
         → Then:
-        - DO NOT classify as `user_profile`, `sql_query`, or `general`.
-        - Always preserve intent as `booking_request`.
+        - ❗ DO NOT classify as `user_profile`, `sql_query`, or `general`.
+        - ✅ **Always preserve intent as `booking_request`**, even if the message overlaps with other categories (e.g., symptoms, location, time).
+
 
         2. If the `last_bot_msg` contains confirmation questions like:
         - "Bạn xác nhận đặt lịch này chứ"

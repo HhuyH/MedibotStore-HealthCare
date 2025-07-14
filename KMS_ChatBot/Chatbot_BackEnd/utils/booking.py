@@ -37,12 +37,7 @@ async def booking_appointment(
     recent_assistant_messages: list[str],
     session_id=None,
     user_id=None,
-):
-    # B1: Kiểm tra thông tin còn thiếu
-    basic_info = await check_missing_booking_info(user_id=user_id, session_id=session_id)
-    missing_fields = [k for k in ["full_name", "phone", "location"] if not basic_info.get(k)]
-    # logger.info(f"📋 Thông tin thiếu: {missing_fields}")
-    
+):    
     session_data = await get_session_data(user_id=user_id, session_id=session_id)
     # 📥 Lấy từ session
     logger.info("📦 JSON từ session trước khi chuyền vào prompt:\n" + json.dumps(session_data.get("booking_info", {}), indent=2, ensure_ascii=False))
@@ -62,6 +57,19 @@ async def booking_appointment(
     clinic_id = extracted.get("clinic_id", "")
     doctor_id = extracted.get("doctor_id", "")
     specialty_id = extracted.get("specialty_id", "")
+    schedule_id = extracted.get("schedule_id", "")
+
+    basic_info = await get_missing_booking_info(user_id=user_id, extracted=extracted)
+    missing_fields = [k for k in ["full_name", "phone", "location"] if not basic_info.get(k)]
+    logger.info(f"📋 Thông tin thiếu: {missing_fields}")
+
+    # 📌 Merge lại trước khi tạo prompt
+    merged_extracted = {**extracted, **{k: v for k, v in basic_info.items() if v}}
+
+    session_data["booking_info"] = {
+        **booking_info,
+        "extracted_info": merged_extracted
+    }
 
     # Ưu tiên lấy clinic từ specialties hiện tại
     if specialties:
@@ -75,35 +83,65 @@ async def booking_appointment(
     else:
         suggested_clinics = []
 
-
     # Ưu tiên lấy tất cả bắc sĩ từ cơ sỡ đó
     if clinic_id:
         suggested_doctors = get_doctors(clinic_id)
         session_data["suggested_doctors"] = suggested_doctors
+
+        suggested_doctors = [{
+            "doctor_id": d["doctor_id"],
+            "full_name": d["full_name"],
+            "specialty_name": d["specialty"],
+            "biography": d["biography"],
+            "clinic_id": clinic_id,
+        } for d in suggested_doctors]
+
+        session_data["suggested_doctors"] = suggested_doctors
+
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+
     # Nếu có bác sĩ dc lưu trong session thì lấy
     elif session_data.get("suggested_doctors"):
         suggested_doctors = session_data.get("suggested_doctors")
     else:
         suggested_doctors = []
 
+    # Lay lich kham
     if doctor_id and clinic_id and specialty_id:
         schedules = get_doctor_schedules(
             doctor_id=doctor_id,
             clinic_id=clinic_id,
             specialty_id=specialty_id
         )
-        session_data["schedules"] = schedules
-        await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+        if schedules:
+            session_data["schedules_info"] = serialize_schedules(schedules)
+            await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+        else:
+            schedules = []
+
+    elif schedule_id:
+        schedule_detail = get_schedule_by_id(schedule_id)
+        if schedule_detail:
+            schedules = [schedule_detail]  # Đưa về dạng list cho đồng nhất
+            session_data["schedules_info"] = serialize_schedules(schedules)
+            await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+        else:
+            schedules = []
+
     elif session_data.get("schedules_info"):
-        schedules = session_data.get("schedules_info")
+        schedules = session_data["schedules_info"]
+
     else:
         schedules = []
 
-    logger.info("🔍 Suggested clinics trước khi chuyền vào prompt:\n" + json.dumps(suggested_clinics, indent=2, ensure_ascii=False))
+
+    
+    # logger.info("🔍 Suggested clinics trước khi chuyền vào prompt:\n" + json.dumps(suggested_clinics, indent=2, ensure_ascii=False))
     safe_schedules = serialize_for_logging(schedules)
 
     # logger.info("🔍 lịch trích được trước khi chuyền vào prompt:\n" + json.dumps(safe_schedules, indent=2, ensure_ascii=False))
+    
+    status = booking_info.get("status", "")
 
     # B2: Tạo prompt và gọi GPT
     prompt = booking_prompt(
@@ -115,6 +153,7 @@ async def booking_appointment(
         suggested_doctors=suggested_doctors,
         schedules=schedules,
         booking_info=session_data.get("booking_info", {}),
+        status=status,
     )
 
     import tiktoken
@@ -168,6 +207,7 @@ async def booking_appointment(
     location = extracted.get("location")
     clinic_id = extracted.get("clinic_id")
     doctor_id = extracted.get("doctor_id")
+    schedule_id = extracted.get("schedule_id")
 
     if isinstance(specialty, list):
         specialties = specialty
@@ -175,19 +215,6 @@ async def booking_appointment(
         specialties = [specialty]
     else:
         specialties = []
-
-    # Nếu GPT chỉ trả về clinic_name nhưng không trả về clinic_id
-    if extracted.get("clinic_name") and not extracted.get("clinic_id"):
-        for c in session_data.get("suggested_clinics", []):
-            if normalize(c["clinic_name"]) == normalize(extracted["clinic_name"]):
-                extracted["clinic_id"] = str(c["clinic_id"])
-                break
-
-
-    # 💾 Cập nhật lại context
-    session_data["extracted_info"] = extracted
-    await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
-
 
     # 🧾 Log giá trị truyền vào get_clinics và get_doctors_by_clinic
     logger.info(f"📥 Input to get_clinics → location: {location}, specialties: {specialties}")
@@ -260,18 +287,18 @@ async def booking_appointment(
 
     # Xác định bác sĩ muốn khám
     elif status == "incomplete_doctor_info":
+
         if not clinic_id:
             yield {"message": "Không xác định được phòng khám để tìm bác sĩ."}
             return
 
         doctors = get_doctors(clinic_id=clinic_id, specialty=specialty)
-        logger.info(f"👨‍⚕️ Gợi ý bác sĩ: {[d['full_name'] for d in doctors]}")
 
         if not doctors:
             yield {"message": "Hiện không có bác sĩ nào phù hợp tại phòng khám này."}
             return
 
-        suggested = [{
+        suggested_doctors = [{
             "doctor_id": d["doctor_id"],
             "full_name": d["full_name"],
             "specialty_name": d["specialty"],
@@ -279,36 +306,58 @@ async def booking_appointment(
             "clinic_id": clinic_id,
         } for d in doctors]
 
-        session_data["suggested_doctors"] = suggested
+        session_data["suggested_doctors"] = suggested_doctors
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
 
         if len(doctors) > 1:
             names = ", ".join([d["full_name"] for d in doctors])
-            yield {"message": f"{message}\n\n{suggested}"}
+            yield {"message": f"{message}\n\n{suggested_doctors}"}
         else:
             yield {"message": message}
         return
 
     # Xác định lịch khám
     elif status == "incomplete_schedules_info":
-        schedules = get_doctor_schedules(
-            doctor_id=doctor_id,
-            clinic_id=clinic_id,
-            specialty_id=specialty_id
-        )
+        # Lấy lịch khám dựa vào thông tin sẵn có
+        if doctor_id:
+            # Ưu tiên lấy theo bác sĩ nếu đã rõ
+            schedules = get_doctor_schedules(
+                doctor_id=doctor_id,
+                clinic_id=clinic_id,
+                specialty_id=specialty_id
+            )
+        elif schedule_id:
+            # Nếu chỉ có schedule_id → truy xuất chi tiết lịch khám
+            schedule_detail = get_schedule_by_id(schedule_id)
+            if not schedule_detail:
+                yield {"message": "Không tìm thấy lịch khám tương ứng. Bạn muốn chọn lại không?"}
+                return
+            schedules = [schedule_detail]  # Đưa về dạng danh sách để xử lý thống nhất
+        else:
+            # Nếu không có đủ thông tin
+            yield {"message": "Xin vui lòng chọn bác sĩ hoặc lịch khám trước khi tiếp tục."}
+            return
 
         if not schedules:
             yield {"message": "Xin lỗi, hiện không có lịch khám nào phù hợp. Bạn muốn chọn lại thời gian khác không?"}
             return
 
-        session_data["schedules_info"] = schedules
-        await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+        # Lưu thông tin lịch vào session
+        session_data["schedules_info"] = serialize_schedules(schedules)
 
+        # Nếu schedule chỉ có 1 thì không cần hiển thị lại danh sách
         if len(schedules) > 1:
             formatted_schedule = format_weekly_schedule(schedules)
-            yield {"message": f"{message}\n\n{formatted_schedule}"}
+            yield {
+                "message": f"{message}\n\n{formatted_schedule}"
+            }
         else:
-            yield {"message": message}
+            yield {
+                "message": message
+            }
+
+        # Lưu lại session
+        await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
         return
 
     # In ra tất cả thông tin chờ người dùng xác nhận
@@ -345,7 +394,7 @@ async def booking_appointment(
                 return
             names = [d["full_name"] for d in doctors]
             suggested = "\n".join(f"- {name}" for name in names)
-            yield {"message": "Dưới đây là danh sách bác sĩ bạn có thể chọn lại:\n" + suggested}
+            yield {"message": message + "\n" + suggested}
             return
 
         elif target == "schedule":
@@ -357,7 +406,7 @@ async def booking_appointment(
                 f"Bác sĩ {row['full_name']} - {row['day_of_week']} từ {row['start_time']} đến {row['end_time']}"
                 for row in schedules
             ]
-            yield {"message": "Dưới đây là các lịch khám khác bạn có thể chọn lại:\n" + "\n".join(formatted)}
+            yield {"message": message + "\n" + "\n".join(formatted)}
             return
 
         elif target == "clinic":
@@ -370,7 +419,7 @@ async def booking_appointment(
                 return
             lines = [f"{c['name']} - {c['address']}" for c in clinics]
             suggestion = "\n".join(f"- {line}" for line in lines)
-            yield {"message": "Dưới đây là các phòng khám bạn có thể chọn lại:\n" + suggestion}
+            yield {"message": message + "\n" + suggestion}
             return
 
         elif target == "specialty":
@@ -431,6 +480,7 @@ def booking_prompt(
     suggested_doctors: list[str],
     schedules: list[str],
     booking_info,
+    status: str,
 ) -> str:
     last_bot_msgs = recent_assistant_messages[-3:] if recent_assistant_messages else []
     last_user_msgs = recent_user_messages[-3:] if recent_user_messages else []
@@ -441,27 +491,22 @@ def booking_prompt(
 
     full_name = extracted.get("full_name", "").strip()
     phone = extracted.get("phone", "").strip()
-    clinic_id = extracted.get("clinic_id", "")
-    specialty = extracted.get("specialty_name")
-    specialty_id = extracted.get("specialty_id")
-    location = extracted.get("location")
-    doctor_id = extracted.get("doctor_id")
 
     minimal_clinics = [
         {
             "clinic_id": c["clinic_id"],
             "clinic_name": c["clinic_name"],
-            # "address": c["address"]
+            "address": c["address"]
         }for c in suggested_clinics
     ]
 
-    logger.info("🔍 Suggested clinics đã được chuyền vào prompt:\n" + json.dumps(minimal_clinics, indent=2, ensure_ascii=False))
+    # logger.info("🔍 Suggested clinics đã được chuyền vào prompt:\n" + json.dumps(minimal_clinics, indent=2, ensure_ascii=False))
 
     specialties_str = ", ".join(f'"{s}"' for s in all_specialty_names)
     extracted = booking_info.get("extracted_info", {}) or {}
 
-    logger.info("latest_bot_message" + json.dumps(last_bot_msgs, ensure_ascii=False))
-    logger.info("latest_user_message" + json.dumps(last_user_msgs, ensure_ascii=False))
+    # logger.info("latest_bot_message" + json.dumps(last_bot_msgs, ensure_ascii=False))
+    # logger.info("latest_user_message" + json.dumps(last_user_msgs, ensure_ascii=False))
 
     # "suggested_clinics": {json.dumps(suggested_clinics, ensure_ascii=False)},
     # Nhiệm vụ và cách giả trị dã có
@@ -494,20 +539,23 @@ def booking_prompt(
         ### 🎯 SYSTEM INSTRUCTION:
 
         You are a medical appointment assistant. Follow these rules **strictly and step-by-step**, and DO NOT skip ahead.
+        If full_name and phone already exist in extracted_info, you MUST assume they are already collected, even if user just sent them.
+        Do NOT ask again.
+
+        Only ask what's still missing.
 
     """.strip()
 
-    if not full_name or not phone:
+    if (not full_name or not phone) and status != "incomplete_clinic_info":
         print("⚠️ Thiếu họ tên hoặc số điện thoại.")
-        print(f"👤 Họ tên: {full_name} | ☎️ SĐT: {phone}")
-        
         prompt += f"""
             ------------------------------------------------------------------
             Set "status": "incomplete_info" if:
             - 'specialty_name' is not determined
             OR
             - Any required fields are missing: full_name, phone
-            (Note: location is optional and may be missing — do NOT block progress because of it.)
+            (Note: location is optional *only if the user refuses or cannot provide it clearly*.
+            → You MUST still ask for location if it is missing. Only skip if the user gives vague or refusing answers.)
 
             Then follow the logic below step-by-step:
             If "extracted_info.specialty_name" is already provided, skip STEP 1 and 2.
@@ -522,9 +570,13 @@ def booking_prompt(
 
             STEP 2. If "prediction_today_details" is available:
             → Use it to infer the possible medical specialties related to the symptoms or diagnosis.
-            → Return a list of matching 'specialty_name' values (if any), mapped to their corresponding "specialty_id".
-            → For example, if the prediction includes “đau ngực” and “khó thở”, the result might be ["Tim mạch", "Hô hấp"].
-            → Each 'specialty_name' must match one of: [{specialties_str}].
+            → Return a list of relevant 'specialty_name' values (if any), each mapped to its corresponding "specialty_id".
+            → For example, if the prediction includes “đau ngực” and “khó thở”, the result might be: ["Tim mạch", "Hô hấp"].
+            → Each 'specialty_name' must strictly match one of: [{specialties_str}].
+            → If multiple specialties apply, provide a short and clear list (maximum 3 items) and ask the user to choose one.
+            → Example message to user (in Vietnamese):
+            - “Triệu chứng của bạn có thể liên quan đến các chuyên khoa sau: Tim mạch, Hô hấp. Bạn muốn đặt khám ở khoa nào?”
+            → Do NOT auto-select a specialty for the user unless they explicitly ask for a recommendation.
 
             ⚠️ Only include medical specialties in the `specialty_name` list.
             Do NOT include locations, dates, times, or any unrelated strings.
@@ -550,9 +602,9 @@ def booking_prompt(
             Check `extracted_info` for missing fields. A field is considered missing if null, empty string (""), or not present.
 
             Required fields:
+            - location
             - full_name
             - phone
-            - location
 
             ❗ Do NOT ask for a field if it already exists and is non-empty.
 
@@ -568,7 +620,7 @@ def booking_prompt(
             - If `location` is empty, try to extract it from the user's most recent message or recent conversation context.
             - Accept short answers (e.g., “tphcm”, “Hà Nội”, “Đà Nẵng”) as valid location inputs.
             - Normalize common variants into **the exact canonical form used in the database**. For example:
-            - "tp hcm", "tphcm", "hcm", "Sài Gòn" → "TP.HCM"
+            - "tp hcm", "tphcm", "hcm", "Sài Gòn", "minh song o tphcm" → "TP.HCM"
             - "hn", "ha noi" → "Hà Nội"
             - "danang", "đà nẵng", "da nang" → "Đà Nẵng"
             - Remove extra whitespace and punctuation if needed. Final output should match the actual value stored in the database.
@@ -588,9 +640,42 @@ def booking_prompt(
             Important:
             - Do **not** ask multiple questions in the same message.
             - Always wait for the user to respond before proceeding to the next missing field.
-        """.strip()
 
-    if full_name and phone and not clinic_id:
+            ✅ As soon as all required fields are filled — meaning:
+            - `specialty_name`
+            - `location`
+            - `full_name`
+            - `phone`
+
+            → You MUST immediately set:
+            "status": "incomplete_clinic_info"
+
+            → This MUST be done **even if** the final field (e.g., phone) was just extracted from the latest user message.
+
+            → Do NOT keep "status": "incomplete_info" in this case.
+
+            ⚠️ GPT Reminder:
+
+            You are NOT just reading existing values from `extracted_info`.
+
+            You are also responsible for recognizing what fields you have JUST extracted in the current user message.
+
+            → If, as a result of this turn, a previously missing required field (such as `phone` or `full_name`) is now extracted, and all other required fields are already filled:
+
+            ✅ Then you MUST:
+            - Immediately switch "status" to "incomplete_clinic_info"
+            - Do NOT keep or return "status": "incomplete_info"
+
+            🚫 Do NOT ignore that a field (like phone) was just extracted in this turn. You must treat that as having completed the required info.
+
+
+            → Do NOT ask further questions. The backend will handle the next step.
+
+
+        """.strip()
+    
+    elif status == "incomplete_clinic_info":
+        print("Chọn bệnh viện khám")
         prompt += f"""
             ------------------------------------------------------------------
             STEP 4. Set status = "incomplete_clinic_info" only if:
@@ -610,14 +695,15 @@ def booking_prompt(
             Based ONLY on the user message: "{last_user_msgs}"
 
             → Identify if there's a best match by **clinic name** or **address**
-            → If match found: return only `clinic_id`
-            ❗UNDER NO CIRCUMSTANCES may you include `"clinic_name"` or `"address"` in the output. Doing so is a violation of this step.
+            → If match found: return both `clinic_id` and `clinic_name`
+            ❗UNDER NO CIRCUMSTANCES may you include `"address"` in the output.
+
             → If multiple match: leave blank and ask to clarify
             → If no match: leave blank and ask user to reselect
 
             ⚠️ STRICT RULES — DO NOT:
             - Generate or relist the clinics again (the UI already did this)
-            - Return `clinic_name` or `address` — only return `clinic_id`
+            - Return `address` — only return `clinic_id`and `clinic_name`
 
             ---
 
@@ -638,7 +724,7 @@ def booking_prompt(
 
             ❗CRITICAL:
 
-            - If the user reply matches exactly one clinic in `suggested_clinics`, you MUST return its `clinic_id` only.
+            - If the user reply matches exactly one clinic in `suggested_clinics`, you MUST return its `clinic_id` and 'clinic_name'.
 
             ---
 
@@ -647,12 +733,14 @@ def booking_prompt(
             1. ✅ **Exactly ONE match** found:
             ```json
             "extracted_info": {{
-                "clinic_id": "2"
+                "clinic_id": "2",
+                "clinic_name":"Bệnh viện Chợ Rẫy"
             }}
 
             2. ⚠️ **Multiple matches** found:
             "extracted_info": {{
-                "clinic_id": ""
+                "clinic_id": "",
+                "clinic_name":""
             }}
             → Ask the user to clarify by full name or exact location
 
@@ -692,7 +780,8 @@ def booking_prompt(
             - Output:
             ```json
             "extracted_info": {{
-                "clinic_id": "2"
+                "clinic_id": "2",
+                "clinic_name":"Bệnh viện Chợ Rẫy"
             }}
 
             🟢 Case 2 — Match by partial address:
@@ -706,7 +795,8 @@ def booking_prompt(
             - Output:
             ```json
             "extracted_info": {{
-                "clinic_id": "5"
+                "clinic_id": "5",
+                "clinic_name": "Phòng khám đa khoa Pasteur"
             }}
 
             🟢 Case 3 — One clinic only + confirmation:
@@ -724,132 +814,301 @@ def booking_prompt(
 
             🧷 FINAL INSTRUCTION (non-negotiable):
 
-            → Do NOT include clinic_name or any additional explanation
-            → Do NOT ask the user to confirm again
-            → Do NOT say “Bạn chắc chắn chứ?” — this is invalid
+            → If you successfully identify **exactly ONE matching clinic** from `suggested_clinics` based on the user's **latest message**:
 
-            Only return:
+            - You MUST return:
+                - `"clinic_id"` and `"clinic_name"` inside `"extracted_info"`
+                - And set `"status": "ask_for_doctor_or_schedules"`
 
-            json
+            ❗This MUST be done **immediately**, even if the match just occurred from the current message.
 
-            "extracted_info": {{
-                "clinic_id": "<matching ID as string>"
+            ❗Do NOT keep `"status": "incomplete_clinic_info"` in this case.
+
+            Your output **must include**:
+
+            ```json
+            {{
+                "extracted_info": {{
+                    "clinic_id": "<string clinic_id>",
+                    "clinic_name": "<string clinic_name>"
+                }},
+                "status": "ask_for_doctor_or_schedules"
             }}
+
+            → If no confident match is found (zero or multiple), leave "clinic_id" and "clinic_name" empty, and set:
+
+            "status": "incomplete_clinic_info"
+
+            ⚠️ Do NOT keep "status" as "incomplete_clinic_info" once a valid clinic is identified.
+
+            ⚠️ Do NOT skip the "status" field under any circumstance.
+
+        """.strip()
+        
+    elif status == "ask_for_doctor_or_schedules":
+        prompt += f"""
+            ------------------------------------------------------------------
+            STEP 6A. Determine Next Action (Doctor vs. Schedule)
+
+            You are currently at `"status": "ask_for_doctor_or_schedules"`.  
+            The user has already selected a specialty and a clinic.
+
+            → Your goal is to determine the user’s intent:
+            Do they want to:
+            1. Choose a **doctor**?
+            2. Choose a **time/schedule**?
+            3. Or have not expressed a clear intent yet?
+
+            Ask user "What you want to see to show the list" not help them to choose.
+
+            You MUST analyze `last_user_messages` to identify their preference.
+
+            ▶️ If the user message contains **intent to choose a doctor**, such as:
+
+                - "Mình muốn chọn bác sĩ"
+                - "Bệnh viện này có bác sĩ nào?"
+                - "Cho mình xem danh sách bác sĩ"
+                - "Tôi muốn khám với bác sĩ Linh"
+                - "Có bác sĩ nữ không?"
+                - "Ai giỏi nhất ở đây?"
+                - "cho minh xem danh sach bac si di"
+
+            → Then:
+            - Set `"status": "incomplete_doctor_info"`
+            - Do **not** repeat any previous messages.
+            - The backend will show the list of doctors based on the current `clinic_id`.
+
+            ▶️ If the user message contains **intent to choose a schedule**, such as:
+
+                - "Cho mình xem lịch khám"
+                - "Có khám thứ Bảy không?"
+                - "Mình rảnh chiều mai"
+                - "Mình muốn đặt lịch vào sáng thứ Hai"
+                - "Có lịch khám vào cuối tuần không?"
+
+            → Then:
+            - Set `"status": "incomplete_schedules_info"`
+            - Do **not** repeat any previous messages.
+            - The backend will show the available schedules for this clinic and specialty.
+
+            ▶️ If the user does **not express a clear intent**, you MUST ask them in a helpful, polite, and natural tone. Example:
+
+            > "Bạn muốn chọn bác sĩ trước, hay xem lịch khám trước ạ? Mình sẽ hiển thị danh sách tương ứng để bạn lựa chọn nhé."
+
+            → Keep `"status": "ask_for_doctor_or_schedules"` in this case.
+
+            🔒 Critical Notes:
+
+            - 🚫 Do **NOT** set `status` back to `"incomplete_info"` at this point.
+            - 🚫 Do **NOT** ask again for full_name, phone, or location.
+            - 🚫 Do **NOT** clear any previously extracted info.
+            - 🧠 The system will **automatically show** the doctor or schedule list based on the selected status.
+
+            ✅ This step ensures the booking continues smoothly toward completion.
 
         """.strip()
 
-    if clinic_id:
+    elif status == "incomplete_doctor_info":
+        logging.info("🧑‍⚕️ Danh sách bác sĩ gợi ý: %s", suggested_doctors)
         prompt += f"""
-
             ------------------------------------------------------------------
-            STEP 6A. Determine Next Action (Doctor vs. Schedule)
-                After the user has selected both specialty and clinic:
+            STEP 6B. If "status" is "incomplete_doctor_info":
 
-                You MUST analyze their message 'last_user_msgs' to decide the next action:
+            When the user chooses a doctor, you MUST determine their intent and extract doctor information **only from the current `suggested_doctors` list**.
 
-                If the user mentions:
+            User input (in "last_user_msgs") may be:
 
-                A doctor name, a phrase like “chọn bác sĩ”, or anything indicating they want to pick a doctor:
-                → You MUST set "status": "incomplete_doctor_info"
+            - A full doctor name (e.g., "Nguyễn Hoàng Nam")
+            - A partial name (e.g., "Dr Linh", "bác sĩ Nam", "Hoài Nam")
+            - A generic confirmation (e.g., "ok", "choose that doctor", "fine", "sure") — only if there is **exactly one doctor** in the list
 
-                If the user mentions:
+            You MUST:
 
-                A specific date, a weekday (e.g., "thứ hai"), a time (e.g., “buổi sáng”), or any phrase like “muốn đặt lịch ngày mai”:
-                → You MUST set "status": "incomplete_schedules_info"
+            - Normalize the user input: remove accents, convert to lowercase, strip prefixes like "dr", "bác sĩ", etc.
+            - Compare the result with each `doctor["doctor_name"]` in the `available_doctors` list
+            - **DO NOT accept or match any doctor outside of `available_doctors`**
+            - The most important field is `doctor_id` — without it, do not proceed
 
-                ❗If you fail to set the correct status, the system will be unable to proceed.
+            ### Matching logic:
 
-                → Do not repeat the previous message. Just update the status field.
+            - ✅ If **exactly one match** is found:
+            - Set `"doctor_id"` and `"doctor_name"` in `extracted_info` using that doctor
+            - Set `"status"` to `"incomplete_schedules_info"`
+            - Update `"message"` to prompt the user to choose a schedule (e.g., "Which time would you like to book?")
 
-            STEP 6B. If `status == "incomplete_doctor_info"`
+            - ⚠️ If **multiple matches** are found:
+            - DO NOT set `"doctor_id"` or `"doctor_name"`
+            - Ask the user to clarify using the full doctor name
 
-                Once the user chooses to select a doctor:
+            - 🔄 If there is **only ONE doctor** in `available_doctors`, and the user responds with a generic confirmation like:
+            - "ok", "sure", "choose that doctor", "yes", "fine", "go with that", "alright"
+            
+            → You MUST:
+            - Set `"doctor_id"` and `"doctor_name"` using that one doctor in `available_doctors`
+            - Set `"status"` to `"incomplete_schedules_info"`
+            - Update `"message"` to prompt for schedule selection
 
-                You MUST identify their intent and extract doctor information based on the available `suggested_doctors` list.
+            ❗CRITICAL WARNING:  
+            Always extract `doctor_id` **only** from the current `available_doctors` list.  
+            If `doctor_id` is missing or not from the list, the booking process will **break**.
+            you MUST transition the status to "incomplete_schedules_info" and prompt user for a schedule.
+            Otherwise, the flow will stall and booking cannot continue.
 
-                The user may reply in 'last_user_msgs' with:
 
-                - A full doctor name (e.g., “Nguyễn Hoàng Nam”)
-                - A partial name (e.g., “bác sĩ Nam”, “Hoài Nam”)
-                - A generic confirmation (e.g., “ok”, “đặt bác sĩ đó”) if only one doctor is available
+            🧷 Final instruction:
+            - You MUST check both existing extracted_info and the new fields extracted from the current user message.
+            - If both doctor_id and schedule_id are present by the end of this step → "status" MUST be "complete".
 
-                You MUST:
+            🚫 Do NOT ask any more questions.
+            🚫 Do NOT leave "status" as "incomplete_info", or any other intermediate state once both are known.
 
-                - Normalize user input (remove accents, convert to lowercase)
-                - Compare with each `doctor["full_name"]` in `suggested_doctors`
-
-                Matching behavior:
-
-                - If exactly one match is found:
-                → Set `"doctor_id"` and `"doctor_name"` from the matched doctor
-
-                - If multiple matches are found:
-                → Do **not** set `"doctor_id"` or `"doctor_name"`
-                → Ask the user to clarify using the full doctor name
-
-                - If only one doctor exists in `suggested_doctors`, and the user replies with any confirmation:
-                → Set `"doctor_id"` and `"doctor_name"` using that doctor
-
-                ❗CRITICAL WARNING:
-                If `suggested_doctors` contains only one doctor, and the user gives any affirmative confirmation,
-                you MUST return both `"doctor_id"` and `"doctor_name"` in `extracted_info`, and update the `status == "incomplete_schedules_info"`.
-
-                → If you fail to do this, the scheduling pipeline will crash and all progress may be lost.
-
-            STEP 6C. If `status == "incomplete_schedules_info"`
-
-                Once the user chooses to select a date/time in 'last_user_msgs' for appointment:
-
-                - Ask for preferred date/time (e.g., “thứ hai tuần sau”, “sáng mai”, “14h ngày 12/7”)
-
-                Once `schedule_time` is provided:
-
-                - Search for matching schedules (filtered by clinic, and optionally doctor)
-
-                - If no match found:
-                → Reply: *“Xin lỗi, không có lịch khám nào phù hợp với thời gian đó. Bạn có muốn chọn thời gian khác không?”*
-
-                - If multiple doctors are available:
-                → Ask the user to select a doctor
-
-                - If exactly one matching doctor is found:
-                → Set:
-                    - `"doctor_id"`
-                    - `"doctor_name"`
-                    - `"schedule_id"`
-
-                If only one schedule is available:
-                → Ask: *“Mình tìm được một lịch khám duy nhất là \[day\_of\_week] lúc \[start\_time]. Bạn có muốn đặt lịch này không?”*
-                → If the user replies with any confirmation:
-                → Set `"schedule_id"`, `"doctor_id"`, and `"doctor_name"`
-
-                ❗CRITICAL WARNING:
-                If you detect only one matching schedule and the user confirms, but you fail to return the correct
-                `"schedule_id"`, `"doctor_id"` and `"doctor_name"`, the system will crash immediately.
-
+            """.strip()
+    
+    elif status == "incomplete_schedules_info":
+        logging.info("📅 Danh sách lịch khám gợi ý: %s", schedules)
+        prompt += f"""
             ------------------------------------------------------------------
-            STEP 7. If all required information is complete, politely confirm the booking and set `"status": "complete"`.
-            - Ask the user if they want to confirm or change any detail.
+            STEP 6C. If `status == "incomplete_schedules_info"`:
 
-            STEP 8: If the user wants to change any part of the booking (e.g., doctor, schedule, clinic, or specialty):
+            📥 Once the user chooses a date/time in `last_user_msgs` for an appointment:
 
-            → Then:
-                - Set `"status": "modifying_info"`
-                - Set `"modification_target"`: one of `"doctor"`, `"schedule"`, `"clinic"`, or `"specialty"`
-                - Respond with a friendly message asking the user to specify the updated value for that part.
-                - Do NOT modify other parts of `"extracted_info"` unless user gives a new value.
+            - Parse the user's message to extract `schedule_time` (e.g., “thứ hai tuần sau”, “sáng mai”, “14h ngày 12/7”)
 
-            🚫 If you detect a modification intent, SKIP STEP 10. DO NOT confirm the booking yet.
+            🔍 Then search for matching schedule(s) from the provided `available_schedules`, using:
 
-            STEP 9: Only proceed here if the user clearly confirms the booking without asking to modify anything.
+            - ✅ Required: `clinic_id`
+            - ⚠️ Optional: `doctor_id` (if it was selected earlier)
 
-            → Then:
-                - Set `"status": "confirmed"`
-                - Set `"should_insert": true`
-                - Respond with a warm confirmation message in Vietnamese.
+            🎯 Matching outcomes:
 
-            🚫 If there's any indication the user wants to change doctor, schedule, clinic, or specialty → DO NOT confirm. Go to STEP 9 instead.
+            1. ❌ **No matching schedules found**:
+            - Reply:
+                > *"Xin lỗi, không có lịch khám nào phù hợp với thời gian đó. Bạn có muốn chọn thời gian khác không?"*
+            - Do not set `schedule_id`
 
+            2. ⚠️ **Multiple matching schedules (across different doctors)**:
+            - Reply:
+                > *"Có nhiều bác sĩ phù hợp với thời gian này. Bạn muốn chọn bác sĩ nào?"*
+            - Only allow selection from `available_doctors`
+            - Do not set `schedule_id` yet
+            - Keep `status = "incomplete_doctor_info"`
+
+            3. ✅ **Exactly one matching schedule found**:
+            - Immediately set:
+                ```json
+                "schedule_id": "...",
+                "doctor_id": "...",
+                "doctor_name": "...",
+                "status": "complete"
+                ```
+            - Reply:
+                > *"Đã tìm thấy lịch khám phù hợp. Đang tiến hành đặt lịch..."*
+
+
+            4. ✅ **Only one available schedule in total** (not just a match):
+            - Reply:
+                > *"Mình tìm được một lịch khám duy nhất là [day_of_week] lúc [start_time]. Bạn có muốn đặt lịch này không?"*
+            - If user confirms:
+                - You MUST return:
+                ```json
+                "schedule_id": "...",
+                "doctor_id": "...",
+                "doctor_name": "...",
+                "status": "complete"
+                ```
+
+            ❗CRITICAL WARNING:  
+            - All logic must be strictly based on the provided `available_schedules`.
+            - If you detect only **one valid schedule** and the user confirms, but you **fail to set `status = "complete"`**, the system will crash.
+            - Do NOT hallucinate or invent any schedule outside the provided list.
+
+        """.strip()
+
+    elif status == "complete":
+        print("Xác nhận lịch khám")
+        prompt += f"""
+            ------------------------------------------------------------------
+            STEP 7. Final Booking Confirmation
+
+            ✅ All required information has been collected successfully.
+            → Do NOT repeat or display booking details again — the UI has already shown them.
+
+            Please now analyze the user's latest message to determine if:
+
+            1️⃣ They clearly confirm the booking (e.g., "ok", "xác nhận", "đặt luôn", "đồng ý", etc.)
+                → Then you MUST set:
+                - "status": "confirmed"
+                - "should_insert": true
+                - Respond with a warm and polite confirmation message in Vietnamese
+
+            2️⃣ They want to modify any part of the booking (e.g., doctor, schedule, clinic, or specialty)
+                → Then you MUST set:
+                - "status": "modifying_info"
+
+            ❌ If there's any ambiguity, do NOT confirm yet.
+            → Wait for user clarification before setting `"status": "confirmed"`.
+
+            ⚠️ CRITICAL:
+            - Do NOT ask for confirmation again if the user already gave a clear yes.
+            - Do NOT proceed to confirmation if they mention wanting to change anything.
+        """.strip()
+
+    elif status == "modifying_info":
+        prompt += f"""
+            ------------------------------------------------------------------
+            STEP 8. Modify Booking Information (User-Initiated)
+
+            The user wants to change a specific part of their booking (e.g., doctor, schedule, clinic, or specialty).
+
+            → You MUST:
+            1️⃣ Analyze the user's latest message to determine **which field** they want to modify.
+                - Set `"modification_target"` as one of: "doctor", "schedule", "clinic", or "specialty"
+
+            2️⃣ Respond with a friendly Vietnamese message asking them to provide the new value for that specific field.
+
+            3️⃣ Wait for the user's reply with the updated information.
+
+            4️⃣ Once the user provides the new value:
+                - Update that specific field in `extracted_info`
+                - Do NOT change unrelated fields
+
+            5️⃣ Check if all required booking information is now complete:
+                - full_name
+                - phone
+                - location
+                - specialty_name
+                - clinic_id
+                - doctor_id
+                - schedule_id
+
+                → If ALL of these are present and valid:
+                - You MUST set `"status": "complete"`
+
+            🧷 Important Rules:
+            - You MUST infer `modification_target` directly from the user’s message.
+            - Do NOT ask "What do you want to change?" — infer and act.
+            - Only ask for the updated value once the target is identified.
+            - you do NOT need to generate a detailed or user-facing message.
+            - The frontend/UI will handle communication.
+
+            ✅ When the user finishes providing the new information, and the booking is complete again:
+            - Set `"status": "complete"`
+            - Prepare to reconfirm in the next step.
+        """.strip()
+
+    elif status == "confirmed":
+        prompt += f"""
+            ------------------------------------------------------------------
+            STEP 9. Final Confirmation
+
+            The user has clearly confirmed the booking without requesting any change.
+
+            → You MUST:
+            - Set "status": "confirmed"
+            - Set "should_insert": true
+            - Respond with a warm, friendly confirmation message in Vietnamese.
+
+            ✅ The system will now insert the appointment into the database.
         """.strip()
 
     prompt += f"""
@@ -860,7 +1119,7 @@ def booking_prompt(
 
         ### 📦 Output format (MUST be JSON):
         {{
-            "status": "waiting_complete_info"| "incomplete_info" | "incomplete_clinic_info" | "incomplete_doctor_info" | "incomplete_schedules_info" | "complete" | "modifying_info" | "confirmed",
+            "status": "waiting_complete_info"| "incomplete_info" | "incomplete_clinic_info" | "ask_for_doctor_or_schedules" | "incomplete_doctor_info" | "incomplete_schedules_info" | "complete" | "modifying_info" | "confirmed",
             "request_appointment_time": true | false,
             "modification_target": "doctor" | "schedule" | "clinic" | "specialty" | null, ← only for `modifying_info`
             "extracted_info": {{
@@ -870,6 +1129,7 @@ def booking_prompt(
                 "specialty_id": ["..."],
                 "specialty_name": ["..."],  
                 "clinic_id": ["..."],
+                "clinic_name": "...",
                 "schedule_id": ["..."],
                 "doctor_id": ["..."],
                 "doctor_name": ["..."]
@@ -880,24 +1140,24 @@ def booking_prompt(
 
         ⚠️ Output only valid JSON — no explanations or markdown.    
     """.strip()
-    #Step 7            - Display all extracted info for confirmation.
+    
+    
+    
+    
+    #Step 7 - Display all extracted info for confirmation.
 
     # logger.info("📄 Full booking prompt:\n" + prompt)
 
     return prompt
 
 # Kiểm tra thông tin con thiếu khi đặt lịch
-async def check_missing_booking_info(user_id: int = None, session_id: str = None) -> dict:
-    session = await get_session_data(user_id=user_id, session_id=session_id)
-    booking_info = session.get("booking_info", {})
-    extracted = booking_info.get("extracted_info", {}) or {}
+async def get_missing_booking_info(user_id: int = None, extracted: dict = {}) -> dict:
+    extracted = extracted or {}
 
-    # Ưu tiên lấy từ extracted_info và session
-    full_name = extracted.get("full_name") or session.get("full_name")
-    phone = extracted.get("phone") or session.get("phone")
-    location = extracted.get("location") or session.get("location")
+    full_name = extracted.get("full_name")
+    phone = extracted.get("phone")
+    location = extracted.get("location")
 
-    # Nếu thiếu, lấy từ DB
     if user_id and (not full_name or not phone):
         conn = pymysql.connect(**DB_CONFIG)
         try:
@@ -910,37 +1170,15 @@ async def check_missing_booking_info(user_id: int = None, session_id: str = None
                 """, (user_id,))
                 row = cursor.fetchone()
                 if row:
-                    if not full_name:
-                        full_name = row[0]
-                    if not phone:
-                        phone = row[1]
+                    full_name = full_name or row[0]
+                    phone = phone or row[1]
         finally:
             conn.close()
 
-    # Nếu có thêm thông tin → cập nhật lại vào extracted_info và lưu session
-    updated_extracted = {
-        **extracted,
+    return {
         "full_name": full_name or "",
         "phone": phone or "",
-        "location": location or "",
-    }
-
-    session["booking_info"] = {
-        **booking_info,
-        "extracted_info": updated_extracted
-    }
-
-    await save_session_data(user_id=user_id, session_id=session_id, data=session)
-    # logger.info("📋 [CHECK INFO] Extracted info before return:\n" + json.dumps({
-    #     "full_name": full_name,
-    #     "phone": phone,
-    #     "location": location
-    # }, indent=2, ensure_ascii=False))
-
-    return {
-        "full_name": full_name,
-        "phone": phone,
-        "location": location
+        "location": location or ""
     }
 
 # lấy dự đoán bệnh hôm nay của người dùng
@@ -1038,7 +1276,7 @@ def get_doctors(clinic_id: int = None, specialty: list[str] = None) -> list[dict
             query = """
                 SELECT 
                     d.doctor_id,
-                    ui.full_name,
+                    ui.full_name as doctor_name,
                     s.name AS specialty_name,
                     d.biography
                 FROM doctors d
@@ -1231,7 +1469,7 @@ def insert_appointment(
 
 def get_schedule_by_id(schedule_id: int) -> dict:
     """
-    Trả về thông tin lịch khám + định dạng dễ hiểu (ngày, giờ, buổi), bao gồm dịch ngày sang tiếng Việt.
+    Trả về thông tin lịch khám + định dạng dễ hiểu (ngày, giờ, buổi), bao gồm doctor_id và dịch ngày sang tiếng Việt.
     """
     EN_TO_VI_DAY_MAP = {
         "Monday": "Thứ Hai",
@@ -1247,7 +1485,7 @@ def get_schedule_by_id(schedule_id: int) -> dict:
     try:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             cursor.execute("""
-                SELECT day_of_week, start_time, end_time
+                SELECT doctor_id, day_of_week, start_time, end_time
                 FROM doctor_schedules
                 WHERE schedule_id = %s
                 LIMIT 1
@@ -1257,14 +1495,13 @@ def get_schedule_by_id(schedule_id: int) -> dict:
             if not row:
                 return {}
 
+            doctor_id = row["doctor_id"]
             day_en = row["day_of_week"]
             start = row["start_time"]
             end = row["end_time"]
 
-            # Dịch ngày sang tiếng Việt nếu có
             day_vi = EN_TO_VI_DAY_MAP.get(day_en, day_en)
 
-            # Xác định buổi dựa vào giờ bắt đầu
             hour = start.hour
             if hour < 11:
                 period = "Buổi sáng"
@@ -1276,6 +1513,7 @@ def get_schedule_by_id(schedule_id: int) -> dict:
                 period = "Buổi tối"
 
             return {
+                "doctor_id": doctor_id,
                 "day_of_week": day_vi,
                 "start_time": start.strftime("%H:%M"),
                 "end_time": end.strftime("%H:%M"),
@@ -1354,3 +1592,15 @@ def match_clinic(user_input, suggested_clinics):
     if len(matched) == 1:
         return matched[0]
     return None
+
+def serialize_schedules(schedules: list[dict]) -> list[dict]:
+    result = []
+    for s in schedules:
+        s = s.copy()  # tránh modify trực tiếp
+        if isinstance(s.get("start_time"), (datetime.time, datetime.timedelta)):
+            s["start_time"] = str(s["start_time"])
+        if isinstance(s.get("end_time"), (datetime.time, datetime.timedelta)):
+            s["end_time"] = str(s["end_time"])
+        result.append(s)
+    return result
+

@@ -23,7 +23,8 @@ from utils.session_store import (
     clear_followup_asked_all_keys, 
     clear_symptoms_all_keys,
     update_chat_history_in_session,
-    reset_related_symptom_flag
+    reset_related_symptom_flag,
+    clear_all_sessions_in_redis
 )
 from utils.intent_utils import detect_intent, build_system_message
 from utils.symptom_utils import (
@@ -491,6 +492,9 @@ async def reset_session(data: ResetRequest):
             "related_symptom_asked": False
         }
     )
+
+    # Reset toan bo session
+    await clear_all_sessions_in_redis()
 
     # 🧹 Reset luôn bộ nhớ symptom riêng nếu có
     await clear_symptoms_all_keys(user_id=user_id, session_id=session_id)

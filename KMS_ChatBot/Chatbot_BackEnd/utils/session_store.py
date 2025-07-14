@@ -55,6 +55,16 @@ async def get_session_data(user_id: str = None, session_id: str = None) -> dict:
     # logger.info(f"📤 [GET] key = {key}, raw = {raw}")
     return json.loads(raw) if raw else {}
 
+# Reset Redis xóa sạch tất cả key
+async def clear_all_sessions_in_redis():
+    keys = await redis_client.keys("session:*")
+    if keys:
+        await redis_client.delete(*keys)
+        print(f"🧹 Đã xoá {len(keys)} sessions từ Redis.")
+    else:
+        print("✅ Không có session nào trong Redis.")
+
+
 # ----- Triệu chứng (ID dạng chuỗi) -----
 
 async def get_symptoms_from_session(user_id: str = None, session_id: str = None) -> list[dict]:
