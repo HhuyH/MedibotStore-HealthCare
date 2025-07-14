@@ -8,10 +8,11 @@ logger = logging.getLogger(__name__)
 import json
 from utils.openai_utils import chat_completion, stream_gpt_tokens
 import asyncio
-import datetime
 from collections import defaultdict
 import unicodedata
 import re
+from datetime import timedelta, time, datetime
+from collections import defaultdict
 
 def extract_json(text: str) -> str:
     """
@@ -532,7 +533,7 @@ def booking_prompt(
         }},
         "health_prediction_today": {json.dumps(prediction_today_details, ensure_ascii=False)},
         "valid_specialties": {json.dumps(specialties_str, ensure_ascii=False)},
-        "available_schedules": {json.dumps(schedules, ensure_ascii=False)},
+        "available_schedules": {json.dumps(serialize_schedules(schedules), ensure_ascii=False)},
         "available_doctors": {json.dumps(suggested_doctors, ensure_ascii=False)}
         
 
@@ -550,6 +551,23 @@ def booking_prompt(
         print("⚠️ Thiếu họ tên hoặc số điện thoại.")
         prompt += f"""
             ------------------------------------------------------------------
+
+            🔥 CRITICAL RULE (MUST FOLLOW):
+
+            → As soon as all required fields are present in `extracted_info`:
+            - specialty_name (non-empty)
+            - full_name (non-empty)
+            - phone (non-empty)
+
+            ✅ Then you MUST:
+            - Set "status": "incomplete_clinic_info"
+            - Do NOT keep "status": "incomplete_info"
+            - Do NOT ask any more questions
+
+            This rule applies EVEN IF the last required field (e.g., phone) was just extracted from the latest user message.
+
+            🚫 Failure to update status will break the booking process.
+
             Set "status": "incomplete_info" if:
             - 'specialty_name' is not determined
             OR
@@ -916,51 +934,49 @@ def booking_prompt(
 
             When the user chooses a doctor, you MUST determine their intent and extract doctor information **only from the current `suggested_doctors` list**.
 
-            User input (in "last_user_msgs") may be:
-
+            User input (in `last_user_msgs`) may be:
             - A full doctor name (e.g., "Nguyễn Hoàng Nam")
-            - A partial name (e.g., "Dr Linh", "bác sĩ Nam", "Hoài Nam")
-            - A generic confirmation (e.g., "ok", "choose that doctor", "fine", "sure") — only if there is **exactly one doctor** in the list
+            - A partial name (e.g., "Dr Linh", "bác sĩ Nam", "Nam")
+            - A natural sentence that includes confirmation and a name (e.g., "ok đặt bác sĩ Linh", "chọn bác sĩ Nam", "đặt lịch bác Hoàng")
+            - A generic confirmation (e.g., "ok", "sure", "choose that doctor", "yes") — only if there is **exactly one doctor** in the list
 
             You MUST:
 
-            - Normalize the user input: remove accents, convert to lowercase, strip prefixes like "dr", "bác sĩ", etc.
-            - Compare the result with each `doctor["doctor_name"]` in the `available_doctors` list
-            - **DO NOT accept or match any doctor outside of `available_doctors`**
-            - The most important field is `doctor_id` — without it, do not proceed
+            - Normalize the user input:
+            - Remove accents
+            - Convert to lowercase
+            - Remove polite or functional phrases that do not help identify the doctor (e.g., "dr", "bác sĩ", "bs", "đặt", "chọn", "ok", "luôn", etc.)
+            - Focus on identifying the meaningful name inside the sentence
+
+            - Then, compare the cleaned result with each `doctor["doctor_name"]` (also normalized the same way)
 
             ### Matching logic:
 
-            - ✅ If **exactly one match** is found:
-            - Set `"doctor_id"` and `"doctor_name"` in `extracted_info` using that doctor
+            - ✅ If exactly one match is found:
+            - Set `"doctor_id"` and `"doctor_name"` in `extracted_info`
             - Set `"status"` to `"incomplete_schedules_info"`
-            - Update `"message"` to prompt the user to choose a schedule (e.g., "Which time would you like to book?")
+            - Prompt user to choose a schedule (e.g., "Bạn muốn đặt vào thời gian nào?")
 
-            - ⚠️ If **multiple matches** are found:
+            - ⚠️ If multiple matches:
             - DO NOT set `"doctor_id"` or `"doctor_name"`
             - Ask the user to clarify using the full doctor name
 
-            - 🔄 If there is **only ONE doctor** in `available_doctors`, and the user responds with a generic confirmation like:
-            - "ok", "sure", "choose that doctor", "yes", "fine", "go with that", "alright"
-            
-            → You MUST:
-            - Set `"doctor_id"` and `"doctor_name"` using that one doctor in `available_doctors`
+            - 🔄 If there is only ONE doctor in `suggested_doctors` and the user gives a generic confirmation:
+            - Automatically select that doctor
             - Set `"status"` to `"incomplete_schedules_info"`
-            - Update `"message"` to prompt for schedule selection
+            - Prompt for schedule selection
 
             ❗CRITICAL WARNING:  
-            Always extract `doctor_id` **only** from the current `available_doctors` list.  
-            If `doctor_id` is missing or not from the list, the booking process will **break**.
-            you MUST transition the status to "incomplete_schedules_info" and prompt user for a schedule.
-            Otherwise, the flow will stall and booking cannot continue.
-
+            You MUST extract `doctor_id` only from the current `suggested_doctors` list.  
+            If `doctor_id` is missing or invalid, the booking flow will break.  
+            DO NOT proceed to schedule selection without a valid doctor.
 
             🧷 Final instruction:
-            - You MUST check both existing extracted_info and the new fields extracted from the current user message.
-            - If both doctor_id and schedule_id are present by the end of this step → "status" MUST be "complete".
+            - Check both the current `extracted_info` and new info from the user message.
+            - If both `doctor_id` and `schedule_id` are known, then set `"status"` to `"complete"` and stop asking further.
 
-            🚫 Do NOT ask any more questions.
-            🚫 Do NOT leave "status" as "incomplete_info", or any other intermediate state once both are known.
+            🚫 Do NOT ask any additional questions.
+            🚫 Do NOT leave `"status"` in `"incomplete_info"` or any other intermediate state once both are known.
 
             """.strip()
     
@@ -1523,6 +1539,17 @@ def get_schedule_by_id(schedule_id: int) -> dict:
     finally:
         conn.close()
 
+def format_time(value):
+    if isinstance(value, timedelta):
+        total_seconds = int(value.total_seconds())
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        return f"{hours:02}:{minutes:02}"
+    elif isinstance(value, (time, datetime)):
+        return value.strftime("%H:%M")
+    else:
+        return str(value)  # fallback nếu cần debug
+
 def format_weekly_schedule(schedules: list[dict]) -> str:
     day_map = {
         "Monday": "Thứ 2",
@@ -1537,8 +1564,8 @@ def format_weekly_schedule(schedules: list[dict]) -> str:
     grouped = defaultdict(list)
     for s in schedules:
         day = s["day_of_week"]
-        start = s["start_time"].strftime("%H:%M")
-        end = s["end_time"].strftime("%H:%M")
+        start = format_time(s["start_time"])
+        end = format_time(s["end_time"])
         doctor = s["full_name"]
         grouped[day].append(f"- {doctor}: {start} - {end}")
 
@@ -1558,7 +1585,7 @@ def serialize_for_logging(obj):
             key: serialize_for_logging(value)
             for key, value in obj.items()
         }
-    elif isinstance(obj, datetime.timedelta):
+    elif isinstance(obj, timedelta):
         return str(obj)
     else:
         return obj
@@ -1597,9 +1624,9 @@ def serialize_schedules(schedules: list[dict]) -> list[dict]:
     result = []
     for s in schedules:
         s = s.copy()  # tránh modify trực tiếp
-        if isinstance(s.get("start_time"), (datetime.time, datetime.timedelta)):
+        if isinstance(s.get("start_time"), (time, timedelta)):
             s["start_time"] = str(s["start_time"])
-        if isinstance(s.get("end_time"), (datetime.time, datetime.timedelta)):
+        if isinstance(s.get("end_time"), (time, timedelta)):
             s["end_time"] = str(s["end_time"])
         result.append(s)
     return result
