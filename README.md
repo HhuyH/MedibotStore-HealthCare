@@ -92,7 +92,7 @@ http://localhost:8000
 ## ✅ Các chức năng chính
 
 * **Health Talk**: Phân tích triệu chứng, hỏi đáp follow-up, đưa ra lời khuyên sức khỏe cơ bản.
-* **Tư vấn chuyên khoa**: Dựa trên triệu chứng đã lưu, chọn chuyên khoa phù hợp và giải thích lý do.
+* **Tư vấn sức khỏe**: Dưa theo mong muốn của người dùng mà gợi ý cách có thể cải thiện vấn đề mà người dùng đang gập phải.
 * **Đặt lịch khám**: Tạo lịch khám qua chat, xác nhận đầy đủ thông tin trước khi lưu.
 * **Gợi ý sản phẩm**: Gợi ý thực phẩm chức năng, thiết bị y tế nếu thấy phù hợp.
 * **Báo cáo cho bác sĩ**: Tổng hợp dữ liệu sức khỏe bệnh nhân gửi cho bác sĩ.
