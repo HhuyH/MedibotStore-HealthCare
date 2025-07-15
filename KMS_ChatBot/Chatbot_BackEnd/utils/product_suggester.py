@@ -146,7 +146,8 @@ async def summarize_products(
         ✅ Output rules:
         - For each product: write a short paragraph in **Vietnamese** recommending it
         - Each paragraph must end with:
-        👉 [Xem chi tiết tại đây](https://demo.site.vn/products/{{product_id}})
+        👉 [Xem chi tiết tại đây](http://localhost/shop/details.php?id={{product_id}})
+
         - Do NOT repeat or rephrase the raw description
         - Output all paragraphs in order, no numbering, no formatting, no extra explanation
         - Output in Vietnamese only

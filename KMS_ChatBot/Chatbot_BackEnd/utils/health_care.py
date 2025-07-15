@@ -203,7 +203,7 @@ async def health_talk(
 
         symptom_notes_list = list(note_map.values())
 
-        logger.info("📋 Updated symptom_notes_list:\n%s", json.dumps(symptom_notes_list, indent=2, ensure_ascii=False))
+        # logger.info("📋 Updated symptom_notes_list:\n%s", json.dumps(symptom_notes_list, indent=2, ensure_ascii=False))
 
         # Step 4: lưu vào session
         session_data["symptom_notes_list"] = symptom_notes_list
@@ -228,7 +228,6 @@ async def health_talk(
                 user_id=user_id,
             )
     
-
     # nếu action là post-diagnosis và next_action là diagnosis
     # thì sẽ tách message tại điểm DIAGNOSIS_SPLIT
     # nếu không có thì sẽ stream message bình thường

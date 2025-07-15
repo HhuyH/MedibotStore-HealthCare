@@ -14,7 +14,8 @@ from models import Message,ResetRequest
 from config.intents import INTENT_PIPELINES
 
 from utils.limit_history import limit_history_by_tokens, refresh_system_context
-from utils.auth_utils import has_permission, normalize_role
+from utils.auth_utils import enforce_permission, get_pipeline, log_intent_handling, normalize_role
+
 from utils.session_store import (
     resolve_session_key,
     get_session_data, 
@@ -23,7 +24,8 @@ from utils.session_store import (
     clear_followup_asked_all_keys, 
     clear_symptoms_all_keys,
     update_chat_history_in_session,
-    reset_related_symptom_flag
+    reset_related_symptom_flag,
+    clear_all_sessions_in_redis
 )
 from utils.intent_utils import detect_intent, build_system_message
 from utils.symptom_utils import (
@@ -58,19 +60,11 @@ symptom_list = get_symptom_list()
 async def chat_stream(msg: Message = Body(...)):
     role = normalize_role(msg.role)
     # logger.info(f"ID: {msg.user_id} User: ({msg.username}) Session:({msg.session_id}) với vai trò {role} gửi: {msg.message}")
-    logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role} || Role: {msg.message}")
-    if not has_permission(role, "chat"):
-        async def denied_stream():
-            yield "data: ⚠️ Bạn không được phép thực hiện chức năng này.\n\n"
-            await asyncio.sleep(1)
-            yield "data: 😅 Vui lòng liên hệ admin để biết thêm chi tiết.\n\n"
-        return StreamingResponse(denied_stream(), media_type="text/event-stream; charset=utf-8")
+    logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role} || msg: {msg.message}")
 
     # ✅ Load session data trước
     session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
 
-    # ✅ Đảm bảo active_date được cập nhật và reset session nếu cần
-    session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
     session_data = await ensure_active_date_fresh(msg, session_data)
 
     # Cập nhật active_date
@@ -110,7 +104,20 @@ async def chat_stream(msg: Message = Body(...)):
     # Xác định mục tiêu người dùng để lấy chức năng phù hợp
     intent = intent.replace("intent:", "").strip()
 
-    # Xác định các bước xử lý
+    # Áp quyền
+    original_intent = intent
+    intent = enforce_permission(role, intent)
+
+    # Ghi log
+    log_intent_handling(
+        user_id=msg.user_id,
+        username=msg.username,
+        role=role,
+        original_intent=original_intent,
+        final_intent=intent
+    )
+
+    # Lấy pipeline tương ứng
     pipeline = INTENT_PIPELINES.get(intent, [])
     logger.debug(f"[PIPELINE] Pipeline for intent '{intent}': {pipeline}")
 
@@ -145,7 +152,8 @@ async def chat_stream(msg: Message = Body(...)):
                     intent,
                     symptoms,
                     recent_user_messages=recent_user_messages,
-                    recent_assistant_messages=recent_assistant_messages
+                    recent_assistant_messages=recent_assistant_messages,
+                    fallback_reason="insufficient_permission" if original_intent != intent else None
                 )
                 limited_history.clear()
                 limited_history.extend(limit_history_by_tokens(system_message_dict, msg.history))
@@ -372,9 +380,9 @@ async def chat_stream(msg: Message = Body(...)):
                 chunks = []
                 async for chunk in booking_appointment(
                     user_message=msg.message,
-                    recent_messages=session_data.get("recent_messages", []),
-                    recent_user_messages=session_data.get("recent_user_messages", []),
-                    recent_assistant_messages=session_data.get("recent_assistant_messages", []),
+                    recent_messages=recent_messages,
+                    recent_user_messages=recent_user_messages,
+                    recent_assistant_messages=recent_assistant_messages,
                     session_id=msg.session_id,
                     user_id=msg.user_id
                 ):
@@ -493,6 +501,9 @@ async def reset_session(data: ResetRequest):
             "related_symptom_asked": False
         }
     )
+
+    # Reset toan bo session
+    await clear_all_sessions_in_redis()
 
     # 🧹 Reset luôn bộ nhớ symptom riêng nếu có
     await clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
