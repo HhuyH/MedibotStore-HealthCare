@@ -241,7 +241,6 @@ async def booking_appointment(
     # Kiểm tra xem người dùng có đủ thông tin cơ bản không gồm tên đầy đủ và sdt
     if status == "incomplete_info":
         yield {"message": message or "Bạn có thể cung cấp thêm thông tin để mình hỗ trợ đặt lịch nha."}
-        return
 
     # Hỏi người dùng về địa điểm để lựa chọn cơ sở khám gần nhất
     elif status == "incomplete_clinic_info":
@@ -261,7 +260,6 @@ async def booking_appointment(
 
         if not clinics:
             yield {"message": f"Hiện không tìm thấy phòng khám phù hợp với chuyên khoa {specialty}. Bạn thử khu vực khác nha."}
-            return
         
         session_data["suggested_clinics"] = clinics
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
@@ -286,20 +284,17 @@ async def booking_appointment(
         yield {
             "message": f"{message}\n\n{suggestion}",
         }
-        return
 
     # Xác định bác sĩ muốn khám
     elif status == "incomplete_doctor_info":
 
         if not clinic_id:
             yield {"message": "Không xác định được phòng khám để tìm bác sĩ."}
-            return
 
         doctors = get_doctors(clinic_id=clinic_id, specialty=specialty)
 
         if not doctors:
             yield {"message": "Hiện không có bác sĩ nào phù hợp tại phòng khám này."}
-            return
 
         suggested_doctors = [{
             "doctor_id": d["doctor_id"],
@@ -317,7 +312,6 @@ async def booking_appointment(
             yield {"message": f"{message}\n\n{suggested_doctors}"}
         else:
             yield {"message": message}
-        return
 
     # Xác định lịch khám
     elif status == "incomplete_schedules_info":
@@ -340,16 +334,13 @@ async def booking_appointment(
             schedule_detail = get_schedule_by_id(schedule_id)
             if not schedule_detail:
                 yield {"message": "Không tìm thấy lịch khám tương ứng. Bạn muốn chọn lại không?"}
-                return
             schedules = [schedule_detail]  # Đưa về dạng danh sách để xử lý thống nhất
         else:
             # Không đủ thông tin
             yield {"message": "Xin vui lòng chọn bác sĩ hoặc lịch khám trước khi tiếp tục."}
-            return
 
         if not schedules:
             yield {"message": "Xin lỗi, hiện không có lịch khám nào phù hợp. Bạn muốn chọn lại thời gian khác không hoặc là bạn muốn chọn bác sĩ không??"}
-            return
 
         # Lưu thông tin lịch vào session
         session_data["schedules_info"] = serialize_schedules(schedules)
@@ -360,7 +351,6 @@ async def booking_appointment(
 
         # Lưu lại session
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
-        return
 
     # In ra tất cả thông tin chờ người dùng xác nhận
     elif status == "complete":
@@ -385,7 +375,6 @@ async def booking_appointment(
 
         logger.info("✅ Đã đủ thông tin. Chờ người dùng xác nhận.")
         yield{"message": "✅ Bạn đã chọn đầy đủ thông tin:\n" + "\n".join(lines) + "\n\nBạn xác nhận đặt lịch này chứ?",}
-        return
 
     # Thây đổi thông tin như bác sĩ lịch hẹn nếu người dùng yêu cầu
     elif status == "modifying_info":
@@ -394,50 +383,40 @@ async def booking_appointment(
         if target == "doctor":
             if not clinic_id:
                 yield {"message": "Không xác định được phòng khám hiện tại để gợi ý bác sĩ mới."}
-                return
             doctors = get_doctors(clinic_id)
             if not doctors:
                 yield {"message": "Không có bác sĩ nào tại phòng khám này."}
-                return
             names = [d["full_name"] for d in doctors]
             suggested = "\n".join(f"- {name}" for name in names)
             yield {"message": message + "\n" + suggested}
-            return
 
         elif target == "schedule":
             schedules = get_doctor_schedules(doctor_id=doctor_id, clinic_id=clinic_id, specialty_id=specialty_id)
             if not schedules:
                 yield {"message": "Không có lịch khám mới nào để thay đổi. Bạn muốn giữ lịch hiện tại chứ?"}
-                return
             formatted = [
                 f"Bác sĩ {row['full_name']} - {row['day_of_week']} từ {row['start_time']} đến {row['end_time']}"
                 for row in schedules
             ]
             yield {"message": message + "\n" + "\n".join(formatted)}
-            return
 
         elif target == "clinic":
             if not specialty:
                 yield {"message": "Không xác định được chuyên khoa để tìm phòng khám mới."}
-                return
             clinics = get_clinics(location, [specialty])
             if not clinics:
                 yield {"message": "Không tìm được phòng khám nào mới với chuyên khoa hiện tại."}
-                return
             lines = [f"{c['name']} - {c['address']}" for c in clinics]
             suggestion = "\n".join(f"- {line}" for line in lines)
             yield {"message": message + "\n" + suggestion}
-            return
 
         elif target == "specialty":
             all_specialties = get_all_specialty_names()
             specialties_str = "\n".join(f"- {name}" for name in all_specialties)
             yield {"message": f"Bạn muốn khám chuyên khoa nào khác? Dưới đây là danh sách để chọn lại:\n{specialties_str}"}
-            return
 
         else:
             yield {"message": "Bạn muốn thay đổi thông tin nào? (ví dụ: bác sĩ, phòng khám, chuyên khoa, hoặc lịch hẹn)"}
-            return
 
     # Xác nhận lịch khám và insert vào table lịch khám
     elif status == "confirmed" and should_insert:
@@ -471,7 +450,6 @@ async def booking_appointment(
             ),
             "should_insert": False  # để tránh tạo trùng lần sau
         }
-        return
 
     # Stream câu trả lời
     if message:
