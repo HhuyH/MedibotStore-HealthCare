@@ -4,6 +4,7 @@ import json
 current_year = datetime.now().year
 from utils.text_utils import normalize_text
 import logging
+from utils.booking import serialize_schedules
 logger = logging.getLogger(__name__)
 
 # Prompt chính
@@ -529,6 +530,21 @@ def build_KMS_prompt(
          {json.dumps(symptoms_to_ask, ensure_ascii=False)}
 
          🛑 Follow-Up Policy:
+
+         🚧 ABSOLUTE RULE — DO NOT DIAGNOSE YET
+
+         Even if the user input seems related to a diagnosis,  
+         you are strictly forbidden from switching action to `"diagnosis"` while `symptoms_to_ask` is still non-empty.
+
+         👉 You MUST set `"action": "followup"` until `symptoms_to_ask` is completely empty.
+
+         Violating this rule results in **logical failure** and will be logged for debugging.
+
+         DO NOT use `"diagnosis"`:
+         - Even if user provides additional info
+         - Even if you *think* they implied a symptom is answered
+         - Until the follow-up phase is properly finished
+
          If `symptoms_to_ask` is not empty → you must enter follow-up mode first.
 
          DO NOT skip to diagnosis unless all required follow-ups have been asked or clearly answered by user in free text.
@@ -941,8 +957,6 @@ def suggest_medical_prompt(
          Output: One short, polite, and responsible Vietnamese message.
 
       """
-
-
 
 
 # Prompt quyết định hành động nên xữ lý những việc gì tiếp theo
