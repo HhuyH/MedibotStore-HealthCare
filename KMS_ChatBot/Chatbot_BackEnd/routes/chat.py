@@ -14,7 +14,8 @@ from models import Message,ResetRequest
 from config.intents import INTENT_PIPELINES
 
 from utils.limit_history import limit_history_by_tokens, refresh_system_context
-from utils.auth_utils import has_permission, normalize_role
+from utils.auth_utils import enforce_permission, get_pipeline, log_intent_handling, normalize_role
+
 from utils.session_store import (
     resolve_session_key,
     get_session_data, 
@@ -60,12 +61,6 @@ async def chat_stream(msg: Message = Body(...)):
     role = normalize_role(msg.role)
     # logger.info(f"ID: {msg.user_id} User: ({msg.username}) Session:({msg.session_id}) với vai trò {role} gửi: {msg.message}")
     logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role} || msg: {msg.message}")
-    if not has_permission(role, "chat"):
-        async def denied_stream():
-            yield "data: ⚠️ Bạn không được phép thực hiện chức năng này.\n\n"
-            await asyncio.sleep(1)
-            yield "data: 😅 Vui lòng liên hệ admin để biết thêm chi tiết.\n\n"
-        return StreamingResponse(denied_stream(), media_type="text/event-stream; charset=utf-8")
 
     # ✅ Load session data trước
     session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
@@ -109,7 +104,20 @@ async def chat_stream(msg: Message = Body(...)):
     # Xác định mục tiêu người dùng để lấy chức năng phù hợp
     intent = intent.replace("intent:", "").strip()
 
-    # Xác định các bước xử lý
+    # Áp quyền
+    original_intent = intent
+    intent = enforce_permission(role, intent)
+
+    # Ghi log
+    log_intent_handling(
+        user_id=msg.user_id,
+        username=msg.username,
+        role=role,
+        original_intent=original_intent,
+        final_intent=intent
+    )
+
+    # Lấy pipeline tương ứng
     pipeline = INTENT_PIPELINES.get(intent, [])
     logger.debug(f"[PIPELINE] Pipeline for intent '{intent}': {pipeline}")
 
@@ -144,7 +152,8 @@ async def chat_stream(msg: Message = Body(...)):
                     intent,
                     symptoms,
                     recent_user_messages=recent_user_messages,
-                    recent_assistant_messages=recent_assistant_messages
+                    recent_assistant_messages=recent_assistant_messages,
+                    fallback_reason="insufficient_permission" if original_intent != intent else None
                 )
                 limited_history.clear()
                 limited_history.extend(limit_history_by_tokens(system_message_dict, msg.history))

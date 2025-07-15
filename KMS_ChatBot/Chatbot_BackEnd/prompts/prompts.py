@@ -10,19 +10,10 @@ logger = logging.getLogger(__name__)
 # Prompt chính
 def build_system_prompt(
    intent: str, 
-   symptom_names: list[str] = None,
    recent_user_messages: list[str] = None,
-   recent_assistant_messages: list[str] = None
+   recent_assistant_messages: list[str] = None,
+   fallback_reason: str = None
 ) -> str:
-    
-    # Nếu không có danh sách triệu chứng, sử dụng danh sách rỗng
-    symptom_note = ""
-    if symptom_names:
-        joined = ", ".join(symptom_names)
-        symptom_note = (
-            f"\n\n🧠 The user has reported symptoms: {joined}. "
-            "Please focus your advice around these symptoms — but avoid going too deep unless the user asks clearly."
-        )
     
     # Lấy tin nhắn cuối của người dùng và trợ lý nếu không có thì rỗng
     last_user_msg = (recent_user_messages or [])[-1] if recent_user_messages else ""
@@ -81,12 +72,28 @@ def build_system_prompt(
       Keep the tone light, friendly, and give the user space to decide.
     """.strip()
     
+    fallback_permission_note = ""
+    if fallback_reason == "insufficient_permission":
+        fallback_permission_note = """
+        🔐 IMPORTANT NOTICE:
+
+        The user originally requested an action that is not permitted for their current role (e.g., Guest or Patient trying to access admin-only features).
+
+        ➤ You must politely decline the request. 
+        ➤ DO NOT try to perform the original action. 
+        ➤ DO NOT speculate or offer alternatives unless asked.
+        ➤ Speak gently, explain that they do not have permission, and suggest they log in or contact support if needed.
+
+        ✅ Example response:
+        “Xin lỗi bạn nha, hiện tại bạn chưa có quyền truy cập chức năng này. Bạn có thể đăng nhập hoặc liên hệ quản trị viên để được hỗ trợ thêm nhé!”
+        """.strip()
+
     full_prompt = "\n\n".join([
         last_bot_user_msg,
         core_guidelines,
         behavioral_notes,
-        symptom_note,
-        clarification_prompt
+        clarification_prompt,
+        fallback_permission_note
     ])
 
     return full_prompt

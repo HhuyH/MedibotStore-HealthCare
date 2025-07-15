@@ -427,17 +427,21 @@ def build_system_message(
     intent: str,
     symptoms: list[str] = None,
     recent_user_messages: list[str] = None,
-    recent_assistant_messages: list[str] = None
+    recent_assistant_messages: list[str] = None,
+    fallback_reason: str = None
 ) -> dict:
     sql_part = get_sql_prompt_for_intent(intent).strip()
-    medical_part = build_system_prompt(
+
+    # ✅ Đổi tên cho đúng ngữ nghĩa
+    system_part = build_system_prompt(
         intent,
-        symptoms=symptoms,
         recent_user_messages=recent_user_messages,
-        recent_assistant_messages=recent_assistant_messages
+        recent_assistant_messages=recent_assistant_messages,
+        fallback_reason=fallback_reason
     ).strip()
 
-    full_content = f"{medical_part}\n\n{sql_part}"
+
+    full_content = f"{system_part}\n\n{sql_part}"
 
     return {
         "role": "system",
