@@ -2,10 +2,10 @@
 -- Bảng lưu thông tin tài khoản
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,                   -- Khóa chính, định danh người dùng
+    role_id INT NOT NULL,                                     -- Liên kết đến bảng roles
     username VARCHAR(50) UNIQUE NOT NULL,                     -- Tên đăng nhập, không được trùng
     email VARCHAR(100) UNIQUE NOT NULL,                       -- Email đăng ký, duy nhất
     password_hash VARCHAR(255) NOT NULL,                      -- Mật khẩu đã mã hóa
-    role_id INT NOT NULL,                                     -- Liên kết đến bảng roles
     status ENUM('active', 'inactive', 'suspended') DEFAULT 'active', -- Trang thái tài khoản
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,           -- Thời gian tạo tài khoản
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -51,16 +51,6 @@ CREATE TABLE users_info (
 -- sẽ được tạo khi người dùng chưa có tài khoản và có nhu cầu đặt lịch khám thì 
 -- AI sẽ hỏi nhưng thông tin này và thực hiện đặt lịch khám khi đầy đủ thông tin cần thiết
 -- và xác nhận đặt
-
-------------------------- (BỎ)
-CREATE TABLE guest_users (
-    guest_id INT AUTO_INCREMENT PRIMARY KEY,
-    full_name VARCHAR(255),                                 -- Tên đầy đủ mục này của guest chỉ được nhập vào do chatbot làm khi người trả lời cung cấp đầy đủ
-    phone VARCHAR(20),                                      -- số điện mục này của guest chỉ được nhập vào do chatbot làm khi người trả lời cung cấp đầy đủ
-    email VARCHAR(255),                                     -- Email không bắt buộc nếu ko có mục này của guest chỉ được nhập vào do chatbot làm khi người trả lời cung cấp đầy đủ
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-);
 
 -- Bảng lưu địa chỉ người dùng 
 CREATE TABLE user_addresses (
@@ -143,11 +133,11 @@ CREATE TABLE medical_categories (
 -- Bảng diseases: Danh sách các bệnh
 CREATE TABLE diseases (
     disease_id INT AUTO_INCREMENT PRIMARY KEY,        -- Khóa chính
+    category_id INT,                                  -- Liên kết đến chuyên khoa
     name VARCHAR(255) NOT NULL,                       -- Tên bệnh
     description TEXT,                                 -- Mô tả về bệnh
     treatment_guidelines TEXT,                        -- Hướng dẫn điều trị
-    severity ENUM('nhẹ', 'trung bình', 'nghiêm trọng') DEFAULT 'trung bình'; -- Mức độ nghiệm trộng
-    category_id INT,                                  -- Liên kết đến chuyên khoa
+    -- severity ENUM('nhẹ', 'trung bình', 'nghiêm trọng') DEFAULT 'trung bình'; -- Mức độ nghiệm trộng
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP,
@@ -158,9 +148,9 @@ CREATE TABLE diseases (
 CREATE TABLE symptoms (
     symptom_id INT AUTO_INCREMENT PRIMARY KEY,        -- Khóa chính
     name VARCHAR(255) NOT NULL,                       -- Tên triệu chứng
-    alias TEXT,
+    alias TEXT,                                       -- Các tên hoặc các gọi khác để bot dể truy xét theo
     description TEXT,                                 -- Mô tả triệu chứng
-    followup_question TEXT
+    -- followup_question TEXT
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP
@@ -221,7 +211,6 @@ CREATE TABLE clinic_specialties (
     FOREIGN KEY (specialty_id) REFERENCES specialties(specialty_id) ON DELETE CASCADE
 );
 
-
 -- Bảng doctors: Thông tin bác sĩ
 CREATE TABLE doctors (
     doctor_id INT AUTO_INCREMENT PRIMARY KEY,           -- Khóa chính
@@ -257,7 +246,7 @@ CREATE TABLE doctor_schedules (
 CREATE TABLE appointments (
     appointment_id INT AUTO_INCREMENT PRIMARY KEY,        -- Khóa chính
     user_id INT,                                 -- Liên kết đến bảng users
-    guest_id INT,
+    -- guest_id INT,
     doctor_id INT NOT NULL,                               -- Liên kết đến bảng doctors
     clinic_id INT,                                        -- Liên kết đến bảng clinics (phòng khám)
     appointment_time DATETIME NOT NULL,                   -- Thời gian đặt lịch
@@ -297,7 +286,7 @@ CREATE TABLE medical_records (
 );
 
 ----------------------------------------------------------------3. Chatbot AI-------------------------------------------------------------------------------
--- Bảng lưu dữ liệu sức khỏe định kỳ của người dùng (cân nặng, huyết áp, giấc ngủ, v.v.)
+-----------------Phần mở rộng... Bảng lưu dữ liệu sức khỏe định kỳ của người dùng (cân nặng, huyết áp, giấc ngủ, v.v.)
 CREATE TABLE health_records (
     record_id INT AUTO_INCREMENT PRIMARY KEY,			 -- Khóa chính, tự động tăng
     user_id INT NOT NULL,								 -- liên kết đến bảng users
@@ -420,7 +409,7 @@ CREATE TABLE medicines (
     dosage_form VARCHAR(100),                            -- Dạng bào chế (viên, ống, gói, ...)
     unit VARCHAR(50),                                    -- Đơn vị tính: viên, ml, ...
     usage_instructions TEXT,                             -- Hướng dẫn dùng thuốc
-    medicine_type ENUM('OTC', 'Kê đơn', 'Kháng sinh', 'Bổ sung') DEFAULT 'OTC', -- Loại thuốc: OTC, kê đơn, kháng sinh, bổ sung
+    medicine_type ENUM('OTC', 'Kê đơn', 'Kháng sinh', 'Bổ sung') DEFAULT 'OTC', -- Loại thuốc: OTC (Thuốc không kê đơn), kê đơn, kháng sinh, bổ sung
     side_effects TEXT,                                   -- Tác dụng phụ (nếu có)
     contraindications TEXT,                               -- Chống chỉ định (nếu có)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -429,7 +418,7 @@ CREATE TABLE medicines (
     FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
 
--- Bảng đơn thuốc liên kết với sản phẩm
+-----------------Phần mở rộng... Bảng đơn thuốc liên kết với sản phẩm
 CREATE TABLE prescription_products (
     id INT AUTO_INCREMENT PRIMARY KEY,                    -- Khóa chính
     prescription_id INT NOT NULL,                         -- Liên kết đơn thuốc
@@ -576,49 +565,6 @@ CREATE TABLE package_features (
 );
 
 ----------------------------------------------------------------6. Blog-------------------------------------------------------------------------------
-
--- Tạo bảng categories (danh mục bài viết)
-CREATE TABLE IF NOT EXISTS blog_categories (
-    category_id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
--- Tạo bảng authors (tác giả)
-CREATE TABLE IF NOT EXISTS blog_authors (
-    author_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT,
-    name VARCHAR(100) NOT NULL,
-    avatar VARCHAR(255),
-    bio TEXT,
-    title VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
-);
-
--- Tạo bảng posts (bài viết)
-CREATE TABLE IF NOT EXISTS blog_posts (
-    post_id INT PRIMARY KEY AUTO_INCREMENT,
-    author_id INT,
-    category_id INT,
-    title VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) NOT NULL UNIQUE,
-    content TEXT NOT NULL,
-    excerpt TEXT,
-    featured_image VARCHAR(255),
-    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
-    is_featured BOOLEAN DEFAULT FALSE,
-    view_count INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    published_at TIMESTAMP NULL,
-    FOREIGN KEY (author_id) REFERENCES blog_authors(author_id) ON DELETE SET NULL,
-    FOREIGN KEY (category_id) REFERENCES blog_categories(category_id) ON DELETE SET NULL
-);
 
 -- Tạo bảng categories (danh mục bài viết)
 CREATE TABLE IF NOT EXISTS blog_categories (
