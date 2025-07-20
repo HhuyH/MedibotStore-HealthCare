@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 15, 2025 at 03:38 PM
+-- Generation Time: Jul 20, 2025 at 08:01 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -1585,25 +1585,26 @@ CREATE TABLE `products` (
   `image_url` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `is_active` tinyint(1) DEFAULT 1 COMMENT 'Ẩn/hiện sản phẩm (TRUE = hiển thị, FALSE = ẩn)'
+  `is_active` tinyint(1) DEFAULT 1 COMMENT 'Ẩn/hiện sản phẩm (TRUE = hiển thị, FALSE = ẩn)',
+  `discount_amount` decimal(16,0) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `category_id`, `name`, `description`, `price`, `stock`, `is_medicine`, `image_url`, `created_at`, `updated_at`, `is_active`) VALUES
-(1, 1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 1, 'https://example.com/images/paracetamol.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1),
-(2, 1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 1, 'https://example.com/images/amoxicillin.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1),
-(3, 2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 1, 'https://example.com/images/vitaminC.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1),
-(4, 3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 0, 'https://example.com/images/blood_pressure_monitor.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1),
-(5, 4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 0, 'https://example.com/images/face_mask.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1),
-(6, 1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 1, 'https://example.com/images/ibuprofen.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1),
-(7, 2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 1, 'https://example.com/images/zinc.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1),
-(8, 2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 1, 'https://example.com/images/probiotic.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1),
-(9, 3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 0, 'https://example.com/images/nebulizer.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1),
-(10, 5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 0, 'https://example.com/images/moisturizer.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1),
-(11, 6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 0, 'https://example.com/images/chamomile_tea.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1);
+INSERT INTO `products` (`product_id`, `category_id`, `name`, `description`, `price`, `stock`, `is_medicine`, `image_url`, `created_at`, `updated_at`, `is_active`, `discount_amount`) VALUES
+(1, 1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 1, 'https://example.com/images/paracetamol.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1, 0),
+(2, 1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 1, 'https://example.com/images/amoxicillin.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1, 0),
+(3, 2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 1, 'https://example.com/images/vitaminC.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1, 0),
+(4, 3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 0, 'https://example.com/images/blood_pressure_monitor.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1, 0),
+(5, 4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 0, 'https://example.com/images/face_mask.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1, 0),
+(6, 1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 1, 'https://example.com/images/ibuprofen.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1, 0),
+(7, 2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 1, 'https://example.com/images/zinc.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1, 0),
+(8, 2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 1, 'https://example.com/images/probiotic.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1, 0),
+(9, 3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 0, 'https://example.com/images/nebulizer.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1, 0),
+(10, 5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 0, 'https://example.com/images/moisturizer.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1, 0),
+(11, 6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 0, 'https://example.com/images/chamomile_tea.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1, 0);
 
 -- --------------------------------------------------------
 

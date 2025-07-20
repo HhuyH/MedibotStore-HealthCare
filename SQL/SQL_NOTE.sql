@@ -392,6 +392,7 @@ CREATE TABLE products (
     name VARCHAR(255) NOT NULL,                          -- Tên sản phẩm
     description TEXT,                                    -- Mô tả sản phẩm
     price DECIMAL(16, 0) NOT NULL,                       -- Giá
+    discount_amount DECIMAL(16, 0) DEFAULT 0,            -- Số tiền giảm  
     stock INT DEFAULT 0,                                 -- Tồn kho
     is_medicine BOOLEAN DEFAULT FALSE,                   -- Có phải là thuốc hay không
     image_url TEXT,                                      -- Ảnh sản phẩm (nếu có)
