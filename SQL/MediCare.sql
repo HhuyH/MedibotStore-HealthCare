@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jul 20, 2025 at 08:01 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th7 21, 2025 lúc 08:51 AM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,12 +18,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `kms`
+-- Cơ sở dữ liệu: `local_kms`
 --
 
 DELIMITER $$
 --
--- Procedures
+-- Thủ tục
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_all_users_by_role` (IN `input_role_id` INT)   BEGIN
     SELECT 
@@ -155,7 +155,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `appointments`
+-- Cấu trúc bảng cho bảng `appointments`
 --
 
 CREATE TABLE `appointments` (
@@ -172,7 +172,7 @@ CREATE TABLE `appointments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `appointments`
+-- Đang đổ dữ liệu cho bảng `appointments`
 --
 
 INSERT INTO `appointments` (`appointment_id`, `user_id`, `guest_id`, `doctor_id`, `clinic_id`, `appointment_time`, `reason`, `status`, `created_at`, `updated_at`) VALUES
@@ -181,13 +181,15 @@ INSERT INTO `appointments` (`appointment_id`, `user_id`, `guest_id`, `doctor_id`
 (3, NULL, 1, 1, 1, '2025-05-25 10:00:00', 'Đau đầu và cao huyết áp gần đây', 'confirmed', '2025-05-24 07:15:05', '2025-05-24 14:15:05'),
 (4, NULL, 2, 2, 2, '2025-05-27 08:00:00', 'Khó thở, nghi ngờ bệnh tim', 'pending', '2025-05-24 07:15:05', '2025-05-24 14:15:05'),
 (5, NULL, 3, 2, 2, '2025-05-29 15:00:00', 'Đặt lịch kiểm tra tim định kỳ', 'canceled', '2025-05-24 07:15:05', '2025-05-24 14:15:05'),
-(6, 4, NULL, 2, 2, '2025-07-22 09:00:00', '', 'pending', '2025-07-15 09:41:34', '2025-07-15 16:41:34'),
-(7, 4, NULL, 1, 1, '2025-07-16 08:00:00', '', 'pending', '2025-07-15 12:15:02', '2025-07-15 19:15:02');
+(6, 4, NULL, 2, 2, '2025-07-22 09:00:00', '', 'confirmed', '2025-07-15 09:41:34', '2025-07-21 00:04:19'),
+(7, 4, NULL, 1, 1, '2025-07-16 08:00:00', '', 'pending', '2025-07-15 12:15:02', '2025-07-15 19:15:02'),
+(8, 1, NULL, 2, 2, '2025-07-21 09:30:00', '', 'confirmed', '2025-07-20 12:52:24', '2025-07-20 23:43:14'),
+(9, 1, NULL, 2, 2, '2025-07-23 11:30:00', 'rrwe', 'confirmed', '2025-07-20 17:00:45', '2025-07-21 00:00:56');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `blog_authors`
+-- Cấu trúc bảng cho bảng `blog_authors`
 --
 
 CREATE TABLE `blog_authors` (
@@ -201,10 +203,21 @@ CREATE TABLE `blog_authors` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `blog_authors`
+--
+
+INSERT INTO `blog_authors` (`author_id`, `user_id`, `name`, `avatar`, `bio`, `title`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'BS. Nguyễn Văn A', '/assets/images/authors/author-1.jpg', 'Bác sĩ chuyên khoa Nội tổng quát với 10 năm kinh nghiệm', 'Bác sĩ chuyên khoa', '2025-07-20 13:01:26', '2025-07-20 13:01:26'),
+(2, NULL, 'BS. Trần Thị B', '/assets/images/authors/author-2.jpg', 'Bác sĩ chuyên khoa Dinh dưỡng', 'Bác sĩ dinh dưỡng', '2025-07-20 13:01:26', '2025-07-20 13:01:26'),
+(3, NULL, 'BS. Lê Văn C', '/assets/images/authors/author-3.jpg', 'Bác sĩ chuyên khoa Thể thao', 'Bác sĩ thể thao', '2025-07-20 13:01:26', '2025-07-20 13:01:26'),
+(4, NULL, 'BS. Phạm Thị D', '/assets/images/authors/author-4.jpg', 'Bác sĩ chuyên khoa Tâm lý', 'Bác sĩ tâm lý', '2025-07-20 13:01:26', '2025-07-20 13:01:26'),
+(5, NULL, 'ThS. Hoàng Văn E', '/assets/images/authors/author-5.jpg', 'Thạc sĩ Y học cổ truyền', 'Thạc sĩ y học', '2025-07-20 13:01:26', '2025-07-20 13:01:26');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `blog_categories`
+-- Cấu trúc bảng cho bảng `blog_categories`
 --
 
 CREATE TABLE `blog_categories` (
@@ -216,10 +229,22 @@ CREATE TABLE `blog_categories` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `blog_categories`
+--
+
+INSERT INTO `blog_categories` (`category_id`, `name`, `slug`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'Chăm sóc sức khỏe', 'cham-soc-suc-khoe', 'Các bài viết về chăm sóc sức khỏe tổng quát', '2025-07-20 13:01:25', '2025-07-20 13:01:25'),
+(2, 'Dinh dưỡng', 'dinh-duong', 'Các bài viết về dinh dưỡng và chế độ ăn uống', '2025-07-20 13:01:25', '2025-07-20 13:01:25'),
+(3, 'Thể dục', 'the-duc', 'Các bài viết về thể dục và vận động', '2025-07-20 13:01:25', '2025-07-20 13:01:25'),
+(4, 'Giấc ngủ', 'giac-ngu', 'Các bài viết về giấc ngủ và sức khỏe', '2025-07-20 13:01:25', '2025-07-20 13:01:25'),
+(5, 'Tâm lý', 'tam-ly', 'Các bài viết về sức khỏe tâm lý', '2025-07-20 13:01:25', '2025-07-20 13:01:25'),
+(6, 'Y học', 'y-hoc', 'Các bài viết về y học và điều trị', '2025-07-20 13:01:25', '2025-07-20 13:01:25');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `blog_posts`
+-- Cấu trúc bảng cho bảng `blog_posts`
 --
 
 CREATE TABLE `blog_posts` (
@@ -239,10 +264,34 @@ CREATE TABLE `blog_posts` (
   `published_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `blog_posts`
+--
+
+INSERT INTO `blog_posts` (`post_id`, `author_id`, `category_id`, `title`, `slug`, `content`, `excerpt`, `featured_image`, `status`, `is_featured`, `view_count`, `created_at`, `updated_at`, `published_at`) VALUES
+(1, 1, 1, '10 Cách Tăng Cường Hệ Miễn Dịch Tự Nhiên', '10-c-ch-t-ng-c-ng-h-mi-n-d-ch-t-nhi-n', '<p>Nội dung chi tiết về c&aacute;ch tăng cường hệ miễn dịch...</p>', 'Khám phá những phương pháp đơn giản nhưng hiệu quả để tăng cường hệ miễn dịch của bạn thông qua chế độ ăn uống, lối sống và các hoạt động hàng ngày...', 'https://i.pinimg.com/736x/d7/22/35/d72235c87cfe02dfcdc92c89d46096c0.jpg', 'published', 1, 3, '2025-07-20 13:01:26', '2025-07-21 06:36:37', '2025-07-20 13:01:26'),
+(2, 2, 2, 'Chế Độ Ăn Uống Lành Mạnh Cho Tim Mạch', 'che-do-an-uong-lanh-manh-cho-tim-mach', '<p>Nội dung chi tiết về chế độ ăn uống tốt cho tim mạch...</p>', 'Tìm hiểu về những thực phẩm tốt cho tim mạch và cách xây dựng chế độ ăn uống khoa học...', '/assets/images/blog/post-1.jpg', 'published', 0, 0, '2025-07-20 13:01:26', '2025-07-20 13:01:26', '2025-07-20 13:01:26'),
+(3, 3, 3, 'Lợi Ích Của Việc Tập Thể Dục Đều Đặn', 'loi-ich-cua-viec-tap-the-duc-deu-dan', '<p>Nội dung chi tiết về lợi ích của tập thể dục...</p>', 'Khám phá những lợi ích tuyệt vời của việc duy trì thói quen tập luyện thể dục hàng ngày...', '/assets/images/blog/post-2.jpg', 'published', 0, 0, '2025-07-20 13:01:26', '2025-07-20 13:01:26', '2025-07-20 13:01:26'),
+(4, 4, 4, 'Tầm Quan Trọng Của Giấc Ngủ Chất Lượng', 'tam-quan-trong-cua-giac-ngu-chat-luong', '<p>Nội dung chi tiết về giấc ngủ...</p>', 'Hiểu rõ về tác động của giấc ngủ đến sức khỏe và cách cải thiện chất lượng giấc ngủ...', '/assets/images/blog/post-3.jpg', 'published', 0, 0, '2025-07-20 13:01:26', '2025-07-20 13:01:26', '2025-07-20 13:01:26'),
+(5, 5, 5, 'Quản Lý Stress Hiệu Quả Trong Cuộc Sống', 'quan-ly-stress-hieu-qua-trong-cuoc-song', '<p>Nội dung chi tiết về quản lý stress...</p>', 'Học cách nhận biết và quản lý stress để duy trì sức khỏe tinh thần tốt...', '/assets/images/blog/post-4.jpg', 'published', 0, 0, '2025-07-20 13:01:26', '2025-07-20 13:01:26', '2025-07-20 13:01:26');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chatbot_knowledge_base`
+-- Cấu trúc bảng cho bảng `blog_tags`
+--
+
+CREATE TABLE `blog_tags` (
+  `tag_id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `slug` varchar(50) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `chatbot_knowledge_base`
 --
 
 CREATE TABLE `chatbot_knowledge_base` (
@@ -256,7 +305,7 @@ CREATE TABLE `chatbot_knowledge_base` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `chatbot_knowledge_base`
+-- Đang đổ dữ liệu cho bảng `chatbot_knowledge_base`
 --
 
 INSERT INTO `chatbot_knowledge_base` (`kb_id`, `intent`, `question`, `answer`, `category`, `created_at`, `updated_at`) VALUES
@@ -278,7 +327,7 @@ INSERT INTO `chatbot_knowledge_base` (`kb_id`, `intent`, `question`, `answer`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chat_logs`
+-- Cấu trúc bảng cho bảng `chat_logs`
 --
 
 CREATE TABLE `chat_logs` (
@@ -289,10 +338,10 @@ CREATE TABLE `chat_logs` (
   `message` text NOT NULL,
   `sender` enum('user','bot') NOT NULL,
   `sent_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `chat_logs`
+-- Đang đổ dữ liệu cho bảng `chat_logs`
 --
 
 INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, `sender`, `sent_at`) VALUES
@@ -845,7 +894,7 @@ INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clinics`
+-- Cấu trúc bảng cho bảng `clinics`
 --
 
 CREATE TABLE `clinics` (
@@ -860,7 +909,7 @@ CREATE TABLE `clinics` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `clinics`
+-- Đang đổ dữ liệu cho bảng `clinics`
 --
 
 INSERT INTO `clinics` (`clinic_id`, `name`, `address`, `phone`, `email`, `description`, `created_at`, `updated_at`) VALUES
@@ -873,7 +922,7 @@ INSERT INTO `clinics` (`clinic_id`, `name`, `address`, `phone`, `email`, `descri
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clinic_specialties`
+-- Cấu trúc bảng cho bảng `clinic_specialties`
 --
 
 CREATE TABLE `clinic_specialties` (
@@ -882,7 +931,7 @@ CREATE TABLE `clinic_specialties` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `clinic_specialties`
+-- Đang đổ dữ liệu cho bảng `clinic_specialties`
 --
 
 INSERT INTO `clinic_specialties` (`clinic_id`, `specialty_id`) VALUES
@@ -896,19 +945,12 @@ INSERT INTO `clinic_specialties` (`clinic_id`, `specialty_id`) VALUES
 (2, 8),
 (3, 1),
 (3, 5),
-(3, 6),
-(4, 1),
-(4, 2),
-(4, 7),
-(4, 8),
-(5, 1),
-(5, 4),
-(5, 7);
+(3, 6);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `diseases`
+-- Cấu trúc bảng cho bảng `diseases`
 --
 
 CREATE TABLE `diseases` (
@@ -923,7 +965,7 @@ CREATE TABLE `diseases` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `diseases`
+-- Đang đổ dữ liệu cho bảng `diseases`
 --
 
 INSERT INTO `diseases` (`disease_id`, `name`, `description`, `treatment_guidelines`, `severity`, `category_id`, `created_at`, `updated_at`) VALUES
@@ -958,7 +1000,7 @@ INSERT INTO `diseases` (`disease_id`, `name`, `description`, `treatment_guidelin
 -- --------------------------------------------------------
 
 --
--- Table structure for table `disease_symptoms`
+-- Cấu trúc bảng cho bảng `disease_symptoms`
 --
 
 CREATE TABLE `disease_symptoms` (
@@ -967,7 +1009,7 @@ CREATE TABLE `disease_symptoms` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `disease_symptoms`
+-- Đang đổ dữ liệu cho bảng `disease_symptoms`
 --
 
 INSERT INTO `disease_symptoms` (`disease_id`, `symptom_id`) VALUES
@@ -1062,7 +1104,7 @@ INSERT INTO `disease_symptoms` (`disease_id`, `symptom_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `doctors`
+-- Cấu trúc bảng cho bảng `doctors`
 --
 
 CREATE TABLE `doctors` (
@@ -1076,7 +1118,7 @@ CREATE TABLE `doctors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `doctors`
+-- Đang đổ dữ liệu cho bảng `doctors`
 --
 
 INSERT INTO `doctors` (`doctor_id`, `user_id`, `specialty_id`, `clinic_id`, `biography`, `created_at`, `updated_at`) VALUES
@@ -1086,36 +1128,89 @@ INSERT INTO `doctors` (`doctor_id`, `user_id`, `specialty_id`, `clinic_id`, `bio
 -- --------------------------------------------------------
 
 --
--- Table structure for table `doctor_schedules`
+-- Cấu trúc bảng cho bảng `doctor_off_days`
+--
+
+CREATE TABLE `doctor_off_days` (
+  `off_day_id` int(11) NOT NULL,
+  `doctor_id` int(11) NOT NULL,
+  `off_date` date NOT NULL,
+  `reason` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `doctor_off_days`
+--
+
+INSERT INTO `doctor_off_days` (`off_day_id`, `doctor_id`, `off_date`, `reason`, `created_at`) VALUES
+(1, 1, '2025-07-25', 'Đi công tác', '2025-07-20 06:51:05'),
+(2, 2, '2025-07-30', 'Nghỉ phép', '2025-07-20 06:51:05');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `doctor_schedules`
 --
 
 CREATE TABLE `doctor_schedules` (
   `schedule_id` int(11) NOT NULL,
   `doctor_id` int(11) NOT NULL,
   `clinic_id` int(11) DEFAULT NULL,
-  `day_of_week` varchar(20) NOT NULL,
+  `day_of_week` int(11) NOT NULL COMMENT '1-7: Thứ 2 - Chủ nhật',
   `start_time` time NOT NULL,
   `end_time` time NOT NULL,
+  `is_available` tinyint(1) DEFAULT 1,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `doctor_schedules`
+-- Đang đổ dữ liệu cho bảng `doctor_schedules`
 --
 
-INSERT INTO `doctor_schedules` (`schedule_id`, `doctor_id`, `clinic_id`, `day_of_week`, `start_time`, `end_time`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 'Monday', '08:00:00', '12:00:00', '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
-(2, 1, 1, 'Wednesday', '08:00:00', '12:00:00', '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
-(3, 1, 1, 'Friday', '13:30:00', '17:30:00', '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
-(4, 2, 2, 'Tuesday', '09:00:00', '12:00:00', '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
-(5, 2, 2, 'Thursday', '14:00:00', '18:00:00', '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
-(6, 2, 2, 'Saturday', '08:30:00', '11:30:00', '2025-05-24 06:25:08', '2025-05-24 13:25:08');
+INSERT INTO `doctor_schedules` (`schedule_id`, `doctor_id`, `clinic_id`, `day_of_week`, `start_time`, `end_time`, `is_available`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 1, '08:00:00', '12:00:00', 1, '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
+(2, 1, 1, 2, '08:00:00', '12:00:00', 1, '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
+(3, 1, 1, 3, '13:30:00', '17:30:00', 1, '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
+(4, 1, 1, 4, '08:00:00', '12:00:00', 1, '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
+(5, 1, 1, 5, '13:30:00', '17:30:00', 1, '2025-05-24 06:25:08', '2025-05-24 13:25:08'),
+(6, 2, 2, 1, '09:00:00', '12:00:00', 0, '2025-05-24 06:25:08', '2025-07-21 13:41:11'),
+(7, 2, 2, 2, '14:00:00', '17:00:00', 0, '2025-05-24 06:25:08', '2025-07-21 13:41:11'),
+(8, 2, 2, 3, '09:00:00', '12:00:00', 0, '2025-05-24 06:25:08', '2025-07-21 13:41:11'),
+(9, 2, 2, 4, '14:00:00', '17:00:00', 0, '2025-05-24 06:25:08', '2025-07-21 13:41:12'),
+(10, 2, 2, 5, '09:00:00', '12:00:00', 0, '2025-05-24 06:25:08', '2025-07-21 13:41:12'),
+(11, 1, NULL, 6, '08:00:00', '12:00:00', 1, '2025-07-20 16:42:29', '2025-07-20 23:42:29'),
+(12, 2, NULL, 7, '09:00:00', '12:00:00', 1, '2025-07-21 06:41:34', '2025-07-21 13:41:34');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `guest_users`
+-- Cấu trúc bảng cho bảng `email_logs`
+--
+
+CREATE TABLE `email_logs` (
+  `id` int(11) NOT NULL,
+  `recipient` varchar(255) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `status` enum('success','failed','error') NOT NULL,
+  `error_message` text DEFAULT NULL,
+  `sent_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `email_logs`
+--
+
+INSERT INTO `email_logs` (`id`, `recipient`, `subject`, `status`, `error_message`, `sent_at`) VALUES
+(1, 'admin@gmail.com', 'Xác nhận đơn hàng #1 - MediSync Hospital', 'success', 'Email sent successfully via SMTP', '2025-07-20 17:14:18'),
+(2, 'hoanhuy12@gmail.com', 'Đặt lại mật khẩu - QickMed', 'success', 'Email sent successfully via SMTP', '2025-07-21 06:23:11'),
+(3, 'dvtdang1101@gmail.com', 'Đặt lại mật khẩu - QickMed', 'success', 'Email sent successfully via SMTP', '2025-07-21 06:23:24');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `guest_users`
 --
 
 CREATE TABLE `guest_users` (
@@ -1128,7 +1223,7 @@ CREATE TABLE `guest_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `guest_users`
+-- Đang đổ dữ liệu cho bảng `guest_users`
 --
 
 INSERT INTO `guest_users` (`guest_id`, `full_name`, `phone`, `email`, `created_at`, `updated_at`) VALUES
@@ -1139,7 +1234,7 @@ INSERT INTO `guest_users` (`guest_id`, `full_name`, `phone`, `email`, `created_a
 -- --------------------------------------------------------
 
 --
--- Table structure for table `health_predictions`
+-- Cấu trúc bảng cho bảng `health_predictions`
 --
 
 CREATE TABLE `health_predictions` (
@@ -1150,10 +1245,10 @@ CREATE TABLE `health_predictions` (
   `prediction_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `confidence_score` float DEFAULT NULL,
   `details` text DEFAULT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `health_predictions`
+-- Đang đổ dữ liệu cho bảng `health_predictions`
 --
 
 INSERT INTO `health_predictions` (`prediction_id`, `user_id`, `record_id`, `chat_id`, `prediction_date`, `confidence_score`, `details`) VALUES
@@ -1177,7 +1272,7 @@ INSERT INTO `health_predictions` (`prediction_id`, `user_id`, `record_id`, `chat
 -- --------------------------------------------------------
 
 --
--- Table structure for table `health_records`
+-- Cấu trúc bảng cho bảng `health_records`
 --
 
 CREATE TABLE `health_records` (
@@ -1193,7 +1288,7 @@ CREATE TABLE `health_records` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `health_records`
+-- Đang đổ dữ liệu cho bảng `health_records`
 --
 
 INSERT INTO `health_records` (`record_id`, `user_id`, `record_date`, `weight`, `blood_pressure`, `sleep_hours`, `notes`, `created_at`, `updated_at`) VALUES
@@ -1272,7 +1367,7 @@ INSERT INTO `health_records` (`record_id`, `user_id`, `record_date`, `weight`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `medical_categories`
+-- Cấu trúc bảng cho bảng `medical_categories`
 --
 
 CREATE TABLE `medical_categories` (
@@ -1284,7 +1379,7 @@ CREATE TABLE `medical_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `medical_categories`
+-- Đang đổ dữ liệu cho bảng `medical_categories`
 --
 
 INSERT INTO `medical_categories` (`category_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
@@ -1297,7 +1392,7 @@ INSERT INTO `medical_categories` (`category_id`, `name`, `description`, `created
 -- --------------------------------------------------------
 
 --
--- Table structure for table `medical_records`
+-- Cấu trúc bảng cho bảng `medical_records`
 --
 
 CREATE TABLE `medical_records` (
@@ -1310,7 +1405,7 @@ CREATE TABLE `medical_records` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `medical_records`
+-- Đang đổ dữ liệu cho bảng `medical_records`
 --
 
 INSERT INTO `medical_records` (`med_rec_id`, `appointment_id`, `note_date`, `diagnosis`, `recommendations`, `created_at`) VALUES
@@ -1321,7 +1416,7 @@ INSERT INTO `medical_records` (`med_rec_id`, `appointment_id`, `note_date`, `dia
 -- --------------------------------------------------------
 
 --
--- Table structure for table `medicines`
+-- Cấu trúc bảng cho bảng `medicines`
 --
 
 CREATE TABLE `medicines` (
@@ -1338,7 +1433,7 @@ CREATE TABLE `medicines` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `medicines`
+-- Đang đổ dữ liệu cho bảng `medicines`
 --
 
 INSERT INTO `medicines` (`product_id`, `active_ingredient`, `dosage_form`, `unit`, `usage_instructions`, `medicine_type`, `side_effects`, `contraindications`, `created_at`, `updated_at`) VALUES
@@ -1352,7 +1447,7 @@ INSERT INTO `medicines` (`product_id`, `active_ingredient`, `dosage_form`, `unit
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notifications`
+-- Cấu trúc bảng cho bảng `notifications`
 --
 
 CREATE TABLE `notifications` (
@@ -1369,7 +1464,7 @@ CREATE TABLE `notifications` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `orders`
+-- Cấu trúc bảng cho bảng `orders`
 --
 
 CREATE TABLE `orders` (
@@ -1381,15 +1476,23 @@ CREATE TABLE `orders` (
   `payment_method` varchar(50) DEFAULT NULL,
   `payment_status` varchar(50) DEFAULT 'pending',
   `status` enum('cart','pending','processing','shipped','completed','cancelled') DEFAULT 'cart',
+  `total_amount` decimal(16,0) DEFAULT 0,
   `order_note` text DEFAULT NULL,
   `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `user_id`, `address_id`, `shipping_address`, `total`, `payment_method`, `payment_status`, `status`, `total_amount`, `order_note`, `order_date`, `updated_at`) VALUES
+(1, 1, NULL, 'Quản trị viên\n09777313131\n123 Đường Trần Hưng Đạo\nPhường Nguyễn Cư Trinh, Quận 1, TP.HCM', 20000, 'cod', 'pending', 'pending', 645000, '', '2025-07-20 17:14:14', '2025-07-21 00:14:14');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order_items`
+-- Cấu trúc bảng cho bảng `order_items`
 --
 
 CREATE TABLE `order_items` (
@@ -1400,10 +1503,18 @@ CREATE TABLE `order_items` (
   `unit_price` decimal(16,0) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `order_items`
+--
+
+INSERT INTO `order_items` (`item_id`, `order_id`, `product_id`, `quantity`, `unit_price`) VALUES
+(9, 1, 4, 1, 640000),
+(10, 1, 1, 1, 5000);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `package_features`
+-- Cấu trúc bảng cho bảng `package_features`
 --
 
 CREATE TABLE `package_features` (
@@ -1416,7 +1527,7 @@ CREATE TABLE `package_features` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `package_features`
+-- Đang đổ dữ liệu cho bảng `package_features`
 --
 
 INSERT INTO `package_features` (`id`, `package_id`, `feature_name`, `description`, `display_order`, `created_at`) VALUES
@@ -1433,7 +1544,33 @@ INSERT INTO `package_features` (`id`, `package_id`, `feature_name`, `description
 -- --------------------------------------------------------
 
 --
--- Table structure for table `payments`
+-- Cấu trúc bảng cho bảng `password_reset_tokens`
+--
+
+CREATE TABLE `password_reset_tokens` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `expires_at` datetime NOT NULL,
+  `used` tinyint(1) NOT NULL DEFAULT 0,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `password_reset_tokens`
+--
+
+INSERT INTO `password_reset_tokens` (`id`, `user_id`, `email`, `token`, `created_at`, `expires_at`, `used`, `ip_address`, `user_agent`) VALUES
+(1, 2, 'hoanhuy12@gmail.com', 'b82813ba8f3e9a5afa46d2b35c5390a28cbbcc23473a5b25a47f3840d6c518ae', '2025-07-21 06:23:08', '2025-07-22 13:23:08', 0, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'),
+(2, 1, 'dvtdang1101@gmail.com', '587d2d7370f6a2ca3d5eaf7c9e85ca63da1cc64f2d21a7d66882c48f3b925150', '2025-07-21 06:23:21', '2025-07-22 13:23:21', 0, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `payments`
 --
 
 CREATE TABLE `payments` (
@@ -1449,7 +1586,7 @@ CREATE TABLE `payments` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `prediction_diseases`
+-- Cấu trúc bảng cho bảng `prediction_diseases`
 --
 
 CREATE TABLE `prediction_diseases` (
@@ -1463,7 +1600,7 @@ CREATE TABLE `prediction_diseases` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `prediction_diseases`
+-- Đang đổ dữ liệu cho bảng `prediction_diseases`
 --
 
 INSERT INTO `prediction_diseases` (`id`, `prediction_id`, `disease_id`, `disease_name_raw`, `confidence`, `disease_summary`, `disease_care`) VALUES
@@ -1517,7 +1654,7 @@ INSERT INTO `prediction_diseases` (`id`, `prediction_id`, `disease_id`, `disease
 -- --------------------------------------------------------
 
 --
--- Table structure for table `prescriptions`
+-- Cấu trúc bảng cho bảng `prescriptions`
 --
 
 CREATE TABLE `prescriptions` (
@@ -1531,7 +1668,7 @@ CREATE TABLE `prescriptions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `prescriptions`
+-- Đang đổ dữ liệu cho bảng `prescriptions`
 --
 
 INSERT INTO `prescriptions` (`prescription_id`, `appointment_id`, `prescribed_date`, `medications`, `notes`, `created_at`, `updated_at`) VALUES
@@ -1542,7 +1679,7 @@ INSERT INTO `prescriptions` (`prescription_id`, `appointment_id`, `prescribed_da
 -- --------------------------------------------------------
 
 --
--- Table structure for table `prescription_products`
+-- Cấu trúc bảng cho bảng `prescription_products`
 --
 
 CREATE TABLE `prescription_products` (
@@ -1557,7 +1694,7 @@ CREATE TABLE `prescription_products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `prescription_products`
+-- Đang đổ dữ liệu cho bảng `prescription_products`
 --
 
 INSERT INTO `prescription_products` (`id`, `prescription_id`, `product_id`, `quantity`, `dosage`, `usage_time`, `created_at`, `updated_at`) VALUES
@@ -1571,7 +1708,7 @@ INSERT INTO `prescription_products` (`id`, `prescription_id`, `product_id`, `qua
 -- --------------------------------------------------------
 
 --
--- Table structure for table `products`
+-- Cấu trúc bảng cho bảng `products`
 --
 
 CREATE TABLE `products` (
@@ -1590,26 +1727,26 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `products`
+-- Đang đổ dữ liệu cho bảng `products`
 --
 
 INSERT INTO `products` (`product_id`, `category_id`, `name`, `description`, `price`, `stock`, `is_medicine`, `image_url`, `created_at`, `updated_at`, `is_active`, `discount_amount`) VALUES
-(1, 1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 1, 'https://example.com/images/paracetamol.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1, 0),
-(2, 1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 1, 'https://example.com/images/amoxicillin.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1, 0),
-(3, 2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 1, 'https://example.com/images/vitaminC.jpg', '2025-05-28 07:02:02', '2025-07-04 20:03:58', 1, 0),
-(4, 3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 0, 'https://example.com/images/blood_pressure_monitor.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1, 0),
-(5, 4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 0, 'https://example.com/images/face_mask.jpg', '2025-05-28 07:02:02', '2025-05-28 14:02:02', 1, 0),
-(6, 1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 1, 'https://example.com/images/ibuprofen.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1, 0),
-(7, 2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 1, 'https://example.com/images/zinc.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1, 0),
-(8, 2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 1, 'https://example.com/images/probiotic.jpg', '2025-07-04 12:55:40', '2025-07-04 20:03:58', 1, 0),
-(9, 3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 0, 'https://example.com/images/nebulizer.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1, 0),
-(10, 5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 0, 'https://example.com/images/moisturizer.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1, 0),
-(11, 6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 0, 'https://example.com/images/chamomile_tea.jpg', '2025-07-04 12:55:40', '2025-07-04 19:55:40', 1, 0);
+(1, 1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 1, 'https://i.pinimg.com/736x/63/72/7c/63727c4fe25f05abee1f32debe73e5ca.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:15', 1, 10000),
+(2, 1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 1, 'https://example.com/images/amoxicillin.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:21', 1, 10000),
+(3, 2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 1, 'https://example.com/images/vitaminC.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:23', 1, 10000),
+(4, 3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 0, 'https://example.com/images/blood_pressure_monitor.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:25', 1, 10000),
+(5, 4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 0, 'https://example.com/images/face_mask.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:27', 1, 10000),
+(6, 1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 1, 'assets/images/products/product_1752991945_687c88c9aba5a.png', '2025-07-04 12:55:40', '2025-07-20 13:19:30', 1, 10000),
+(7, 2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 1, 'https://example.com/images/zinc.jpg', '2025-07-04 12:55:40', '2025-07-20 13:19:31', 1, 10000),
+(8, 2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 1, 'https://example.com/images/probiotic.jpg', '2025-07-04 12:55:40', '2025-07-20 13:19:33', 1, 10000),
+(9, 3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 0, 'https://example.com/images/nebulizer.jpg', '2025-07-04 12:55:40', '2025-07-20 13:19:35', 1, 10000),
+(10, 5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 0, 'https://example.com/images/moisturizer.jpg', '2025-07-04 12:55:40', '2025-07-20 13:19:36', 1, 10000),
+(11, 6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 0, 'https://i.pinimg.com/736x/d7/22/35/d72235c87cfe02dfcdc92c89d46096c0.jpg', '2025-07-04 12:55:40', '2025-07-21 13:37:48', 1, 10000);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `product_categories`
+-- Cấu trúc bảng cho bảng `product_categories`
 --
 
 CREATE TABLE `product_categories` (
@@ -1621,7 +1758,7 @@ CREATE TABLE `product_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `product_categories`
+-- Đang đổ dữ liệu cho bảng `product_categories`
 --
 
 INSERT INTO `product_categories` (`category_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
@@ -1629,7 +1766,7 @@ INSERT INTO `product_categories` (`category_id`, `name`, `description`, `created
 (2, 'Thực phẩm chức năng', 'Sản phẩm hỗ trợ tăng cường sức khỏe.', '2025-05-28 07:02:01', '2025-05-28 14:02:01'),
 (3, 'Thiết bị y tế', 'Các thiết bị và dụng cụ y tế sử dụng trong chẩn đoán và điều trị.', '2025-05-28 07:02:01', '2025-05-28 14:02:01'),
 (4, 'Vật tư tiêu hao', 'Găng tay, khẩu trang, bông băng,... sử dụng một lần.', '2025-05-28 07:02:01', '2025-05-28 14:02:01'),
-(5, 'Chăm sóc da', 'Sản phẩm hỗ trợ điều trị và chăm sóc da.', '2025-07-04 12:55:32', '2025-07-04 19:55:32'),
+(5, 'Chăm sóc da', 'Sản phẩm hỗ trợ điều trị và chăm sóc da.', '2025-07-04 12:55:32', '2025-07-20 20:59:29'),
 (6, 'Tiêu hóa', 'Sản phẩm hỗ trợ hệ tiêu hóa.', '2025-07-04 12:55:32', '2025-07-04 19:55:32'),
 (7, 'Miễn dịch', 'Sản phẩm tăng cường sức đề kháng.', '2025-07-04 12:55:32', '2025-07-04 19:55:32'),
 (8, 'Giấc ngủ & thư giãn', 'Giúp cải thiện giấc ngủ và thư giãn.', '2025-07-04 12:55:32', '2025-07-04 19:55:32');
@@ -1637,7 +1774,7 @@ INSERT INTO `product_categories` (`category_id`, `name`, `description`, `created
 -- --------------------------------------------------------
 
 --
--- Table structure for table `product_reviews`
+-- Cấu trúc bảng cho bảng `product_reviews`
 --
 
 CREATE TABLE `product_reviews` (
@@ -1651,7 +1788,7 @@ CREATE TABLE `product_reviews` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `product_reviews`
+-- Đang đổ dữ liệu cho bảng `product_reviews`
 --
 
 INSERT INTO `product_reviews` (`review_id`, `product_id`, `user_id`, `rating`, `comment`, `created_at`, `updated_at`) VALUES
@@ -1663,7 +1800,7 @@ INSERT INTO `product_reviews` (`review_id`, `product_id`, `user_id`, `rating`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `roles`
+-- Cấu trúc bảng cho bảng `roles`
 --
 
 CREATE TABLE `roles` (
@@ -1673,7 +1810,7 @@ CREATE TABLE `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `roles`
+-- Đang đổ dữ liệu cho bảng `roles`
 --
 
 INSERT INTO `roles` (`role_id`, `role_name`, `description`) VALUES
@@ -1685,7 +1822,7 @@ INSERT INTO `roles` (`role_id`, `role_name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `services`
+-- Cấu trúc bảng cho bảng `services`
 --
 
 CREATE TABLE `services` (
@@ -1708,7 +1845,7 @@ CREATE TABLE `services` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `services`
+-- Đang đổ dữ liệu cho bảng `services`
 --
 
 INSERT INTO `services` (`id`, `category_id`, `name`, `slug`, `short_description`, `full_description`, `icon`, `image`, `price_from`, `price_to`, `is_featured`, `is_emergency`, `is_active`, `display_order`, `created_at`, `updated_at`) VALUES
@@ -1720,7 +1857,7 @@ INSERT INTO `services` (`id`, `category_id`, `name`, `slug`, `short_description`
 -- --------------------------------------------------------
 
 --
--- Table structure for table `service_categories`
+-- Cấu trúc bảng cho bảng `service_categories`
 --
 
 CREATE TABLE `service_categories` (
@@ -1736,7 +1873,7 @@ CREATE TABLE `service_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `service_categories`
+-- Đang đổ dữ liệu cho bảng `service_categories`
 --
 
 INSERT INTO `service_categories` (`id`, `name`, `slug`, `icon`, `description`, `display_order`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -1750,7 +1887,7 @@ INSERT INTO `service_categories` (`id`, `name`, `slug`, `icon`, `description`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `service_features`
+-- Cấu trúc bảng cho bảng `service_features`
 --
 
 CREATE TABLE `service_features` (
@@ -1764,7 +1901,7 @@ CREATE TABLE `service_features` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `service_features`
+-- Đang đổ dữ liệu cho bảng `service_features`
 --
 
 INSERT INTO `service_features` (`id`, `service_id`, `feature_name`, `description`, `icon`, `display_order`, `created_at`) VALUES
@@ -1780,7 +1917,7 @@ INSERT INTO `service_features` (`id`, `service_id`, `feature_name`, `description
 -- --------------------------------------------------------
 
 --
--- Table structure for table `service_packages`
+-- Cấu trúc bảng cho bảng `service_packages`
 --
 
 CREATE TABLE `service_packages` (
@@ -1798,7 +1935,7 @@ CREATE TABLE `service_packages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `service_packages`
+-- Đang đổ dữ liệu cho bảng `service_packages`
 --
 
 INSERT INTO `service_packages` (`id`, `name`, `slug`, `description`, `price`, `duration`, `is_featured`, `is_active`, `display_order`, `created_at`, `updated_at`) VALUES
@@ -1809,7 +1946,21 @@ INSERT INTO `service_packages` (`id`, `name`, `slug`, `description`, `price`, `d
 -- --------------------------------------------------------
 
 --
--- Table structure for table `specialties`
+-- Cấu trúc bảng cho bảng `settings`
+--
+
+CREATE TABLE `settings` (
+  `id` int(11) NOT NULL,
+  `setting_key` varchar(100) NOT NULL,
+  `setting_value` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `specialties`
 --
 
 CREATE TABLE `specialties` (
@@ -1821,7 +1972,7 @@ CREATE TABLE `specialties` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `specialties`
+-- Đang đổ dữ liệu cho bảng `specialties`
 --
 
 INSERT INTO `specialties` (`specialty_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
@@ -1837,7 +1988,7 @@ INSERT INTO `specialties` (`specialty_id`, `name`, `description`, `created_at`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `symptoms`
+-- Cấu trúc bảng cho bảng `symptoms`
 --
 
 CREATE TABLE `symptoms` (
@@ -1851,7 +2002,7 @@ CREATE TABLE `symptoms` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `symptoms`
+-- Đang đổ dữ liệu cho bảng `symptoms`
 --
 
 INSERT INTO `symptoms` (`symptom_id`, `name`, `alias`, `description`, `followup_question`, `created_at`, `updated_at`) VALUES
@@ -1899,7 +2050,7 @@ INSERT INTO `symptoms` (`symptom_id`, `name`, `alias`, `description`, `followup_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Cấu trúc bảng cho bảng `users`
 --
 
 CREATE TABLE `users` (
@@ -1914,11 +2065,11 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Đang đổ dữ liệu cho bảng `users`
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role_id`, `created_at`, `updated_at`, `status`) VALUES
-(1, 'admin', 'admin@gmail.com', '123', 1, '2025-05-22 06:49:02', '2025-06-03 07:25:19', 'active'),
+(1, 'admin', 'dvtdang1101@gmail.com', '123', 1, '2025-05-22 06:49:02', '2025-07-21 06:09:54', 'active'),
 (2, 'huy', 'hoanhuy12@gmail.com', '123', 1, '2025-05-22 06:49:02', '2025-06-06 06:10:42', 'active'),
 (3, 'dr.hanh', 'doctor@example.com', '123', 2, '2025-05-22 06:49:02', '2025-06-06 06:10:34', 'active'),
 (4, 'vana', 'vana@example.com', '123', 3, '2025-05-22 08:38:06', '2025-06-10 08:28:14', 'active'),
@@ -1927,7 +2078,7 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role_id`, `cre
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users_info`
+-- Cấu trúc bảng cho bảng `users_info`
 --
 
 CREATE TABLE `users_info` (
@@ -1943,20 +2094,20 @@ CREATE TABLE `users_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users_info`
+-- Đang đổ dữ liệu cho bảng `users_info`
 --
 
 INSERT INTO `users_info` (`id`, `user_id`, `full_name`, `gender`, `date_of_birth`, `profile_picture`, `created_at`, `updated_at`, `phone`) VALUES
-(1, 1, 'Quản trị viên', 'Nam', '1990-01-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55', NULL),
+(1, 1, 'Quản trị viên', 'Nam', '1990-01-01', NULL, '2025-05-22 06:49:55', '2025-07-21 06:09:57', '09777313131'),
 (2, 2, 'Hoàn Huy', 'Nam', '1999-09-09', NULL, '2025-05-22 06:49:55', '2025-05-24 07:07:40', NULL),
 (3, 3, 'John Doe', 'Nam', '2000-12-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55', NULL),
 (4, 4, 'Nguyễn Văn A', 'Nam', '1995-08-15', NULL, '2025-05-22 08:39:27', '2025-05-22 08:39:27', NULL),
-(5, 6, 'Dr.Linh', 'Nữ', '1995-08-15', NULL, '2025-05-24 06:17:47', '2025-05-24 06:17:47', NULL);
+(5, 6, 'Dr.Linh', 'Nữ', '1995-08-15', NULL, '2025-05-24 06:17:47', '2025-07-20 13:22:15', '');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_addresses`
+-- Cấu trúc bảng cho bảng `user_addresses`
 --
 
 CREATE TABLE `user_addresses` (
@@ -1974,7 +2125,7 @@ CREATE TABLE `user_addresses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `user_addresses`
+-- Đang đổ dữ liệu cho bảng `user_addresses`
 --
 
 INSERT INTO `user_addresses` (`address_id`, `user_id`, `address_line`, `ward`, `district`, `city`, `postal_code`, `country`, `is_default`, `created_at`, `updated_at`) VALUES
@@ -1987,7 +2138,7 @@ INSERT INTO `user_addresses` (`address_id`, `user_id`, `address_line`, `ward`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_notifications`
+-- Cấu trúc bảng cho bảng `user_notifications`
 --
 
 CREATE TABLE `user_notifications` (
@@ -2001,7 +2152,7 @@ CREATE TABLE `user_notifications` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_symptom_history`
+-- Cấu trúc bảng cho bảng `user_symptom_history`
 --
 
 CREATE TABLE `user_symptom_history` (
@@ -2013,7 +2164,7 @@ CREATE TABLE `user_symptom_history` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `user_symptom_history`
+-- Đang đổ dữ liệu cho bảng `user_symptom_history`
 --
 
 INSERT INTO `user_symptom_history` (`id`, `user_id`, `symptom_id`, `record_date`, `notes`) VALUES
@@ -2044,11 +2195,11 @@ INSERT INTO `user_symptom_history` (`id`, `user_id`, `symptom_id`, `record_date`
 (169, 4, 3, '2025-07-15', 'Người dùng có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.');
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `appointments`
+-- Chỉ mục cho bảng `appointments`
 --
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`appointment_id`),
@@ -2058,21 +2209,21 @@ ALTER TABLE `appointments`
   ADD KEY `clinic_id` (`clinic_id`);
 
 --
--- Indexes for table `blog_authors`
+-- Chỉ mục cho bảng `blog_authors`
 --
 ALTER TABLE `blog_authors`
   ADD PRIMARY KEY (`author_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `blog_categories`
+-- Chỉ mục cho bảng `blog_categories`
 --
 ALTER TABLE `blog_categories`
   ADD PRIMARY KEY (`category_id`),
   ADD UNIQUE KEY `slug` (`slug`);
 
 --
--- Indexes for table `blog_posts`
+-- Chỉ mục cho bảng `blog_posts`
 --
 ALTER TABLE `blog_posts`
   ADD PRIMARY KEY (`post_id`),
@@ -2081,13 +2232,20 @@ ALTER TABLE `blog_posts`
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `chatbot_knowledge_base`
+-- Chỉ mục cho bảng `blog_tags`
+--
+ALTER TABLE `blog_tags`
+  ADD PRIMARY KEY (`tag_id`),
+  ADD UNIQUE KEY `slug` (`slug`);
+
+--
+-- Chỉ mục cho bảng `chatbot_knowledge_base`
 --
 ALTER TABLE `chatbot_knowledge_base`
   ADD PRIMARY KEY (`kb_id`);
 
 --
--- Indexes for table `chat_logs`
+-- Chỉ mục cho bảng `chat_logs`
 --
 ALTER TABLE `chat_logs`
   ADD PRIMARY KEY (`chat_id`),
@@ -2095,20 +2253,20 @@ ALTER TABLE `chat_logs`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `clinics`
+-- Chỉ mục cho bảng `clinics`
 --
 ALTER TABLE `clinics`
   ADD PRIMARY KEY (`clinic_id`);
 
 --
--- Indexes for table `clinic_specialties`
+-- Chỉ mục cho bảng `clinic_specialties`
 --
 ALTER TABLE `clinic_specialties`
   ADD PRIMARY KEY (`clinic_id`,`specialty_id`),
   ADD KEY `specialty_id` (`specialty_id`);
 
 --
--- Indexes for table `diseases`
+-- Chỉ mục cho bảng `diseases`
 --
 ALTER TABLE `diseases`
   ADD PRIMARY KEY (`disease_id`),
@@ -2116,14 +2274,14 @@ ALTER TABLE `diseases`
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `disease_symptoms`
+-- Chỉ mục cho bảng `disease_symptoms`
 --
 ALTER TABLE `disease_symptoms`
   ADD PRIMARY KEY (`disease_id`,`symptom_id`),
   ADD KEY `symptom_id` (`symptom_id`);
 
 --
--- Indexes for table `doctors`
+-- Chỉ mục cho bảng `doctors`
 --
 ALTER TABLE `doctors`
   ADD PRIMARY KEY (`doctor_id`),
@@ -2132,21 +2290,33 @@ ALTER TABLE `doctors`
   ADD KEY `clinic_id` (`clinic_id`);
 
 --
--- Indexes for table `doctor_schedules`
+-- Chỉ mục cho bảng `doctor_off_days`
+--
+ALTER TABLE `doctor_off_days`
+  ADD PRIMARY KEY (`off_day_id`),
+  ADD KEY `doctor_id` (`doctor_id`);
+
+--
+-- Chỉ mục cho bảng `doctor_schedules`
 --
 ALTER TABLE `doctor_schedules`
   ADD PRIMARY KEY (`schedule_id`),
-  ADD KEY `doctor_id` (`doctor_id`),
-  ADD KEY `clinic_id` (`clinic_id`);
+  ADD KEY `doctor_id` (`doctor_id`);
 
 --
--- Indexes for table `guest_users`
+-- Chỉ mục cho bảng `email_logs`
+--
+ALTER TABLE `email_logs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Chỉ mục cho bảng `guest_users`
 --
 ALTER TABLE `guest_users`
   ADD PRIMARY KEY (`guest_id`);
 
 --
--- Indexes for table `health_predictions`
+-- Chỉ mục cho bảng `health_predictions`
 --
 ALTER TABLE `health_predictions`
   ADD PRIMARY KEY (`prediction_id`),
@@ -2155,40 +2325,40 @@ ALTER TABLE `health_predictions`
   ADD KEY `chat_id` (`chat_id`);
 
 --
--- Indexes for table `health_records`
+-- Chỉ mục cho bảng `health_records`
 --
 ALTER TABLE `health_records`
   ADD PRIMARY KEY (`record_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `medical_categories`
+-- Chỉ mục cho bảng `medical_categories`
 --
 ALTER TABLE `medical_categories`
   ADD PRIMARY KEY (`category_id`);
 
 --
--- Indexes for table `medical_records`
+-- Chỉ mục cho bảng `medical_records`
 --
 ALTER TABLE `medical_records`
   ADD PRIMARY KEY (`med_rec_id`),
   ADD KEY `appointment_id` (`appointment_id`);
 
 --
--- Indexes for table `medicines`
+-- Chỉ mục cho bảng `medicines`
 --
 ALTER TABLE `medicines`
   ADD PRIMARY KEY (`product_id`);
 
 --
--- Indexes for table `notifications`
+-- Chỉ mục cho bảng `notifications`
 --
 ALTER TABLE `notifications`
   ADD PRIMARY KEY (`notification_id`),
   ADD KEY `target_role_id` (`target_role_id`);
 
 --
--- Indexes for table `orders`
+-- Chỉ mục cho bảng `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
@@ -2196,7 +2366,7 @@ ALTER TABLE `orders`
   ADD KEY `address_id` (`address_id`);
 
 --
--- Indexes for table `order_items`
+-- Chỉ mục cho bảng `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`item_id`),
@@ -2204,14 +2374,24 @@ ALTER TABLE `order_items`
   ADD KEY `product_id` (`product_id`);
 
 --
--- Indexes for table `package_features`
+-- Chỉ mục cho bảng `package_features`
 --
 ALTER TABLE `package_features`
   ADD PRIMARY KEY (`id`),
   ADD KEY `package_id` (`package_id`);
 
 --
--- Indexes for table `payments`
+-- Chỉ mục cho bảng `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `email` (`email`),
+  ADD KEY `token` (`token`),
+  ADD KEY `expires_at` (`expires_at`);
+
+--
+-- Chỉ mục cho bảng `payments`
 --
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`payment_id`),
@@ -2219,7 +2399,7 @@ ALTER TABLE `payments`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `prediction_diseases`
+-- Chỉ mục cho bảng `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
   ADD PRIMARY KEY (`id`),
@@ -2227,14 +2407,14 @@ ALTER TABLE `prediction_diseases`
   ADD KEY `disease_id` (`disease_id`);
 
 --
--- Indexes for table `prescriptions`
+-- Chỉ mục cho bảng `prescriptions`
 --
 ALTER TABLE `prescriptions`
   ADD PRIMARY KEY (`prescription_id`),
   ADD KEY `appointment_id` (`appointment_id`);
 
 --
--- Indexes for table `prescription_products`
+-- Chỉ mục cho bảng `prescription_products`
 --
 ALTER TABLE `prescription_products`
   ADD PRIMARY KEY (`id`),
@@ -2242,20 +2422,20 @@ ALTER TABLE `prescription_products`
   ADD KEY `product_id` (`product_id`);
 
 --
--- Indexes for table `products`
+-- Chỉ mục cho bảng `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`product_id`),
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `product_categories`
+-- Chỉ mục cho bảng `product_categories`
 --
 ALTER TABLE `product_categories`
   ADD PRIMARY KEY (`category_id`);
 
 --
--- Indexes for table `product_reviews`
+-- Chỉ mục cho bảng `product_reviews`
 --
 ALTER TABLE `product_reviews`
   ADD PRIMARY KEY (`review_id`),
@@ -2263,14 +2443,14 @@ ALTER TABLE `product_reviews`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `roles`
+-- Chỉ mục cho bảng `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`role_id`),
   ADD UNIQUE KEY `role_name` (`role_name`);
 
 --
--- Indexes for table `services`
+-- Chỉ mục cho bảng `services`
 --
 ALTER TABLE `services`
   ADD PRIMARY KEY (`id`),
@@ -2278,41 +2458,48 @@ ALTER TABLE `services`
   ADD KEY `category_id` (`category_id`);
 
 --
--- Indexes for table `service_categories`
+-- Chỉ mục cho bảng `service_categories`
 --
 ALTER TABLE `service_categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `slug` (`slug`);
 
 --
--- Indexes for table `service_features`
+-- Chỉ mục cho bảng `service_features`
 --
 ALTER TABLE `service_features`
   ADD PRIMARY KEY (`id`),
   ADD KEY `service_id` (`service_id`);
 
 --
--- Indexes for table `service_packages`
+-- Chỉ mục cho bảng `service_packages`
 --
 ALTER TABLE `service_packages`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `slug` (`slug`);
 
 --
--- Indexes for table `specialties`
+-- Chỉ mục cho bảng `settings`
+--
+ALTER TABLE `settings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `setting_key` (`setting_key`);
+
+--
+-- Chỉ mục cho bảng `specialties`
 --
 ALTER TABLE `specialties`
   ADD PRIMARY KEY (`specialty_id`);
 
 --
--- Indexes for table `symptoms`
+-- Chỉ mục cho bảng `symptoms`
 --
 ALTER TABLE `symptoms`
   ADD PRIMARY KEY (`symptom_id`),
   ADD UNIQUE KEY `unique_symptom_name` (`name`);
 
 --
--- Indexes for table `users`
+-- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
@@ -2321,21 +2508,21 @@ ALTER TABLE `users`
   ADD KEY `role_id` (`role_id`);
 
 --
--- Indexes for table `users_info`
+-- Chỉ mục cho bảng `users_info`
 --
 ALTER TABLE `users_info`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `user_addresses`
+-- Chỉ mục cho bảng `user_addresses`
 --
 ALTER TABLE `user_addresses`
   ADD PRIMARY KEY (`address_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `user_notifications`
+-- Chỉ mục cho bảng `user_notifications`
 --
 ALTER TABLE `user_notifications`
   ADD PRIMARY KEY (`id`),
@@ -2343,7 +2530,7 @@ ALTER TABLE `user_notifications`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Indexes for table `user_symptom_history`
+-- Chỉ mục cho bảng `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
   ADD PRIMARY KEY (`id`),
@@ -2351,243 +2538,273 @@ ALTER TABLE `user_symptom_history`
   ADD KEY `symptom_id` (`symptom_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `appointments`
+-- AUTO_INCREMENT cho bảng `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `blog_authors`
+-- AUTO_INCREMENT cho bảng `blog_authors`
 --
 ALTER TABLE `blog_authors`
-  MODIFY `author_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `author_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `blog_categories`
+-- AUTO_INCREMENT cho bảng `blog_categories`
 --
 ALTER TABLE `blog_categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `blog_posts`
+-- AUTO_INCREMENT cho bảng `blog_posts`
 --
 ALTER TABLE `blog_posts`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `chatbot_knowledge_base`
+-- AUTO_INCREMENT cho bảng `blog_tags`
+--
+ALTER TABLE `blog_tags`
+  MODIFY `tag_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `chatbot_knowledge_base`
 --
 ALTER TABLE `chatbot_knowledge_base`
   MODIFY `kb_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT for table `chat_logs`
+-- AUTO_INCREMENT cho bảng `chat_logs`
 --
 ALTER TABLE `chat_logs`
-  MODIFY `chat_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `chat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1745;
 
 --
--- AUTO_INCREMENT for table `clinics`
+-- AUTO_INCREMENT cho bảng `clinics`
 --
 ALTER TABLE `clinics`
   MODIFY `clinic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `diseases`
+-- AUTO_INCREMENT cho bảng `diseases`
 --
 ALTER TABLE `diseases`
   MODIFY `disease_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
--- AUTO_INCREMENT for table `doctors`
+-- AUTO_INCREMENT cho bảng `doctors`
 --
 ALTER TABLE `doctors`
   MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `doctor_schedules`
+-- AUTO_INCREMENT cho bảng `doctor_off_days`
 --
-ALTER TABLE `doctor_schedules`
-  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `doctor_off_days`
+  MODIFY `off_day_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `guest_users`
+-- AUTO_INCREMENT cho bảng `doctor_schedules`
+--
+ALTER TABLE `doctor_schedules`
+  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT cho bảng `email_logs`
+--
+ALTER TABLE `email_logs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT cho bảng `guest_users`
 --
 ALTER TABLE `guest_users`
   MODIFY `guest_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `health_predictions`
+-- AUTO_INCREMENT cho bảng `health_predictions`
 --
 ALTER TABLE `health_predictions`
-  MODIFY `prediction_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `prediction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
--- AUTO_INCREMENT for table `health_records`
+-- AUTO_INCREMENT cho bảng `health_records`
 --
 ALTER TABLE `health_records`
   MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
--- AUTO_INCREMENT for table `medical_categories`
+-- AUTO_INCREMENT cho bảng `medical_categories`
 --
 ALTER TABLE `medical_categories`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `medical_records`
+-- AUTO_INCREMENT cho bảng `medical_records`
 --
 ALTER TABLE `medical_records`
   MODIFY `med_rec_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `notifications`
+-- AUTO_INCREMENT cho bảng `notifications`
 --
 ALTER TABLE `notifications`
   MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `orders`
+-- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `order_items`
+-- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `package_features`
+-- AUTO_INCREMENT cho bảng `package_features`
 --
 ALTER TABLE `package_features`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `payments`
+-- AUTO_INCREMENT cho bảng `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `payments`
 --
 ALTER TABLE `payments`
   MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `prediction_diseases`
+-- AUTO_INCREMENT cho bảng `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=209;
 
 --
--- AUTO_INCREMENT for table `prescriptions`
+-- AUTO_INCREMENT cho bảng `prescriptions`
 --
 ALTER TABLE `prescriptions`
   MODIFY `prescription_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `prescription_products`
+-- AUTO_INCREMENT cho bảng `prescription_products`
 --
 ALTER TABLE `prescription_products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `products`
+-- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
   MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `product_categories`
+-- AUTO_INCREMENT cho bảng `product_categories`
 --
 ALTER TABLE `product_categories`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `product_reviews`
+-- AUTO_INCREMENT cho bảng `product_reviews`
 --
 ALTER TABLE `product_reviews`
   MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `roles`
+-- AUTO_INCREMENT cho bảng `roles`
 --
 ALTER TABLE `roles`
   MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `services`
+-- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `service_categories`
+-- AUTO_INCREMENT cho bảng `service_categories`
 --
 ALTER TABLE `service_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `service_features`
+-- AUTO_INCREMENT cho bảng `service_features`
 --
 ALTER TABLE `service_features`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `service_packages`
+-- AUTO_INCREMENT cho bảng `service_packages`
 --
 ALTER TABLE `service_packages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `specialties`
+-- AUTO_INCREMENT cho bảng `settings`
+--
+ALTER TABLE `settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `specialties`
 --
 ALTER TABLE `specialties`
   MODIFY `specialty_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT for table `symptoms`
+-- AUTO_INCREMENT cho bảng `symptoms`
 --
 ALTER TABLE `symptoms`
   MODIFY `symptom_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `users_info`
+-- AUTO_INCREMENT cho bảng `users_info`
 --
 ALTER TABLE `users_info`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `user_addresses`
+-- AUTO_INCREMENT cho bảng `user_addresses`
 --
 ALTER TABLE `user_addresses`
   MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `user_notifications`
+-- AUTO_INCREMENT cho bảng `user_notifications`
 --
 ALTER TABLE `user_notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `user_symptom_history`
+-- AUTO_INCREMENT cho bảng `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=170;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `appointments`
+-- Các ràng buộc cho bảng `appointments`
 --
 ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
@@ -2596,47 +2813,47 @@ ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_4` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`);
 
 --
--- Constraints for table `blog_authors`
+-- Các ràng buộc cho bảng `blog_authors`
 --
 ALTER TABLE `blog_authors`
   ADD CONSTRAINT `blog_authors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `blog_posts`
+-- Các ràng buộc cho bảng `blog_posts`
 --
 ALTER TABLE `blog_posts`
   ADD CONSTRAINT `blog_posts_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `blog_authors` (`author_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `blog_posts_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `blog_categories` (`category_id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `chat_logs`
+-- Các ràng buộc cho bảng `chat_logs`
 --
 ALTER TABLE `chat_logs`
   ADD CONSTRAINT `chat_logs_ibfk_1` FOREIGN KEY (`guest_id`) REFERENCES `guest_users` (`guest_id`),
   ADD CONSTRAINT `chat_logs_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Constraints for table `clinic_specialties`
+-- Các ràng buộc cho bảng `clinic_specialties`
 --
 ALTER TABLE `clinic_specialties`
   ADD CONSTRAINT `clinic_specialties_ibfk_1` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `clinic_specialties_ibfk_2` FOREIGN KEY (`specialty_id`) REFERENCES `specialties` (`specialty_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `diseases`
+-- Các ràng buộc cho bảng `diseases`
 --
 ALTER TABLE `diseases`
   ADD CONSTRAINT `diseases_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `medical_categories` (`category_id`);
 
 --
--- Constraints for table `disease_symptoms`
+-- Các ràng buộc cho bảng `disease_symptoms`
 --
 ALTER TABLE `disease_symptoms`
   ADD CONSTRAINT `disease_symptoms_ibfk_1` FOREIGN KEY (`disease_id`) REFERENCES `diseases` (`disease_id`),
   ADD CONSTRAINT `disease_symptoms_ibfk_2` FOREIGN KEY (`symptom_id`) REFERENCES `symptoms` (`symptom_id`);
 
 --
--- Constraints for table `doctors`
+-- Các ràng buộc cho bảng `doctors`
 --
 ALTER TABLE `doctors`
   ADD CONSTRAINT `doctors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
@@ -2644,14 +2861,19 @@ ALTER TABLE `doctors`
   ADD CONSTRAINT `doctors_ibfk_3` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`);
 
 --
--- Constraints for table `doctor_schedules`
+-- Các ràng buộc cho bảng `doctor_off_days`
 --
-ALTER TABLE `doctor_schedules`
-  ADD CONSTRAINT `doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`),
-  ADD CONSTRAINT `doctor_schedules_ibfk_2` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`);
+ALTER TABLE `doctor_off_days`
+  ADD CONSTRAINT `fk_offday_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `health_predictions`
+-- Các ràng buộc cho bảng `doctor_schedules`
+--
+ALTER TABLE `doctor_schedules`
+  ADD CONSTRAINT `doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `health_predictions`
 --
 ALTER TABLE `health_predictions`
   ADD CONSTRAINT `health_predictions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
@@ -2659,129 +2881,135 @@ ALTER TABLE `health_predictions`
   ADD CONSTRAINT `health_predictions_ibfk_3` FOREIGN KEY (`chat_id`) REFERENCES `chat_logs` (`chat_id`);
 
 --
--- Constraints for table `health_records`
+-- Các ràng buộc cho bảng `health_records`
 --
 ALTER TABLE `health_records`
   ADD CONSTRAINT `health_records_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Constraints for table `medical_records`
+-- Các ràng buộc cho bảng `medical_records`
 --
 ALTER TABLE `medical_records`
   ADD CONSTRAINT `medical_records_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`);
 
 --
--- Constraints for table `medicines`
+-- Các ràng buộc cho bảng `medicines`
 --
 ALTER TABLE `medicines`
   ADD CONSTRAINT `fk_medicines_products` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `medicines_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `notifications`
+-- Các ràng buộc cho bảng `notifications`
 --
 ALTER TABLE `notifications`
   ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`target_role_id`) REFERENCES `roles` (`role_id`);
 
 --
--- Constraints for table `orders`
+-- Các ràng buộc cho bảng `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `user_addresses` (`address_id`);
 
 --
--- Constraints for table `order_items`
+-- Các ràng buộc cho bảng `order_items`
 --
 ALTER TABLE `order_items`
   ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 
 --
--- Constraints for table `package_features`
+-- Các ràng buộc cho bảng `package_features`
 --
 ALTER TABLE `package_features`
   ADD CONSTRAINT `package_features_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `service_packages` (`id`);
 
 --
--- Constraints for table `payments`
+-- Các ràng buộc cho bảng `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD CONSTRAINT `password_reset_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Các ràng buộc cho bảng `payments`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Constraints for table `prediction_diseases`
+-- Các ràng buộc cho bảng `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
   ADD CONSTRAINT `prediction_diseases_ibfk_1` FOREIGN KEY (`prediction_id`) REFERENCES `health_predictions` (`prediction_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `prediction_diseases_ibfk_2` FOREIGN KEY (`disease_id`) REFERENCES `diseases` (`disease_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `prescriptions`
+-- Các ràng buộc cho bảng `prescriptions`
 --
 ALTER TABLE `prescriptions`
   ADD CONSTRAINT `prescriptions_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`);
 
 --
--- Constraints for table `prescription_products`
+-- Các ràng buộc cho bảng `prescription_products`
 --
 ALTER TABLE `prescription_products`
   ADD CONSTRAINT `prescription_products_ibfk_1` FOREIGN KEY (`prescription_id`) REFERENCES `prescriptions` (`prescription_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `prescription_products_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `products`
+-- Các ràng buộc cho bảng `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `product_categories` (`category_id`);
 
 --
--- Constraints for table `product_reviews`
+-- Các ràng buộc cho bảng `product_reviews`
 --
 ALTER TABLE `product_reviews`
   ADD CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
   ADD CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Constraints for table `services`
+-- Các ràng buộc cho bảng `services`
 --
 ALTER TABLE `services`
   ADD CONSTRAINT `services_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `service_categories` (`id`);
 
 --
--- Constraints for table `service_features`
+-- Các ràng buộc cho bảng `service_features`
 --
 ALTER TABLE `service_features`
   ADD CONSTRAINT `service_features_ibfk_1` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`);
 
 --
--- Constraints for table `users`
+-- Các ràng buộc cho bảng `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 
 --
--- Constraints for table `users_info`
+-- Các ràng buộc cho bảng `users_info`
 --
 ALTER TABLE `users_info`
   ADD CONSTRAINT `users_info_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `user_addresses`
+-- Các ràng buộc cho bảng `user_addresses`
 --
 ALTER TABLE `user_addresses`
   ADD CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Constraints for table `user_notifications`
+-- Các ràng buộc cho bảng `user_notifications`
 --
 ALTER TABLE `user_notifications`
   ADD CONSTRAINT `user_notifications_ibfk_1` FOREIGN KEY (`notification_id`) REFERENCES `notifications` (`notification_id`),
   ADD CONSTRAINT `user_notifications_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Constraints for table `user_symptom_history`
+-- Các ràng buộc cho bảng `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
   ADD CONSTRAINT `user_symptom_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),

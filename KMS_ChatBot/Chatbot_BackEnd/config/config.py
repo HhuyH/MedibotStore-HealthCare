@@ -22,7 +22,7 @@ DB_CONFIG = {
     "host": "localhost",
     "user": "chatbot_user",
     "password": "StrongPassword123",
-    "database": "kms",
+    "database": "MediCare",
     "charset": 'utf8mb4',
     "cursorclass": pymysql.cursors.Cursor
 }
