@@ -241,7 +241,8 @@ async def booking_appointment(
     # Kiểm tra xem người dùng có đủ thông tin cơ bản không gồm tên đầy đủ và sdt
     if status == "incomplete_info":
         yield {"message": message or "Bạn có thể cung cấp thêm thông tin để mình hỗ trợ đặt lịch nha."}
-
+        return
+    
     # Hỏi người dùng về địa điểm để lựa chọn cơ sở khám gần nhất
     elif status == "incomplete_clinic_info":
         # match = match_clinic(recent_user_messages[-1:] if recent_user_messages else [], suggested_clinics)
@@ -260,6 +261,7 @@ async def booking_appointment(
 
         if not clinics:
             yield {"message": f"Hiện không tìm thấy phòng khám phù hợp với chuyên khoa {specialty}. Bạn thử khu vực khác nha."}
+            return
         
         session_data["suggested_clinics"] = clinics
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
@@ -284,18 +286,25 @@ async def booking_appointment(
         yield {
             "message": f"{message}\n\n{suggestion}",
         }
+        return
+    
+    elif status == "ask_for_doctor_or_schedules":
+        yield {"message": message}
+        return
 
     # Xác định bác sĩ muốn khám
     elif status == "incomplete_doctor_info":
 
         if not clinic_id:
             yield {"message": "Không xác định được phòng khám để tìm bác sĩ."}
-
+            return
+        
         doctors = get_doctors(clinic_id=clinic_id, specialty=specialty)
 
         if not doctors:
             yield {"message": "Hiện không có bác sĩ nào phù hợp tại phòng khám này."}
-
+            return
+        
         suggested_doctors = [{
             "doctor_id": d["doctor_id"],
             "full_name": d["full_name"],
@@ -312,7 +321,8 @@ async def booking_appointment(
             yield {"message": f"{message}\n\n{suggested_doctors}"}
         else:
             yield {"message": message}
-
+        return
+    
     # Xác định lịch khám
     elif status == "incomplete_schedules_info":
         # Lấy lịch khám dựa vào thông tin sẵn có
@@ -348,7 +358,8 @@ async def booking_appointment(
         yield {
             "message": message
         }
-
+        return
+    
         # Lưu lại session
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
 
@@ -375,7 +386,8 @@ async def booking_appointment(
 
         logger.info("✅ Đã đủ thông tin. Chờ người dùng xác nhận.")
         yield{"message": "✅ Bạn đã chọn đầy đủ thông tin:\n" + "\n".join(lines) + "\n\nBạn xác nhận đặt lịch này chứ?",}
-
+        return
+    
     # Thây đổi thông tin như bác sĩ lịch hẹn nếu người dùng yêu cầu
     elif status == "modifying_info":
         target = parsed.get("modification_target")
@@ -450,13 +462,14 @@ async def booking_appointment(
             ),
             "should_insert": False  # để tránh tạo trùng lần sau
         }
+        return
 
     # Stream câu trả lời
-    if message:
-        for chunk in stream_gpt_tokens(message):
-            yield chunk
-            await asyncio.sleep(0.065)
-        return
+    # if message:
+    #     for chunk in stream_gpt_tokens(message):
+    #         yield chunk
+    #         await asyncio.sleep(0.065)
+    #     return
 
 def booking_prompt(
     recent_user_messages: list[str],
@@ -1839,13 +1852,13 @@ def insert_appointment(
             day_of_week, start_time = row
 
             # Tìm ngày tiếp theo ứng với day_of_week (ví dụ: "Tuesday")
-            day_map = {
-                "Monday": 0, "Tuesday": 1, "Wednesday": 2,
-                "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6
-            }
+            # day_map = {
+            #     "Monday": 0, "Tuesday": 1, "Wednesday": 2,
+            #     "Thursday": 3, "Friday": 4, "Saturday": 5, "Sunday": 6
+            # }
             today = datetime.now()
             today_weekday = today.weekday()
-            target_weekday = day_map[day_of_week]
+            target_weekday = int(day_of_week)
 
             days_ahead = (target_weekday - today_weekday + 7) % 7
             if days_ahead == 0:

@@ -4,6 +4,8 @@ from config.config import DB_CONFIG
 from decimal import Decimal
 import re
 
+from datetime import datetime
+
 def run_sql_query(query: str):
     conn = pymysql.connect(**DB_CONFIG)
     try:
@@ -19,6 +21,9 @@ def run_sql_query(query: str):
                 # Convert Decimal → float
                 if isinstance(value, Decimal):
                     value = float(value)
+                # Convert datetime → string
+                elif isinstance(value, datetime):
+                    value = value.strftime("%Y-%m-%d %H:%M:%S")  # format tùy ý
                 item[col] = value
             data.append(item)
         return {"status": "success", "data": data}

@@ -3,6 +3,7 @@ VALID_INTENTS = [
     # --- Triệu chứng & chẩn  & chăm sóc sức khỏe ---
     "medical_history",
     "health_query",
+    "symptom_query",
     "health_advice",
     "booking_request",
     
@@ -35,7 +36,8 @@ VALID_INTENTS = [
     "general_chat",
 
     # --- Phân loại truy vấn sản phẩm (giữ để phân luồng) ---
-    "product_query"
+    "product_query",
+    "sql_query"
 ]
 
 # Mapping từ client intent → pipeline key
@@ -56,7 +58,7 @@ INTENT_MAPPING = {
     # Truy vấn dữ liệu thương mại / dịch vụ
     "products":              "product_query",
     "order_items_details":   "product_query",
-    "orders":                "product_query",
+    "orders":                "sql_query",
     "services":              "product_query",
 
     # Các truy vấn dữ liệu (cần SQL)

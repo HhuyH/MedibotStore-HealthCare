@@ -449,13 +449,16 @@ async def chat_stream(msg: Message = Body(...)):
                         if rows:
                             result_text = natural_text
 
-                            final_bot_message = natural_text
+                            final_bot_message = {
+                                "description": natural_text,
+                                "data": rows
+                            }
 
                             await update_chat_history_in_session(
                                 msg.user_id, session_data, msg.session_id, msg.message, final_bot_message
                             )
                             save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
-                            save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
+                            save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=json.dumps(final_bot_message, ensure_ascii=False), sender='bot')
                         else:
                             result_text = "📋 Không có dữ liệu phù hợp."
 
@@ -550,12 +553,8 @@ async def ensure_active_date_fresh(msg, session_data):
 
     return session_data
 
-
 @router.get("/chat/logs")
 def get_chat_logs(session_id: str = None, user_id: int = None, guest_id: int = None, limit: int = 30):
-    import pymysql
-    from config.config import DB_CONFIG
-
     conn = pymysql.connect(**DB_CONFIG)
     try:
         with conn.cursor() as cursor:
@@ -564,7 +563,7 @@ def get_chat_logs(session_id: str = None, user_id: int = None, guest_id: int = N
                     SELECT message, sender, sent_at
                     FROM chat_logs
                     WHERE user_id = %s
-                    ORDER BY sent_at DESC
+                    ORDER BY sent_at DESC, chat_id DESC
                     LIMIT %s
                 """, (user_id, limit))
             elif guest_id:
@@ -572,21 +571,45 @@ def get_chat_logs(session_id: str = None, user_id: int = None, guest_id: int = N
                     SELECT message, sender, sent_at
                     FROM chat_logs
                     WHERE guest_id = %s
-                    ORDER BY sent_at DESC
+                    ORDER BY sent_at DESC, chat_id DESC
                     LIMIT %s
                 """, (guest_id, limit))
             else:
                 return []
 
-            rows = list(cursor.fetchall())   # ✅ Chuyển thành list
-            rows.reverse()                   # ✅ Đảo chiều để hiện từ cũ → mới
+            rows = list(cursor.fetchall())
+            rows.reverse()
 
-            return [{"message": m, "sender": s, "time": str(t)} for m, s, t in rows]
+            parsed_logs = []
+            for m, s, t in rows:
+                parsed = m
+                # Thử parse JSON
+                if isinstance(m, str) and m.startswith("{"):
+                    try:
+                        parsed = json.loads(m)
+                        # Nếu là message có sql_query thì bỏ qua
+                        if isinstance(parsed, dict) and "sql_query" in parsed:
+                            continue
+                    except Exception:
+                        parsed = m  # giữ nguyên string nếu parse lỗi
+
+                parsed_logs.append({
+                    "message": parsed,
+                    "sender": s,
+                    "time": str(t)
+                })
+
+            logging.debug(f"Logs trả về API: {parsed_logs}")
+            return parsed_logs
+
     finally:
         conn.close()
 
-
 def save_chat_log(user_id=None, guest_id=None, intent=None, message=None, sender='user'):
+    # Nếu message không phải là string thì chuyển thành JSON
+    if not isinstance(message, str):
+        message = json.dumps(message, ensure_ascii=False)
+
     conn = pymysql.connect(**DB_CONFIG)
     try:
         with conn.cursor() as cursor:
@@ -598,7 +621,6 @@ def save_chat_log(user_id=None, guest_id=None, intent=None, message=None, sender
             return cursor.lastrowid  # 👉 trả về chat_id vừa insert
     finally:
         conn.close()
-
 
 async def not_use():
             # # --- Step 2: GPT điều phối health_talk ---

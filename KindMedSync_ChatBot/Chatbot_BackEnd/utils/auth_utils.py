@@ -14,7 +14,7 @@ ROLE_INTENT_PERMISSIONS = {
     "Patient": [
         "general_chat", "health_query", "health_advice", "suggest_product",
         "booking_request", "medical_history", "products", "services",
-        "orders", "order_items_details"
+        "orders", "order_items_details","symptom_query"
     ],
     "Guest": [
         "general_chat", "health_query"

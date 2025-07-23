@@ -91,6 +91,18 @@ async def health_talk(
 
     had_conclusion = session_data.get("had_conclusion", False)
 
+    # print(
+    #     "user_message:", user_message, "\n",
+    #     "stored_symptoms_name:", [s["name"] for s in stored_symptoms], "\n",
+    #     "symptoms_to_ask:", inputs["symptoms_to_ask"], "\n",
+    #     "recent_user_messages:", recent_user_messages, "\n",
+    #     "recent_assistant_messages:", recent_assistant_messages, "\n",
+    #     "related_symptom_names:", inputs["related_symptom_names"], "\n",
+    #     "session_context:", session_context, "\n",
+    #     "had_conclusion:", had_conclusion
+    # )
+
+
     # Step 3: Xây prompt tổng hợp
     prompt = build_KMS_prompt(
         SYMPTOM_LIST=get_symptom_list(),
@@ -114,7 +126,7 @@ async def health_talk(
     completion = chat_completion(messages=[{"role": "user", "content": prompt}], temperature=0.7)
 
     content = completion.choices[0].message.content.strip()
-    # logger.info("🔎 Raw content từ GPT:\n%s", content)
+    logger.info("🔎 Raw content từ GPT:\n%s", content)
 
     raw_json = extract_json(content)
 
@@ -142,13 +154,9 @@ async def health_talk(
     action = parsed.get("action")
     next_action = parsed.get("next_action")
 
-    # ✅ Log theo logic thực tế đang xử lý
-    if action == "diagnosis" or next_action == "diagnosis":
-        logger.info("🎯 Action (effective): diagnosis")
-    else:
-        logger.info("🎯 Action: %s", action)
+    logger.info("🎯 Action: %s", action)
 
-    # ✅ Ghi nhận kết luận để đánh dấu đã chẩn đoán hôm nay
+    # Ghi nhận kết luận để đánh dấu đã chẩn đoán hôm nay
     if action == "diagnosis":
         session_data["had_conclusion"] = True
 
@@ -203,7 +211,7 @@ async def health_talk(
 
         symptom_notes_list = list(note_map.values())
 
-        # logger.info("📋 Updated symptom_notes_list:\n%s", json.dumps(symptom_notes_list, indent=2, ensure_ascii=False))
+        logger.info("📋 Note Được tạo:\n%s", json.dumps(symptom_notes_list, indent=2, ensure_ascii=False))
 
         # Step 4: lưu vào session
         session_data["symptom_notes_list"] = symptom_notes_list

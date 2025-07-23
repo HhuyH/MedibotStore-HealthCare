@@ -271,9 +271,36 @@ def build_KMS_prompt(
             "next_action": one of ["light_summary", "diagnosis"]
             "message": "Câu trả lời tự nhiên bằng tiếng Việt",
             "updated_symptom": "Ho",
-            "end": true | false
+            "end": true | false,
+            diseases = [
+               {{
+                  "name": "Tên bệnh bằng tiếng Việt",
+                  "confidence": 0.0,
+                  "summary": "Tóm tắt ngắn gọn bằng tiếng Việt về bệnh này",
+                  "care": "Gợi ý chăm sóc nhẹ nhàng bằng tiếng Việt"
+               }},
+            ]
          }}
          ```
+
+         ⚠️ Mandatory rule for the `"diseases"` field:
+
+         - The `"diseases"` field MUST always be included in the JSON you return.
+         - If there are no diseases to suggest (e.g., when the chosen `"action"` is `"followup"` or `"related"`), you must return `"diseases": []`.
+         - This rule ensures consistent JSON structure — it does **not** give you permission to speculate or guess diseases early.
+         - You are only allowed to fill `"diseases"` with real condition data **after** confirming that all requirements in **STEP — 4. 🧠 Diagnosis** are satisfied.
+         - In all other steps, the field must still exist but remain an empty array.
+
+
+         Example when no diseases are identified:
+         {{
+            "action": "followup",
+            "next_action": "light_summary",
+            "message": "…",
+            "updated_symptom": "Ho",
+            "end": false,
+            "diseases": []
+         }}
 
          Guidance:
 
@@ -791,9 +818,7 @@ def build_KMS_prompt(
             - Avoid mild guesses like stress or thiếu vitamin
 
             📦 JSON structure for `"diseases"` field:
-
                After composing your Vietnamese explanation (`"message"`), you must also return a JSON field `"diseases"` to help the system save the prediction.
-
                It should be a list of possible conditions, each with the following fields:
          
                   ```json
@@ -821,6 +846,7 @@ def build_KMS_prompt(
                   - 0.3 → weak match, possibly related
 
                   → This score reflects AI reasoning — NOT a medical diagnosis.
+
             📦 Note for the assistant:
 
             → Even when `had_conclusion = true`, you are still allowed to provide full diagnostic reasoning — as long as it is done **within the `"post-diagnosis"` step** using `"next_action": "diagnosis"`.
