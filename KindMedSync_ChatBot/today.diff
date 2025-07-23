@@ -1,0 +1,1381 @@
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/prompts/__pycache__/prompts.cpython-313.pyc b/KMS_ChatBot/Chatbot_BackEnd/prompts/__pycache__/prompts.cpython-313.pyc
+index 8988efd..d85e944 100644
+Binary files a/KMS_ChatBot/Chatbot_BackEnd/prompts/__pycache__/prompts.cpython-313.pyc and b/KMS_ChatBot/Chatbot_BackEnd/prompts/__pycache__/prompts.cpython-313.pyc differ
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/prompts/prompts.py b/KMS_ChatBot/Chatbot_BackEnd/prompts/prompts.py
+index 3c904e8..9cb383a 100644
+--- a/KMS_ChatBot/Chatbot_BackEnd/prompts/prompts.py
++++ b/KMS_ChatBot/Chatbot_BackEnd/prompts/prompts.py
+@@ -232,7 +232,7 @@ def build_KMS_prompt(
+ 
+          ```json
+          {{
+-            "action": one of ["ask_symptom_intro", "followup", "related", "light_summary", "diagnosis"]
++            "action": one of ["followup", "related", "light_summary", "diagnosis", "post-diagnosis"]
+             "message": "Câu trả lời tự nhiên bằng tiếng Việt",
+             "updated_symptom": "Ho",
+             "end": true | false
+@@ -327,167 +327,95 @@ def build_KMS_prompt(
+ 
+     """.strip()
+     
+-    # "🩺 1. Create follow up question for symptom" Tạo câu hỏi để hỏi về chi tiết triệu chứng
+-    prompt += f"""
+-      🩺 STEP — 1. Create follow up question for symptom
+-
+-      ❗ Follow-up symptom list (you may ask about **only these**):  
+-      {json.dumps(symptoms_to_ask, ensure_ascii=False)}
+-
+-      🔁 Follow-up allowance:
+-      - had_conclusion = {"true" if had_conclusion else "false"}
+-
+-      🛑 Follow-up Policy:
+-
+-      You are ONLY allowed to set `"action": "followup"` if:
+-      - `symptoms_to_ask` is not empty  
+-      → This is the ONLY condition for triggering follow-up.
+-
+-      🚫 In ALL other cases:
+-      - You must SKIP STEP 1 entirely.
+-      - Do NOT generate a follow-up question — even in reworded or softer form.
+-      - Do NOT guess, infer, or rephrase questions for symptoms not explicitly listed.
+-
+-      Even if a symptom appears in `stored_symptoms_name`, you are NOT allowed to follow up unless:
+-      - It is in `symptoms_to_ask`,  
+-      - OR the user clearly revisits it after a previous conclusion.
+-
+-      This is a strict rule. Any violation is considered a logic failure.
+-
+-            
+-      🚫 VERY IMPORTANT:
+-         - If the user has ALREADY answered your previous follow-up — even in vague or brief form like:
+-            • “Tầm 5-10 phút”
+-            • “Cũng nhanh thôi”
+-            • “Chắc vài tiếng”
+-            • “Không nhớ rõ, chắc khoảng chiều”
+-         → then you must NOT ask about the same aspect again (e.g., duration, intensity).
+-
+-         - Do NOT reword or “double check” the same topic — it breaks the conversational flow.
+-
+-      Examples:
+-         - Bot: “Bạn thường bị đau đầu trong bao lâu?”  
+-         User: “Tầm 5-10 phút”  
+-         → ✅ User has answered → SKIP follow-up on duration
+-
+-      📌 If the symptom has already been followed up and no new details are emerging from the user,  
+-         → you MUST NOT continue repeating similar follow-up questions.
+-
+-         In this case, you should either:
+-         - Switch to `"related"` (if it hasn't been done), or  
+-         - Proceed to `"light_summary"` if follow-up seems exhausted.
+-
+-         Do NOT ask variations of the same follow-up question unless the user introduced a new detail.
+-
+-      → Then, write ONE fluent, empathetic question in **Vietnamese** to clarify what’s missing.
+-
+-      → Your question should give the user multiple directions to reflect on, not just a single narrow angle.
+-
+-      → Do NOT just ask “Bạn thấy thế nào?” — that’s too vague. Instead, offer some soft examples inside the question itself.
+-
+-      → These gentle contrasts help users pick what feels right, without needing medical vocabulary.
+-
+-      ⚠️ DO NOT:
+-      - Use any symptom not listed in `symptoms_to_ask`
+-      - Repeat questions the user already answered (even vaguely)
+-      - Ask more than one question
+-      - Mention possible diseases
+-
+-      Instructions:
+-      - Only ask about **that one symptom** — do NOT bring up new or related symptoms.
+-      - 🚫 For example, if the symptom is “nhức đầu”, you must NOT ask whether the user also feels “mệt mỏi”, “buồn nôn”, or any other symptom.
+-      - 🚫 You must also avoid phrases like:
+-         • “Có kèm theo cảm giác… không?”
+-         • “Có thêm triệu chứng gì khác không ha?”
+-      - ✅ These are part of STEP 2 (related symptoms) and must not appear during follow-up.
+-         → If you accidentally include related symptoms in your follow-up, the result will be rejected by the system.
+-      - Do NOT repeat what the user already said (e.g., nếu họ nói “đau đầu từ sáng” thì đừng hỏi lại “bạn đau từ khi nào?”).
+-      - Instead, dig deeper:
+-      - Timing (kéo dài bao lâu, xuất hiện khi nào?)
+-      - Severity (nặng dần, thoáng qua hay dai dẳng?)
+-      - Triggers (xuất hiện khi làm gì?)
+-      - Functional impact (cản trở sinh hoạt không?)
++   # STEP 1 — Follow-up hoặc Skip nếu không đủ điều kiện
++    if symptoms_to_ask:
++      prompt += f"""
++         🩺 STEP — 1. Create Follow-Up Question
+ 
+-      → Follow the Global Tone Guide above
++         ❗ Symptom(s) available for follow-up:  
++         {json.dumps(symptoms_to_ask, ensure_ascii=False)}
+ 
+-      💡 Before generating the follow-up, read `recent_user_messages` and `recent_assistant_messages` carefully.
+-         → If the assistant has already asked about this symptom — even with different wording — you must skip it.
++         🛑 Follow-Up Policy:
++         If `symptoms_to_ask` is not empty → you must enter follow-up mode first.
+ 
+-      🔄 After finishing follow-up:
++         DO NOT skip to diagnosis unless all required follow-ups have been asked or clearly answered by user in free text.
+ 
+-         You must now choose ONE of the following next steps based on the user’s current information:
++         You are ONLY allowed to set `"action": "followup"` if:
++         - `symptoms_to_ask` is not empty  
++         → This is the ONLY condition to trigger follow-up.
+ 
+-         1. If symptoms are clear but you still want to enrich understanding → choose `"related"`  
+-            → Ask about relevant symptoms that often co-occur.
++         Even if a symptom is in `stored_symptoms_name`, you are NOT allowed to follow up unless:
++         - It is in `symptoms_to_ask`,  
++         - OR the user clearly revisits it after a previous conclusion.
+ 
+-         2. If symptoms are mild, temporary, and don’t need further clarification → choose `"light_summary"`  
+-            → Write a gentle summary and remind the user to keep monitoring.
+-
+-         3. If symptoms are clear and you can suggest possible causes → choose `"diagnosis"`  
+-            → Write a friendly, informative explanation in Vietnamese.
+-
+-         ⛔ Do NOT continue looping or re-asking old questions.
+-
+-         ✅ Pick only ONE action from the list — never combine multiple.
++         This is a strict rule. Any violation is considered a logic failure.
+ 
++         🚫 DO NOT:
++         - Repeat questions already asked (even if vaguely answered, like “about 5-10 minutes”, “I guess a few hours”)
++         - Reword or “double check” the same topic
++         - Mention any related symptoms or diseases
++         - Ask more than one question
+ 
++         ✅ Your task:
++         - Write ONE empathetic, specific question in Vietnamese  
++         - Focus only on the single symptom in `symptoms_to_ask`  
++         - Use soft contrast options to help the user answer  
++         - Follow the **Global Tone Guide**
+       """.strip()
+-    
+-    # "🧩 2. Create question for Related Symptoms" Hỏi triệu chứng có thể liên quan 
+-    prompt += f"""   
+-         🧩 STEP — 2. Create question for Related Symptoms:
+-
+-         🛑 STRICT RULE: Related symptoms may only be asked **once per conversation**.
++    else:
++      prompt += """
++         🩺 STEP — 1. Skip Follow-Up
+ 
+-         → You are allowed to ask about related symptoms only if:
+-         - The main symptoms have already been explored (follow-up is done or skipped)
+-         - There is no related symptom question already present in `recent_assistant_messages`
++         🚫 There are no more symptoms to follow up, and the user is not revisiting a previous one.
+ 
+-         ❌ If a related symptom question has already appeared — even with different words or softer phrasing — you MUST SKIP this step entirely.
++         You MUST skip this step entirely.
+ 
+-         ✅ Do NOT attempt to “clarify”, “soften”, or “revisit” related symptoms. Treat this as a strict one-time opportunity.
++         👉 Choose ONE next step:
++         - `"related"` if applicable and not yet asked
++         - `"diagnosis"` if user has described ≥2 meaningful symptoms
++         - `"light_summary"` if symptoms seem mild or unclear
+ 
+-         For example:
+-           - If the assistant previously asked:  
+-             “Bạn có cảm thấy hoa mắt, chóng mặt gì không?”  
+-           → Then you MUST NOT ask again:  
+-             “Vậy còn chóng mặt hay cảm giác quay cuồng gì không?”
+-
+-         → Even if words differ, if the meaning is the same, it is considered a duplication.
+-
+-         ⚠️ Once a related question has been asked, you must proceed to `"diagnosis"` or `"light_summary"` — depending on context.
+-
+-         → If the user replies vaguely or says things like “không có”, “không rõ”, “chắc không sao đâu”, etc.  
+-         → Then you must **not retry this step** — move forward instead.
+-
+-         🔒 If uncertain:
+-         - Prefer `"diagnosis"` if the user has described ≥2 symptoms with meaningful details
+-         - Otherwise, choose `"light_summary"` as a gentle closing step
++         ⚠️ DO NOT:
++         - Retry follow-up
++         - Reword old questions
++         - Ask about additional symptoms — that’s in STEP 2
++      """.strip()
+ 
+-         ➕ Example transitions (only if allowed):
+-           - “Mình hỏi vậy vì đôi khi mệt mỏi kéo dài có thể đi kèm các triệu chứng như vậy.”
+-           - “Thỉnh thoảng những cảm giác này sẽ đi cùng với những triệu chứng khác nữa đó…”
++   # "🧩 2. Create question for Related Symptoms" Hỏi triệu chứng có thể liên quan 
++    if related_symptom_names:
++            prompt += f"""
++               🧩 STEP — 2. Ask About Related Symptoms
+ 
+-         → Related symptoms to consider: {', '.join(related_symptom_names or [])}
++               set `"action": "related"`
+ 
+-         🚫 FINAL WARNING:
++               👉 You may now ask about **possibly related symptoms** to complete the context.
++               
++               ⚠️ STRICT RULES:
++               - Only ask this once per session.
++               - Check that no similar question has already been asked.
++               - If any prior assistant message includes a prompt about “cảm giác khác”, “triệu chứng đi kèm”, etc → you must skip.
+ 
+-            If `recent_assistant_messages` contains **any sentence** that asks about related symptoms — even with different wording — you MUST SKIP this step completely.
++               → Related symptoms to consider: {', '.join(related_symptom_names)}
+ 
+-            → This includes phrases like:
+-            - “Mình đang nghĩ không biết bạn có thêm cảm giác nào khác…”
+-            - “Đôi khi triệu chứng này đi kèm…”
+-            - “Bạn có thấy thêm gì như chóng mặt, hoa mắt không…”
++               🎯 Write one natural follow-up message in Vietnamese that gently brings up these related symptoms.
++                  → Follow the Global Tone Guide above
++                  
++               ❌ Do not repeat, clarify, or revisit this once it’s been asked.
++            """.strip()
++    else:
++         prompt += """
++            🧩 STEP — 2. Skip Related Symptoms
+ 
+-            ❗ Repeating or rephrasing a related symptom prompt — even once — is a **critical logic violation**.
++            🔍 There are no related symptoms to ask, or they have already been covered.
+ 
+-            ⚠️ The system will reject your response and consider the assistant broken.
++            👉 You must now **proceed directly** to the next logical step.
+ 
+-            → Never attempt to "soften", "clarify", or "extend" a related question after it has already appeared.
++            → If the user has described **2 or more meaningful symptoms**, move to `"diagnosis"`.
+ 
+-            → This is an **absolute rule** — no exceptions.
++            → Otherwise, use `"light_summary"` to gently summarize and transition out.
+ 
+-    """.strip()
++            ⚠️ Do not retry any previous step. Move forward.
++         """.strip()
+ 
+     # "3. 🌿 Light Summary" — Tạo phản hồi nhẹ nhàng khi không cần chẩn đoán hoặc follow-up thêm
+     prompt += f"""   
+@@ -651,82 +579,79 @@ def build_KMS_prompt(
+                      → This score reflects AI reasoning — NOT a medical diagnosis.
+     """.strip()
+     
+-    # "🆕 STEP — 5. Detect and Handle Updated Symptom" - xác định người dùng đang nói đến triệu chứng cũ và update
+-    prompt += f"""
+-      🆕 STEP — 5. Detect and Handle Updated Symptom
+-
+-         Your job in this step is to determine whether the user is describing a **change, progression, or additional detail** for a symptom they previously mentioned.
+-
+-         This is called an “updated symptom”.
++    # "🆕 STEP — 5. Post-Diagnosis Updated Symptom (if had_conclusion = true)"
++    if had_conclusion and (not symptoms_to_ask) and (not related_symptom_names):
++      prompt += f"""
++      🆕 STEP — 5. Post-Diagnosis Updated Symptom
+ 
+-         ⚠️ Do NOT set `"updated_symptom"` in the following cases:
++      Your job in this step is to determine whether the user is describing a **change, progression, or additional detail** for a symptom they previously mentioned.
+ 
+-         1. The user only uses vague or uncertain expressions such as:
+-            - “hình như”, “có vẻ”, “chắc là”, “mình nghĩ”, “không rõ”, “có thể”  
+-            → and all similar expressions of approximation or uncertainty.
++      set `"action": "post-diagnosis"`
+ 
+-         2. The user merely repeats or rementions the symptom (e.g., “mình vẫn chóng mặt”), **without adding new descriptive details**.
++      ---
+ 
+-         3. The assistant is the one asking about the symptom (e.g., follow-up question), and the user has **not yet replied**.  
+-            → Do **NOT** assume an update just because the symptom was mentioned in the assistant’s message.
++      🔍 You must carefully scan:
++      - `recent_user_messages`: to detect any new descriptive information
++      - `stored_symptoms_name`: to match it to a known symptom
+ 
+-         ---
++      This step applies in both of the following cases:
++      - The user adds more detail **after** a diagnosis (`had_conclusion = true`)
+ 
+-         ✅ You may set `"updated_symptom"` **only if** the user **voluntarily** provides **concrete new details** (not just repeats, and not in response to a follow-up).
++      ---
+ 
+-         These new details must describe a **change, progression, or additional context** related to a previously reported symptom — such as timing, intensity, duration, or characteristics.
++      🚫 DO NOT set `"updated_symptom"` in the following cases:
++      - The user uses vague or uncertain expressions like “hình như”, “có vẻ”, “chắc là”, “không rõ”
++      - The user repeats the symptom without adding new information
++      - The assistant is the one asking, and the user hasn’t responded yet
+ 
+-         This is valid only if:
+-         - The message contains clear comparative or descriptive information  
+-         - AND `stored_symptoms_name` includes that symptom  
+-         - AND the user is **not introducing a new symptom**
++      ---
+ 
+-         Examples of valid updates:
+-         - “Hôm nay thấy chóng mặt kéo dài hơn” → update to “Chóng mặt”
+-         - “Giờ thì cảm giác đó quay cuồng luôn rồi” → update to “Chóng mặt”
+-         - “Lần này đau đầu kiểu khác lúc trước” → update to “Đau đầu”
+-         - “Giờ thì sổ mũi có đàm màu xanh rồi” → update to “Sổ mũi”
++      ✅ You may set `"updated_symptom": "<name>"` **only if**:
++      - The user voluntarily provides new, descriptive info (not prompted)
++      - It describes timing, intensity, duration, or other characteristics
++      - The symptom exists in `stored_symptoms_name`
+ 
+-         If you detect such an update:
+-         → Set `"updated_symptom": "Tên triệu chứng"`  
+-         → Also embed a soft acknowledgment in your `"message"` to reflect that you recognized this change (e.g., “Mình ghi nhận thêm rồi nè”).
++      Examples of valid updates:
++      - “Hôm nay thấy chóng mặt kéo dài hơn” → update to “Chóng mặt”
++      - “Lần này đau đầu kiểu khác lúc trước” → update to “Đau đầu”
++      - “Giờ thì sổ mũi có đàm màu xanh rồi” → update to “Sổ mũi”
+ 
+-         ---
++      ---
+ 
+-         ✅ Good response examples (you can take inspiration from these, but do not reuse them exactly):
++      🎯 Response logic:
+ 
+-         - “À Mình thấy triệu chứng đó có vẻ thay đổi chút rồi ha.”
+-         - “Um, cảm ơn bạn nha. Nghe như là tình trạng đó đang tiến triển thêm chút rồi á.”
+-         - “Mình ghi nhận thông tin bạn vừa chia sẻ nha, để theo dõi kỹ hơn hen.”
+-         - “Hiểu rồi, có vẻ như triệu chứng này đang khác hơn chút so với lúc trước ha.”
+-         - “Bạn mô tả thêm rõ hơn rồi, mình sẽ lưu lại để xem xét cẩn thận hơn nữa nha.”
++      → Always embed a soft acknowledgment in your `"message"` when setting `"updated_symptom"`
+ 
+-         👉 These are just reference styles — make your response feel like a gentle conversation, not a script.
++      ✅ Example acknowledgments (rephrase freely, but keep the warm tone):
++      - “À, có vẻ như triệu chứng đó đang nặng hơn chút rồi ha…”
++      - “Hiểu rồi nhen, lần này cảm giác đó nghe có vẻ khác hơn trước á.”
++      - “Cảm ơn bạn, mình sẽ ghi chú thêm để theo dõi kỹ hơn nha.”
++      - “Mình thấy bạn mô tả rõ hơn rồi, để mình lưu lại thêm nghen.”
++      - “Mình ghi nhận thông tin bạn vừa chia sẻ nha, để theo dõi sát hơn ha.”
+ 
++      → Follow the **Global Tone Guide**.
+ 
+-         ---
++      ---
+ 
++      ⚖️ Action logic:
+ 
+-         ⚖️ Choose the right action:
++      - If `had_conclusion = true`:
++         → Set `"action": "post-diagnosis"`  
++         → Then choose either `"light_summary"` or `"diagnosis"` as the next step depending on severity
+ 
+-         - If the update sounds **mild or non-concerning** → set `action = "light_summary"`
+-         - If the update clearly suggests a **specific condition** or raises concern  
+-            (e.g., máu, tím, liệt, bất thường nặng) → set `action = "diagnosis"`
++      - If `had_conclusion = false`:
++         → Do NOT set `"post-diagnosis"`
++         → Choose `"light_summary"` if mild  
++         → Choose `"diagnosis"` if the detail adds meaningful insight
+ 
+-         ✅ Do NOT use "related" unless you are also asking about other symptoms.
+-         ❌ Do NOT reuse old questions.
+-
+-         ---
+-
+-         📌 Summary:
+-
+-         - Always set `"updated_symptom"` if relevant.
+-         - Choose between `"light_summary"` or `"diagnosis"` depending on severity.
+-         - Only escalate to `"diagnosis"` if the new info is potentially medically significant
++      ---
+ 
++      📌 Summary:
++      - Always set `"updated_symptom"` if appropriate
++      - Embed a gentle, human message
++      - Route accordingly using `"light_summary"` or `"diagnosis"`
++      """.strip()
+ 
+-    """
+-   
+     # Rule set action
+     prompt += f"""
+ 
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/routes/__pycache__/chat.cpython-313.pyc b/KMS_ChatBot/Chatbot_BackEnd/routes/__pycache__/chat.cpython-313.pyc
+index f0cb50f..ece0330 100644
+Binary files a/KMS_ChatBot/Chatbot_BackEnd/routes/__pycache__/chat.cpython-313.pyc and b/KMS_ChatBot/Chatbot_BackEnd/routes/__pycache__/chat.cpython-313.pyc differ
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/routes/chat.py b/KMS_ChatBot/Chatbot_BackEnd/routes/chat.py
+index ccf7706..f21179c 100644
+--- a/KMS_ChatBot/Chatbot_BackEnd/routes/chat.py
++++ b/KMS_ChatBot/Chatbot_BackEnd/routes/chat.py
+@@ -5,6 +5,10 @@ import asyncio
+ import logging
+ logger = logging.getLogger(__name__)
+ from datetime import datetime
++from redis import asyncio as aioredis
++
++# Tạo client nếu cần
++redis_client = aioredis.from_url("redis://localhost")
+ 
+ from models import Message,ResetRequest
+ from config.intents import INTENT_PIPELINES
+@@ -12,12 +16,14 @@ from config.intents import INTENT_PIPELINES
+ from utils.limit_history import limit_history_by_tokens, refresh_system_context
+ from utils.auth_utils import has_permission, normalize_role
+ from utils.session_store import (
++    resolve_session_key,
+     get_session_data, 
+     save_session_data, 
+     get_symptoms_from_session, 
+     clear_followup_asked_all_keys, 
+     clear_symptoms_all_keys,
+-    update_chat_history_in_session
++    update_chat_history_in_session,
++    reset_related_symptom_flag
+ )
+ from utils.intent_utils import detect_intent, build_system_message
+ from utils.symptom_utils import (
+@@ -48,7 +54,7 @@ symptom_list = get_symptom_list()
+ async def chat_stream(msg: Message = Body(...)):
+     role = normalize_role(msg.role)
+     # logger.info(f"ID: {msg.user_id} User: ({msg.username}) Session:({msg.session_id}) với vai trò {role} gửi: {msg.message}")
+-    logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role}")
++    logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role} || Role: {msg.message}")
+     if not has_permission(role, "chat"):
+         async def denied_stream():
+             yield "data: ⚠️ Bạn không được phép thực hiện chức năng này.\n\n"
+@@ -81,7 +87,7 @@ async def chat_stream(msg: Message = Body(...)):
+     
+     is_same_day = session_data.get("active_date") == today
+     diagnosed_today = has_diagnosis_today(user_id=msg.user_id) if msg.user_id else False
+-
++    
+     # Sau khi bot xử lý xong và đã có câu trả lời cuối cùng:
+ 
+     recent_messages = session_data.get("recent_messages", [])
+@@ -97,11 +103,11 @@ async def chat_stream(msg: Message = Body(...)):
+     intent = await detect_intent(
+         last_intent=last_intent,
+         recent_user_messages=recent_user_messages,
+-        recent_assistant_messages=recent_assistant_messages
++        recent_assistant_messages=recent_assistant_messages,
++        diagnosed_today=diagnosed_today
+     )
+ 
+     session_data["last_intent"] = intent
+-    save_session_data(msg.session_id, session_data)
+ 
+     # Xác định mục tiêu người dùng để lấy chức năng phù hợp
+     intent = intent.replace("intent:", "").strip()
+@@ -118,6 +124,7 @@ async def chat_stream(msg: Message = Body(...)):
+         buffer = ""
+         is_json_mode = True
+         final_bot_message = ""
++        chat_id = None
+         nonlocal symptoms, suggestion, updated_session_data, session_data
+         sql_query = None
+         natural_text = ""
+@@ -154,13 +161,17 @@ async def chat_stream(msg: Message = Body(...)):
+                             yield f"data: {json.dumps({'natural_text': content})}\n\n"
+                             await asyncio.sleep(0.01)
+                 final_bot_message = buffer.strip()
+-                update_chat_history_in_session(session_data, msg.session_id, msg.message, final_bot_message)
++
++                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
++                session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
++                updated_session_data = session_data
++
++                update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
+ 
+                 # ✅ Lưu log hội thoại
+                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                 chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
+-
+-                
++   
+             # --- Step 2: GPT điều phối health_talk ---
+             elif step == "health_talk":
+                 chunks = []
+@@ -187,7 +198,11 @@ async def chat_stream(msg: Message = Body(...)):
+                 final_message = full_message
+                 final_bot_message = final_message
+ 
+-                update_chat_history_in_session(session_data, msg.session_id, msg.message, final_bot_message)
++                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
++                session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
++                updated_session_data = session_data
++
++                await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
+ 
+                 # ✅ Lưu log hội thoại
+                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+@@ -195,7 +210,6 @@ async def chat_stream(msg: Message = Body(...)):
+ 
+                 # ✅ Lưu message cuối của bot
+                 session_data["last_bot_message"] = final_message
+-                save_session_data(msg.session_id, session_data)
+ 
+                 yield "data: [DONE]\n\n"
+                 return
+@@ -215,13 +229,17 @@ async def chat_stream(msg: Message = Body(...)):
+                 final_message = "".join(chunks).strip()
+                 final_bot_message = final_message
+ 
+-                update_chat_history_in_session(session_data, msg.session_id, msg.message, final_bot_message)
++                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
++                session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
++                updated_session_data = session_data
++
++                await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
++
+                 # ✅ Lưu log hội thoại
+                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                 chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
+ 
+                 session_data["last_bot_message"] = final_message
+-                save_session_data(msg.session_id, session_data)
+ 
+                 yield "data: [DONE]\n\n"
+                 return
+@@ -237,7 +255,7 @@ async def chat_stream(msg: Message = Body(...)):
+                     if info and info.get("user_id"):
+                         user_id_for_summary = info["user_id"]
+                         session_data["current_summary_user_id"] = user_id_for_summary
+-                        save_session_data(msg.session_id, session_data)
++                        await save_session_data(user_id=msg.user_id, session_id=msg.session_id, data=session_data)
+                     else:
+                         if info and info.get("ambiguous"):
+                             match_type = info.get("matched_by")
+@@ -267,7 +285,13 @@ async def chat_stream(msg: Message = Body(...)):
+                 summary_data = result["summary_data"]
+ 
+                 final_bot_message = markdown
+-                update_chat_history_in_session(session_data, msg.session_id, msg.message, final_bot_message)
++
++                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
++                session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
++                updated_session_data = session_data
++
++                await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
++                
+                 # ✅ Lưu log hội thoại
+                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
+                 chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
+@@ -333,32 +357,40 @@ async def chat_stream(msg: Message = Body(...)):
+                 yield "data: [DONE]\n\n"
+ 
+         # ✅ Lưu session nếu có cập nhật
+-        if updated_session_data:
+-            save_session_data(msg.session_id, updated_session_data)
++        # if updated_session_data:
++        #     await save_session_data(user_id=msg.user_id, session_id=msg.session_id, data=updated_session_data)
+ 
+         yield "data: [DONE]\n\n"
+-    
+-    save_session_data(msg.session_id, session_data)
+     return StreamingResponse(event_generator(), media_type="text/event-stream; charset=utf-8")
+ 
+-
+ @router.post("/chat/reset")
+ async def reset_session(data: ResetRequest):
+     session_id = data.session_id
+     user_id = data.user_id
+ 
+     # 🔁 Reset toàn bộ session RAM (session_store)
+-    save_session_data(session_id, {
+-        "last_intent": None,
+-        "recent_messages": [],
+-        "symptoms": [],
+-        "followup_asked": [],
+-        "symptom_notes": []
+-    })
++    await save_session_data(
++        user_id=user_id,
++        session_id=session_id,
++        data={
++            "last_intent": None,
++            "recent_messages": [],
++            "recent_user_messages": [],
++            "recent_assistant_messages": [],
++            "symptoms": [],
++            "followup_asked": [],
++            "symptom_notes_list": [],
++            "related_symptom_asked": False
++        }
++    )
+ 
+     # 🧹 Reset luôn bộ nhớ symptom riêng nếu có
+     await clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
+     await clear_followup_asked_all_keys(user_id=user_id, session_id=session_id)
++    await reset_related_symptom_flag(session_id=session_id, user_id=user_id)
++
++    await redis_client.delete(resolve_session_key(user_id, session_id))
++
+ 
+     # logger.info(f"✅ Đã reset session cho user_id={user_id}, session_id={session_id}")
+     logger.debug(await get_session_data(user_id, session_id))  # Log lại để xác nhận
+@@ -373,24 +405,40 @@ async def get_chat_history(session_id: str, user_id: int = None):
+     }
+ 
+ @router.get("/chat/logs")
+-def get_chat_logs(user_id: int = None, guest_id: int = None):
++def get_chat_logs(session_id: str = None, user_id: int = None, guest_id: int = None, limit: int = 30):
+     import pymysql
+     from config.config import DB_CONFIG
+ 
+     conn = pymysql.connect(**DB_CONFIG)
+     try:
+         with conn.cursor() as cursor:
+-            cursor.execute("""
+-                SELECT message, sender, sent_at
+-                FROM chat_logs
+-                WHERE user_id = %s OR guest_id = %s
+-                ORDER BY sent_at ASC
+-            """, (user_id, guest_id))
+-            rows = cursor.fetchall()
++            if user_id:
++                cursor.execute("""
++                    SELECT message, sender, sent_at
++                    FROM chat_logs
++                    WHERE user_id = %s
++                    ORDER BY sent_at DESC
++                    LIMIT %s
++                """, (user_id, limit))
++            elif guest_id:
++                cursor.execute("""
++                    SELECT message, sender, sent_at
++                    FROM chat_logs
++                    WHERE guest_id = %s
++                    ORDER BY sent_at DESC
++                    LIMIT %s
++                """, (guest_id, limit))
++            else:
++                return []
++
++            rows = list(cursor.fetchall())   # ✅ Chuyển thành list
++            rows.reverse()                   # ✅ Đảo chiều để hiện từ cũ → mới
++
+             return [{"message": m, "sender": s, "time": str(t)} for m, s, t in rows]
+     finally:
+         conn.close()
+ 
++
+ def save_chat_log(user_id=None, guest_id=None, intent=None, message=None, sender='user'):
+     conn = pymysql.connect(**DB_CONFIG)
+     try:
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/health_care.cpython-313.pyc b/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/health_care.cpython-313.pyc
+index 7a6e9d1..71c9e58 100644
+Binary files a/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/health_care.cpython-313.pyc and b/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/health_care.cpython-313.pyc differ
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/intent_utils.cpython-313.pyc b/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/intent_utils.cpython-313.pyc
+index 0e01faa..13e77dd 100644
+Binary files a/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/intent_utils.cpython-313.pyc and b/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/intent_utils.cpython-313.pyc differ
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/session_store.cpython-313.pyc b/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/session_store.cpython-313.pyc
+index 3a7d900..ee4a3f0 100644
+Binary files a/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/session_store.cpython-313.pyc and b/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/session_store.cpython-313.pyc differ
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/symptom_utils.cpython-313.pyc b/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/symptom_utils.cpython-313.pyc
+index 4dfb864..721f98d 100644
+Binary files a/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/symptom_utils.cpython-313.pyc and b/KMS_ChatBot/Chatbot_BackEnd/utils/__pycache__/symptom_utils.cpython-313.pyc differ
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/utils/health_care.py b/KMS_ChatBot/Chatbot_BackEnd/utils/health_care.py
+index d0fda0b..4bfd8e8 100644
+--- a/KMS_ChatBot/Chatbot_BackEnd/utils/health_care.py
++++ b/KMS_ChatBot/Chatbot_BackEnd/utils/health_care.py
+@@ -25,7 +25,8 @@ from utils.session_store import (
+     update_symptom_note_in_session, 
+     save_session_data, get_session_data, 
+     get_followed_up_symptom_ids, mark_followup_asked, 
+-    save_symptoms_to_session, get_symptoms_from_session
++    save_symptoms_to_session, get_symptoms_from_session,
++    mark_related_symptom_asked
+ )
+ def extract_json(content: str) -> str:
+     """
+@@ -47,12 +48,13 @@ async def health_talk(
+     session_context: dict = None
+ ):
+     session_data = await get_session_data(user_id=user_id, session_id=session_id)
+-    followup_after_conclusion_used = session_data.get("followup_after_conclusion_used", False)
++    logger.debug("📦 Session ban đầu:\n%s", json.dumps(session_data, indent=2, ensure_ascii=False))
+ 
+     # Step 1: Trích triệu chứng mới
+     new_symptoms, fallback_message = extract_symptoms_gpt(
+         user_message,
+-        recent_messages=recent_messages
++        recent_messages=recent_messages,
++        recent_assistant_messages=recent_assistant_messages
+     )
+     logger.info("🌿 Triệu chứng trích được: %s", new_symptoms)
+ 
+@@ -68,14 +70,11 @@ async def health_talk(
+ 
+     # ✅ In log triệu chứng đã hỏi follow-up
+     asked = await get_followed_up_symptom_ids(session_id=session_id, user_id=user_id)
+-    logger.info("📌 Đã hỏi follow-up các triệu chứng có ID: %s", asked)
++    logger.info("📎 Follow-up IDs từ session: %s", asked)
+ 
+-    session_data = await get_session_data(user_id=user_id, session_id=session_id)
+ 
+-    had_conclusion = (
+-        session_data.get("had_conclusion", False)
+-        and not followup_after_conclusion_used
+-    )
++
++    had_conclusion = session_data.get("had_conclusion", False)
+ 
+     # Step 3: Xây prompt tổng hợp
+     prompt = build_KMS_prompt(
+@@ -90,6 +89,10 @@ async def health_talk(
+         had_conclusion=had_conclusion
+     )
+ 
++    # 🔒 Đánh dấu đã hỏi related symptom (chỉ 1 lần duy nhất)
++    if inputs.get("related_symptom_names"):
++        await mark_related_symptom_asked(session_id=session_id, user_id=user_id)
++        session_data = await get_session_data(user_id=user_id, session_id=session_id)
+ 
+     # Step 4: Gọi GPT (non-stream)
+     completion = chat_completion(messages=[{"role": "user", "content": prompt}], temperature=0.7)
+@@ -113,17 +116,9 @@ async def health_talk(
+ 
+     action = parsed.get("action")
+ 
+-    # Đặt cờ khi đã qua kết luận 1 lần để kiểm soát followup
+-    if action in ["light_summary", "diagnosis"]:
++    # ✅ Ghi nhận kết luận để đánh dấu đã chẩn đoán hôm nay
++    if action == "diagnosis":
+         session_data["had_conclusion"] = True
+-        save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+-
+-    if parsed.get("action") == "followup" and had_conclusion:
+-        logger.info("🔁 Đã cho phép follow-up sau kết luận. Tắt cờ had_conclusion.")
+-        session_data["had_conclusion"] = False
+-        session_data["followup_after_conclusion_used"] = True  # ✅ Đánh dấu đã dùng rồi
+-        save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+-
+ 
+     # 🔄 Nếu người dùng nói thêm về triệu chứng cũ → ghi chú lại vào user_symptom_history
+     updated_symptom = parsed.get("updated_symptom")
+@@ -147,34 +142,59 @@ async def health_talk(
+     # Đặt cơ cho những triệu chứng tương ứng khi followup đã hỏi
+     if action == "followup" and target_followup_id:
+         logger.info("✅ Đánh dấu đã hỏi follow-up triệu chứng ID: %s", target_followup_id)
+-        await mark_followup_asked(session_id, user_id, [target_followup_id])
++        await mark_followup_asked(user_id, session_id, [target_followup_id])
++        session_data = await get_session_data(user_id=user_id, session_id=session_id)
++        # logger.info("✅ Session sau khi đánh dấu follow-up:\n%s", json.dumps(session_data, indent=2, ensure_ascii=False))
++
+ 
+     end = parsed.get("end", False)
+ 
+     # Log các biến phụ trợ
+     logger.info("🎯 Action: %s", action)
+ 
++    # Nếu không có chẩn đoán trước đó trong ngày thì sẽ tạo note dựa theo triệu chứng
++    if not diagnosed_today:
++        # 📋 Tạo note
++        # Step 1: lấy note cũ từ session
++        existing_notes = session_data.get("symptom_notes_list", [])
++
++        # Step 2: gọi GPT để lấy note mới (có thể chỉ 1-2 cái)
++        new_notes = await generate_symptom_note(
++            symptoms=stored_symptoms,
++            recent_messages=recent_messages,
++            existing_notes=existing_notes
++        )
++
++        # Step 3: gộp lại (override nếu có id trùng)
++        note_map = {n["id"]: n for n in existing_notes}
++        for n in new_notes:
++            note_map[n["id"]] = n  # override or add
++
++        symptom_notes_list = list(note_map.values())
++
++        # logger.debug("📋 Updated symptom_notes_list:\n%s", json.dumps(symptom_notes_list, indent=2, ensure_ascii=False))
++
++
++        # Step 4: lưu vào session
++        session_data["symptom_notes_list"] = symptom_notes_list
++        await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
+ 
+ 
+     if action == "diagnosis":
+-        # ✅ Lưu triệu chứng mới nếu có
+-        saved_ids = get_saved_symptom_ids(user_id)
+-
+-        # Gộp ID và note từ GPT
+-        symptom_notes_list = await generate_symptom_note(stored_symptoms, recent_messages)
+-
+-        symptoms_to_save = []
+-        for s in stored_symptoms:
+-            if s["id"] not in saved_ids:
+-                matching = next((item for item in symptom_notes_list if item["name"] == s["name"]), None)
+-                symptoms_to_save.append({
+-                    "id": s["id"],
+-                    "note": matching["note"] if matching else "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."
+-                })
++        
++        #Lưu note đã được tạo trước đó vào db
++        if not diagnosed_today:
++            # ✅ Lưu triệu chứng mới nếu có
++            saved_ids = get_saved_symptom_ids(user_id)
+ 
+-        if symptoms_to_save:
+-            save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
++            symptoms_to_save = [
++                {"id": note["id"], "note": note["note"]}
++                for note in symptom_notes_list
++                if note["id"] not in saved_ids
++            ]
+ 
++            if symptoms_to_save:
++                save_symptoms_to_db(user_id=user_id, symptoms=symptoms_to_save)
+ 
+         # ✅ Xử lý phần bệnh
+         diseases = parsed.get("diseases", [])
+@@ -266,21 +286,23 @@ async def decide_KMS_prompt_inputs(session_id: str, user_id: int):
+     next_symptom = await get_next_symptom_to_followup(session_id, user_id, stored_symptoms)
+ 
+     symptoms_to_ask = [next_symptom["name"]] if next_symptom else []
++    related_symptom_names = None  # ✅ Khởi tạo mặc định
+ 
+     logger.info("📭 symptoms_to_ask: %s", symptoms_to_ask)
+ 
+-    related_symptom_names = []
+-
+-    symptom_ids = [s['id'] for s in stored_symptoms]
+-    related = get_related_symptoms_by_disease(symptom_ids)
+-    stored_names = [s["name"] for s in stored_symptoms]
+-    related_names = [s["name"] for s in related if s["name"] not in stored_names]
+-    related_symptom_names = list(set(related_names))[:10]
++    if not symptoms_to_ask:
++        session = await get_session_data(session_id=session_id, user_id=user_id)
++        if not session.get("related_symptom_asked"):
++            symptom_ids = [s['id'] for s in stored_symptoms]
++            related = get_related_symptoms_by_disease(symptom_ids)
++            stored_names = [s["name"] for s in stored_symptoms]
++            related_names = [s["name"] for s in related if s["name"] not in stored_names]
++            related_symptom_names = list(set(related_names))[:10] or None  # None nếu không còn
+ 
+     return {
+         "symptoms_to_ask": symptoms_to_ask,
+-        "raw_followup_question": None,  # không dùng nữa
+-        "related_symptom_names": related_symptom_names or None,
++        "raw_followup_question": None,
++        "related_symptom_names": related_symptom_names,
+         "target_followup_id": next_symptom["id"] if next_symptom else None
+     }
+ 
+@@ -486,8 +508,6 @@ def filter_new_predicted_diseases(cursor, prediction_id: int, new_diseases: list
+     return filtered
+ 
+ 
+-
+-
+ #-------------- dưới đây là nhừng hàm được sử dung cho việc chia theo controller không tôt không lien mạch bot gần như ko quyết định chính xác việc cần thực hiện --------------------------------------------------
+ 
+ # Dự đoán bệnh dựa trên list triệu chứng
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/utils/intent_utils.py b/KMS_ChatBot/Chatbot_BackEnd/utils/intent_utils.py
+index 962c6a6..ca44ba9 100644
+--- a/KMS_ChatBot/Chatbot_BackEnd/utils/intent_utils.py
++++ b/KMS_ChatBot/Chatbot_BackEnd/utils/intent_utils.py
+@@ -73,12 +73,13 @@ def get_combined_schema_for_intent(intent: str) -> str:
+ async def detect_intent(
+     last_intent: str = None,
+     recent_user_messages: list[str] = [],
+-    recent_assistant_messages: list[str] = []
++    recent_assistant_messages: list[str] = [],
++    diagnosed_today: bool = False  # ✅ thêm dòng này
+ ) -> str:
+     # Sử dụng trực tiếp message đã tách
+     last_bot_msg = recent_assistant_messages[-1] if recent_assistant_messages else ""
+     last_user_msg = recent_user_messages[-1] if recent_user_messages else ""
+-
++    diagnosed_today_flag = "True" if diagnosed_today else "False"
+     # logger.info(f"[Intent Debug] Recent User: {last_user_msg}")
+     # logger.info(f"[Intent Debug] Recent Bot: {last_bot_msg}")
+ 
+@@ -95,6 +96,8 @@ async def detect_intent(
+ 
+         Valid intents: {", ".join(VALID_INTENTS)}
+ 
++        Diagnosed today: {diagnosed_today_flag}
++
+         Instructions:
+ 
+         - If the last intent was "symptom_query" and the user's current message clearly answers a previous follow-up (e.g., gives timing, severity, or symptom detail), then KEEP "symptom_query".
+@@ -113,12 +116,18 @@ async def detect_intent(
+         - If unsure, prefer a more specific intent over `"general_chat"`.
+         - If the previous assistant message was a follow-up question about a symptom, and the user responds with something vague or approximate (e.g. “chắc 5-10 phút”, “khoảng sáng tới giờ”, “tầm chiều hôm qua”, "chắc tầm"), you SHOULD assume this is a continuation of the symptom discussion → prefer "symptom_query".
+         - If user says “không biết”, “chắc vậy”, “khó nói”, "không rõ", but it’s still in reply to a symptom follow-up → KEEP "symptom_query"
++        - If Diagnosed today = True and the user message sounds like explaining the cause or context of symptoms → KEEP "symptom_query".
+ 
+         Always return only ONE valid intent from the list.
+         Do NOT explain your reasoning.
+         Do NOT include any other words — only return the intent.
+ 
+         Examples:
++        - Diagnosed today = True
++          User: "à hình như mình hiểu tại sao mình cảm thấy chống mặt rồi" → ✅ → intent = `symptom_query`
++          User: "chắc là do hôm qua mình ăn linh tinh" → ✅ → intent = `symptom_query`
++          User: "giờ mình mới nhớ ra, hôm qua bị trúng mưa" → ✅ → intent = `symptom_query`
++          
+         - Bot: “Bạn thấy tê tay bắt đầu từ lúc nào?”  
+           User: “nó tự nhiên xuất hiện thôi” → ✅ → intent = `symptom_query`
+ 
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/utils/session_store.py b/KMS_ChatBot/Chatbot_BackEnd/utils/session_store.py
+index 9e95925..9f6bfdb 100644
+--- a/KMS_ChatBot/Chatbot_BackEnd/utils/session_store.py
++++ b/KMS_ChatBot/Chatbot_BackEnd/utils/session_store.py
+@@ -1,22 +1,18 @@
+-# session_store.py - RAM-only session store (tạm thời dùng khi chưa có Redis)
+-
+-import asyncio
+ import logging
+ from collections import defaultdict
+ import hashlib
+ logger = logging.getLogger(__name__)
++import json
++from datetime import timedelta
++
++# Kết nối Redis
++from redis import asyncio as aioredis
++redis_client = aioredis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+ 
+ # ---------------------------
+-# CẤU HÌNH SESSION TẠM TRÊN RAM
++# CÁC HÀM LÀM VIỆC VỚI session_dict (session_id)
+ # ---------------------------
+ 
+-def resolve_session_key(user_id: str = None, session_id: str = None) -> str:
+-    """
+-    Trả về key dùng trong session_dict và SYMPTOM_SESSION.
+-    Ưu tiên user_id nếu có, fallback session_id.
+-    """
+-    return str(user_id) if user_id else str(session_id)
+-
+ # Session lưu theo session_id (giả lập Redis)
+ session_dict = {}
+ 
+@@ -27,20 +23,37 @@ SYMPTOM_SESSION = defaultdict(list)
+ SYMPTOM_KEY = "symptoms"         # Dạng list[str] -> chỉ lưu ID hoặc tên triệu chứng
+ FOLLOWUP_KEY = "followup_asked"  # Dạng list[int] -> lưu ID đã hỏi follow-up
+ 
+-# ---------------------------
+-# CÁC HÀM LÀM VIỆC VỚI session_dict (session_id)
+-# ---------------------------
++# Khóa mặc định nếu không có user/session
++def resolve_session_key(user_id: str = None, session_id: str = None) -> str:
++    if user_id is not None:
++        return f"session:user:{str(user_id)}"
++    if session_id is not None:
++        return f"session:sess:{str(session_id)}"
++    return "session:unknown"
+ 
+-async def get_session_data(user_id: str = None, session_id: str = None) -> dict:
+-    """Truy xuất dữ liệu session từ RAM."""
++
++# lưu session
++async def save_session_data(user_id: str = None, session_id: str = None, data: dict = {}):
+     key = resolve_session_key(user_id, session_id)
+-    return session_dict.get(key, {})
+ 
++    # ⚠️ Đọc lại session cũ nếu có
++    existing_raw = await redis_client.get(key)
++    existing_data = json.loads(existing_raw) if existing_raw else {}
++
++    # ✅ MERGE tại đây
++    existing_data.update(data)
+ 
+-def save_session_data(user_id: str = None, session_id: str = None, data: dict = {}):
+-    """Lưu dữ liệu session vào RAM."""
++    # logger.info(f"📝 [SAVE] key = {key}")
++    # logger.info(f"📝 [SAVE] data = {json.dumps(existing_data, indent=2, ensure_ascii=False)}")
++    await redis_client.setex(key, timedelta(days=1), json.dumps(existing_data))
++
++
++# lấy session
++async def get_session_data(user_id: str = None, session_id: str = None) -> dict:
+     key = resolve_session_key(user_id, session_id)
+-    session_dict[key] = data
++    raw = await redis_client.get(key)
++    # logger.info(f"📤 [GET] key = {key}, raw = {raw}")
++    return json.loads(raw) if raw else {}
+ 
+ # ----- Triệu chứng (ID dạng chuỗi) -----
+ 
+@@ -59,19 +72,18 @@ async def update_symptoms_in_session(session_id: str, new_symptoms: list[str]) -
+         if s not in current:
+             current.append(s)
+     session[SYMPTOM_KEY] = current
+-    save_session_data(session_id, session)
++    await save_session_data(session_id, session)
+     return current
+ 
+ async def clear_symptoms_in_session(session_id: str):
+     """Xóa toàn bộ triệu chứng khỏi session."""
+     session = await get_session_data(session_id)
+     session[SYMPTOM_KEY] = []
+-    save_session_data(session_id, session)
++    await save_session_data(session_id, session)
+ 
+ # ----- Follow-up triệu chứng (ID dạng int) -----
+ async def get_followed_up_symptom_ids(user_id: str = None, session_id: str = None) -> list[int]:
+-    key = resolve_session_key(user_id, session_id)
+-    session = await get_session_data(key)
++    session = await get_session_data(user_id=user_id, session_id=session_id)
+     return session.get(FOLLOWUP_KEY, [])
+ 
+ def hash_question(text: str) -> str:
+@@ -82,25 +94,18 @@ async def get_followed_up_question_hashes(session_id: str) -> list[str]:
+     return session.get(FOLLOWUP_KEY, [])
+ 
+ async def mark_followup_asked(user_id: str = None, session_id: str = None, symptom_ids: list[int] = []):
+-    key = resolve_session_key(user_id, session_id)
+-    if not key:
+-        return
+-
+-    session = await get_session_data(key)
++    session = await get_session_data(user_id=user_id, session_id=session_id)
+     already = set(session.get(FOLLOWUP_KEY, []))
+     already.update(symptom_ids)
+     session[FOLLOWUP_KEY] = list(already)
+-    save_session_data(key, session)
++    await save_session_data(user_id=user_id, session_id=session_id, data=session)
++
+     # logger.info(f"✅ [SessionStore] Ghi followup_asked vào key: {key}")
+ 
+ async def clear_followup_asked_all_keys(user_id: str = None, session_id: str = None):
+-    key = resolve_session_key(user_id, session_id)
+-    if not key:
+-        return
+-
+-    session = await get_session_data(key)
++    session = await get_session_data(user_id=user_id, session_id=session_id)
+     session[FOLLOWUP_KEY] = []
+-    save_session_data(key, session)
++    await save_session_data(user_id=user_id, session_id=session_id, data=session)
+     # logger.info(f"🧹 [SessionStore] Đã xoá followup_asked cho key: {key}")
+ 
+ 
+@@ -132,10 +137,10 @@ async def clear_symptoms_all_keys(user_id: str = None, session_id: str = None):
+ 
+     SYMPTOM_SESSION.pop(key, None)
+ 
+-    session = await get_session_data(key)
++    session = await get_session_data(user_id=user_id, session_id=session_id)
+     session[SYMPTOM_KEY] = []
+     session[FOLLOWUP_KEY] = []
+-    save_session_data(key, session)
++    await save_session_data(user_id=user_id, session_id=session_id)
+     # logger.info(f"🧹 [SessionStore] Đã xoá SYMPTOM + followup cho key: {key}")
+ 
+ # ---------------------------
+@@ -144,23 +149,21 @@ async def clear_symptoms_all_keys(user_id: str = None, session_id: str = None):
+ SYMPTOM_NOTE_KEY = "symptom_notes"
+ 
+ async def update_symptom_note_in_session(user_id: str = None, session_id: str = None, symptom_name: str = "", note: str = ""):
+-    session_key = resolve_session_key(user_id, session_id)
+-    session = await get_session_data(session_key)
++    session = await get_session_data(user_id=user_id, session_id=session_id)
+     notes = session.get(SYMPTOM_NOTE_KEY, {})
+     notes[symptom_name] = note
+     session[SYMPTOM_NOTE_KEY] = notes
+-    save_session_data(session_key, session)
++    await save_session_data(user_id=user_id, session_id=session_id, data=session)
+ 
+ async def get_symptom_notes_from_session(user_id: str = None, session_id: str = None) -> dict:
+-    session_key = resolve_session_key(user_id, session_id)
+-    session = await get_session_data(session_key)
++    session = await get_session_data(user_id=user_id, session_id=session_id)
+     return session.get(SYMPTOM_NOTE_KEY, {})
+ 
+ # ---------------------------
+ # HÀM LƯU TRỮ TIN NHẮN
+ # ---------------------------
+ 
+-def update_chat_history_in_session(session_data, session_id, user_msg, bot_msg):
++async def update_chat_history_in_session(user_id, session_data, session_id, user_msg, bot_msg):
+     recent_messages = session_data.get("recent_messages", [])
+     recent_user_messages = session_data.get("recent_user_messages", [])
+     recent_assistant_messages = session_data.get("recent_assistant_messages", [])
+@@ -171,13 +174,14 @@ def update_chat_history_in_session(session_data, session_id, user_msg, bot_msg):
+     recent_assistant_messages.append(bot_msg)
+ 
+     # ✨ Loại bỏ lặp lại liên tiếp
+-    recent_user_messages = remove_consecutive_duplicates(recent_user_messages)
+-    recent_assistant_messages = remove_consecutive_duplicates(recent_assistant_messages)
++    recent_user_messages = await remove_consecutive_duplicates(recent_user_messages)
++    recent_assistant_messages = await remove_consecutive_duplicates(recent_assistant_messages)
+ 
+     session_data["recent_messages"] = recent_messages[-12:]
+     session_data["recent_user_messages"] = recent_user_messages[-6:]
+     session_data["recent_assistant_messages"] = recent_assistant_messages[-6:]
+-    save_session_data(session_id, session_data)
++    await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
++
+     
+ 
+     # logger.info("🧾 recent_user_messages:")
+@@ -188,8 +192,7 @@ def update_chat_history_in_session(session_data, session_id, user_msg, bot_msg):
+     # for i, assistant_msg in enumerate(session_data["recent_assistant_messages"], 1):
+     #     logger.info(f"🤖 [{i}] {assistant_msg}")
+ 
+-
+-def remove_consecutive_duplicates(messages: list[str]) -> list[str]:
++async def remove_consecutive_duplicates(messages: list[str]) -> list[str]:
+     if not messages:
+         return []
+     result = [messages[0]]
+@@ -197,3 +200,19 @@ def remove_consecutive_duplicates(messages: list[str]) -> list[str]:
+         if msg != result[-1]:
+             result.append(msg)
+     return result
++
++# ---------------------------
++# ĐÁNH DẤU ĐÃ HỎI TRIỆU CHỨNG LIÊN QUAN (related_symptom_asked)
++# ---------------------------
++
++async def mark_related_symptom_asked(session_id: str = None, user_id: str = None):
++    session = await get_session_data(user_id=user_id, session_id=session_id)
++    session["related_symptom_asked"] = True
++    await save_session_data(user_id=user_id, session_id=session_id, data=session)
++
++
++async def reset_related_symptom_flag(session_id: str = None, user_id: str = None):
++    session = await get_session_data(user_id=user_id, session_id=session_id)
++    session["related_symptom_asked"] = False
++    await save_session_data(user_id=user_id, session_id=session_id, data=session)
++
+diff --git a/KMS_ChatBot/Chatbot_BackEnd/utils/symptom_utils.py b/KMS_ChatBot/Chatbot_BackEnd/utils/symptom_utils.py
+index 5ba5198..b8c07ed 100644
+--- a/KMS_ChatBot/Chatbot_BackEnd/utils/symptom_utils.py
++++ b/KMS_ChatBot/Chatbot_BackEnd/utils/symptom_utils.py
+@@ -78,7 +78,8 @@ def refresh_symptom_list():
+     SYMPTOM_LIST = []
+     load_symptom_list()
+ 
+-def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=None, debug=False):
++def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=None, recent_assistant_messages=None, debug=False):
++
+     symptom_lines = []
+     name_to_symptom = {}
+ 
+@@ -97,6 +98,10 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
+         for alias in aliases:
+             name_to_symptom[normalize_text(alias)] = s
+ 
++    if recent_assistant_messages:
++        assistant_context = " ".join(recent_assistant_messages[-2:])
++    else:
++        assistant_context = "..."
+ 
+     prompt = f"""
+         You are a smart and careful medical assistant.
+@@ -142,10 +147,16 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
+ 
+     ---
+ 
+-    Conversation so far:
+-    {user_message}
++    🧠 Conversation context:
++    - The assistant just asked: "{assistant_context}"
++    - The user responded: "{user_message}"
++
++    ⚠️ VERY IMPORTANT:
++    - Only extract symptoms mentioned in the **user's message**.
++    - Do **NOT** extract symptoms based on the assistant's question.
++    - The assistant message is provided only for context — not for extraction.
+ 
+-    Now return a list of **symptom names** (from the list above) that the user is clearly experiencing.
++    Return a list of **symptom names** (from the list above) that the user is clearly experiencing.
+ 
+     Only return names. Example: ["Mệt mỏi", "Đau đầu"]
+     """
+@@ -184,41 +195,6 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
+             print("❌ GPT symptom extraction failed:", str(e))
+         return [], "Xin lỗi, mình chưa rõ bạn đang cảm thấy gì. Bạn có thể mô tả cụ thể hơn không?"
+ 
+-# lưu triệu chứng vào database lưu vào user_symptom_history khi đang thực hiện chẩn đoán kết quả
+-def save_symptoms_to_db(user_id: int, symptoms: list[dict]) -> list[int]:
+-    """
+-    symptoms: list of dicts, each with:
+-        - id: symptom_id
+-        - note: optional note string (default empty)
+-    """
+-    conn = pymysql.connect(**DB_CONFIG)
+-    saved_symptom_ids = []
+-
+-    try:
+-        with conn.cursor() as cursor:
+-            for symptom in symptoms:
+-                symptom_id = symptom.get("id")
+-                note = symptom.get("note", "")
+-
+-                if not symptom_id:
+-                    continue
+-
+-                logger.info(f"➡️ Lưu symptom_id={symptom_id}, note={note}")
+-
+-                cursor.execute("""
+-                    INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes)
+-                    VALUES (%s, %s, %s, %s)
+-                """, (user_id, symptom_id, date.today(), note))
+-                
+-                saved_symptom_ids.append(symptom_id)
+-
+-        conn.commit()
+-    finally:
+-        conn.close()
+-
+-    return saved_symptom_ids
+-
+-
+ # Tạo câu hỏi tiếp theo nhẹ nhàng, thân thiện, gợi ý người dùng chia sẻ thêm thông tin dựa trên các triệu chứng đã ghi nhận.
+ def join_symptom_names_vietnamese(names: list[str]) -> str:
+     if not names:
+@@ -465,51 +441,119 @@ def has_diagnosis_today(user_id: int) -> bool:
+         conn.close()
+ 
+ # Hàm tạo ghi chú cho triệu chứng khi thêm vào database
+-async def generate_symptom_note(symptoms: list[dict], recent_messages: list[str]) -> list[dict]:
++async def generate_symptom_note(
++    symptoms: list[dict],
++    recent_messages: list[str],
++    existing_notes: list[dict] = None
++) -> list[dict]:
+     symptom_lines = "\n".join(f"- {s['name']}" for s in symptoms)
+-    context = "\n".join(f"- {msg}" for msg in recent_messages[-6:])
++    context = "\n".join(f"- {msg}" for msg in recent_messages[-2:])
++
++    # Build existing note text if provided
++    existing_notes_text = ""
++    if existing_notes:
++        existing_notes_text = "\n".join(f"- {n['name']}: {n['note']}" for n in existing_notes)
+ 
+     prompt = f"""
+-    You are a helpful assistant supporting health documentation.
++        You are a helpful assistant supporting health documentation.
++
++        Below is a list of symptoms the user may be experiencing — but they may not have described all of them yet.
++
++        Your task is:
++        👉 Only create a note for a symptom if the user clearly mentioned or described it in the recent conversation.
++        👉 If the user added new detail for a symptom that already has a note, you MUST override and rewrite the note with updated info.
++
++        💬 Recent conversation:
++        {context}
++
++        📌 List of possible symptoms:
++        {symptom_lines}
++
++        📄 Existing notes (if any):
++        {existing_notes_text or "None"}
++
++        ⚠️ Output instructions:
++        - Return a JSON list, each item must have `id`, `name`, and `note`.
++        - Only include symptoms mentioned in the current conversation.
++        - For existing notes: only update if there is **new information**.
++        - Do NOT return notes for symptoms that are not clearly referenced.
++
++        ✅ Example output:
++        ```json
++        [
++        {{
++            "id": 1,
++            "name": "Đau đầu",
++            "note": "Người dùng bị đau đầu ngay sau khi ngủ dậy và nói rằng cơn đau kéo dài hơn 4 tiếng."
++        }}
++        ]
++""".strip()
++    try:
++        # Gọi GPT (không dùng await vì đây là hàm sync)
++        response = chat_completion(
++            [{"role": "user", "content": prompt}],
++            temperature=0.4,
++            max_tokens=400
++        )
++
++        content = response.choices[0].message.content if response.choices else ""
++        # logger.info(f"📤 GPT symptom note raw repr:\n{response.choices[0].message.content if response.choices else ""}")
+ 
+-    Below is a conversation with a user and a list of symptoms they mentioned.
++        # Clean markdown block if any
++        if content.startswith("```json"):
++            content = content.replace("```json", "").replace("```", "").strip()
+ 
+-    💬 Recent conversation:
+-    {context}
++        parsed = json.loads(content)
+ 
+-    🧠 List of symptoms:
+-    {symptom_lines}
++        # Validate format
++        if not isinstance(parsed, list):
++            raise ValueError("GPT returned non-list")
+ 
+-    👉 Your task:
+-    For each symptom, write a short, natural note in Vietnamese summarizing what the user said about it — including any details like timing, severity, or triggers if available.
++        for item in parsed:
++            if not all(k in item for k in ["id", "name", "note"]):
++                raise ValueError("Missing fields in GPT output")
+ 
+-    ⚠️ Instructions:
+-    - You must return a list of JSON objects with `name` and `note` fields.
+-    - Do NOT invent symptoms not mentioned.
+-    - If there’s no clear info about a symptom, write a generic note.
+-    - Do not include explanations, just the raw JSON.
++        return parsed
+ 
+-    Example output:
+-    ```json
+-    [
+-      {{
+-        "name": "Đau đầu",
+-        "note": "Người dùng cảm thấy đau đầu xuất hiện khi mới ngủ dậy."
+-      }},
+-      ...
+-    ]
+-    ```
+-    """.strip()
++    except Exception as e:
++        logger.warning(f"⚠️ GPT fallback (note): {e}")
++        return [{"name": s["name"], "note": "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."} for s in symptoms]
++
++
++# lưu triệu chứng vào database lưu vào user_symptom_history khi đang thực hiện chẩn đoán kết quả
++def save_symptoms_to_db(user_id: int, symptoms: list[dict]) -> list[int]:
++    """
++    symptoms: list of dicts, each with:
++        - id: symptom_id
++        - note: optional note string (default empty)
++    """
++    conn = pymysql.connect(**DB_CONFIG)
++    saved_symptom_ids = []
+ 
+     try:
+-        response = await chat_completion([
+-            {"role": "user", "content": prompt}
+-        ], temperature=0.4, max_tokens=400)
++        with conn.cursor() as cursor:
++            for symptom in symptoms:
++                symptom_id = symptom.get("id")
++                note = symptom.get("note", "")
++
++                if not symptom_id:
++                    continue
++
++                # logger.info(f"➡️ Lưu symptom_id={symptom_id}, note={note}")
++
++                cursor.execute("""
++                    INSERT INTO user_symptom_history (user_id, symptom_id, record_date, notes)
++                    VALUES (%s, %s, %s, %s)
++                """, (user_id, symptom_id, date.today(), note))
++                
++                saved_symptom_ids.append(symptom_id)
++
++        conn.commit()
++    finally:
++        conn.close()
++
++    return saved_symptom_ids
+ 
+-        return json.loads(response.choices[0].message.content.strip())
+-    except Exception:
+-        # fallback nếu lỗi GPT
+-        return [{"name": s["name"], "note": "Người dùng đã mô tả một số triệu chứng trong cuộc trò chuyện."} for s in symptoms]
+ 
+ def update_symptom_note(user_id: int, symptom_name: str, user_message: str) -> bool:
+     today = datetime.now().date().isoformat()
+diff --git a/KMS_ChatBot/requirements.txt b/KMS_ChatBot/requirements.txt
+index 99bff58..94df55d 100644
+--- a/KMS_ChatBot/requirements.txt
++++ b/KMS_ChatBot/requirements.txt
+@@ -7,4 +7,5 @@ rapidfuzz==3.13.0
+ Requests==2.32.4
+ tiktoken==0.9.0
+ Unidecode==1.4.0
+-Uvicorn-0.34.3
+\ No newline at end of file
++Uvicorn-0.34.3
++redis
+\ No newline at end of file
