@@ -1,8 +1,31 @@
-Link Website Project : https://github.com/TdDangxkus/KMS-HealthCare
+Link Website Project : https://github.com/TdDangxkus/KindMedSync-HealthCare
 
-## 📦 KMS ChatBot – Hệ thống Tư Vấn Sức Khỏe & Đặt Lịch Khám
+⚠️ This project was formerly named "KMS-HealthCare" for internal academic purposes.  
+It is **not related in any way to KMS Technology Inc.** or any real-world company.
 
-Đây là mô-đun chính trong đồ án KMS HealthCare, đảm nhiệm vai trò:
+# Kind Med Sync - AI Health Consultation System (Graduation Project)
+
+> 🎓 This is a university graduation project built for educational and research purposes only.  
+> It is **not affiliated with KMS Technology** or any real-world commercial organization.
+
+---
+
+## 📌 About the Name
+
+"Kind Med Sync" stands for **Kind Medical Synchronization** – a fictional system name created by our student team.  
+The project was previously named “KMS-HealthCare” as an internal short form.
+
+To avoid brand confusion, we have adopted the full, original naming convention.
+
+
+## 📘 Đây là đồ án tốt nghiệp đại học, hoàn toàn phục vụ cho mục đích học tập.  
+Mọi đề cập trước đây đến chữ “KMS” đều là **tên giả lập (viết tắt của Kind Med Sync)** do nhóm tự nghĩ ra, **không liên quan tới công ty KMS Technology**.
+
+
+
+## 📦 KindMedSync ChatBot – Hệ thống Tư Vấn Sức Khỏe & Đặt Lịch Khám
+
+Đây là mô-đun chính trong đồ án KindMedSync HealthCare, đảm nhiệm vai trò:
 
 * Trò chuyện thông minh với người dùng dựa trên GPT-4.
 * Phân tích triệu chứng sức khỏe, gợi ý chuyên khoa phù hợp.
@@ -14,7 +37,7 @@ Link Website Project : https://github.com/TdDangxkus/KMS-HealthCare
 ## 📁 Cấu trúc dự án
 
 ```
-KMS_ChatBot/
+KindMedSync_ChatBot/
 │
 ├── Chatbot_BackEnd/       # Toàn bộ code backend chạy bằng FastAPI
 │   ├── main.py            # Điểm khởi chạy FastAPI
@@ -65,7 +88,7 @@ redis-server.exe redis.conf
 
 ### 3. Cài đặt thư viện Python
 
-Vào thư mục `KMS_ChatBot`, chạy:
+Vào thư mục `KindMedSync_ChatBot`, chạy:
 
 ```bash
 pip install -r requirements.txt
