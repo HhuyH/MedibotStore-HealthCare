@@ -31,17 +31,14 @@ def normalize_role(role):
         return "Guest"
     return role
 
-
+# Kiểm tra xem intent có hợp lệ với vai trò hiện tại hay không
 def has_intent_permission(role: str, intent: str) -> bool:
     role = normalize_role(role)
     allowed_intents = ROLE_INTENT_PERMISSIONS.get(role, [])
     return intent in allowed_intents
 
-
+# Nếu người dùng không có quyền với intent gốc, ép về 'general_chat'
 def enforce_permission(role: str, intent: str) -> str:
-    """
-    Nếu người dùng không có quyền với intent gốc, ép về 'general_chat'
-    """
     if has_intent_permission(role, intent):
         return intent
     return "general_chat"
