@@ -62,7 +62,7 @@ async def chat_stream(msg: Message = Body(...)):
     # logger.info(f"ID: {msg.user_id} User: ({msg.username}) Session:({msg.session_id}) với vai trò {role} gửi: {msg.message}")
     logger.info(f"📨 Nhận tin User: {msg.user_id} || Role: {role} || msg: {msg.message}")
 
-    # ✅ Load session data trước
+    # Load session data trước
     session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
 
     session_data = await ensure_active_date_fresh(msg, session_data)
@@ -125,6 +125,9 @@ async def chat_stream(msg: Message = Body(...)):
     symptoms = []
     suggestion = None
 
+    # Hàm `event_generator()` được sử dụng để stream dữ liệu từ server tới client trong thời gian thực. 
+    # Trong dự án, hàm này phục vụ việc gửi phản hồi chatbot theo từng phần nhỏ thay vì đợi hoàn tất toàn bộ câu trả lời. 
+    # Điều này giúp cải thiện trải nghiệm người dùng khi tương tác với hệ thống.
     async def event_generator():
         buffer = ""
         is_json_mode = True
@@ -136,7 +139,8 @@ async def chat_stream(msg: Message = Body(...)):
 
         stored_symptoms = await get_symptoms_from_session(session_id=msg.session_id, user_id=msg.user_id)
 
-
+       # Thực thi lần lượt từng bước đã được định nghĩa trong pipeline
+# Cấu trúc này cho phép chatbot mở rộng tính năng dễ dàng bằng cách thêm step mới
         for step in pipeline:
             # --- Step 1: Chat tự nhiên ---
             if step == "chat":
@@ -146,8 +150,13 @@ async def chat_stream(msg: Message = Body(...)):
                 # chứ chưa áp dụng thống nhất cho toàn bộ các bước xử lý (e.g., health_talk, suggest_product).
                 # Có thể mở rộng trong tương lai nếu cần đảm bảo ổn định cho các prompt dài.
 
+                # Làm mới context hệ thống dựa vào intent và triệu chứng đã lưu
                 limited_history, _ = refresh_system_context(intent, stored_symptoms, msg.history)
+
+                # Lấy danh sách tên triệu chứng nếu có
                 symptoms = [s['name'] for s in stored_symptoms] if stored_symptoms else []
+
+                # Xây dựng system message gửi đến API GPT
                 system_message_dict = build_system_message(
                     intent,
                     symptoms,
@@ -155,35 +164,42 @@ async def chat_stream(msg: Message = Body(...)):
                     recent_assistant_messages=recent_assistant_messages,
                     fallback_reason="insufficient_permission" if original_intent != intent else None
                 )
+
+                # Giới hạn lịch sử hội thoại theo token để tránh vượt ngưỡng API
                 limited_history.clear()
                 limited_history.extend(limit_history_by_tokens(system_message_dict, msg.history))
 
+                # Stream phản hồi từ GPT theo từng chunk
                 async for chunk in stream_chat(msg.message, limited_history, system_message_dict):
                     delta = chunk.choices[0].delta
                     content = getattr(delta, "content", None)
 
                     if content:
                         # logger.info(f"[STREAM] 🌊 Đang stream ra: {repr(content)}") 
-                        buffer += content
+                        buffer += content # Ghép từng phần phản hồi
 
+                        # Xác định chế độ JSON (dành cho intent đặc biệt)
                         if intent not in ["sql_query", "product_query"]:
                             is_json_mode = False
                         if intent in ["sql_query", "product_query"]:
                             if content.strip().startswith("{") or '"sql_query":' in content:
                                 is_json_mode = True
 
+                        # Nếu không ở JSON mode → stream text thường về client
                         if not is_json_mode:
                             yield f"data: {json.dumps({'natural_text': content})}\n\n"
                             await asyncio.sleep(0.01)
+
                 final_bot_message = buffer.strip()
 
-                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
+                # Reload lại session để đảm bảo các cập nhật từ Health Talk được đồng bộ
                 session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
                 updated_session_data = session_data
 
+                # Lưu lịch sử chat vào session
                 await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
 
-                # ✅ Lưu log hội thoại
+                # Lưu log hội thoại (user và bot) vào database
                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
                 chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
    
@@ -191,6 +207,7 @@ async def chat_stream(msg: Message = Body(...)):
             elif step == "health_talk":
                 chunks = []
 
+                # Gọi prompt phù hộp
                 async for chunk in health_talk(
                     user_message=msg.message,
                     stored_symptoms=stored_symptoms,
@@ -205,27 +222,28 @@ async def chat_stream(msg: Message = Body(...)):
                         "diagnosed_today": diagnosed_today
                     }
                 ):
+                    # Ghép từng chunk phản hồi và gửi về client theo SSE
                     chunks.append(chunk)
                     yield f"data: {json.dumps({'natural_text': chunk}, ensure_ascii=False)}\n\n"
 
+                # Nối các chunk thành thông điệp đầy đủ
                 full_message = "".join(chunks).strip()
-
                 final_message = full_message
                 final_bot_message = final_message
 
-                # ✅ Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
+                # Reload session sau khi health_talk đã cập nhật bằng mark_followup_asked, update_note, v.v.
                 session_data = await get_session_data(user_id=msg.user_id, session_id=msg.session_id)
                 updated_session_data = session_data
 
+                # Lưu lịch sử chat (người dùng + bot)
                 await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
-
-                # ✅ Lưu log hội thoại
                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
                 chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
 
-                # ✅ Lưu message cuối của bot
+                # Lưu message cuối của bot để dùng trong các bước sau
                 session_data["last_bot_message"] = final_message
 
+                # Gửi tín hiệu kết thúc stream
                 yield "data: [DONE]\n\n"
                 return
 
@@ -419,29 +437,36 @@ async def chat_stream(msg: Message = Body(...)):
             
             # --- Step 3: Xử lý SQL query nếu có ---
             elif step == "sql":
-                logger.debug(f"🧪 Step 'sql' nhận buffer:\n{buffer}")
+                # Debug nội dung buffer nhận từ GPT
+                logger.debug(f"Step 'sql' nhận buffer:\n{buffer}")
+
+                # Nếu buffer rỗng → không có gì để xử lý
                 if not buffer:
-                    yield "data: ⚠️ Không có dữ liệu để xử lý SQL.\n\n"
+                    yield "data: Không có dữ liệu để xử lý SQL.\n\n"
                     yield "data: [DONE]\n\n"
                     return
                 try:
                     logger.info(f"[DEBUG] Nội dung buffer để parse SQL: {buffer.strip()}")
 
                     buffer_clean = buffer.strip()
+                    # Kiểm tra dữ liệu JSON hợp lệ
                     if not buffer_clean.startswith("{") or not buffer_clean.endswith("}"):
                         raise ValueError("Dữ liệu không phải JSON hợp lệ")
                     
+                    # Parse JSON để lấy sql_query và natural_text
                     parsed = json.loads(buffer_clean)
                     sql_query = parsed.get("sql_query")
                     natural_text = parsed.get("natural_text", "").strip()
 
                 except Exception as e:
+                    # Nếu lỗi parse JSON → thông báo lỗi và kết thúc
                     sql_query = None
                     logger.warning(f"Lỗi phân tích JSON: {e}")
-                    yield f"data: {json.dumps({'natural_text': '⚠️ Không thể xử lý câu hỏi SQL từ tin nhắn vừa rồi.'})}\n\n"
+                    yield f"data: {json.dumps({'natural_text': 'Không thể xử lý câu hỏi SQL từ tin nhắn vừa rồi.'})}\n\n"
                     yield "data: [DONE]\n\n"
                     return
 
+                # Nếu có sql_query → thực thi truy vấn
                 if sql_query:
                     result = run_sql_query(sql_query)
                     if result.get("status") == "success":
@@ -449,30 +474,31 @@ async def chat_stream(msg: Message = Body(...)):
                         if rows:
                             result_text = natural_text
 
+                            # Đóng gói dữ liệu phản hồi gồm mô tả + bảng kết quả
                             final_bot_message = {
                                 "description": natural_text,
                                 "data": rows
                             }
 
+                            # Lưu lịch sử hội thoại
                             await update_chat_history_in_session(
                                 msg.user_id, session_data, msg.session_id, msg.message, final_bot_message
                             )
                             save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
                             save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=json.dumps(final_bot_message, ensure_ascii=False), sender='bot')
                         else:
-                            result_text = "📋 Không có dữ liệu phù hợp."
+                            result_text = "Không có dữ liệu phù hợp."
 
+                        # Stream kết quả về frontend
                         yield f"data: {json.dumps({'natural_text': result_text, 'table': rows})}\n\n"
                         payload = {'natural_text': result_text, 'table': rows}
                         logger.debug(f"[DEBUG] Payload gửi về frontend: {json.dumps(payload, ensure_ascii=False, indent=2)}")
                     else:
+                        # Nếu thực thi SQL thất bại → gửi thông báo lỗi
                         error_msg = result.get("error", "Lỗi không xác định.")
-                        yield f"data: {json.dumps({'natural_text': f'⚠️ Lỗi SQL: {error_msg}'})}\n\n"
+                        yield f"data: {json.dumps({'natural_text': f'Lỗi SQL: {error_msg}'})}\n\n"
 
-                # ✅ Lưu lịch sử nếu có bảng kết quả và natural_text
-   
-
-
+                # Gửi tín hiệu kết thúc stream
                 yield "data: [DONE]\n\n"
 
         # ✅ Lưu session nếu có cập nhật
@@ -487,7 +513,8 @@ async def reset_session(data: ResetRequest):
     session_id = data.session_id
     user_id = data.user_id
 
-    # 🔁 Reset toàn bộ session RAM (session_store)
+    # Reset toàn bộ session RAM (session_store)
+    # Gán lại session về trạng thái rỗng: không intent, không tin nhắn, không triệu chứng
     await save_session_data(
         user_id=user_id,
         session_id=session_id,
@@ -505,19 +532,20 @@ async def reset_session(data: ResetRequest):
         }
     )
 
-    # Reset toan bo session
+    # Reset toàn bộ session lưu trong Redis
     await clear_all_sessions_in_redis()
 
-    # 🧹 Reset luôn bộ nhớ symptom riêng nếu có
+    # Xóa dữ liệu symptom, follow-up và cờ trạng thái riêng
     await clear_symptoms_all_keys(user_id=user_id, session_id=session_id)
     await clear_followup_asked_all_keys(user_id=user_id, session_id=session_id)
     await reset_related_symptom_flag(session_id=session_id, user_id=user_id)
-
+    
+    # Xóa session key cụ thể trong Redis
     await redis_client.delete(resolve_session_key(user_id, session_id))
 
 
-    # logger.info(f"✅ Đã reset session cho user_id={user_id}, session_id={session_id}")
-    logger.debug(await get_session_data(user_id, session_id))  # Log lại để xác nhận
+    # Ghi log để kiểm tra trạng thái sau reset
+    logger.debug(await get_session_data(user_id, session_id))
 
     return {"status": "success", "message": "Đã reset session!"}
 
