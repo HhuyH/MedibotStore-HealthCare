@@ -175,25 +175,27 @@ async def get_symptom_notes_from_session(user_id: str = None, session_id: str = 
 
 async def update_chat_history_in_session(user_id, session_data, session_id, user_msg, bot_msg, extra_data=None):
 
+    # Lấy danh sách tin nhắn gần nhất từ session
     recent_messages = session_data.get("recent_messages", [])
     recent_user_messages = session_data.get("recent_user_messages", [])
     recent_assistant_messages = session_data.get("recent_assistant_messages", [])
 
+    # Thêm tin nhắn mới của user và bot vào lịch sử
     recent_messages.append(f"👤 {user_msg}")
     recent_messages.append(f"🤖 {bot_msg}")
     recent_user_messages.append(user_msg)
     recent_assistant_messages.append(bot_msg)
 
-    # ✨ Loại bỏ lặp lại liên tiếp
+    # Loại bỏ lặp liên tiếp để tránh trùng context
     recent_user_messages = await remove_consecutive_duplicates(recent_user_messages)
     recent_assistant_messages = await remove_consecutive_duplicates(recent_assistant_messages)
 
+    # Giới hạn số lượng tin nhắn lưu lại (12 tổng, 6 cho mỗi phía)
     session_data["recent_messages"] = recent_messages[-12:]
     session_data["recent_user_messages"] = recent_user_messages[-6:]
     session_data["recent_assistant_messages"] = recent_assistant_messages[-6:]
 
-    
-
+    # Lưu session đã cập nhật vào bộ nhớ/Redis
     await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
 
     

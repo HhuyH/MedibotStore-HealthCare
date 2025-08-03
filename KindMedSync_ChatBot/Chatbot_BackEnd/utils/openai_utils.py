@@ -25,9 +25,6 @@ COMMON_HEALTH_EMOJIS = set([
 ])
 
 def is_possible_emoji(token_id, enc):
-    """
-    Kiểm tra xem token có khả năng là emoji phổ biến không.
-    """
     try:
         text = enc.decode([token_id])
         return any(char in COMMON_HEALTH_EMOJIS for char in text)
@@ -74,7 +71,7 @@ def stream_gpt_tokens(text: str, model: str = "gpt-4o"):
                 hold_mode = True
                 post_emoji_hold = 10  # giữ thêm token sau emoji
 
-                # Lưu lại 2 token trước emoji (nếu có)
+                # Lưu lại 2 token trước emoji
                 pre_emoji_buffer = buffer[-2:] if len(buffer) >= 2 else buffer[:]
                 buffer = buffer[:-2] if len(buffer) >= 2 else []
 

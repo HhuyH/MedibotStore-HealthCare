@@ -7,29 +7,36 @@ import re
 from datetime import datetime
 
 def run_sql_query(query: str):
+    # Kết nối cơ sở dữ liệu MySQL
     conn = pymysql.connect(**DB_CONFIG)
     try:
         with conn.cursor() as cursor:
+            # Thực thi câu truy vấn SQL
             cursor.execute(query)
             result = cursor.fetchall()
             columns = [desc[0] for desc in cursor.description]
+
         data = []
+        # Xử lý từng dòng kết quả, chuyển về dict JSON-friendly
         for row in result:
             item = {}
             for i, col in enumerate(columns):
                 value = row[i]
-                # Convert Decimal → float
+                # Chuyển Decimal → float để JSON hóa
                 if isinstance(value, Decimal):
                     value = float(value)
-                # Convert datetime → string
+                # Chuyển datetime → string định dạng
                 elif isinstance(value, datetime):
                     value = value.strftime("%Y-%m-%d %H:%M:%S")  # format tùy ý
                 item[col] = value
             data.append(item)
+
         return {"status": "success", "data": data}
     except Exception as e:
+        # Nếu lỗi, trả về status error và message
         return {"status": "error", "error": str(e)}
     finally:
+        # Đóng kết nối an toàn
         conn.close()
 
 def extract_sql(text):

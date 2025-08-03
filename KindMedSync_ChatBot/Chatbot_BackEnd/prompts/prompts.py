@@ -7,7 +7,7 @@ import logging
 from utils.booking import serialize_schedules
 logger = logging.getLogger(__name__)
 
-# Prompt chính
+# Prompt chính định hình hành vi chatbot
 def build_system_prompt(
    intent: str, 
    recent_user_messages: list[str] = None,
@@ -15,10 +15,11 @@ def build_system_prompt(
    fallback_reason: str = None
 ) -> str:
     
-    # Lấy tin nhắn cuối của người dùng và trợ lý nếu không có thì rỗng
+    # Lấy tin nhắn gần nhất của user và bot
     last_user_msg = (recent_user_messages or [])[-1] if recent_user_messages else ""
     last_bot_msg = (recent_assistant_messages or [])[-1] if recent_assistant_messages else ""
 
+   # Ghép vào thông điệp bối cảnh để GPT hiểu đoạn hội thoại trước
     last_bot_user_msg = f"""
       🧩 The user has just responded with this message:
       “{last_user_msg}”
@@ -26,7 +27,7 @@ def build_system_prompt(
       And your previous message was:
       “{last_bot_msg}”
     """
-
+    # Core guidelines: vai trò và tone chatbot
     core_guidelines = """
       You are a friendly and professional virtual assistant working for KMS Health Care.
 
@@ -42,6 +43,7 @@ def build_system_prompt(
       - Not intrusive — respect when the user seems uncertain, distracted, or casual
    """.strip()
 
+    # Behavioral notes: quy tắc hành vi
     behavioral_notes = """
       ⚠️ Important behavior rules:
 
@@ -59,6 +61,7 @@ def build_system_prompt(
       - Listing multiple conditions or possibilities when not prompted
    """.strip()
 
+    # Clarification prompt: xử lý khi user phản hồi mơ hồ
     clarification_prompt = f"""
       Please read both message carefully.
 
@@ -72,6 +75,7 @@ def build_system_prompt(
       Keep the tone light, friendly, and give the user space to decide.
     """.strip()
     
+   # Fallback note: khi user không đủ quyền
     fallback_permission_note = ""
     if fallback_reason == "insufficient_permission":
         fallback_permission_note = """
@@ -87,7 +91,8 @@ def build_system_prompt(
         ✅ Example response:
         “Xin lỗi bạn nha, hiện tại bạn chưa có quyền truy cập chức năng này. Bạn có thể đăng nhập hoặc liên hệ quản trị viên để được hỗ trợ thêm nhé!”
         """.strip()
-
+   
+   # Kết hợp các phần thành prompt hoàn chỉnh
     full_prompt = "\n\n".join([
         last_bot_user_msg,
         core_guidelines,
