@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th7 21, 2025 lúc 08:51 AM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.0.30
+-- Host: 127.0.0.1
+-- Generation Time: Aug 05, 2025 at 08:14 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,12 +18,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `local_kms`
+-- Database: `medicare`
 --
 
 DELIMITER $$
 --
--- Thủ tục
+-- Procedures
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `get_all_users_by_role` (IN `input_role_id` INT)   BEGIN
     SELECT 
@@ -155,7 +155,7 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `appointments`
+-- Table structure for table `appointments`
 --
 
 CREATE TABLE `appointments` (
@@ -172,7 +172,7 @@ CREATE TABLE `appointments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `appointments`
+-- Dumping data for table `appointments`
 --
 
 INSERT INTO `appointments` (`appointment_id`, `user_id`, `guest_id`, `doctor_id`, `clinic_id`, `appointment_time`, `reason`, `status`, `created_at`, `updated_at`) VALUES
@@ -184,12 +184,13 @@ INSERT INTO `appointments` (`appointment_id`, `user_id`, `guest_id`, `doctor_id`
 (6, 4, NULL, 2, 2, '2025-07-22 09:00:00', '', 'confirmed', '2025-07-15 09:41:34', '2025-07-21 00:04:19'),
 (7, 4, NULL, 1, 1, '2025-07-16 08:00:00', '', 'pending', '2025-07-15 12:15:02', '2025-07-15 19:15:02'),
 (8, 1, NULL, 2, 2, '2025-07-21 09:30:00', '', 'confirmed', '2025-07-20 12:52:24', '2025-07-20 23:43:14'),
-(9, 1, NULL, 2, 2, '2025-07-23 11:30:00', 'rrwe', 'confirmed', '2025-07-20 17:00:45', '2025-07-21 00:00:56');
+(9, 1, NULL, 2, 2, '2025-07-23 11:30:00', 'rrwe', 'confirmed', '2025-07-20 17:00:45', '2025-07-21 00:00:56'),
+(10, 4, NULL, 2, 2, '2025-07-30 14:00:00', '', 'pending', '2025-07-23 16:09:31', '2025-07-23 23:09:31');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `blog_authors`
+-- Table structure for table `blog_authors`
 --
 
 CREATE TABLE `blog_authors` (
@@ -204,7 +205,7 @@ CREATE TABLE `blog_authors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `blog_authors`
+-- Dumping data for table `blog_authors`
 --
 
 INSERT INTO `blog_authors` (`author_id`, `user_id`, `name`, `avatar`, `bio`, `title`, `created_at`, `updated_at`) VALUES
@@ -217,7 +218,7 @@ INSERT INTO `blog_authors` (`author_id`, `user_id`, `name`, `avatar`, `bio`, `ti
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `blog_categories`
+-- Table structure for table `blog_categories`
 --
 
 CREATE TABLE `blog_categories` (
@@ -230,7 +231,7 @@ CREATE TABLE `blog_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `blog_categories`
+-- Dumping data for table `blog_categories`
 --
 
 INSERT INTO `blog_categories` (`category_id`, `name`, `slug`, `description`, `created_at`, `updated_at`) VALUES
@@ -244,7 +245,7 @@ INSERT INTO `blog_categories` (`category_id`, `name`, `slug`, `description`, `cr
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `blog_posts`
+-- Table structure for table `blog_posts`
 --
 
 CREATE TABLE `blog_posts` (
@@ -265,7 +266,7 @@ CREATE TABLE `blog_posts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `blog_posts`
+-- Dumping data for table `blog_posts`
 --
 
 INSERT INTO `blog_posts` (`post_id`, `author_id`, `category_id`, `title`, `slug`, `content`, `excerpt`, `featured_image`, `status`, `is_featured`, `view_count`, `created_at`, `updated_at`, `published_at`) VALUES
@@ -278,7 +279,7 @@ INSERT INTO `blog_posts` (`post_id`, `author_id`, `category_id`, `title`, `slug`
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `blog_tags`
+-- Table structure for table `blog_tags`
 --
 
 CREATE TABLE `blog_tags` (
@@ -291,7 +292,7 @@ CREATE TABLE `blog_tags` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chatbot_knowledge_base`
+-- Table structure for table `chatbot_knowledge_base`
 --
 
 CREATE TABLE `chatbot_knowledge_base` (
@@ -305,7 +306,7 @@ CREATE TABLE `chatbot_knowledge_base` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chatbot_knowledge_base`
+-- Dumping data for table `chatbot_knowledge_base`
 --
 
 INSERT INTO `chatbot_knowledge_base` (`kb_id`, `intent`, `question`, `answer`, `category`, `created_at`, `updated_at`) VALUES
@@ -327,7 +328,7 @@ INSERT INTO `chatbot_knowledge_base` (`kb_id`, `intent`, `question`, `answer`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chat_logs`
+-- Table structure for table `chat_logs`
 --
 
 CREATE TABLE `chat_logs` (
@@ -341,7 +342,7 @@ CREATE TABLE `chat_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chat_logs`
+-- Dumping data for table `chat_logs`
 --
 
 INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, `sender`, `sent_at`) VALUES
@@ -889,12 +890,212 @@ INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, 
 (1741, 4, NULL, 'general_chat', 'cho minh xem tran doan cua nguyen van a', 'user', '2025-07-15 13:02:21'),
 (1742, 4, NULL, 'general_chat', 'Xin lỗi bạn nha, hiện tại bạn chưa có quyền truy cập chức năng này. Bạn có thể đăng nhập hoặc liên hệ quản trị viên để được hỗ trợ thêm nhé!', 'bot', '2025-07-15 13:02:21'),
 (1743, 4, NULL, 'booking_request', 'minh muon dat lich kham', 'user', '2025-07-15 13:12:52'),
-(1744, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết bạn muốn khám về vấn đề sức khỏe nào không? Mình sẽ giúp bạn tìm chuyên khoa phù hợp.Bạn có thể cho mình biết bạn muốn khám về vấn đề sức khỏe nào không? Mình sẽ giúp bạn tìm chuyên khoa phù hợp.', 'bot', '2025-07-15 13:12:52');
+(1744, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết bạn muốn khám về vấn đề sức khỏe nào không? Mình sẽ giúp bạn tìm chuyên khoa phù hợp.Bạn có thể cho mình biết bạn muốn khám về vấn đề sức khỏe nào không? Mình sẽ giúp bạn tìm chuyên khoa phù hợp.', 'bot', '2025-07-15 13:12:52'),
+(1745, 2, NULL, 'general_chat', 'huy', 'user', '2025-07-23 11:09:03'),
+(1746, 2, NULL, 'general_chat', 'Um, mình hiểu rồi nè. Bạn có muốn chia sẻ thêm điều gì không?', 'bot', '2025-07-23 11:09:03'),
+(1747, 2, NULL, 'general_chat', 'cho minh xem danh sach san pham', 'user', '2025-07-23 11:09:45'),
+(1748, 2, NULL, 'general_chat', 'Xin lỗi bạn nha, hiện tại bạn chưa có quyền truy cập chức năng này. Bạn có thể đăng nhập hoặc liên hệ quản trị viên để được hỗ trợ thêm nhé!', 'bot', '2025-07-23 11:09:45'),
+(1749, 2, NULL, 'general_chat', 'cho minh xem danh sach san pham', 'user', '2025-07-23 11:14:09'),
+(1750, 2, NULL, 'general_chat', 'Xin lỗi bạn nha, hiện tại bạn chưa có quyền truy cập chức năng này. Bạn có thể đăng nhập hoặc liên hệ quản trị viên để được hỗ trợ thêm nhé!', 'bot', '2025-07-23 11:14:09'),
+(1751, 2, NULL, 'sql_query', 'cho minh xem danbh sach san pham', 'user', '2025-07-23 11:20:23'),
+(1752, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"📦 Dưới đây là danh sách các sản phẩm hiện có.\",\n  \"sql_query\": \"SELECT name AS \'Tên sản phẩm\', price AS \'Giá\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-07-23 11:20:23'),
+(1753, 2, NULL, 'sql_query', 'cho minh xem danbh sach san pham', 'user', '2025-07-23 11:20:23'),
+(1754, 2, NULL, 'sql_query', '📦 Dưới đây là danh sách các sản phẩm hiện có.', 'bot', '2025-07-23 11:20:24'),
+(1755, 2, NULL, 'sql_query', 'cho xem cac don hang hien co', 'user', '2025-07-23 11:22:13'),
+(1756, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"📦 Dưới đây là danh sách các đơn hàng hiện có.\",\n  \"sql_query\": \"SELECT order_id AS \'Mã đơn hàng\', user_id AS \'Người dùng\', total AS \'Tổng giá\', payment_status AS \'Trạng thái thanh toán\', status AS \'Trạng thái đơn hàng\', order_date AS \'Ngày tạo đơn\' FROM orders\"\n}', 'bot', '2025-07-23 11:22:13'),
+(1757, 2, NULL, 'sql_query', 'cho xem cac don hang hien co', 'user', '2025-07-23 11:22:13'),
+(1758, 2, NULL, 'sql_query', '📦 Dưới đây là danh sách các đơn hàng hiện có.', 'bot', '2025-07-23 11:22:13'),
+(1759, 2, NULL, 'sql_query', 'cho minh xem tat ca don hang hien co', 'user', '2025-07-23 11:22:58'),
+(1760, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"📦 Đây là danh sách các đơn hàng hiện có.\",\n  \"sql_query\": \"SELECT order_id AS \'ID đơn hàng\', user_id AS \'ID người dùng\', address_id AS \'ID địa chỉ\', shipping_address AS \'Địa chỉ giao hàng\', total AS \'Tổng giá\', payment_method AS \'Phương thức thanh toán\', payment_status AS \'Trạng thái thanh toán\', status AS \'Trạng thái\', order_note AS \'Ghi chú đơn hàng\', order_date AS \'Ngày đặt hàng\', updated_at AS \'Cập nhật gần nhất\' FROM orders\"\n}', 'bot', '2025-07-23 11:22:58'),
+(1761, 2, NULL, 'sql_query', 'cho minh xem tat ca don hang hien co', 'user', '2025-07-23 11:22:58'),
+(1762, 2, NULL, 'sql_query', '📦 Đây là danh sách các đơn hàng hiện có.', 'bot', '2025-07-23 11:22:58'),
+(1763, 2, NULL, 'product_query', 'cho xem cac don hang hien co', 'user', '2025-07-23 11:35:43'),
+(1764, 2, NULL, 'product_query', '{\n  \"natural_text\": \"📦 Đây là danh sách các đơn hàng hiện có.\",\n  \"sql_query\": \"SELECT order_id AS \'Mã đơn hàng\', user_id AS \'Mã người dùng\', address_id AS \'Địa chỉ giao hàng\', shipping_address AS \'Địa chỉ giao hàng\', total AS \'Tổng số tiền\', payment_method AS \'Phương thức thanh toán\', payment_status AS \'Trạng thái thanh toán\', status AS \'Trạng thái đơn hàng\', order_note AS \'Ghi chú đơn hàng\', order_date AS \'Thời gian đặt hàng\', updated_at AS \'Thời gian cập nhật\' FROM orders\"\n}', 'bot', '2025-07-23 11:35:43'),
+(1765, 2, NULL, 'product_query', 'cho xem cac don hang hien co', 'user', '2025-07-23 11:35:44'),
+(1766, 2, NULL, 'product_query', '📦 Đây là danh sách các đơn hàng hiện có.', 'bot', '2025-07-23 11:35:44'),
+(1767, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 12:48:35'),
+(1768, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"📦 Dưới đây là danh sách các đơn hàng hiện có.\",\n  \"sql_query\": \"SELECT order_id AS \'Mã đơn hàng\', user_id AS \'Mã người dùng\', address_id AS \'Mã địa chỉ\', shipping_address AS \'Địa chỉ giao hàng\', total AS \'Tổng số tiền\', payment_method AS \'Phương thức thanh toán\', payment_status AS \'Trạng thái thanh toán\', status AS \'Trạng thái đơn hàng\', order_note AS \'Ghi chú đơn hàng\', order_date AS \'Thời gian đặt hàng\' FROM orders\"\n}', 'bot', '2025-07-23 12:48:35'),
+(1769, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 12:48:35'),
+(1770, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 12:51:46'),
+(1771, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"📦 Dưới đây là danh sách các đơn hàng hiện có.\",\n  \"sql_query\": \"SELECT order_id AS \'Mã đơn hàng\', user_id AS \'Mã người dùng\', address_id AS \'Mã địa chỉ\', shipping_address AS \'Địa chỉ giao hàng\', total AS \'Tổng số tiền\', payment_method AS \'Phương thức thanh toán\', payment_status AS \'Trạng thái thanh toán\', status AS \'Trạng thái đơn hàng\', order_note AS \'Ghi chú đơn hàng\', order_date AS \'Thời gian đặt hàng\' FROM orders\"\n}', 'bot', '2025-07-23 12:51:46'),
+(1772, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 12:51:46'),
+(1773, 2, NULL, 'sql_query', '{\"description\": \"📦 Dưới đây là danh sách các đơn hàng hiện có.\", \"data\": [{\"Mã đơn hàng\": 1, \"Mã người dùng\": 1, \"Mã địa chỉ\": null, \"Địa chỉ giao hàng\": \"Quản trị viên\\n09777313131\\n123 Đường Trần Hưng Đạo\\nPhường Nguyễn Cư Trinh, Quận 1, TP.HCM\", \"Tổng số tiền\": 20000.0, \"Phương thức thanh toán\": \"cod\", \"Trạng thái thanh toán\": \"pending\", \"Trạng thái đơn hàng\": \"pending\", \"Ghi chú đơn hàng\": \"\", \"Thời gian đặt hàng\": \"2025-07-21 00:14:14\"}]}', 'bot', '2025-07-23 12:51:46'),
+(1774, 2, NULL, 'sql_query', 'cho minh xem danh sach san pham', 'user', '2025-07-23 12:56:21'),
+(1775, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"📦 Dưới đây là danh sách các sản phẩm hiện có.\",\n  \"sql_query\": \"SELECT name AS \'Tên sản phẩm\', price AS \'Giá\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-07-23 12:56:21'),
+(1776, 2, NULL, 'sql_query', 'cho minh xem danh sach san pham', 'user', '2025-07-23 12:56:21'),
+(1777, 2, NULL, 'sql_query', '{\"description\": \"📦 Dưới đây là danh sách các sản phẩm hiện có.\", \"data\": [{\"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá\": 15000.0}, {\"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá\": 28000.0}, {\"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá\": 50000.0}, {\"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá\": 650000.0}, {\"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá\": 40000.0}, {\"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá\": 20000.0}, {\"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá\": 45000.0}, {\"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá\": 70000.0}, {\"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá\": 350000.0}, {\"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá\": 120000.0}, {\"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá\": 65000.0}]}', 'bot', '2025-07-23 12:56:21'),
+(1778, 2, NULL, 'sql_query', 'cho minh xem don hang', 'user', '2025-07-23 13:09:47'),
+(1779, 2, NULL, 'sql_query', 'Bạn muốn mình giúp bạn kiểm tra thông tin về đơn hàng nào ạ?', 'bot', '2025-07-23 13:09:48'),
+(1780, 2, NULL, 'sql_query', 'cho minh xem danh sach don hang', 'user', '2025-07-23 13:11:28'),
+(1781, 2, NULL, 'sql_query', 'Bạn muốn mình hỗ trợ xem danh sách đơn hàng nào ạ?', 'bot', '2025-07-23 13:11:29'),
+(1782, 2, NULL, 'product_query', 'tat ca don hang', 'user', '2025-07-23 13:11:47'),
+(1783, 2, NULL, 'product_query', 'Bạn muốn mình hỗ trợ xem tất cả đơn hàng của bạn, phải không nè? Mình sẽ giúp bạn!', 'bot', '2025-07-23 13:11:48'),
+(1784, 2, NULL, 'sql_query', 'tat ca don hang', 'user', '2025-07-23 13:12:57'),
+(1785, 2, NULL, 'sql_query', 'Um, mình hiểu rồi nè! Bạn muốn xem tất cả đơn hàng của mình, đúng không? Mình sẽ giúp bạn ngay đây.', 'bot', '2025-07-23 13:12:57'),
+(1786, 2, NULL, 'sql_query', 'cho minh xem danh sach san pham', 'user', '2025-07-23 13:13:19'),
+(1787, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"📦 Đây là danh sách sản phẩm hiện có.\",\n  \"sql_query\": \"SELECT name AS \'Tên sản phẩm\', price AS \'Giá\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-07-23 13:13:19'),
+(1788, 2, NULL, 'sql_query', 'cho minh xem danh sach san pham', 'user', '2025-07-23 13:13:19'),
+(1789, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm hiện có.\", \"data\": [{\"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá\": 15000.0}, {\"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá\": 28000.0}, {\"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá\": 50000.0}, {\"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá\": 650000.0}, {\"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá\": 40000.0}, {\"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá\": 20000.0}, {\"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá\": 45000.0}, {\"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá\": 70000.0}, {\"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá\": 350000.0}, {\"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá\": 120000.0}, {\"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá\": 65000.0}]}', 'bot', '2025-07-23 13:13:19'),
+(1790, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 13:14:35'),
+(1791, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"🛒 Dưới đây là danh sách các đơn hàng hiện có.\",\n  \"sql_query\": \"SELECT order_id AS \'Mã đơn hàng\', user_id AS \'Mã người dùng\', status AS \'Trạng thái\', total AS \'Tổng giá\', order_date AS \'Ngày đặt hàng\' FROM orders WHERE status IN (\'pending\', \'processing\', \'shipped\', \'completed\')\"\n}', 'bot', '2025-07-23 13:14:36'),
+(1792, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 13:14:36'),
+(1793, 2, NULL, 'sql_query', '{\"description\": \"🛒 Dưới đây là danh sách các đơn hàng hiện có.\", \"data\": [{\"Mã đơn hàng\": 1, \"Mã người dùng\": 1, \"Trạng thái\": \"pending\", \"Tổng giá\": 20000.0, \"Ngày đặt hàng\": \"2025-07-21 00:14:14\"}]}', 'bot', '2025-07-23 13:14:36'),
+(1794, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 13:22:30'),
+(1795, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"🛒 Dưới đây là danh sách các đơn hàng hiện có.\",\n  \"sql_query\": \"SELECT order_id AS \'Mã đơn hàng\', user_id AS \'Mã người dùng\', status AS \'Trạng thái\', total AS \'Tổng giá\', order_date AS \'Ngày đặt hàng\' FROM orders\"\n}', 'bot', '2025-07-23 13:22:30'),
+(1796, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 13:22:30'),
+(1797, 2, NULL, 'sql_query', '{\"description\": \"🛒 Dưới đây là danh sách các đơn hàng hiện có.\", \"data\": [{\"Mã đơn hàng\": 1, \"Mã người dùng\": 1, \"Trạng thái\": \"pending\", \"Tổng giá\": 20000.0, \"Ngày đặt hàng\": \"2025-07-21 00:14:14\"}]}', 'bot', '2025-07-23 13:22:30'),
+(1798, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 13:24:16'),
+(1799, 2, NULL, 'sql_query', '{\n  \"natural_text\": \"🛒 Dưới đây là danh sách các đơn hàng hiện có.\",\n  \"sql_query\": \"SELECT order_id AS \'Mã đơn hàng\', user_id AS \'Mã người dùng\', payment_status AS \'Trạng thái thanh toán\', status AS \'Trạng thái\', total AS \'Tổng giá\', order_date AS \'Ngày đặt hàng\' FROM orders\"\n}', 'bot', '2025-07-23 13:24:16'),
+(1800, 2, NULL, 'sql_query', 'cho minh xem cac don hang hien co', 'user', '2025-07-23 13:24:16'),
+(1801, 2, NULL, 'sql_query', '{\"description\": \"🛒 Dưới đây là danh sách các đơn hàng hiện có.\", \"data\": [{\"Mã đơn hàng\": 1, \"Mã người dùng\": 1, \"Trạng thái thanh toán\": \"pending\", \"Trạng thái\": \"pending\", \"Tổng giá\": 20000.0, \"Ngày đặt hàng\": \"2025-07-21 00:14:14\"}]}', 'bot', '2025-07-23 13:24:16'),
+(1804, 2, NULL, 'sql_query', 'danh sach san pham', 'user', '2025-07-23 13:25:15'),
+(1805, 2, NULL, 'sql_query', '{\"description\": \"📦 Dưới đây là danh sách các sản phẩm hiện có.\", \"data\": [{\"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá\": 15000.0, \"Mô tả\": \"Thuốc hạ sốt, giảm đau thường dùng.\", \"Số lượng trong kho\": 100}, {\"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá\": 28000.0, \"Mô tả\": \"Kháng sinh phổ rộng nhóm penicillin.\", \"Số lượng trong kho\": 60}, {\"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá\": 50000.0, \"Mô tả\": \"Hỗ trợ tăng cường đề kháng.\", \"Số lượng trong kho\": 200}, {\"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá\": 650000.0, \"Mô tả\": \"Thiết bị đo huyết áp tại nhà.\", \"Số lượng trong kho\": 15}, {\"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá\": 40000.0, \"Mô tả\": \"Hộp 50 cái, đạt chuẩn kháng khuẩn.\", \"Số lượng trong kho\": 500}, {\"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá\": 20000.0, \"Mô tả\": \"Thuốc giảm đau, kháng viêm, hạ sốt.\", \"Số lượng trong kho\": 80}, {\"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá\": 45000.0, \"Mô tả\": \"Hỗ trợ miễn dịch, chống viêm nhiễm.\", \"Số lượng trong kho\": 150}, {\"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá\": 70000.0, \"Mô tả\": \"Giúp cân bằng hệ vi sinh đường ruột.\", \"Số lượng trong kho\": 90}, {\"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá\": 350000.0, \"Mô tả\": \"Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.\", \"Số lượng trong kho\": 25}, {\"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá\": 120000.0, \"Mô tả\": \"Phục hồi và giữ ẩm cho da khô, kích ứng.\", \"Số lượng trong kho\": 50}, {\"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá\": 65000.0, \"Mô tả\": \"Giúp thư giãn, cải thiện giấc ngủ tự nhiên.\", \"Số lượng trong kho\": 70}]}', 'bot', '2025-07-23 13:25:15'),
+(1806, 6, NULL, 'patient_summary_request', 'cho minh tong quat phong doan benh gan nhat cua benh nhan nguyen van a', 'user', '2025-07-23 13:36:01');
+INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, `sender`, `sent_at`) VALUES
+(1807, 6, NULL, 'patient_summary_request', '<p>\n    <strong>Đau đầu</strong> (15/07/2025): Bệnh nhân báo cáo bị đau đầu kéo dài từ 5-10 phút khi đứng lên hoặc ngồi xuống, kèm theo triệu chứng <strong>chóng mặt</strong> và <strong>buồn nôn</strong> nhẹ.<br>\n    <strong>Chóng mặt</strong> (15/07/2025): Bệnh nhân cảm thấy chóng mặt tự nhiên, đặc biệt khi chưa ăn gì.<br>\n    <strong>Buồn nôn</strong> (15/07/2025): Bệnh nhân có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.<br>\n    <strong>Đau đầu</strong> (12/07/2025): Bệnh nhân muốn khám về vấn đề tim mạch.<br>\n    <strong>Đau đầu</strong> (11/07/2025): Bệnh nhân báo cáo có vấn đề liên quan đến tim mạch.<br>\n    <strong>Đau đầu</strong> (09/07/2025): Bệnh nhân cảm giác đau đầu kéo dài khoảng 5-10 phút khi vừa nằm xuống.<br>\n    <strong>Chóng mặt</strong> (09/07/2025): Bệnh nhân có cảm giác chóng mặt khi vừa đứng dậy.<br>\n    <strong>Đau đầu</strong> (03/07/2025): Bệnh nhân bị đau đầu khi vừa nằm xuống, cơn đau kéo dài khoảng 5-10 phút.<br>\n    <strong>Chóng mặt</strong> (03/07/2025): Bệnh nhân cảm thấy chóng mặt từ sáng tới giờ, triệu chứng không rõ nguyên nhân.<br>\n    <strong>Buồn nôn</strong> (03/07/2025): Bệnh nhân có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.<br>\n    <strong>Tê tay chân</strong> (01/07/2025): Bệnh nhân đã mô tả một số triệu chứng trong cuộc trò chuyện.<br>\n    <strong>Khàn giọng</strong> (01/07/2025): Bệnh nhân đã mô tả một số triệu chứng trong cuộc trò chuyện.<br>\n    <strong>Yếu cơ</strong> (01/07/2025): Bệnh nhân đã mô tả một số triệu chứng trong cuộc trò chuyện.<br>\n    <strong>Đau đầu</strong> (01/07/2025): Bệnh nhân đã mô tả một số triệu chứng trong cuộc trò chuyện.<br>\n    <strong>Khàn giọng</strong> (25/06/2025): Bệnh nhân bị tê tay chân bên trái, nói chuyện ngọng, hay quên, và gần đây cảm thấy mệt mỏi cùng với mất thăng bằng khi đi lại.<br>\n    <strong>Mệt mỏi</strong> (25/06/2025): Bệnh nhân cảm thấy mệt mỏi cùng với tê tay chân bên trái và khàn giọng.<br>\n    <strong>Chóng mặt</strong> (25/06/2025): Bệnh nhân bị tê tay chân bên trái, nói chuyện ng', 'bot', '2025-07-23 13:36:01'),
+(1808, 1, NULL, 'general_chat', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 13:57:08'),
+(1809, 1, NULL, 'general_chat', 'Um, mình hiểu rồi nè. Bạn đang cảm thấy không khỏe với triệu chứng đau đầu, chóng mặt và buồn nôn. Bạn có muốn tiếp tục chia sẻ về cảm giác này hoặc cần mình hỗ trợ gì không?', 'bot', '2025-07-23 13:57:08'),
+(1810, 4, NULL, 'general_chat', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:05:40'),
+(1811, 4, NULL, 'general_chat', 'Um, mình hiểu rồi nè. Bạn cảm thấy không thoải mái với những triệu chứng đó. Bạn có muốn mình hỗ trợ thêm về cách giảm nhẹ triệu chứng hay muốn đặt lịch khám bác sĩ không?', 'bot', '2025-07-23 14:05:40'),
+(1812, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:07:09'),
+(1813, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thấy cảm giác **đau đầu** này thường kéo dài bao lâu mỗi lần bạn gặp không ha? Có khi nào bạn thấy đỡ hơn sau khi nghỉ ngơi không?', 'bot', '2025-07-23 14:07:09'),
+(1814, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:19:03'),
+(1815, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn cảm thấy **chóng mặt** này thường xảy ra khi bạn thay đổi tư thế, lúc đang ngồi hay lúc vừa đứng lên không nhỉ?', 'bot', '2025-07-23 14:19:03'),
+(1816, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-23 14:20:19'),
+(1817, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có cảm giác **buồn nôn** này thường đi kèm với cảm giác mệt mỏi hoặc không thoải mái nào khác không ha? Bạn có thấy tình trạng này xảy ra nhiều khi nào không?', 'bot', '2025-07-23 14:20:19'),
+(1818, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-23 14:21:32'),
+(1819, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Cảm giác **đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n**Buồn nôn** thường liên quan đến cảm giác khó chịu trong dạ dày, có thể do stress hoặc ăn uống không đúng cách. Bạn hãy chú ý đến chế độ ăn uống của mình nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-23 14:21:33'),
+(1820, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:29:33'),
+(1821, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**... Cảm giác **đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha. **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ. **Buồn nôn** thường liên quan đến cảm giác khó chịu trong dạ dày, có thể do stress hoặc ăn uống không đúng cách.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n�� **Thiếu năng lượng nhẹ**  \nCơ thể bị hạ đường huyết tạm thời nếu nhịn ăn lâu.  \n→ Bạn có thể ăn nhẹ hoặc uống sữa để lấy lại sức.\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-23 14:29:33'),
+(1822, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:30:28'),
+(1823, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Bạn có thấy cơn đau này thường kéo dài bao lâu mỗi lần gặp hay có lúc nào thấy đỡ hơn sau khi nghỉ ngơi không ha?', 'bot', '2025-07-23 14:30:28'),
+(1824, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac dau dau va no keo dai tam 5-10p gi do', 'user', '2025-07-23 14:32:29'),
+(1825, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thấy cơn **chóng mặt** này xảy ra nhiều khi nào, chẳng hạn như lúc vừa đứng lên hay khi đang nằm nghỉ không ha?', 'bot', '2025-07-23 14:32:29'),
+(1826, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi', 'user', '2025-07-23 14:33:09'),
+(1827, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **buồn nôn** của bạn nè. Bạn có thấy cảm giác này có kèm theo mệt mỏi hoặc là thường xảy ra trong lúc nào, như khi ăn hay uống nước không ha?', 'bot', '2025-07-23 14:33:10'),
+(1828, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-23 14:33:57'),
+(1829, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, chẳng hạn như có thấy mệt mỏi, tim đập nhanh hay có cảm giác tức ngực gì không nha?', 'bot', '2025-07-23 14:33:58'),
+(1830, 4, NULL, 'symptom_query', 'ko co', 'user', '2025-07-23 14:35:57'),
+(1831, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. \nCảm giác **đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha. \nCảm giác **chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ. \nCảm giác **buồn nôn** có thể liên quan đến việc ăn uống không đều hoặc căng thẳng. Hãy thử ăn nhẹ nhàng và nghỉ ngơi một chút nhé. \n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân. \n\n�� **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày. \n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha. \n\n— \nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha �� \nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-23 14:35:57'),
+(1832, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-23 14:39:22'),
+(1833, 4, NULL, 'symptom_query', 'Mình thấy bạn mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể liên quan đến một số nguyên nhân tự nhiên như căng thẳng, thiếu ngủ hoặc không ăn đúng bữa.\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n**Buồn nôn** có thể liên quan đến việc ăn uống không đều hoặc căng thẳng. Hãy thử ăn nhẹ nhàng và nghỉ ngơi một chút nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-23 14:39:22'),
+(1834, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:42:04'),
+(1835, 4, NULL, 'symptom_query', 'Mình đang tò mò không biết cảm giác **đau đầu** của bạn có thường kéo dài bao lâu mỗi lần bạn gặp phải không nhỉ?', 'bot', '2025-07-23 14:42:04'),
+(1836, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:43:34'),
+(1837, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** nè. Bạn có thường thấy nó xuất hiện khi nào, như lúc đang ngồi hay lúc vừa đứng lên không ha?', 'bot', '2025-07-23 14:43:34'),
+(1838, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-23 14:44:13'),
+(1839, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. \n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha. \n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ. \n**Buồn nôn** có thể liên quan đến việc dạ dày không ổn hoặc căng thẳng. Hãy thử ăn nhẹ hoặc nghỉ ngơi nhé. \n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân. \n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày. \n\n�� **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha. \n\n— \nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿 \nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-23 14:44:13'),
+(1840, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:48:00'),
+(1841, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Bạn có thấy tình trạng này thường kéo dài bao lâu mỗi lần gặp phải không? Có khi nào bạn cảm thấy đỡ hơn sau khi nghỉ ngơi không ha?', 'bot', '2025-07-23 14:48:00'),
+(1842, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-23 14:49:16'),
+(1843, 4, NULL, 'symptom_query', 'Khi bạn cảm thấy **chóng mặt**, nó thường kéo dài bao lâu? Có phải chỉ khi bạn đứng lên hoặc thay đổi tư thế không ha?', 'bot', '2025-07-23 14:49:17'),
+(1844, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi | chat do sang h minh chua an gi', 'user', '2025-07-23 14:49:52'),
+(1845, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thấy thêm cảm giác gì khác không, như là **hoa mắt**, **mệt mỏi** hay có cảm giác gì không ổn khác không nha?', 'bot', '2025-07-23 14:49:52'),
+(1846, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-23 14:50:42'),
+(1847, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể liên quan đến một số nguyên nhân nhẹ nhàng như sau:\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\n**Buồn nôn** có thể là do dạ dày không được thoải mái hoặc căng thẳng. Bạn có thể thử uống một tách trà nhẹ để dịu dạ dày.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-07-23 14:50:42'),
+(1848, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-23 14:53:37'),
+(1849, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. **Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha. **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ. **Buồn nôn** có thể là do dạ dày không được thoải mái hoặc căng thẳng. Bạn có thể thử uống một tách trà nhẹ để dịu dạ dày.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn chưa ăn gì.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n📌 **Thiếu năng lượng nhẹ**  \nCơ thể bị hạ đường huyết tạm thời nếu nhịn ăn lâu.  \n→ Bạn có thể ăn nhẹ hoặc uống sữa để lấy lại sức.\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha ��\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-07-23 14:53:37'),
+(1850, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 14:59:00'),
+(1851, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cơn **đau đầu** của bạn nè. Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?', 'bot', '2025-07-23 14:59:00'),
+(1852, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 15:01:17'),
+(1853, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cơn **đau đầu** của bạn nè. Cảm giác đó thường kéo dài bao lâu mỗi lần bạn gặp vậy?', 'bot', '2025-07-23 15:01:17'),
+(1854, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-23 15:02:24'),
+(1855, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể do nhiều nguyên nhân khác nhau gây ra.\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\n**Buồn nôn** có thể xảy ra khi cơ thể bạn căng thẳng hoặc gặp vấn đề về tiêu hóa. Nghỉ ngơi và giữ cho cơ thể đủ nước có thể giúp bạn cảm thấy dễ chịu hơn.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-23 15:02:24'),
+(1856, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 15:03:01'),
+(1857, 4, NULL, 'symptom_query', 'Cảm giác **đau đầu** của bạn thường kéo dài bao lâu mỗi lần gặp phải vậy? Nó có hay đi kèm với cảm giác mệt mỏi hoặc buồn nôn không ha?', 'bot', '2025-07-23 15:03:01'),
+(1858, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-23 15:03:21'),
+(1859, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **chóng mặt** của bạn nè. Bạn có thấy tình trạng này xảy ra khi đang ngồi hay lúc vừa đứng lên không? 🌿', 'bot', '2025-07-23 15:03:22'),
+(1860, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi | chat do sang h minh chua an gi', 'user', '2025-07-23 15:03:48'),
+(1861, 4, NULL, 'symptom_query', 'Mình đang muốn hỏi thêm về cảm giác **buồn nôn** của bạn nè. Bạn có thấy cảm giác này xảy ra sau khi ăn hay lúc nào khác không ha?', 'bot', '2025-07-23 15:03:48'),
+(1862, 4, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-07-23 15:04:15'),
+(1863, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thấy thêm cảm giác nào khác như **tim đập nhanh**, **mệt mỏi**, hay **tức ngực** không nhỉ? Những điều đó có thể giúp mình hiểu rõ hơn về tình trạng hiện tại của bạn.', 'bot', '2025-07-23 15:04:15'),
+(1864, 4, NULL, 'symptom_query', 'khong co', 'user', '2025-07-23 15:04:54'),
+(1865, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể là dấu hiệu của một số tình trạng khác nhau. \n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\n**Buồn nôn** đôi khi xảy ra khi dạ dày không ổn định hoặc do căng thẳng. Hãy thử ăn nhẹ và nghỉ ngơi một chút.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:  \n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.  \n\n�� **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.  \n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.  \n\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿  \nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-07-23 15:04:54'),
+(1866, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 15:07:31'),
+(1867, 4, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Có khi nào bạn cảm thấy **đau đầu** nhiều hơn khi đang làm việc hay khi nghỉ ngơi không? ��', 'bot', '2025-07-23 15:07:31'),
+(1868, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-23 15:11:28'),
+(1869, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu** kiểu nhói ở thái dương, kèm theo **chóng mặt** và **buồn nôn** nhẹ. **Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha. **Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ. **Buồn nôn** thường liên quan đến cảm giác không thoải mái trong dạ dày, có thể do căng thẳng hoặc lo âu.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n�� **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n�� **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\n\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-07-23 15:11:28'),
+(1870, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 15:13:22'),
+(1871, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể xuất phát từ nhiều nguyên nhân khác nhau.\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n**Buồn nôn** có thể là dấu hiệu của dạ dày không ổn định hoặc căng thẳng. Nếu có thể, bạn hãy thử ăn một chút gì đó nhẹ để xem có đỡ hơn không.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha ��\n\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-07-23 15:13:22'),
+(1872, 4, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-07-23 15:17:43'),
+(1873, 4, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thấy cơn **đau đầu** này kéo dài bao lâu rồi? Có khi nào bạn thấy đỡ hơn sau khi nghỉ ngơi không ha?', 'bot', '2025-07-23 15:17:44'),
+(1874, 4, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac va no keo dai tam 5-10p gi do', 'user', '2025-07-23 15:18:20'),
+(1875, 4, NULL, 'symptom_query', 'Mình đang muốn hỏi thêm một chút về cảm giác **chóng mặt** của bạn nè. Có phải cảm giác đó thường xuất hiện khi bạn vừa đứng lên hoặc thay đổi tư thế không? Hay là nó xảy ra khi bạn đang ngồi yên?', 'bot', '2025-07-23 15:18:20'),
+(1876, 4, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi | chat do sang h minh chua an gi', 'user', '2025-07-23 15:19:00'),
+(1877, 4, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể xuất phát từ một số nguyên nhân khác nhau. \n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha. \n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ. \n**Buồn nôn** có thể liên quan đến dạ dày hoặc căng thẳng, bạn có thể thử ăn nhẹ nhàng xem có đỡ hơn không. \n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân. \n\n�� **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày. \n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha. \n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-07-23 15:19:01'),
+(1878, 4, NULL, 'booking_request', 'um giup minh dat lich kham di', 'user', '2025-07-23 15:37:44'),
+(1879, 4, NULL, 'booking_request', 'Dựa trên triệu chứng đau đầu, chóng mặt và buồn nôn, bạn có thể cần khám chuyên khoa Thần kinh. \n\nBạn có thể cho mình biết bạn ở khu vực nào để mình giúp tìm phòng khám gần nhất nhé?Dựa trên triệu chứng đau đầu, chóng mặt và buồn nôn, bạn có thể cần khám chuyên khoa Thần kinh. \n\nBạn có thể cho mình biết bạn ở khu vực nào để mình giúp tìm phòng khám gần nhất nhé?', 'bot', '2025-07-23 15:37:44'),
+(1880, 4, NULL, 'booking_request', 'Minh muon dat lich kham', 'user', '2025-07-23 15:38:24'),
+(1881, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết triệu chứng hoặc lý do bạn muốn khám để mình có thể giúp bạn chọn chuyên khoa phù hợp không?Bạn có thể cho mình biết triệu chứng hoặc lý do bạn muốn khám để mình có thể giúp bạn chọn chuyên khoa phù hợp không?', 'bot', '2025-07-23 15:38:24'),
+(1882, 4, NULL, 'booking_request', 'Minh muon dat lich kham', 'user', '2025-07-23 15:42:38'),
+(1883, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết bạn muốn khám bệnh gì không? Mình sẽ giúp bạn đặt lịch khám.', 'bot', '2025-07-23 15:42:38'),
+(1884, 4, NULL, 'booking_request', 'Minh muon dat lich kham', 'user', '2025-07-23 15:42:58'),
+(1885, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết bạn đang gặp vấn đề sức khỏe gì không? Mình sẽ giúp bạn tìm chuyên khoa phù hợp.', 'bot', '2025-07-23 15:42:58'),
+(1886, 4, NULL, 'booking_request', 'minh muon kham tim mach', 'user', '2025-07-23 15:46:44'),
+(1887, 4, NULL, 'booking_request', 'Dựa trên vấn đề bạn nêu ra về tim mạch, mình đã xác định chuyên khoa Tim mạch là phù hợp.\n\nBạn ở khu vực nào để mình giúp tìm phòng khám gần nhất?', 'bot', '2025-07-23 15:46:44'),
+(1888, 4, NULL, 'booking_request', 'Minh muon dat lich kham', 'user', '2025-07-23 15:49:28'),
+(1889, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết bạn đang gặp vấn đề gì về sức khỏe không? Mình sẽ giúp bạn chọn chuyên khoa phù hợp.', 'bot', '2025-07-23 15:49:29'),
+(1890, 4, NULL, 'booking_request', 'minh muon kham tim mach', 'user', '2025-07-23 15:50:09'),
+(1891, 4, NULL, 'booking_request', 'Dựa trên yêu cầu khám tim mạch của bạn, mình sẽ giúp bạn đặt lịch. Bạn có thể cho mình biết bạn ở khu vực nào để mình tìm phòng khám gần nhất nhé?', 'bot', '2025-07-23 15:50:09'),
+(1892, 4, NULL, 'booking_request', 'minh song o tphcm', 'user', '2025-07-23 15:52:56'),
+(1893, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết số điện thoại của bạn được không?', 'bot', '2025-07-23 15:52:56'),
+(1894, 4, NULL, 'booking_request', '0901111111', 'user', '2025-07-23 15:53:50'),
+(1895, 4, NULL, 'booking_request', 'Tôi đã ghi nhận thông tin của bạn. Bây giờ, mình sẽ giúp bạn tìm phòng khám tim mạch gần nhất. Bạn có muốn đặt lịch khám không?\n\n- Bệnh viện Chợ Rẫy - 201B Nguyễn Chí Thanh, Quận 5, TP.HCM\n- Phòng khám Đa khoa Hòa Hảo - 254 Hòa Hảo, Quận 10, TP.HCM', 'bot', '2025-07-23 15:53:50'),
+(1896, 4, NULL, 'booking_request', 'Bệnh viện Chợ Rẫy', 'user', '2025-07-23 15:54:15'),
+(1897, 4, NULL, 'booking_request', '', 'bot', '2025-07-23 15:54:15'),
+(1898, 4, NULL, 'booking_request', 'Minh muon dat lich kham', 'user', '2025-07-23 15:55:49'),
+(1899, 4, NULL, 'booking_request', 'Dựa trên triệu chứng của bạn như đau đầu, chóng mặt, và buồn nôn, bạn có thể cần khám chuyên khoa Nội khoa hoặc Thần kinh.\n\nBạn muốn đặt lịch khám ở chuyên khoa nào?', 'bot', '2025-07-23 15:55:49'),
+(1900, 4, NULL, 'booking_request', 'minh muon kham tim mach', 'user', '2025-07-23 15:56:07'),
+(1901, 4, NULL, 'booking_request', 'Dựa trên triệu chứng của bạn, bạn có thể cần khám chuyên khoa Tim mạch.\n\nBạn ở khu vực nào để mình giúp tìm phòng khám gần nhất?', 'bot', '2025-07-23 15:56:07'),
+(1902, 4, NULL, 'booking_request', 'tphcm', 'user', '2025-07-23 15:56:27'),
+(1903, 4, NULL, 'booking_request', 'Bạn vui lòng cung cấp số điện thoại của mình để mình giúp bạn đặt lịch khám nhé.', 'bot', '2025-07-23 15:56:27'),
+(1904, 4, NULL, 'booking_request', '0901111111', 'user', '2025-07-23 15:56:49'),
+(1905, 4, NULL, 'booking_request', 'Tôi đã ghi nhận thông tin của bạn. Bây giờ, mình sẽ tìm kiếm phòng khám chuyên khoa Tim mạch gần bạn tại TP.HCM.\n\n- Bệnh viện Chợ Rẫy - 201B Nguyễn Chí Thanh, Quận 5, TP.HCM\n- Phòng khám Đa khoa Hòa Hảo - 254 Hòa Hảo, Quận 10, TP.HCM', 'bot', '2025-07-23 15:56:49'),
+(1906, 4, NULL, 'booking_request', 'Bệnh viện Chợ Rẫy', 'user', '2025-07-23 15:57:04'),
+(1907, 4, NULL, 'booking_request', '', 'bot', '2025-07-23 15:57:04'),
+(1908, 4, NULL, 'booking_request', 'Minh muon dat lich kham', 'user', '2025-07-23 16:01:02'),
+(1909, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết rõ hơn về vấn đề sức khỏe mà bạn đang gặp phải không? Mình sẽ giúp bạn tìm chuyên khoa phù hợp.', 'bot', '2025-07-23 16:01:02'),
+(1910, 4, NULL, 'booking_request', 'minh muon kham tim mach', 'user', '2025-07-23 16:01:10'),
+(1911, 4, NULL, 'booking_request', 'Dựa trên yêu cầu khám tim mạch của bạn, mình cần biết bạn ở khu vực nào để tìm phòng khám gần nhất nhé.', 'bot', '2025-07-23 16:01:10'),
+(1912, 4, NULL, 'booking_request', 'minh song o tphcm', 'user', '2025-07-23 16:01:23'),
+(1913, 4, NULL, 'booking_request', 'Bạn có thể cho mình biết số điện thoại của bạn để mình có thể đặt lịch khám được không?', 'bot', '2025-07-23 16:01:23'),
+(1914, 4, NULL, 'booking_request', '090111111111', 'user', '2025-07-23 16:01:34'),
+(1915, 4, NULL, 'booking_request', 'Mình đã ghi nhận thông tin của bạn. Bây giờ mình sẽ tìm kiếm phòng khám tim mạch gần bạn ở TP.HCM nhé.\n\n- Bệnh viện Chợ Rẫy - 201B Nguyễn Chí Thanh, Quận 5, TP.HCM\n- Phòng khám Đa khoa Hòa Hảo - 254 Hòa Hảo, Quận 10, TP.HCM', 'bot', '2025-07-23 16:01:34'),
+(1916, 4, NULL, 'booking_request', 'Bệnh viện Chợ Rẫy', 'user', '2025-07-23 16:01:43'),
+(1917, 4, NULL, 'booking_request', 'Bạn đã chọn Bệnh viện Chợ Rẫy. Bây giờ, bạn muốn xem bác sĩ nào hoặc lịch khám ra sao?', 'bot', '2025-07-23 16:01:43'),
+(1918, 4, NULL, 'booking_request', 'cho minh xem danh sach bac si di', 'user', '2025-07-23 16:01:55'),
+(1919, 4, NULL, 'booking_request', 'Bạn muốn xem danh sách bác sĩ trước, hay xem các khung giờ khám trước ạ? Mình sẽ hiển thị danh sách phù hợp để bạn lựa chọn nhé.', 'bot', '2025-07-23 16:01:55'),
+(1920, 4, NULL, 'booking_request', 'cho minh xem danh sach bac si di', 'user', '2025-07-23 16:02:20'),
+(1921, 4, NULL, 'booking_request', 'Dưới đây là danh sách bác sĩ tại Bệnh viện Chợ Rẫy:\n- Dr.Linh: Bác sĩ Tim mạch từng công tác tại Viện Tim TP.HCM. Có bằng Thạc sĩ Y khoa từ Đại học Paris, Pháp.', 'bot', '2025-07-23 16:02:20'),
+(1922, 4, NULL, 'booking_request', 'ok vậy chọn xác sĩ linh đi', 'user', '2025-07-23 16:02:55'),
+(1923, 4, NULL, 'booking_request', 'Bạn muốn đặt lịch với bác sĩ Linh vào thời gian nào? Dưới đây là các khung giờ khám:\n- Buổi sáng 1 (09:00 - 12:00) vào thứ 2\n- Buổi chiều 2 (14:00 - 17:00) vào thứ 3\n- Buổi sáng 3 (09:00 - 12:00) vào thứ 4\n- Buổi chiều 4 (14:00 - 17:00) vào thứ 5\n- Buổi sáng 5 (09:00 - 12:00) vào thứ 6.', 'bot', '2025-07-23 16:02:55'),
+(1924, 4, NULL, 'booking_request', 'vậy thứ 3 đi', 'user', '2025-07-23 16:03:08'),
+(1925, 4, NULL, 'booking_request', 'Dưới đây là các lịch khám của bác sĩ Dr.Linh:\n- Buổi chiều Thứ Ba (14:00 - 17:00)\n- Buổi sáng Thứ Tư (09:00 - 12:00)\n- Buổi chiều Thứ Năm (14:00 - 17:00)\n- Buổi sáng Thứ Sáu (09:00 - 12:00). Bạn muốn đặt lịch vào thời gian nào ạ?', 'bot', '2025-07-23 16:03:08'),
+(1926, 4, NULL, 'booking_request', 'vậy thứ 3 đi', 'user', '2025-07-23 16:03:27'),
+(1927, 4, NULL, 'booking_request', '✅ Bạn đã chọn đầy đủ thông tin:\nHọ tên: Nguyễn Văn A\nSĐT: 090111111111\nKhu vực: TP.HCM\nChuyên khoa: Tim mạch\nPhòng khám: Bệnh viện Chợ Rẫy\nBác sĩ: Dr.Linh\nLịch hẹn: Buổi chiều 2 (14:00 - 17:00)\n\nBạn xác nhận đặt lịch này chứ?', 'bot', '2025-07-23 16:03:27'),
+(1928, 4, NULL, 'booking_request', 'ok minh xac nhan', 'user', '2025-07-23 16:09:31'),
+(1929, 4, NULL, 'booking_request', '✅ Đã đặt lịch thành công! Mã lịch hẹn của bạn là #10.\nLịch khám: Buổi chiều 2 (14:00 - 17:00)\nChúc bạn sức khỏe tốt!', 'bot', '2025-07-23 16:09:31'),
+(1930, 2, NULL, 'general_chat', 'hello', 'user', '2025-08-05 05:53:44'),
+(1931, 2, NULL, 'general_chat', 'Cảm ơn bạn đã nhắn tin! Bạn cần hỗ trợ gì hôm nay không?', 'bot', '2025-08-05 05:53:44'),
+(1932, 2, NULL, 'general_chat', 'hello?', 'user', '2025-08-05 05:54:01'),
+(1933, 2, NULL, 'general_chat', 'Um, mình hiểu rồi nè! Bạn cần hỗ trợ gì hôm nay không?', 'bot', '2025-08-05 05:54:01'),
+(1934, 2, NULL, 'general_chat', 'ban la ai?', 'user', '2025-08-05 05:54:13'),
+(1935, 2, NULL, 'general_chat', 'Um, mình là trợ lý ảo của KMS Health Care, sẵn sàng hỗ trợ bạn với mọi câu hỏi hay nhu cầu về sức khỏe. Bạn cần giúp gì hôm nay không?', 'bot', '2025-08-05 05:54:13'),
+(1936, 2, NULL, 'symptom_query', 'Từ sáng đến giờ mình bị đau đầu kiểu nhói ở thái dương, kèm theo chóng mặt và buồn nôn nhẹ nữa', 'user', '2025-08-05 05:56:20'),
+(1937, 2, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cơn **đau đầu** của bạn nhé. Cảm giác này thường kéo dài bao lâu mỗi lần bạn gặp phải vậy?', 'bot', '2025-08-05 05:56:20'),
+(1938, 2, NULL, 'symptom_query', 'khi vua nam xuong thi minh bat dau co cam giac dau dau va no keo dai tam 5-10p gi do', 'user', '2025-08-05 05:56:51'),
+(1939, 2, NULL, 'symptom_query', 'Khi bạn cảm thấy **chóng mặt**, có khi nào cảm giác này xuất hiện khi bạn vừa đứng lên hay khi đang ngồi không? Mình muốn biết thêm về trải nghiệm của bạn.', 'bot', '2025-08-05 05:56:52'),
+(1940, 2, NULL, 'symptom_query', 'minh cung khong ro no tu nhien chong mat thoi | chat do sang h minh chua an gi', 'user', '2025-08-05 05:58:54'),
+(1941, 2, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **buồn nôn** của bạn nè. Có khi nào nó xuất hiện sau khi bạn ăn hay uống gì không, hay nó thường xảy ra vào lúc nào?', 'bot', '2025-08-05 05:58:54'),
+(1942, 2, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-08-05 05:59:08'),
+(1943, 2, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, như là mệt mỏi, hoặc có cảm giác như tim đập nhanh không ha? Điều này có thể giúp mình hiểu rõ hơn về tình trạng của bạn.', 'bot', '2025-08-05 05:59:08'),
+(1944, 2, NULL, 'symptom_query', 'khong co', 'user', '2025-08-05 06:00:04'),
+(1945, 2, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể liên quan đến một số nguyên nhân nhẹ nhàng như căng thẳng, thiếu ngủ hoặc thay đổi thời tiết.\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\n**Buồn nôn** có thể xảy ra khi bạn đang căng thẳng hoặc không ăn uống điều độ. Hãy thử ăn một bữa nhẹ nhàng và xem cảm giác ra sao nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n�� **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-08-05 06:00:04');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `clinics`
+-- Table structure for table `clinics`
 --
 
 CREATE TABLE `clinics` (
@@ -909,7 +1110,7 @@ CREATE TABLE `clinics` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `clinics`
+-- Dumping data for table `clinics`
 --
 
 INSERT INTO `clinics` (`clinic_id`, `name`, `address`, `phone`, `email`, `description`, `created_at`, `updated_at`) VALUES
@@ -922,7 +1123,7 @@ INSERT INTO `clinics` (`clinic_id`, `name`, `address`, `phone`, `email`, `descri
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `clinic_specialties`
+-- Table structure for table `clinic_specialties`
 --
 
 CREATE TABLE `clinic_specialties` (
@@ -931,7 +1132,7 @@ CREATE TABLE `clinic_specialties` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `clinic_specialties`
+-- Dumping data for table `clinic_specialties`
 --
 
 INSERT INTO `clinic_specialties` (`clinic_id`, `specialty_id`) VALUES
@@ -950,7 +1151,7 @@ INSERT INTO `clinic_specialties` (`clinic_id`, `specialty_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `diseases`
+-- Table structure for table `diseases`
 --
 
 CREATE TABLE `diseases` (
@@ -965,7 +1166,7 @@ CREATE TABLE `diseases` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `diseases`
+-- Dumping data for table `diseases`
 --
 
 INSERT INTO `diseases` (`disease_id`, `name`, `description`, `treatment_guidelines`, `severity`, `category_id`, `created_at`, `updated_at`) VALUES
@@ -1000,7 +1201,7 @@ INSERT INTO `diseases` (`disease_id`, `name`, `description`, `treatment_guidelin
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `disease_symptoms`
+-- Table structure for table `disease_symptoms`
 --
 
 CREATE TABLE `disease_symptoms` (
@@ -1009,7 +1210,7 @@ CREATE TABLE `disease_symptoms` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `disease_symptoms`
+-- Dumping data for table `disease_symptoms`
 --
 
 INSERT INTO `disease_symptoms` (`disease_id`, `symptom_id`) VALUES
@@ -1104,7 +1305,7 @@ INSERT INTO `disease_symptoms` (`disease_id`, `symptom_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `doctors`
+-- Table structure for table `doctors`
 --
 
 CREATE TABLE `doctors` (
@@ -1118,7 +1319,7 @@ CREATE TABLE `doctors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `doctors`
+-- Dumping data for table `doctors`
 --
 
 INSERT INTO `doctors` (`doctor_id`, `user_id`, `specialty_id`, `clinic_id`, `biography`, `created_at`, `updated_at`) VALUES
@@ -1128,7 +1329,7 @@ INSERT INTO `doctors` (`doctor_id`, `user_id`, `specialty_id`, `clinic_id`, `bio
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `doctor_off_days`
+-- Table structure for table `doctor_off_days`
 --
 
 CREATE TABLE `doctor_off_days` (
@@ -1140,7 +1341,7 @@ CREATE TABLE `doctor_off_days` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `doctor_off_days`
+-- Dumping data for table `doctor_off_days`
 --
 
 INSERT INTO `doctor_off_days` (`off_day_id`, `doctor_id`, `off_date`, `reason`, `created_at`) VALUES
@@ -1150,7 +1351,7 @@ INSERT INTO `doctor_off_days` (`off_day_id`, `doctor_id`, `off_date`, `reason`, 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `doctor_schedules`
+-- Table structure for table `doctor_schedules`
 --
 
 CREATE TABLE `doctor_schedules` (
@@ -1166,7 +1367,7 @@ CREATE TABLE `doctor_schedules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `doctor_schedules`
+-- Dumping data for table `doctor_schedules`
 --
 
 INSERT INTO `doctor_schedules` (`schedule_id`, `doctor_id`, `clinic_id`, `day_of_week`, `start_time`, `end_time`, `is_available`, `created_at`, `updated_at`) VALUES
@@ -1186,7 +1387,7 @@ INSERT INTO `doctor_schedules` (`schedule_id`, `doctor_id`, `clinic_id`, `day_of
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `email_logs`
+-- Table structure for table `email_logs`
 --
 
 CREATE TABLE `email_logs` (
@@ -1199,18 +1400,19 @@ CREATE TABLE `email_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `email_logs`
+-- Dumping data for table `email_logs`
 --
 
 INSERT INTO `email_logs` (`id`, `recipient`, `subject`, `status`, `error_message`, `sent_at`) VALUES
 (1, 'admin@gmail.com', 'Xác nhận đơn hàng #1 - MediSync Hospital', 'success', 'Email sent successfully via SMTP', '2025-07-20 17:14:18'),
 (2, 'hoanhuy12@gmail.com', 'Đặt lại mật khẩu - QickMed', 'success', 'Email sent successfully via SMTP', '2025-07-21 06:23:11'),
-(3, 'dvtdang1101@gmail.com', 'Đặt lại mật khẩu - QickMed', 'success', 'Email sent successfully via SMTP', '2025-07-21 06:23:24');
+(3, 'dvtdang1101@gmail.com', 'Đặt lại mật khẩu - QickMed', 'success', 'Email sent successfully via SMTP', '2025-07-21 06:23:24'),
+(4, 'hoanhuy12@gmail.com', 'Xác nhận đơn hàng #2 - MediSync Hospital', 'success', 'Email sent successfully via SMTP', '2025-08-05 06:10:04');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `guest_users`
+-- Table structure for table `guest_users`
 --
 
 CREATE TABLE `guest_users` (
@@ -1223,7 +1425,7 @@ CREATE TABLE `guest_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `guest_users`
+-- Dumping data for table `guest_users`
 --
 
 INSERT INTO `guest_users` (`guest_id`, `full_name`, `phone`, `email`, `created_at`, `updated_at`) VALUES
@@ -1234,7 +1436,7 @@ INSERT INTO `guest_users` (`guest_id`, `full_name`, `phone`, `email`, `created_a
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `health_predictions`
+-- Table structure for table `health_predictions`
 --
 
 CREATE TABLE `health_predictions` (
@@ -1248,7 +1450,7 @@ CREATE TABLE `health_predictions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `health_predictions`
+-- Dumping data for table `health_predictions`
 --
 
 INSERT INTO `health_predictions` (`prediction_id`, `user_id`, `record_id`, `chat_id`, `prediction_date`, `confidence_score`, `details`) VALUES
@@ -1267,12 +1469,14 @@ INSERT INTO `health_predictions` (`prediction_id`, `user_id`, `record_id`, `chat
 (68, 4, 68, NULL, '2025-07-09 08:11:53', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}'),
 (69, 4, 69, NULL, '2025-07-11 16:50:24', 0.85, '{\"symptoms\": [], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}'),
 (70, 4, 70, NULL, '2025-07-12 10:56:49', 0.85, '{\"symptoms\": [], \"predicted_diseases\": [\"Huyết áp thấp\", \"Rối loạn nhịp tim\", \"Căng thẳng hoặc lo âu\"]}'),
-(71, 4, 71, NULL, '2025-07-15 10:45:11', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}');
+(71, 4, 71, NULL, '2025-07-15 10:45:11', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}'),
+(77, 4, 77, NULL, '2025-07-23 15:18:50', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}'),
+(78, 2, 78, NULL, '2025-08-05 05:59:54', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Mất nước hoặc thiếu dinh dưỡng\", \"Căng thẳng hoặc lo âu\", \"Huyết áp thấp\"]}');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `health_records`
+-- Table structure for table `health_records`
 --
 
 CREATE TABLE `health_records` (
@@ -1288,7 +1492,7 @@ CREATE TABLE `health_records` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `health_records`
+-- Dumping data for table `health_records`
 --
 
 INSERT INTO `health_records` (`record_id`, `user_id`, `record_date`, `weight`, `blood_pressure`, `sleep_hours`, `notes`, `created_at`, `updated_at`) VALUES
@@ -1362,12 +1566,19 @@ INSERT INTO `health_records` (`record_id`, `user_id`, `record_date`, `weight`, `
 (68, 4, '2025-07-09', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt', '2025-07-09 08:11:53', '2025-07-09 15:11:53'),
 (69, 4, '2025-07-11', NULL, NULL, NULL, 'Triệu chứng ghi nhận: ', '2025-07-11 16:50:24', '2025-07-11 23:50:24'),
 (70, 4, '2025-07-12', NULL, NULL, NULL, 'Triệu chứng ghi nhận: ', '2025-07-12 10:56:49', '2025-07-12 17:56:49'),
-(71, 4, '2025-07-15', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-15 10:45:11', '2025-07-15 17:45:11');
+(71, 4, '2025-07-15', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-15 10:45:11', '2025-07-15 17:45:11'),
+(72, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: ', '2025-07-23 14:39:10', '2025-07-23 21:39:10'),
+(73, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Chóng mặt', '2025-07-23 14:53:28', '2025-07-23 21:53:28'),
+(74, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-23 15:02:14', '2025-07-23 22:02:14'),
+(75, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu', '2025-07-23 15:11:17', '2025-07-23 22:11:17'),
+(76, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-23 15:13:11', '2025-07-23 22:13:11'),
+(77, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-23 15:18:50', '2025-07-23 22:18:50'),
+(78, 2, '2025-08-05', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-08-05 05:59:54', '2025-08-05 12:59:54');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `medical_categories`
+-- Table structure for table `medical_categories`
 --
 
 CREATE TABLE `medical_categories` (
@@ -1379,7 +1590,7 @@ CREATE TABLE `medical_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `medical_categories`
+-- Dumping data for table `medical_categories`
 --
 
 INSERT INTO `medical_categories` (`category_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
@@ -1392,7 +1603,7 @@ INSERT INTO `medical_categories` (`category_id`, `name`, `description`, `created
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `medical_records`
+-- Table structure for table `medical_records`
 --
 
 CREATE TABLE `medical_records` (
@@ -1405,7 +1616,7 @@ CREATE TABLE `medical_records` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `medical_records`
+-- Dumping data for table `medical_records`
 --
 
 INSERT INTO `medical_records` (`med_rec_id`, `appointment_id`, `note_date`, `diagnosis`, `recommendations`, `created_at`) VALUES
@@ -1416,7 +1627,7 @@ INSERT INTO `medical_records` (`med_rec_id`, `appointment_id`, `note_date`, `dia
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `medicines`
+-- Table structure for table `medicines`
 --
 
 CREATE TABLE `medicines` (
@@ -1433,7 +1644,7 @@ CREATE TABLE `medicines` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `medicines`
+-- Dumping data for table `medicines`
 --
 
 INSERT INTO `medicines` (`product_id`, `active_ingredient`, `dosage_form`, `unit`, `usage_instructions`, `medicine_type`, `side_effects`, `contraindications`, `created_at`, `updated_at`) VALUES
@@ -1447,7 +1658,7 @@ INSERT INTO `medicines` (`product_id`, `active_ingredient`, `dosage_form`, `unit
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `notifications`
+-- Table structure for table `notifications`
 --
 
 CREATE TABLE `notifications` (
@@ -1464,7 +1675,7 @@ CREATE TABLE `notifications` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `orders`
+-- Table structure for table `orders`
 --
 
 CREATE TABLE `orders` (
@@ -1483,16 +1694,17 @@ CREATE TABLE `orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `orders`
+-- Dumping data for table `orders`
 --
 
 INSERT INTO `orders` (`order_id`, `user_id`, `address_id`, `shipping_address`, `total`, `payment_method`, `payment_status`, `status`, `total_amount`, `order_note`, `order_date`, `updated_at`) VALUES
-(1, 1, NULL, 'Quản trị viên\n09777313131\n123 Đường Trần Hưng Đạo\nPhường Nguyễn Cư Trinh, Quận 1, TP.HCM', 20000, 'cod', 'pending', 'pending', 645000, '', '2025-07-20 17:14:14', '2025-07-21 00:14:14');
+(1, 1, NULL, 'Quản trị viên\n09777313131\n123 Đường Trần Hưng Đạo\nPhường Nguyễn Cư Trinh, Quận 1, TP.HCM', 20000, 'cod', 'pending', 'pending', 645000, '', '2025-07-20 17:14:14', '2025-07-21 00:14:14'),
+(2, 2, NULL, 'Hoàn Huy\n\n456 Đường Lê Lợi\nPhường Bến Nghé, Quận 1, TP.HCM', 20000, 'momo', 'pending', 'pending', 80000, '', '2025-08-05 06:09:59', '2025-08-05 13:09:59');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `order_items`
+-- Table structure for table `order_items`
 --
 
 CREATE TABLE `order_items` (
@@ -1504,17 +1716,18 @@ CREATE TABLE `order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `order_items`
+-- Dumping data for table `order_items`
 --
 
 INSERT INTO `order_items` (`item_id`, `order_id`, `product_id`, `quantity`, `unit_price`) VALUES
 (9, 1, 4, 1, 640000),
-(10, 1, 1, 1, 5000);
+(10, 1, 1, 1, 5000),
+(11, 2, 3, 2, 40000);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `package_features`
+-- Table structure for table `package_features`
 --
 
 CREATE TABLE `package_features` (
@@ -1527,7 +1740,7 @@ CREATE TABLE `package_features` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `package_features`
+-- Dumping data for table `package_features`
 --
 
 INSERT INTO `package_features` (`id`, `package_id`, `feature_name`, `description`, `display_order`, `created_at`) VALUES
@@ -1544,7 +1757,7 @@ INSERT INTO `package_features` (`id`, `package_id`, `feature_name`, `description
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `password_reset_tokens`
+-- Table structure for table `password_reset_tokens`
 --
 
 CREATE TABLE `password_reset_tokens` (
@@ -1560,7 +1773,7 @@ CREATE TABLE `password_reset_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `password_reset_tokens`
+-- Dumping data for table `password_reset_tokens`
 --
 
 INSERT INTO `password_reset_tokens` (`id`, `user_id`, `email`, `token`, `created_at`, `expires_at`, `used`, `ip_address`, `user_agent`) VALUES
@@ -1570,7 +1783,7 @@ INSERT INTO `password_reset_tokens` (`id`, `user_id`, `email`, `token`, `created
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `payments`
+-- Table structure for table `payments`
 --
 
 CREATE TABLE `payments` (
@@ -1586,7 +1799,7 @@ CREATE TABLE `payments` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `prediction_diseases`
+-- Table structure for table `prediction_diseases`
 --
 
 CREATE TABLE `prediction_diseases` (
@@ -1600,7 +1813,7 @@ CREATE TABLE `prediction_diseases` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `prediction_diseases`
+-- Dumping data for table `prediction_diseases`
 --
 
 INSERT INTO `prediction_diseases` (`id`, `prediction_id`, `disease_id`, `disease_name_raw`, `confidence`, `disease_summary`, `disease_care`) VALUES
@@ -1649,12 +1862,18 @@ INSERT INTO `prediction_diseases` (`id`, `prediction_id`, `disease_id`, `disease
 (205, 70, -1, 'Căng thẳng hoặc lo âu', 0.7, 'Áp lực cuộc sống có thể khiến bạn cảm thấy không thoải mái trong cơ thể.', 'Bạn có thể thử các kỹ thuật thư giãn như thiền hoặc yoga để giảm bớt căng thẳng.'),
 (206, 71, -1, 'Căng thẳng hoặc lo âu', 0.9, 'Đôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác đau đầu và buồn nôn.', 'Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.'),
 (207, 71, -1, 'Mất nước hoặc thiếu dinh dưỡng', 0.85, 'Nếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy chóng mặt hoặc mệt mỏi.', 'Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.'),
-(208, 71, -1, 'Huyết áp thấp', 0.75, 'Tình trạng này có thể gây cảm giác chóng mặt nhẹ khi bạn thay đổi tư thế đột ngột.', 'Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.');
+(208, 71, -1, 'Huyết áp thấp', 0.75, 'Tình trạng này có thể gây cảm giác chóng mặt nhẹ khi bạn thay đổi tư thế đột ngột.', 'Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.'),
+(224, 77, -1, 'Căng thẳng hoặc lo âu', 0.9, 'Đôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác đau đầu và buồn nôn.', 'Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.'),
+(225, 77, -1, 'Mất nước hoặc thiếu dinh dưỡng', 0.85, 'Nếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy chóng mặt hoặc mệt mỏi.', 'Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.'),
+(226, 77, -1, 'Huyết áp thấp', 0.8, 'Tình trạng này có thể gây cảm giác chóng mặt nhẹ khi bạn thay đổi tư thế đột ngột.', 'Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.'),
+(227, 78, -1, 'Mất nước hoặc thiếu dinh dưỡng', 0.85, 'Tình trạng cơ thể không được cung cấp đủ nước hoặc dinh dưỡng có thể gây ra cảm giác chóng mặt và mệt mỏi.', 'Uống đủ nước và ăn uống đầy đủ sẽ giúp cải thiện.'),
+(228, 78, -1, 'Căng thẳng hoặc lo âu', 0.9, 'Áp lực từ công việc hoặc cuộc sống có thể gây ra cảm giác đau đầu và buồn nôn.', 'Nghỉ ngơi và thư giãn là cách tốt để giảm bớt triệu chứng.'),
+(229, 78, -1, 'Huyết áp thấp', 0.6, 'Huyết áp thấp có thể dẫn đến cảm giác chóng mặt khi thay đổi tư thế.', 'Ngồi nghỉ và uống nước từ từ có thể giúp bạn cảm thấy khá hơn.');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `prescriptions`
+-- Table structure for table `prescriptions`
 --
 
 CREATE TABLE `prescriptions` (
@@ -1668,7 +1887,7 @@ CREATE TABLE `prescriptions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `prescriptions`
+-- Dumping data for table `prescriptions`
 --
 
 INSERT INTO `prescriptions` (`prescription_id`, `appointment_id`, `prescribed_date`, `medications`, `notes`, `created_at`, `updated_at`) VALUES
@@ -1679,7 +1898,7 @@ INSERT INTO `prescriptions` (`prescription_id`, `appointment_id`, `prescribed_da
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `prescription_products`
+-- Table structure for table `prescription_products`
 --
 
 CREATE TABLE `prescription_products` (
@@ -1694,7 +1913,7 @@ CREATE TABLE `prescription_products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `prescription_products`
+-- Dumping data for table `prescription_products`
 --
 
 INSERT INTO `prescription_products` (`id`, `prescription_id`, `product_id`, `quantity`, `dosage`, `usage_time`, `created_at`, `updated_at`) VALUES
@@ -1708,7 +1927,7 @@ INSERT INTO `prescription_products` (`id`, `prescription_id`, `product_id`, `qua
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `products`
+-- Table structure for table `products`
 --
 
 CREATE TABLE `products` (
@@ -1727,7 +1946,7 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `products`
+-- Dumping data for table `products`
 --
 
 INSERT INTO `products` (`product_id`, `category_id`, `name`, `description`, `price`, `stock`, `is_medicine`, `image_url`, `created_at`, `updated_at`, `is_active`, `discount_amount`) VALUES
@@ -1746,7 +1965,7 @@ INSERT INTO `products` (`product_id`, `category_id`, `name`, `description`, `pri
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `product_categories`
+-- Table structure for table `product_categories`
 --
 
 CREATE TABLE `product_categories` (
@@ -1758,7 +1977,7 @@ CREATE TABLE `product_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `product_categories`
+-- Dumping data for table `product_categories`
 --
 
 INSERT INTO `product_categories` (`category_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
@@ -1774,7 +1993,7 @@ INSERT INTO `product_categories` (`category_id`, `name`, `description`, `created
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `product_reviews`
+-- Table structure for table `product_reviews`
 --
 
 CREATE TABLE `product_reviews` (
@@ -1788,7 +2007,7 @@ CREATE TABLE `product_reviews` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `product_reviews`
+-- Dumping data for table `product_reviews`
 --
 
 INSERT INTO `product_reviews` (`review_id`, `product_id`, `user_id`, `rating`, `comment`, `created_at`, `updated_at`) VALUES
@@ -1800,7 +2019,7 @@ INSERT INTO `product_reviews` (`review_id`, `product_id`, `user_id`, `rating`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `roles`
+-- Table structure for table `roles`
 --
 
 CREATE TABLE `roles` (
@@ -1810,7 +2029,7 @@ CREATE TABLE `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `roles`
+-- Dumping data for table `roles`
 --
 
 INSERT INTO `roles` (`role_id`, `role_name`, `description`) VALUES
@@ -1822,7 +2041,7 @@ INSERT INTO `roles` (`role_id`, `role_name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `services`
+-- Table structure for table `services`
 --
 
 CREATE TABLE `services` (
@@ -1845,7 +2064,7 @@ CREATE TABLE `services` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `services`
+-- Dumping data for table `services`
 --
 
 INSERT INTO `services` (`id`, `category_id`, `name`, `slug`, `short_description`, `full_description`, `icon`, `image`, `price_from`, `price_to`, `is_featured`, `is_emergency`, `is_active`, `display_order`, `created_at`, `updated_at`) VALUES
@@ -1857,7 +2076,7 @@ INSERT INTO `services` (`id`, `category_id`, `name`, `slug`, `short_description`
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `service_categories`
+-- Table structure for table `service_categories`
 --
 
 CREATE TABLE `service_categories` (
@@ -1873,7 +2092,7 @@ CREATE TABLE `service_categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `service_categories`
+-- Dumping data for table `service_categories`
 --
 
 INSERT INTO `service_categories` (`id`, `name`, `slug`, `icon`, `description`, `display_order`, `is_active`, `created_at`, `updated_at`) VALUES
@@ -1887,7 +2106,7 @@ INSERT INTO `service_categories` (`id`, `name`, `slug`, `icon`, `description`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `service_features`
+-- Table structure for table `service_features`
 --
 
 CREATE TABLE `service_features` (
@@ -1901,7 +2120,7 @@ CREATE TABLE `service_features` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `service_features`
+-- Dumping data for table `service_features`
 --
 
 INSERT INTO `service_features` (`id`, `service_id`, `feature_name`, `description`, `icon`, `display_order`, `created_at`) VALUES
@@ -1917,7 +2136,7 @@ INSERT INTO `service_features` (`id`, `service_id`, `feature_name`, `description
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `service_packages`
+-- Table structure for table `service_packages`
 --
 
 CREATE TABLE `service_packages` (
@@ -1935,7 +2154,7 @@ CREATE TABLE `service_packages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `service_packages`
+-- Dumping data for table `service_packages`
 --
 
 INSERT INTO `service_packages` (`id`, `name`, `slug`, `description`, `price`, `duration`, `is_featured`, `is_active`, `display_order`, `created_at`, `updated_at`) VALUES
@@ -1946,7 +2165,7 @@ INSERT INTO `service_packages` (`id`, `name`, `slug`, `description`, `price`, `d
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `settings`
+-- Table structure for table `settings`
 --
 
 CREATE TABLE `settings` (
@@ -1960,7 +2179,7 @@ CREATE TABLE `settings` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `specialties`
+-- Table structure for table `specialties`
 --
 
 CREATE TABLE `specialties` (
@@ -1972,7 +2191,7 @@ CREATE TABLE `specialties` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `specialties`
+-- Dumping data for table `specialties`
 --
 
 INSERT INTO `specialties` (`specialty_id`, `name`, `description`, `created_at`, `updated_at`) VALUES
@@ -1988,7 +2207,7 @@ INSERT INTO `specialties` (`specialty_id`, `name`, `description`, `created_at`, 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `symptoms`
+-- Table structure for table `symptoms`
 --
 
 CREATE TABLE `symptoms` (
@@ -2002,7 +2221,7 @@ CREATE TABLE `symptoms` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `symptoms`
+-- Dumping data for table `symptoms`
 --
 
 INSERT INTO `symptoms` (`symptom_id`, `name`, `alias`, `description`, `followup_question`, `created_at`, `updated_at`) VALUES
@@ -2050,7 +2269,7 @@ INSERT INTO `symptoms` (`symptom_id`, `name`, `alias`, `description`, `followup_
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -2065,7 +2284,7 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role_id`, `created_at`, `updated_at`, `status`) VALUES
@@ -2078,7 +2297,7 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role_id`, `cre
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `users_info`
+-- Table structure for table `users_info`
 --
 
 CREATE TABLE `users_info` (
@@ -2094,7 +2313,7 @@ CREATE TABLE `users_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `users_info`
+-- Dumping data for table `users_info`
 --
 
 INSERT INTO `users_info` (`id`, `user_id`, `full_name`, `gender`, `date_of_birth`, `profile_picture`, `created_at`, `updated_at`, `phone`) VALUES
@@ -2107,7 +2326,7 @@ INSERT INTO `users_info` (`id`, `user_id`, `full_name`, `gender`, `date_of_birth
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_addresses`
+-- Table structure for table `user_addresses`
 --
 
 CREATE TABLE `user_addresses` (
@@ -2125,7 +2344,7 @@ CREATE TABLE `user_addresses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `user_addresses`
+-- Dumping data for table `user_addresses`
 --
 
 INSERT INTO `user_addresses` (`address_id`, `user_id`, `address_line`, `ward`, `district`, `city`, `postal_code`, `country`, `is_default`, `created_at`, `updated_at`) VALUES
@@ -2138,7 +2357,7 @@ INSERT INTO `user_addresses` (`address_id`, `user_id`, `address_line`, `ward`, `
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_notifications`
+-- Table structure for table `user_notifications`
 --
 
 CREATE TABLE `user_notifications` (
@@ -2152,7 +2371,7 @@ CREATE TABLE `user_notifications` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_symptom_history`
+-- Table structure for table `user_symptom_history`
 --
 
 CREATE TABLE `user_symptom_history` (
@@ -2164,7 +2383,7 @@ CREATE TABLE `user_symptom_history` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `user_symptom_history`
+-- Dumping data for table `user_symptom_history`
 --
 
 INSERT INTO `user_symptom_history` (`id`, `user_id`, `symptom_id`, `record_date`, `notes`) VALUES
@@ -2192,14 +2411,20 @@ INSERT INTO `user_symptom_history` (`id`, `user_id`, `symptom_id`, `record_date`
 (166, 4, 1, '2025-07-12', 'Người dùng muốn khám về vấn đề tim mạch.'),
 (167, 4, 1, '2025-07-15', 'Bệnh nhân báo cáo bị đau đầu kéo dài từ 5-10 phút khi đứng lên hoặc ngồi xuống. Từ sáng đến giờ, bệnh nhân cảm thấy đau đầu kiểu nhói ở thái dương, kèm theo triệu chứng chóng mặt và buồn nôn nhẹ.'),
 (168, 4, 19, '2025-07-15', 'Người dùng cảm thấy chóng mặt tự nhiên, đặc biệt khi chưa ăn gì và có thể kéo dài không xác định.'),
-(169, 4, 3, '2025-07-15', 'Người dùng có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.');
+(169, 4, 3, '2025-07-15', 'Người dùng có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.'),
+(186, 4, 1, '2025-07-23', 'Người dùng bị đau đầu kiểu nhói ở thái dương từ sáng đến giờ và cơn đau kéo dài khoảng 5-10 phút.'),
+(187, 4, 19, '2025-07-23', 'Người dùng cảm thấy chóng mặt tự nhiên và chưa ăn gì từ sáng.'),
+(188, 4, 3, '2025-07-23', 'Người dùng có cảm giác buồn nôn nhẹ.'),
+(189, 2, 1, '2025-08-05', 'Người dùng bị đau đầu kéo dài khoảng 5-10 phút sau khi ngồi dậy.'),
+(190, 2, 19, '2025-08-05', 'Người dùng cảm thấy chóng mặt tự nhiên, xảy ra khi chưa ăn gì vào buổi sáng.'),
+(191, 2, 3, '2025-08-05', 'Người dùng có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.');
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `appointments`
+-- Indexes for table `appointments`
 --
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`appointment_id`),
@@ -2209,21 +2434,21 @@ ALTER TABLE `appointments`
   ADD KEY `clinic_id` (`clinic_id`);
 
 --
--- Chỉ mục cho bảng `blog_authors`
+-- Indexes for table `blog_authors`
 --
 ALTER TABLE `blog_authors`
   ADD PRIMARY KEY (`author_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `blog_categories`
+-- Indexes for table `blog_categories`
 --
 ALTER TABLE `blog_categories`
   ADD PRIMARY KEY (`category_id`),
   ADD UNIQUE KEY `slug` (`slug`);
 
 --
--- Chỉ mục cho bảng `blog_posts`
+-- Indexes for table `blog_posts`
 --
 ALTER TABLE `blog_posts`
   ADD PRIMARY KEY (`post_id`),
@@ -2232,20 +2457,20 @@ ALTER TABLE `blog_posts`
   ADD KEY `category_id` (`category_id`);
 
 --
--- Chỉ mục cho bảng `blog_tags`
+-- Indexes for table `blog_tags`
 --
 ALTER TABLE `blog_tags`
   ADD PRIMARY KEY (`tag_id`),
   ADD UNIQUE KEY `slug` (`slug`);
 
 --
--- Chỉ mục cho bảng `chatbot_knowledge_base`
+-- Indexes for table `chatbot_knowledge_base`
 --
 ALTER TABLE `chatbot_knowledge_base`
   ADD PRIMARY KEY (`kb_id`);
 
 --
--- Chỉ mục cho bảng `chat_logs`
+-- Indexes for table `chat_logs`
 --
 ALTER TABLE `chat_logs`
   ADD PRIMARY KEY (`chat_id`),
@@ -2253,20 +2478,20 @@ ALTER TABLE `chat_logs`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `clinics`
+-- Indexes for table `clinics`
 --
 ALTER TABLE `clinics`
   ADD PRIMARY KEY (`clinic_id`);
 
 --
--- Chỉ mục cho bảng `clinic_specialties`
+-- Indexes for table `clinic_specialties`
 --
 ALTER TABLE `clinic_specialties`
   ADD PRIMARY KEY (`clinic_id`,`specialty_id`),
   ADD KEY `specialty_id` (`specialty_id`);
 
 --
--- Chỉ mục cho bảng `diseases`
+-- Indexes for table `diseases`
 --
 ALTER TABLE `diseases`
   ADD PRIMARY KEY (`disease_id`),
@@ -2274,14 +2499,14 @@ ALTER TABLE `diseases`
   ADD KEY `category_id` (`category_id`);
 
 --
--- Chỉ mục cho bảng `disease_symptoms`
+-- Indexes for table `disease_symptoms`
 --
 ALTER TABLE `disease_symptoms`
   ADD PRIMARY KEY (`disease_id`,`symptom_id`),
   ADD KEY `symptom_id` (`symptom_id`);
 
 --
--- Chỉ mục cho bảng `doctors`
+-- Indexes for table `doctors`
 --
 ALTER TABLE `doctors`
   ADD PRIMARY KEY (`doctor_id`),
@@ -2290,33 +2515,33 @@ ALTER TABLE `doctors`
   ADD KEY `clinic_id` (`clinic_id`);
 
 --
--- Chỉ mục cho bảng `doctor_off_days`
+-- Indexes for table `doctor_off_days`
 --
 ALTER TABLE `doctor_off_days`
   ADD PRIMARY KEY (`off_day_id`),
   ADD KEY `doctor_id` (`doctor_id`);
 
 --
--- Chỉ mục cho bảng `doctor_schedules`
+-- Indexes for table `doctor_schedules`
 --
 ALTER TABLE `doctor_schedules`
   ADD PRIMARY KEY (`schedule_id`),
   ADD KEY `doctor_id` (`doctor_id`);
 
 --
--- Chỉ mục cho bảng `email_logs`
+-- Indexes for table `email_logs`
 --
 ALTER TABLE `email_logs`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `guest_users`
+-- Indexes for table `guest_users`
 --
 ALTER TABLE `guest_users`
   ADD PRIMARY KEY (`guest_id`);
 
 --
--- Chỉ mục cho bảng `health_predictions`
+-- Indexes for table `health_predictions`
 --
 ALTER TABLE `health_predictions`
   ADD PRIMARY KEY (`prediction_id`),
@@ -2325,40 +2550,40 @@ ALTER TABLE `health_predictions`
   ADD KEY `chat_id` (`chat_id`);
 
 --
--- Chỉ mục cho bảng `health_records`
+-- Indexes for table `health_records`
 --
 ALTER TABLE `health_records`
   ADD PRIMARY KEY (`record_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `medical_categories`
+-- Indexes for table `medical_categories`
 --
 ALTER TABLE `medical_categories`
   ADD PRIMARY KEY (`category_id`);
 
 --
--- Chỉ mục cho bảng `medical_records`
+-- Indexes for table `medical_records`
 --
 ALTER TABLE `medical_records`
   ADD PRIMARY KEY (`med_rec_id`),
   ADD KEY `appointment_id` (`appointment_id`);
 
 --
--- Chỉ mục cho bảng `medicines`
+-- Indexes for table `medicines`
 --
 ALTER TABLE `medicines`
   ADD PRIMARY KEY (`product_id`);
 
 --
--- Chỉ mục cho bảng `notifications`
+-- Indexes for table `notifications`
 --
 ALTER TABLE `notifications`
   ADD PRIMARY KEY (`notification_id`),
   ADD KEY `target_role_id` (`target_role_id`);
 
 --
--- Chỉ mục cho bảng `orders`
+-- Indexes for table `orders`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
@@ -2366,7 +2591,7 @@ ALTER TABLE `orders`
   ADD KEY `address_id` (`address_id`);
 
 --
--- Chỉ mục cho bảng `order_items`
+-- Indexes for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD PRIMARY KEY (`item_id`),
@@ -2374,14 +2599,14 @@ ALTER TABLE `order_items`
   ADD KEY `product_id` (`product_id`);
 
 --
--- Chỉ mục cho bảng `package_features`
+-- Indexes for table `package_features`
 --
 ALTER TABLE `package_features`
   ADD PRIMARY KEY (`id`),
   ADD KEY `package_id` (`package_id`);
 
 --
--- Chỉ mục cho bảng `password_reset_tokens`
+-- Indexes for table `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`id`),
@@ -2391,7 +2616,7 @@ ALTER TABLE `password_reset_tokens`
   ADD KEY `expires_at` (`expires_at`);
 
 --
--- Chỉ mục cho bảng `payments`
+-- Indexes for table `payments`
 --
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`payment_id`),
@@ -2399,7 +2624,7 @@ ALTER TABLE `payments`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `prediction_diseases`
+-- Indexes for table `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
   ADD PRIMARY KEY (`id`),
@@ -2407,14 +2632,14 @@ ALTER TABLE `prediction_diseases`
   ADD KEY `disease_id` (`disease_id`);
 
 --
--- Chỉ mục cho bảng `prescriptions`
+-- Indexes for table `prescriptions`
 --
 ALTER TABLE `prescriptions`
   ADD PRIMARY KEY (`prescription_id`),
   ADD KEY `appointment_id` (`appointment_id`);
 
 --
--- Chỉ mục cho bảng `prescription_products`
+-- Indexes for table `prescription_products`
 --
 ALTER TABLE `prescription_products`
   ADD PRIMARY KEY (`id`),
@@ -2422,20 +2647,20 @@ ALTER TABLE `prescription_products`
   ADD KEY `product_id` (`product_id`);
 
 --
--- Chỉ mục cho bảng `products`
+-- Indexes for table `products`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`product_id`),
   ADD KEY `category_id` (`category_id`);
 
 --
--- Chỉ mục cho bảng `product_categories`
+-- Indexes for table `product_categories`
 --
 ALTER TABLE `product_categories`
   ADD PRIMARY KEY (`category_id`);
 
 --
--- Chỉ mục cho bảng `product_reviews`
+-- Indexes for table `product_reviews`
 --
 ALTER TABLE `product_reviews`
   ADD PRIMARY KEY (`review_id`),
@@ -2443,14 +2668,14 @@ ALTER TABLE `product_reviews`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `roles`
+-- Indexes for table `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`role_id`),
   ADD UNIQUE KEY `role_name` (`role_name`);
 
 --
--- Chỉ mục cho bảng `services`
+-- Indexes for table `services`
 --
 ALTER TABLE `services`
   ADD PRIMARY KEY (`id`),
@@ -2458,48 +2683,48 @@ ALTER TABLE `services`
   ADD KEY `category_id` (`category_id`);
 
 --
--- Chỉ mục cho bảng `service_categories`
+-- Indexes for table `service_categories`
 --
 ALTER TABLE `service_categories`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `slug` (`slug`);
 
 --
--- Chỉ mục cho bảng `service_features`
+-- Indexes for table `service_features`
 --
 ALTER TABLE `service_features`
   ADD PRIMARY KEY (`id`),
   ADD KEY `service_id` (`service_id`);
 
 --
--- Chỉ mục cho bảng `service_packages`
+-- Indexes for table `service_packages`
 --
 ALTER TABLE `service_packages`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `slug` (`slug`);
 
 --
--- Chỉ mục cho bảng `settings`
+-- Indexes for table `settings`
 --
 ALTER TABLE `settings`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `setting_key` (`setting_key`);
 
 --
--- Chỉ mục cho bảng `specialties`
+-- Indexes for table `specialties`
 --
 ALTER TABLE `specialties`
   ADD PRIMARY KEY (`specialty_id`);
 
 --
--- Chỉ mục cho bảng `symptoms`
+-- Indexes for table `symptoms`
 --
 ALTER TABLE `symptoms`
   ADD PRIMARY KEY (`symptom_id`),
   ADD UNIQUE KEY `unique_symptom_name` (`name`);
 
 --
--- Chỉ mục cho bảng `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`),
@@ -2508,21 +2733,21 @@ ALTER TABLE `users`
   ADD KEY `role_id` (`role_id`);
 
 --
--- Chỉ mục cho bảng `users_info`
+-- Indexes for table `users_info`
 --
 ALTER TABLE `users_info`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `user_addresses`
+-- Indexes for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
   ADD PRIMARY KEY (`address_id`),
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `user_notifications`
+-- Indexes for table `user_notifications`
 --
 ALTER TABLE `user_notifications`
   ADD PRIMARY KEY (`id`),
@@ -2530,7 +2755,7 @@ ALTER TABLE `user_notifications`
   ADD KEY `user_id` (`user_id`);
 
 --
--- Chỉ mục cho bảng `user_symptom_history`
+-- Indexes for table `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
   ADD PRIMARY KEY (`id`),
@@ -2538,273 +2763,273 @@ ALTER TABLE `user_symptom_history`
   ADD KEY `symptom_id` (`symptom_id`);
 
 --
--- AUTO_INCREMENT cho các bảng đã đổ
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `appointments`
+-- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `appointment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT cho bảng `blog_authors`
+-- AUTO_INCREMENT for table `blog_authors`
 --
 ALTER TABLE `blog_authors`
   MODIFY `author_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `blog_categories`
+-- AUTO_INCREMENT for table `blog_categories`
 --
 ALTER TABLE `blog_categories`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT cho bảng `blog_posts`
+-- AUTO_INCREMENT for table `blog_posts`
 --
 ALTER TABLE `blog_posts`
   MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `blog_tags`
+-- AUTO_INCREMENT for table `blog_tags`
 --
 ALTER TABLE `blog_tags`
   MODIFY `tag_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `chatbot_knowledge_base`
+-- AUTO_INCREMENT for table `chatbot_knowledge_base`
 --
 ALTER TABLE `chatbot_knowledge_base`
   MODIFY `kb_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
--- AUTO_INCREMENT cho bảng `chat_logs`
+-- AUTO_INCREMENT for table `chat_logs`
 --
 ALTER TABLE `chat_logs`
-  MODIFY `chat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1745;
+  MODIFY `chat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1946;
 
 --
--- AUTO_INCREMENT cho bảng `clinics`
+-- AUTO_INCREMENT for table `clinics`
 --
 ALTER TABLE `clinics`
   MODIFY `clinic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `diseases`
+-- AUTO_INCREMENT for table `diseases`
 --
 ALTER TABLE `diseases`
   MODIFY `disease_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
--- AUTO_INCREMENT cho bảng `doctors`
+-- AUTO_INCREMENT for table `doctors`
 --
 ALTER TABLE `doctors`
   MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `doctor_off_days`
+-- AUTO_INCREMENT for table `doctor_off_days`
 --
 ALTER TABLE `doctor_off_days`
   MODIFY `off_day_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `doctor_schedules`
+-- AUTO_INCREMENT for table `doctor_schedules`
 --
 ALTER TABLE `doctor_schedules`
   MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
--- AUTO_INCREMENT cho bảng `email_logs`
+-- AUTO_INCREMENT for table `email_logs`
 --
 ALTER TABLE `email_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT cho bảng `guest_users`
+-- AUTO_INCREMENT for table `guest_users`
 --
 ALTER TABLE `guest_users`
   MODIFY `guest_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `health_predictions`
+-- AUTO_INCREMENT for table `health_predictions`
 --
 ALTER TABLE `health_predictions`
-  MODIFY `prediction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `prediction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
--- AUTO_INCREMENT cho bảng `health_records`
+-- AUTO_INCREMENT for table `health_records`
 --
 ALTER TABLE `health_records`
-  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
--- AUTO_INCREMENT cho bảng `medical_categories`
+-- AUTO_INCREMENT for table `medical_categories`
 --
 ALTER TABLE `medical_categories`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `medical_records`
+-- AUTO_INCREMENT for table `medical_records`
 --
 ALTER TABLE `medical_records`
   MODIFY `med_rec_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `notifications`
+-- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
   MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `orders`
+-- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `order_items`
+-- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT cho bảng `package_features`
+-- AUTO_INCREMENT for table `package_features`
 --
 ALTER TABLE `package_features`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT cho bảng `password_reset_tokens`
+-- AUTO_INCREMENT for table `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT cho bảng `payments`
+-- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
   MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `prediction_diseases`
+-- AUTO_INCREMENT for table `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=209;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=230;
 
 --
--- AUTO_INCREMENT cho bảng `prescriptions`
+-- AUTO_INCREMENT for table `prescriptions`
 --
 ALTER TABLE `prescriptions`
   MODIFY `prescription_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `prescription_products`
+-- AUTO_INCREMENT for table `prescription_products`
 --
 ALTER TABLE `prescription_products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT cho bảng `products`
+-- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
   MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT cho bảng `product_categories`
+-- AUTO_INCREMENT for table `product_categories`
 --
 ALTER TABLE `product_categories`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT cho bảng `product_reviews`
+-- AUTO_INCREMENT for table `product_reviews`
 --
 ALTER TABLE `product_reviews`
   MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT cho bảng `roles`
+-- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
   MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT cho bảng `services`
+-- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT cho bảng `service_categories`
+-- AUTO_INCREMENT for table `service_categories`
 --
 ALTER TABLE `service_categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT cho bảng `service_features`
+-- AUTO_INCREMENT for table `service_features`
 --
 ALTER TABLE `service_features`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT cho bảng `service_packages`
+-- AUTO_INCREMENT for table `service_packages`
 --
 ALTER TABLE `service_packages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT cho bảng `settings`
+-- AUTO_INCREMENT for table `settings`
 --
 ALTER TABLE `settings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `specialties`
+-- AUTO_INCREMENT for table `specialties`
 --
 ALTER TABLE `specialties`
   MODIFY `specialty_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT cho bảng `symptoms`
+-- AUTO_INCREMENT for table `symptoms`
 --
 ALTER TABLE `symptoms`
   MODIFY `symptom_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
--- AUTO_INCREMENT cho bảng `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT cho bảng `users_info`
+-- AUTO_INCREMENT for table `users_info`
 --
 ALTER TABLE `users_info`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `user_addresses`
+-- AUTO_INCREMENT for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
   MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT cho bảng `user_notifications`
+-- AUTO_INCREMENT for table `user_notifications`
 --
 ALTER TABLE `user_notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `user_symptom_history`
+-- AUTO_INCREMENT for table `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=170;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=192;
 
 --
--- Các ràng buộc cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Các ràng buộc cho bảng `appointments`
+-- Constraints for table `appointments`
 --
 ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
@@ -2813,47 +3038,47 @@ ALTER TABLE `appointments`
   ADD CONSTRAINT `appointments_ibfk_4` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`);
 
 --
--- Các ràng buộc cho bảng `blog_authors`
+-- Constraints for table `blog_authors`
 --
 ALTER TABLE `blog_authors`
   ADD CONSTRAINT `blog_authors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `blog_posts`
+-- Constraints for table `blog_posts`
 --
 ALTER TABLE `blog_posts`
   ADD CONSTRAINT `blog_posts_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `blog_authors` (`author_id`) ON DELETE SET NULL,
   ADD CONSTRAINT `blog_posts_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `blog_categories` (`category_id`) ON DELETE SET NULL;
 
 --
--- Các ràng buộc cho bảng `chat_logs`
+-- Constraints for table `chat_logs`
 --
 ALTER TABLE `chat_logs`
   ADD CONSTRAINT `chat_logs_ibfk_1` FOREIGN KEY (`guest_id`) REFERENCES `guest_users` (`guest_id`),
   ADD CONSTRAINT `chat_logs_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `clinic_specialties`
+-- Constraints for table `clinic_specialties`
 --
 ALTER TABLE `clinic_specialties`
   ADD CONSTRAINT `clinic_specialties_ibfk_1` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `clinic_specialties_ibfk_2` FOREIGN KEY (`specialty_id`) REFERENCES `specialties` (`specialty_id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `diseases`
+-- Constraints for table `diseases`
 --
 ALTER TABLE `diseases`
   ADD CONSTRAINT `diseases_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `medical_categories` (`category_id`);
 
 --
--- Các ràng buộc cho bảng `disease_symptoms`
+-- Constraints for table `disease_symptoms`
 --
 ALTER TABLE `disease_symptoms`
   ADD CONSTRAINT `disease_symptoms_ibfk_1` FOREIGN KEY (`disease_id`) REFERENCES `diseases` (`disease_id`),
   ADD CONSTRAINT `disease_symptoms_ibfk_2` FOREIGN KEY (`symptom_id`) REFERENCES `symptoms` (`symptom_id`);
 
 --
--- Các ràng buộc cho bảng `doctors`
+-- Constraints for table `doctors`
 --
 ALTER TABLE `doctors`
   ADD CONSTRAINT `doctors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
@@ -2861,19 +3086,19 @@ ALTER TABLE `doctors`
   ADD CONSTRAINT `doctors_ibfk_3` FOREIGN KEY (`clinic_id`) REFERENCES `clinics` (`clinic_id`);
 
 --
--- Các ràng buộc cho bảng `doctor_off_days`
+-- Constraints for table `doctor_off_days`
 --
 ALTER TABLE `doctor_off_days`
   ADD CONSTRAINT `fk_offday_doctor` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `doctor_schedules`
+-- Constraints for table `doctor_schedules`
 --
 ALTER TABLE `doctor_schedules`
   ADD CONSTRAINT `doctor_schedules_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `doctors` (`doctor_id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `health_predictions`
+-- Constraints for table `health_predictions`
 --
 ALTER TABLE `health_predictions`
   ADD CONSTRAINT `health_predictions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
@@ -2881,135 +3106,135 @@ ALTER TABLE `health_predictions`
   ADD CONSTRAINT `health_predictions_ibfk_3` FOREIGN KEY (`chat_id`) REFERENCES `chat_logs` (`chat_id`);
 
 --
--- Các ràng buộc cho bảng `health_records`
+-- Constraints for table `health_records`
 --
 ALTER TABLE `health_records`
   ADD CONSTRAINT `health_records_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `medical_records`
+-- Constraints for table `medical_records`
 --
 ALTER TABLE `medical_records`
   ADD CONSTRAINT `medical_records_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`);
 
 --
--- Các ràng buộc cho bảng `medicines`
+-- Constraints for table `medicines`
 --
 ALTER TABLE `medicines`
   ADD CONSTRAINT `fk_medicines_products` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `medicines_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `notifications`
+-- Constraints for table `notifications`
 --
 ALTER TABLE `notifications`
   ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`target_role_id`) REFERENCES `roles` (`role_id`);
 
 --
--- Các ràng buộc cho bảng `orders`
+-- Constraints for table `orders`
 --
 ALTER TABLE `orders`
   ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `user_addresses` (`address_id`);
 
 --
--- Các ràng buộc cho bảng `order_items`
+-- Constraints for table `order_items`
 --
 ALTER TABLE `order_items`
   ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 
 --
--- Các ràng buộc cho bảng `package_features`
+-- Constraints for table `package_features`
 --
 ALTER TABLE `package_features`
   ADD CONSTRAINT `package_features_ibfk_1` FOREIGN KEY (`package_id`) REFERENCES `service_packages` (`id`);
 
 --
--- Các ràng buộc cho bảng `password_reset_tokens`
+-- Constraints for table `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
   ADD CONSTRAINT `password_reset_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `payments`
+-- Constraints for table `payments`
 --
 ALTER TABLE `payments`
   ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`),
   ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `prediction_diseases`
+-- Constraints for table `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
   ADD CONSTRAINT `prediction_diseases_ibfk_1` FOREIGN KEY (`prediction_id`) REFERENCES `health_predictions` (`prediction_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `prediction_diseases_ibfk_2` FOREIGN KEY (`disease_id`) REFERENCES `diseases` (`disease_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `prescriptions`
+-- Constraints for table `prescriptions`
 --
 ALTER TABLE `prescriptions`
   ADD CONSTRAINT `prescriptions_ibfk_1` FOREIGN KEY (`appointment_id`) REFERENCES `appointments` (`appointment_id`);
 
 --
--- Các ràng buộc cho bảng `prescription_products`
+-- Constraints for table `prescription_products`
 --
 ALTER TABLE `prescription_products`
   ADD CONSTRAINT `prescription_products_ibfk_1` FOREIGN KEY (`prescription_id`) REFERENCES `prescriptions` (`prescription_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `prescription_products_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `products`
+-- Constraints for table `products`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `product_categories` (`category_id`);
 
 --
--- Các ràng buộc cho bảng `product_reviews`
+-- Constraints for table `product_reviews`
 --
 ALTER TABLE `product_reviews`
   ADD CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
   ADD CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `services`
+-- Constraints for table `services`
 --
 ALTER TABLE `services`
   ADD CONSTRAINT `services_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `service_categories` (`id`);
 
 --
--- Các ràng buộc cho bảng `service_features`
+-- Constraints for table `service_features`
 --
 ALTER TABLE `service_features`
   ADD CONSTRAINT `service_features_ibfk_1` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`);
 
 --
--- Các ràng buộc cho bảng `users`
+-- Constraints for table `users`
 --
 ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`);
 
 --
--- Các ràng buộc cho bảng `users_info`
+-- Constraints for table `users_info`
 --
 ALTER TABLE `users_info`
   ADD CONSTRAINT `users_info_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `user_addresses`
+-- Constraints for table `user_addresses`
 --
 ALTER TABLE `user_addresses`
   ADD CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `user_notifications`
+-- Constraints for table `user_notifications`
 --
 ALTER TABLE `user_notifications`
   ADD CONSTRAINT `user_notifications_ibfk_1` FOREIGN KEY (`notification_id`) REFERENCES `notifications` (`notification_id`),
   ADD CONSTRAINT `user_notifications_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
--- Các ràng buộc cho bảng `user_symptom_history`
+-- Constraints for table `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
   ADD CONSTRAINT `user_symptom_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
