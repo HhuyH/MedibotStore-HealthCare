@@ -12,7 +12,14 @@ function appendMessage(message, sender = "user") {
 
     const content = document.createElement("div");
     content.className = "message-content";
-    content.innerHTML = marked.parse(message);
+
+    if (typeof message === "string") {
+        content.innerHTML = marked.parse(message);
+    } else if (message instanceof HTMLElement) {
+        content.appendChild(message); // ✅ Hỗ trợ DOM element
+    } else {
+        content.textContent = String(message); // fallback
+    }
 
     wrapper.appendChild(avatar);
     wrapper.appendChild(content);
@@ -20,6 +27,7 @@ function appendMessage(message, sender = "user") {
     document.getElementById("chat-box").appendChild(wrapper);
     scrollToBottom();
 }
+
 
 function scrollToBottom() {
     const chatBox = document.getElementById("chat-box");
@@ -197,8 +205,8 @@ async function loadChatLogs() {
 
                     // Nếu có data bảng → render bảng
                     if (Array.isArray(log.message.data) && log.message.data.length > 0) {
-                        const tableHTML = renderTable(log.message.data);
-                        appendMessage(tableHTML, sender);  // appendMessage hỗ trợ HTML?
+                        const tableElement = renderTableWithPagination(log.message.data);
+                        appendMessage(tableElement, sender);
                     }
                 } else {
                     appendMessage(log.message, sender);
@@ -246,6 +254,100 @@ function renderTable(data) {
 
     return table;
 }
+
+// rnderTable khi reload chat logs
+function renderTableWithPagination(tableData, sender = "bot") {
+    const rowsPerPage = 10;
+    let currentPage = 1;
+    const totalPages = Math.ceil(tableData.length / rowsPerPage);
+
+    const container = document.createElement("div");
+    container.className = "chat-table-wrapper";
+
+    const table = document.createElement("table");
+    table.className = "chat-result-table";
+
+    const headers = Object.keys(tableData[0]);
+    const thead = document.createElement("thead");
+    const trHead = document.createElement("tr");
+    headers.forEach(h => {
+        const th = document.createElement("th");
+        th.textContent = h;
+        trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    table.appendChild(tbody);
+
+    container.appendChild(table);
+
+    const pagination = document.createElement("div");
+    pagination.className = "pagination";
+    container.appendChild(pagination);
+
+    function renderPage(page) {
+        tbody.innerHTML = "";
+        const start = (page - 1) * rowsPerPage;
+        const pageRows = tableData.slice(start, start + rowsPerPage);
+
+        pageRows.forEach(row => {
+            const tr = document.createElement("tr");
+            headers.forEach(h => {
+                const td = document.createElement("td");
+                td.textContent = row[h];
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+
+        updatePagination(page);
+    }
+
+    function updatePagination(page) {
+        pagination.innerHTML = "";
+
+        const prev = document.createElement("button");
+        prev.textContent = "← Trước";
+        prev.disabled = page === 1;
+        prev.onclick = () => {
+            currentPage--;
+            renderPage(currentPage);
+            scrollToBottom();
+        };
+        pagination.appendChild(prev);
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            btn.disabled = i === page;
+            btn.onclick = () => {
+                currentPage = i;
+                renderPage(currentPage);
+                scrollToBottom();
+            };
+            pagination.appendChild(btn);
+        }
+
+        const next = document.createElement("button");
+        next.textContent = "Tiếp →";
+        next.disabled = page === totalPages;
+        next.onclick = () => {
+            currentPage++;
+            renderPage(currentPage);
+            scrollToBottom();
+        };
+        pagination.appendChild(next);
+    }
+
+    scrollToBottom();
+
+    renderPage(currentPage);
+    // appendMessage(container.ouerHTML, sender);  // hoặc gắn trực tiếp nếu appendMessage không hỗ trợ DOM element
+    return container; // Trả về DOM element để gắn vào chat box
+}
+
 
 
 
@@ -325,11 +427,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ✅ Cập nhật nội dung text trước
                 content.innerHTML = html;
 
-                // ✅ Nếu có bảng và chưa gắn bảng → tạo bảng
+                // Nếu có bảng và chưa gắn bảng → tạo bảng
                 if (parsed?.table && Array.isArray(parsed.table) && parsed.table.length > 0 && !content.querySelector("table")) {
+                    // Pagination setup
+                    const rowsPerPage = 10;
+                    let currentPage = 1;
+                    let totalPages = Math.ceil(parsed.table.length / rowsPerPage);
+
+                    // Tạo bảng như bình thường
                     const table = document.createElement("table");
                     table.className = "chat-result-table";
 
+                    // Tạo header
                     const headers = Object.keys(parsed.table[0]);
                     const thead = document.createElement("thead");
                     const trHead = document.createElement("tr");
@@ -341,26 +450,90 @@ document.addEventListener('DOMContentLoaded', () => {
                     thead.appendChild(trHead);
                     table.appendChild(thead);
 
+                    // Tạo tbody – nhưng KHÔNG thêm toàn bộ rows ở đây
                     const tbody = document.createElement("tbody");
-                    parsed.table.forEach(row => {
-                        const tr = document.createElement("tr");
-                        headers.forEach(h => {
-                            const td = document.createElement("td");
-                            td.textContent = row[h];
-                            tr.appendChild(td);
-                        });
-                        tbody.appendChild(tr);
-                    });
                     table.appendChild(tbody);
 
+                    // Hàm render rows theo trang
+                    function renderTablePage(page) {
+                        tbody.innerHTML = ""; // clear old rows
+                        const start = (page - 1) * rowsPerPage;
+                        const end = start + rowsPerPage;
+                        const pageRows = parsed.table.slice(start, end);
+
+                        pageRows.forEach(row => {
+                            const tr = document.createElement("tr");
+                            headers.forEach(h => {
+                                const td = document.createElement("td");
+                                td.textContent = row[h];
+                                tr.appendChild(td);
+                            });
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    // Gọi hàm lần đầu tiên
+                    renderTablePage(currentPage);
+
+                    // Tạo pagination control
+                    const pagination = document.createElement("div");
+                    pagination.className = "pagination";
+
+                    function updatePaginationControls() {
+                        pagination.innerHTML = "";
+
+                        // Previous button
+                        const prevBtn = document.createElement("button");
+                        prevBtn.textContent = "← Trước";
+                        prevBtn.disabled = currentPage === 1;
+                        prevBtn.onclick = () => {
+                            currentPage--;
+                            renderTablePage(currentPage);
+                            updatePaginationControls();
+                            scrollToBottom();
+                        };
+                        pagination.appendChild(prevBtn);
+
+                        // Page numbers (1, 2, 3, ...)
+                        for (let i = 1; i <= totalPages; i++) {
+                            const pageBtn = document.createElement("button");
+                            pageBtn.textContent = i;
+                            if (i === currentPage) pageBtn.disabled = true;
+                            pageBtn.onclick = () => {
+                                currentPage = i;
+                                renderTablePage(currentPage);
+                                updatePaginationControls();
+                                scrollToBottom();
+                            };
+                            pagination.appendChild(pageBtn);
+                        }
+
+                        // Next button
+                        const nextBtn = document.createElement("button");
+                        nextBtn.textContent = "Tiếp →";
+                        nextBtn.disabled = currentPage === totalPages;
+                        nextBtn.onclick = () => {
+                            currentPage++;
+                            renderTablePage(currentPage);
+                            updatePaginationControls();
+                            scrollToBottom();
+                        };
+                        pagination.appendChild(nextBtn);
+                    }
+
+                    updatePaginationControls();
+
+                    // Gắn table và pagination vào content
                     const tableWrapper = document.createElement("div");
                     tableWrapper.className = "chat-table-wrapper";
                     tableWrapper.appendChild(table);
-                    content.appendChild(tableWrapper);
+                    tableWrapper.appendChild(pagination);
 
+                    content.appendChild(tableWrapper);
+                    scrollToBottom();
                 }
 
-                // ✅ Nếu có SQL và chưa gắn → thêm khối SQL vào cuối
+                // Nếu có SQL và chưa gắn → thêm khối SQL vào cuối
                 if (parsed?.sql_query && !content.querySelector(".chat-sql-text")) {
                     const sqlDiv = document.createElement("pre");
                     sqlDiv.textContent = "[SQL nội bộ]\n" + parsed.sql_query;
