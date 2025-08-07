@@ -47,6 +47,7 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
                 JOIN prediction_diseases d ON p.prediction_id = d.prediction_id
                 WHERE p.user_id = %s
             """
+            
             pred_params = [user_id]
             if date_obj:
                 pred_query += " AND DATE(p.prediction_date) = %s"
@@ -80,7 +81,6 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
         if care:
             disease_block += f"<br>→ Gợi ý: {care.strip()}"
         disease_lines.append(disease_block)
-
 
     # 💡 Prompt yêu cầu HTML đẹp
     gpt_prompt = f"""
@@ -150,7 +150,7 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
     }
 
     return {
-        "markdown": summary_html,  # Dù là HTML, frontend vẫn dùng key này
+        "markdown": summary_html, 
         "summary_data": summary_data,
         "raw_data": {
             "symptoms": symptom_rows,
