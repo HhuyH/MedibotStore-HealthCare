@@ -19,7 +19,7 @@ def build_system_prompt(
     last_user_msg = (recent_user_messages or [])[-1] if recent_user_messages else ""
     last_bot_msg = (recent_assistant_messages or [])[-1] if recent_assistant_messages else ""
 
-   # Ghép vào thông điệp bối cảnh để GPT hiểu đoạn hội thoại trước
+    # Ghép vào thông điệp bối cảnh để GPT hiểu đoạn hội thoại trước
     last_bot_user_msg = f"""
       🧩 The user has just responded with this message:
       “{last_user_msg}”
@@ -27,6 +27,7 @@ def build_system_prompt(
       And your previous message was:
       “{last_bot_msg}”
     """
+    
     # Core guidelines: vai trò và tone chatbot
     core_guidelines = """
       You are a friendly and professional virtual assistant working for KMS Health Care.
@@ -52,28 +53,35 @@ def build_system_prompt(
       - DO NOT try to extract deep meaning or force follow-up questions unless necessary.
 
       ✅ It's okay to:
-      - Reflect what the user just said and ask softly if they want to continue
-      - Give short, kind reactions like “Um, mình hiểu rồi nè” or “Cảm ơn bạn đã chia sẻ nghen”
+      - Acknowledge the user's message briefly and check if they'd like to continue
+      - Respond with a short, kind reaction in your own natural words
 
       🚫 Avoid:
       - Offering detailed medical guidance unless the user clearly asks
       - Repeating previous questions over and over
       - Listing multiple conditions or possibilities when not prompted
-   """.strip()
+    """.strip()
+
 
     # Clarification prompt: xử lý khi user phản hồi mơ hồ
     clarification_prompt = f"""
-      Please read both message carefully.
+      Please read both messages carefully.
 
-      If your last reply included multiple types of support (e.g., suggesting products and also offering to help schedule a medical appointment),
-      and the user’s reply is vague, short, or non-committal (e.g., “ok giúp mình đi”, “ừ cũng được”, “ok nha”, “được đó”),
-      → then **kindly ask for clarification**.
+      If your last reply included multiple types of support (e.g., suggesting products and also offering to help schedule a medical appointment),  
+      and the user’s reply is vague, short, or non-committal (e.g., “ok giúp mình đi”, “ừ cũng được”, “ok nha”, “được đó”),  
+      → then you **must respond with a friendly clarification** to help the user specify what they want next.
 
-      ✅ Example:
+      🎯 Your goal is to gently guide the user to clarify their intent without making them feel rushed or confused.
+
+      ✅ Example response:
       “Bạn muốn mình hỗ trợ gợi ý sản phẩm hay đặt lịch khám trước nhỉ?”
 
-      Keep the tone light, friendly, and give the user space to decide.
+      🧠 Remember:
+      - Keep your tone light and open-ended
+      - Avoid assuming what the user wants
+      - Encourage them to choose or clarify the next step
     """.strip()
+
     
    # Fallback note: khi user không đủ quyền
     fallback_permission_note = ""
@@ -103,12 +111,12 @@ def build_system_prompt(
 
     return full_prompt
 
-example_json = """
-{
-  "natural_text": "🧠 Dưới đây là các triệu chứng phổ biến của đột quỵ:",
-  "sql_query": "SELECT name AS 'Tên sản phẩm', price AS 'Giá' FROM products WHERE is_action = 1"
-}
-"""
+# example_json = """
+# {
+#   "natural_text": "🧠 Dưới đây là các triệu chứng phổ biến của đột quỵ:",
+#   "sql_query": "SELECT name AS 'Tên sản phẩm', price AS 'Giá' FROM products WHERE is_action = 1"
+# }
+# """
 
 # Block rule khi tạo và truy vấn câu lệnh sql 
 system_prompt_sql = f"""
@@ -172,7 +180,12 @@ Then generate a SQL SELECT query for that case.
 
 4. When generating SQL, your **entire output must be a single valid JSON object**, like this:
    ⚠️ VERY IMPORTANT: You must return only one JSON object with the following format:
-   {example_json}  
+   {{
+      "natural_text": "📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:",
+      "sql_query": "SELECT product_id AS 'Mã sản phẩm', name AS 'Tên sản phẩm', price AS 'Giá gốc', discount_amount AS 'Giảm giá', (price - discount_amount) AS 'Giá sau giảm', ROUND(CASE WHEN price > 0 THEN (discount_amount / price) * 100 ELSE 0 END, 2) AS '% giảm', stock AS 'Tồn kho', CASE WHEN is_active = 1 THEN 'Đang bán' ELSE 'Ngừng bán' END AS 'Trạng thái', created_at AS 'Ngày tạo', updated_at AS 'Cập nhật lần cuối' FROM products WHERE is_active = 1"
+   }}
+
+   ➡️ Note: The json above is only an illustrative placeholder. Your output should be a valid JSON object, not necessarily matching that structure.
 
    📌 This is a data retrieval task.
    You are accessing structured healthcare data from a relational database.

@@ -492,7 +492,7 @@ async def chat_stream(msg: Message = Body(...)):
                         # Stream kết quả về frontend
                         yield f"data: {json.dumps({'natural_text': result_text, 'table': rows})}\n\n"
                         payload = {'natural_text': result_text, 'table': rows}
-                        logger.debug(f"[DEBUG] Payload gửi về frontend: {json.dumps(payload, ensure_ascii=False, indent=2)}")
+                        # logger.info(f"[DEBUG] Payload gửi về frontend: {json.dumps(payload, ensure_ascii=False, indent=2)}")
                     else:
                         # Nếu thực thi SQL thất bại → gửi thông báo lỗi
                         error_msg = result.get("error", "Lỗi không xác định.")

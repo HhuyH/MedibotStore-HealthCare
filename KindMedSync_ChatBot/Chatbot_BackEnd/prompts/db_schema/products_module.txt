@@ -11,7 +11,8 @@
 - name (VARCHAR): product name  
 - description (TEXT): product description  
 - price (DECIMAL): price of product  
-- stock (INT): stock quantity  
+- stock (INT): stock quantity
+- discount_amount (DECIMAL): discount amount applied to the product  
 - image_url (TEXT): product image URL  
 - is_active (BOOLEAN): product active status  
 - created_at (TIMESTAMP): creation timestamp  
