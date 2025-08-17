@@ -167,6 +167,10 @@ Then generate a SQL SELECT query for that case.
     - ALWAYS interpret it as '{current_year}-06-17'. 
     - NEVER assume the year is 2023 or anything else, unless explicitly stated.
 
+   - If the user says “under X products”, “less than X products”, “tồn kho < X”, “san pham duoi X san pham”, “sản phẩm dưới X sản phẩm”, “stock < X”, “quantity < X”, or any equivalent phrase, and there is NO mention of money units (USD, VND, $, đồng, price, cost, value), interpret this as a stock filter: `stock < X`.
+   - If the user mentions price-related keywords (“price”, “giá”, “cost”, “value”, “đồng”, “USD”, “VND”, “$”), interpret the number as a price filter: `price < X`.
+   - Give priority to interpreting the number as stock quantity if the user mentions products/items explicitly without price units.
+
    - 🚫 VERY IMPORTANT: Never include the SQL query in the response shown to the user.
 
    ✅ Instead, respond in a structured JSON format with the following fields:

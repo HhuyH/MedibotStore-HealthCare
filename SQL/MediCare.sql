@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 05, 2025 at 08:14 AM
+-- Generation Time: Aug 17, 2025 at 02:43 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -1090,7 +1090,68 @@ INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, 
 (1942, 2, NULL, 'symptom_query', 'khi minh ngui thay 1 mui gi do kha nang thi co cam giac buon non', 'user', '2025-08-05 05:59:08'),
 (1943, 2, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, như là mệt mỏi, hoặc có cảm giác như tim đập nhanh không ha? Điều này có thể giúp mình hiểu rõ hơn về tình trạng của bạn.', 'bot', '2025-08-05 05:59:08'),
 (1944, 2, NULL, 'symptom_query', 'khong co', 'user', '2025-08-05 06:00:04'),
-(1945, 2, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể liên quan đến một số nguyên nhân nhẹ nhàng như căng thẳng, thiếu ngủ hoặc thay đổi thời tiết.\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\n**Buồn nôn** có thể xảy ra khi bạn đang căng thẳng hoặc không ăn uống điều độ. Hãy thử ăn một bữa nhẹ nhàng và xem cảm giác ra sao nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n�� **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-08-05 06:00:04');
+(1945, 2, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**, **chóng mặt**, và **buồn nôn**. Những triệu chứng này có thể liên quan đến một số nguyên nhân nhẹ nhàng như căng thẳng, thiếu ngủ hoặc thay đổi thời tiết.\n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\n**Chóng mặt** có thể do thay đổi tư thế đột ngột hoặc thiếu nước nhẹ. Bạn có thể thử uống nước từ từ và ngồi nghỉ.\n\n**Buồn nôn** có thể xảy ra khi bạn đang căng thẳng hoặc không ăn uống điều độ. Hãy thử ăn một bữa nhẹ nhàng và xem cảm giác ra sao nhé.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n�� **Mất nước hoặc thiếu dinh dưỡng**  \nNếu cơ thể không được cung cấp đủ nước hoặc năng lượng, bạn có thể cảm thấy **chóng mặt** hoặc mệt mỏi.  \n→ Bạn nên uống đủ nước, ăn uống đầy đủ trong ngày.\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu** và **buồn nôn**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Huyết áp thấp**  \nTình trạng này có thể gây cảm giác **chóng mặt** nhẹ khi bạn thay đổi tư thế đột ngột.  \n→ Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu bạn muốn chắc chắn, bạn có thể đi khám để kiểm tra kỹ hơn.', 'bot', '2025-08-05 06:00:04'),
+(1946, 2, NULL, 'sql_query', 'danh sach san pham', 'user', '2025-08-07 03:58:41'),
+(1947, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá gốc\', discount_amount AS \'Giảm giá\', (price - discount_amount) AS \'Giá sau giảm\', ROUND((discount_amount / price) * 100, 2) AS \'% giảm\', stock AS \'Tồn kho\', is_active AS \'Đang bán\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-08-07 03:58:41'),
+(1948, 2, NULL, 'sql_query', 'danh sach san pham', 'user', '2025-08-07 03:58:42'),
+(1949, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\", \"data\": [{\"Mã sản phẩm\": 1, \"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá gốc\": 15000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 5000.0, \"% giảm\": 66.67, \"Tồn kho\": 100, \"Đang bán\": 1}, {\"Mã sản phẩm\": 2, \"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá gốc\": 28000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 18000.0, \"% giảm\": 35.71, \"Tồn kho\": 60, \"Đang bán\": 1}, {\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá gốc\": 50000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 40000.0, \"% giảm\": 20.0, \"Tồn kho\": 200, \"Đang bán\": 1}, {\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá gốc\": 650000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 640000.0, \"% giảm\": 1.54, \"Tồn kho\": 15, \"Đang bán\": 1}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá gốc\": 40000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 30000.0, \"% giảm\": 25.0, \"Tồn kho\": 500, \"Đang bán\": 1}, {\"Mã sản phẩm\": 6, \"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá gốc\": 20000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 10000.0, \"% giảm\": 50.0, \"Tồn kho\": 80, \"Đang bán\": 1}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá gốc\": 45000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 35000.0, \"% giảm\": 22.22, \"Tồn kho\": 150, \"Đang bán\": 1}, {\"Mã sản phẩm\": 8, \"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá gốc\": 70000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 60000.0, \"% giảm\": 14.29, \"Tồn kho\": 90, \"Đang bán\": 1}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá gốc\": 350000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 340000.0, \"% giảm\": 2.86, \"Tồn kho\": 25, \"Đang bán\": 1}, {\"Mã sản phẩm\": 10, \"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá gốc\": 120000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 110000.0, \"% giảm\": 8.33, \"Tồn kho\": 50, \"Đang bán\": 1}, {\"Mã sản phẩm\": 11, \"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá gốc\": 65000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 55000.0, \"% giảm\": 15.38, \"Tồn kho\": 70, \"Đang bán\": 1}]}', 'bot', '2025-08-07 03:58:42'),
+(1950, 2, NULL, 'sql_query', 'lay danh sach san pham co hon 100 ton kho', 'user', '2025-08-07 04:08:32'),
+(1951, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm có tồn kho hơn 100 tấn:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá gốc\', discount_amount AS \'Giảm giá\', (price - discount_amount) AS \'Giá sau giảm\', ROUND(CASE WHEN price > 0 THEN (discount_amount / price) * 100 ELSE 0 END, 2) AS \'% giảm\', stock AS \'Tồn kho\', CASE WHEN is_active = 1 THEN \'Đang bán\' ELSE \'Ngừng bán\' END AS \'Trạng thái\' FROM products WHERE stock > 100 AND is_active = 1\"\n}', 'bot', '2025-08-07 04:08:33'),
+(1952, 2, NULL, 'sql_query', 'lay danh sach san pham co hon 100 ton kho', 'user', '2025-08-07 04:08:33'),
+(1953, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm có tồn kho hơn 100 tấn:\", \"data\": [{\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá gốc\": 50000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 40000.0, \"% giảm\": 20.0, \"Tồn kho\": 200, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá gốc\": 40000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 30000.0, \"% giảm\": 25.0, \"Tồn kho\": 500, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá gốc\": 45000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 35000.0, \"% giảm\": 22.22, \"Tồn kho\": 150, \"Trạng thái\": \"Đang bán\"}]}', 'bot', '2025-08-07 04:08:33'),
+(1954, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-07 04:35:18'),
+(1955, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá gốc\', discount_amount AS \'Giảm giá\', (price - discount_amount) AS \'Giá sau giảm\', ROUND(CASE WHEN price > 0 THEN (discount_amount / price) * 100 ELSE 0 END, 2) AS \'% giảm\', stock AS \'Tồn kho\', CASE WHEN is_active = 1 THEN \'Đang bán\' ELSE \'Ngừng bán\' END AS \'Trạng thái\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-08-07 04:35:18'),
+(1956, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-07 04:35:18'),
+(1957, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\", \"data\": [{\"Mã sản phẩm\": 1, \"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá gốc\": 15000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 5000.0, \"% giảm\": 66.67, \"Tồn kho\": 100, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 2, \"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá gốc\": 28000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 18000.0, \"% giảm\": 35.71, \"Tồn kho\": 60, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá gốc\": 50000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 40000.0, \"% giảm\": 20.0, \"Tồn kho\": 200, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá gốc\": 650000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 640000.0, \"% giảm\": 1.54, \"Tồn kho\": 15, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá gốc\": 40000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 30000.0, \"% giảm\": 25.0, \"Tồn kho\": 500, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 6, \"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá gốc\": 20000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 10000.0, \"% giảm\": 50.0, \"Tồn kho\": 80, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá gốc\": 45000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 35000.0, \"% giảm\": 22.22, \"Tồn kho\": 150, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 8, \"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá gốc\": 70000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 60000.0, \"% giảm\": 14.29, \"Tồn kho\": 90, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá gốc\": 350000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 340000.0, \"% giảm\": 2.86, \"Tồn kho\": 25, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 10, \"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá gốc\": 120000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 110000.0, \"% giảm\": 8.33, \"Tồn kho\": 50, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 11, \"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá gốc\": 65000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 55000.0, \"% giảm\": 15.38, \"Tồn kho\": 70, \"Trạng thái\": \"Đang bán\"}]}', 'bot', '2025-08-07 04:35:18'),
+(1958, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-07 04:37:30'),
+(1959, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá gốc\', discount_amount AS \'Giảm giá\', (price - discount_amount) AS \'Giá sau giảm\', ROUND(CASE WHEN price > 0 THEN (discount_amount / price) * 100 ELSE 0 END, 2) AS \'% giảm\', stock AS \'Tồn kho\', CASE WHEN is_active = 1 THEN \'Đang bán\' ELSE \'Ngừng bán\' END AS \'Trạng thái\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-08-07 04:37:30'),
+(1960, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-07 04:37:31');
+INSERT INTO `chat_logs` (`chat_id`, `user_id`, `guest_id`, `intent`, `message`, `sender`, `sent_at`) VALUES
+(1961, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\", \"data\": [{\"Mã sản phẩm\": 1, \"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá gốc\": 15000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 5000.0, \"% giảm\": 66.67, \"Tồn kho\": 100, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 2, \"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá gốc\": 28000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 18000.0, \"% giảm\": 35.71, \"Tồn kho\": 60, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá gốc\": 50000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 40000.0, \"% giảm\": 20.0, \"Tồn kho\": 200, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá gốc\": 650000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 640000.0, \"% giảm\": 1.54, \"Tồn kho\": 15, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá gốc\": 40000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 30000.0, \"% giảm\": 25.0, \"Tồn kho\": 500, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 6, \"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá gốc\": 20000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 10000.0, \"% giảm\": 50.0, \"Tồn kho\": 80, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá gốc\": 45000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 35000.0, \"% giảm\": 22.22, \"Tồn kho\": 150, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 8, \"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá gốc\": 70000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 60000.0, \"% giảm\": 14.29, \"Tồn kho\": 90, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá gốc\": 350000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 340000.0, \"% giảm\": 2.86, \"Tồn kho\": 25, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 10, \"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá gốc\": 120000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 110000.0, \"% giảm\": 8.33, \"Tồn kho\": 50, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 11, \"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá gốc\": 65000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 55000.0, \"% giảm\": 15.38, \"Tồn kho\": 70, \"Trạng thái\": \"Đang bán\"}]}', 'bot', '2025-08-07 04:37:31'),
+(1962, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-07 04:52:08'),
+(1963, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá gốc\', discount_amount AS \'Giảm giá\', (price - discount_amount) AS \'Giá sau giảm\', ROUND(CASE WHEN price > 0 THEN (discount_amount / price) * 100 ELSE 0 END, 2) AS \'% giảm\', stock AS \'Tồn kho\', CASE WHEN is_active = 1 THEN \'Đang bán\' ELSE \'Ngừng bán\' END AS \'Trạng thái\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-08-07 04:52:08'),
+(1964, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-07 04:52:08'),
+(1965, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\", \"data\": [{\"Mã sản phẩm\": 1, \"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá gốc\": 15000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 5000.0, \"% giảm\": 66.67, \"Tồn kho\": 100, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 2, \"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá gốc\": 28000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 18000.0, \"% giảm\": 35.71, \"Tồn kho\": 60, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá gốc\": 50000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 40000.0, \"% giảm\": 20.0, \"Tồn kho\": 200, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá gốc\": 650000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 640000.0, \"% giảm\": 1.54, \"Tồn kho\": 15, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá gốc\": 40000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 30000.0, \"% giảm\": 25.0, \"Tồn kho\": 500, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 6, \"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá gốc\": 20000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 10000.0, \"% giảm\": 50.0, \"Tồn kho\": 80, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá gốc\": 45000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 35000.0, \"% giảm\": 22.22, \"Tồn kho\": 150, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 8, \"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá gốc\": 70000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 60000.0, \"% giảm\": 14.29, \"Tồn kho\": 90, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá gốc\": 350000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 340000.0, \"% giảm\": 2.86, \"Tồn kho\": 25, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 10, \"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá gốc\": 120000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 110000.0, \"% giảm\": 8.33, \"Tồn kho\": 50, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 11, \"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá gốc\": 65000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 55000.0, \"% giảm\": 15.38, \"Tồn kho\": 70, \"Trạng thái\": \"Đang bán\"}]}', 'bot', '2025-08-07 04:52:08'),
+(1966, 2, NULL, 'sql_query', 'danh sach san pham', 'user', '2025-08-07 04:57:56'),
+(1967, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá gốc\', discount_amount AS \'Giảm giá\', (price - discount_amount) AS \'Giá sau giảm\', ROUND(CASE WHEN price > 0 THEN (discount_amount / price) * 100 ELSE 0 END, 2) AS \'% giảm\', stock AS \'Tồn kho\', CASE WHEN is_active = 1 THEN \'Đang bán\' ELSE \'Ngừng bán\' END AS \'Trạng thái\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-08-07 04:57:57'),
+(1968, 2, NULL, 'sql_query', 'danh sach san pham', 'user', '2025-08-07 04:57:57'),
+(1969, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\", \"data\": [{\"Mã sản phẩm\": 1, \"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá gốc\": 15000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 5000.0, \"% giảm\": 66.67, \"Tồn kho\": 100, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 2, \"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá gốc\": 28000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 18000.0, \"% giảm\": 35.71, \"Tồn kho\": 60, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá gốc\": 50000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 40000.0, \"% giảm\": 20.0, \"Tồn kho\": 200, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá gốc\": 650000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 640000.0, \"% giảm\": 1.54, \"Tồn kho\": 15, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá gốc\": 40000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 30000.0, \"% giảm\": 25.0, \"Tồn kho\": 500, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 6, \"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá gốc\": 20000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 10000.0, \"% giảm\": 50.0, \"Tồn kho\": 80, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá gốc\": 45000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 35000.0, \"% giảm\": 22.22, \"Tồn kho\": 150, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 8, \"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá gốc\": 70000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 60000.0, \"% giảm\": 14.29, \"Tồn kho\": 90, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá gốc\": 350000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 340000.0, \"% giảm\": 2.86, \"Tồn kho\": 25, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 10, \"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá gốc\": 120000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 110000.0, \"% giảm\": 8.33, \"Tồn kho\": 50, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 11, \"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá gốc\": 65000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 55000.0, \"% giảm\": 15.38, \"Tồn kho\": 70, \"Trạng thái\": \"Đang bán\"}]}', 'bot', '2025-08-07 04:57:57'),
+(1970, 2, NULL, 'sql_query', 'danh sach san pham', 'user', '2025-08-07 05:01:48'),
+(1971, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá gốc\', discount_amount AS \'Giảm giá\', (price - discount_amount) AS \'Giá sau giảm\', ROUND(CASE WHEN price > 0 THEN (discount_amount / price) * 100 ELSE 0 END, 2) AS \'% giảm\', stock AS \'Tồn kho\', CASE WHEN is_active = 1 THEN \'Đang bán\' ELSE \'Ngừng bán\' END AS \'Trạng thái\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-08-07 05:01:48'),
+(1972, 2, NULL, 'sql_query', 'danh sach san pham', 'user', '2025-08-07 05:01:49'),
+(1973, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm đang hoạt động kèm thông tin giảm giá:\", \"data\": [{\"Mã sản phẩm\": 1, \"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá gốc\": 15000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 5000.0, \"% giảm\": 66.67, \"Tồn kho\": 100, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 2, \"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá gốc\": 28000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 18000.0, \"% giảm\": 35.71, \"Tồn kho\": 60, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá gốc\": 50000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 40000.0, \"% giảm\": 20.0, \"Tồn kho\": 200, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá gốc\": 650000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 640000.0, \"% giảm\": 1.54, \"Tồn kho\": 15, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá gốc\": 40000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 30000.0, \"% giảm\": 25.0, \"Tồn kho\": 500, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 6, \"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá gốc\": 20000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 10000.0, \"% giảm\": 50.0, \"Tồn kho\": 80, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá gốc\": 45000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 35000.0, \"% giảm\": 22.22, \"Tồn kho\": 150, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 8, \"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá gốc\": 70000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 60000.0, \"% giảm\": 14.29, \"Tồn kho\": 90, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá gốc\": 350000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 340000.0, \"% giảm\": 2.86, \"Tồn kho\": 25, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 10, \"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá gốc\": 120000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 110000.0, \"% giảm\": 8.33, \"Tồn kho\": 50, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 11, \"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá gốc\": 65000.0, \"Giảm giá\": 10000.0, \"Giá sau giảm\": 55000.0, \"% giảm\": 15.38, \"Tồn kho\": 70, \"Trạng thái\": \"Đang bán\"}]}', 'bot', '2025-08-07 05:01:49'),
+(1974, 2, NULL, 'sql_query', 'cho minh xem danh sach san pham duoi 50 san pham', 'user', '2025-08-12 12:43:53'),
+(1975, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm có giá dưới 50:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá\', stock AS \'Tồn kho\' FROM products WHERE price < 50 AND is_active = 1\"\n}', 'bot', '2025-08-12 12:43:53'),
+(1976, 2, NULL, 'sql_query', 'cho minh xem danh sach san pham duoi 50 san pham', 'user', '2025-08-12 12:48:53'),
+(1977, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm có giá dưới 50:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá\', stock AS \'Tồn kho\' FROM products WHERE price < 50 AND is_active = 1\"\n}', 'bot', '2025-08-12 12:48:53'),
+(1978, 2, NULL, 'sql_query', 'cho minh xem danh sach san pham duoi 50 san pham', 'user', '2025-08-12 12:50:59'),
+(1979, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm có tồn kho dưới 50:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá\', stock AS \'Tồn kho\' FROM products WHERE stock < 50 AND is_active = 1\"\n}', 'bot', '2025-08-12 12:51:00'),
+(1980, 2, NULL, 'sql_query', 'cho minh xem danh sach san pham duoi 50 san pham', 'user', '2025-08-12 12:51:00'),
+(1981, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm có tồn kho dưới 50:\", \"data\": [{\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá\": 650000.0, \"Tồn kho\": 15}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá\": 350000.0, \"Tồn kho\": 25}]}', 'bot', '2025-08-12 12:51:00'),
+(1982, 2, NULL, 'health_advice', 'khong biet sao nay cam thay met qua', 'user', '2025-08-12 13:22:37'),
+(1983, 2, NULL, 'health_advice', 'Mệt mỏi nhiều khi cũng do căng thẳng hay thiếu nghỉ ngơi. Bạn thử nghỉ ngơi một chút, có thể nằm thư giãn nghe nhạc nhẹ nha 🎶. Hoặc bạn có thể uống một cốc trà ấm để dễ chịu hơn, nhiều khi cũng giúp tinh thần thoải mái hơn đó. Nếu có thời gian, đi dạo một chút ngoài trời cũng giúp thư giãn lắm á! \nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿', 'bot', '2025-08-12 13:22:37'),
+(1984, 2, NULL, 'symptom_query', 'ko biet sao sang h nhuc dau qua', 'user', '2025-08-12 13:30:19'),
+(1985, 2, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Bạn có thấy cơn đau này thường kéo dài bao lâu mỗi lần bạn gặp phải không?', 'bot', '2025-08-12 13:30:19'),
+(1986, 2, NULL, 'symptom_query', 'khong ro', 'user', '2025-08-12 13:30:37'),
+(1987, 2, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, ví dụ như **chóng mặt**, **mệt mỏi**, hay có cảm giác như tim đập nhanh không nha?', 'bot', '2025-08-12 13:30:37'),
+(1988, 2, NULL, 'symptom_query', 'khong co', 'user', '2025-08-12 13:31:11'),
+(1989, 2, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu**... \n\n**Đau đầu** có thể là do bạn thiếu ngủ hoặc căng thẳng. Bạn thử nghỉ ngơi xem sao nha.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau: \n\n📌 **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực công việc hoặc cuộc sống có thể gây ra cảm giác **đau đầu**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Thiếu ngủ**  \nNếu bạn không có đủ giấc ngủ, cơ thể sẽ dễ mệt mỏi và có thể dẫn đến **đau đầu**.  \n→ Hãy cố gắng ngủ đủ giấc và tạo thói quen ngủ điều độ.\n\n�� **Mất nước**  \nKhi cơ thể thiếu nước, bạn có thể cảm thấy **đau đầu** và mệt mỏi.  \n→ Bạn nên uống đủ nước trong suốt cả ngày để giữ cơ thể luôn được cung cấp đủ nước.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿 \nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-08-12 13:31:11'),
+(1990, 2, NULL, 'symptom_query', 'ko biet sao sang h nhuc dau qua', 'user', '2025-08-12 13:50:55'),
+(1991, 2, NULL, 'symptom_query', 'Mình muốn hỏi thêm một chút về cảm giác **đau đầu** của bạn nè. Bạn có thấy nó thường xuất hiện khi nào, như lúc đang làm việc hay chỉ khi nghỉ ngơi thôi?', 'bot', '2025-08-12 13:50:56'),
+(1992, 2, NULL, 'symptom_query', 'minh cung khong ro lam khi vua ngu day thi bi roi', 'user', '2025-08-12 13:53:52'),
+(1993, 2, NULL, 'symptom_query', 'Mình đang nghĩ không biết bạn có thêm cảm giác nào khác nữa không, như là **chóng mặt**, **mệt mỏi**, hay có gì khác không nha? 😊', 'bot', '2025-08-12 13:53:52'),
+(1994, 2, NULL, 'symptom_query', 'khong co', 'user', '2025-08-12 13:55:37'),
+(1995, 2, NULL, 'symptom_query', 'Bạn đã mô tả cảm giác như **đau đầu** và không có thêm triệu chứng nào khác. Cảm giác **đau đầu** có thể là do bạn thiếu ngủ, căng thẳng hoặc chỉ là những thay đổi nhẹ trong cơ thể. Bạn thử nghỉ ngơi, uống nước và thư giãn xem sao nha.\n\nNgoài ra, các triệu chứng bạn vừa chia sẻ cũng có thể liên quan đến vài tình trạng như sau:\n\n�� **Căng thẳng hoặc lo âu**  \nĐôi khi áp lực trong cuộc sống có thể gây ra cảm giác **đau đầu**.  \n→ Bạn có thể thử nghỉ ngơi, hít thở sâu và dành thời gian cho bản thân.\n\n📌 **Thiếu nước**  \nNếu cơ thể bạn không được cung cấp đủ nước, bạn có thể cảm thấy **đau đầu**.  \n→ Bạn nên uống đủ nước trong suốt cả ngày.\n\n�� **Thiếu ngủ**  \nThiếu ngủ có thể là nguyên nhân chính gây ra cảm giác **đau đầu**.  \n→ Bạn hãy cố gắng ngủ đủ giấc và tạo thói quen đi ngủ sớm hơn nhé.\n\n—\nNếu bạn muốn, mình có thể gợi ý vài sản phẩm giúp bạn cảm thấy dễ chịu hơn nha 🌿\nNếu cần, mình có thể hỗ trợ bạn đặt lịch khám phù hợp nha.', 'bot', '2025-08-12 13:55:37'),
+(1996, 2, NULL, 'sql_query', 'danh sach san pham', 'user', '2025-08-17 10:43:58'),
+(1997, 2, NULL, 'sql_query', 'Bạn muốn mình hỗ trợ gợi ý sản phẩm hay bạn đang tìm kiếm danh sách cụ thể nào đó nhỉ?', 'bot', '2025-08-17 10:43:58'),
+(1998, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-17 10:44:56'),
+(1999, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm đang hoạt động:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá\', stock AS \'Tồn kho\', is_active AS \'Trạng thái\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-08-17 10:44:56'),
+(2000, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-17 10:44:56'),
+(2001, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm đang hoạt động:\", \"data\": [{\"Mã sản phẩm\": 1, \"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá\": 15000.0, \"Tồn kho\": 100, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 2, \"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá\": 28000.0, \"Tồn kho\": 60, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá\": 50000.0, \"Tồn kho\": 200, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá\": 650000.0, \"Tồn kho\": 15, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá\": 40000.0, \"Tồn kho\": 500, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 6, \"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá\": 20000.0, \"Tồn kho\": 80, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá\": 45000.0, \"Tồn kho\": 150, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 8, \"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá\": 70000.0, \"Tồn kho\": 90, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá\": 350000.0, \"Tồn kho\": 25, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 10, \"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá\": 120000.0, \"Tồn kho\": 50, \"Trạng thái\": 1}, {\"Mã sản phẩm\": 11, \"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá\": 65000.0, \"Tồn kho\": 70, \"Trạng thái\": 1}]}', 'bot', '2025-08-17 10:44:56'),
+(2002, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-17 10:45:31'),
+(2003, 2, NULL, 'sql_query', '{\n   \"natural_text\": \"📦 Đây là danh sách sản phẩm đang hoạt động:\",\n   \"sql_query\": \"SELECT product_id AS \'Mã sản phẩm\', name AS \'Tên sản phẩm\', price AS \'Giá\', stock AS \'Tồn kho\', CASE WHEN is_active = 1 THEN \'Đang bán\' ELSE \'Ngừng bán\' END AS \'Trạng thái\' FROM products WHERE is_active = 1\"\n}', 'bot', '2025-08-17 10:45:31'),
+(2004, 2, NULL, 'sql_query', 'lay danh sach san pham', 'user', '2025-08-17 10:45:31'),
+(2005, 2, NULL, 'sql_query', '{\"description\": \"📦 Đây là danh sách sản phẩm đang hoạt động:\", \"data\": [{\"Mã sản phẩm\": 1, \"Tên sản phẩm\": \"Paracetamol 500mg\", \"Giá\": 15000.0, \"Tồn kho\": 100, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 2, \"Tên sản phẩm\": \"Amoxicillin 500mg\", \"Giá\": 28000.0, \"Tồn kho\": 60, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 3, \"Tên sản phẩm\": \"Vitamin C 1000mg\", \"Giá\": 50000.0, \"Tồn kho\": 200, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 4, \"Tên sản phẩm\": \"Máy đo huyết áp điện tử\", \"Giá\": 650000.0, \"Tồn kho\": 15, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 5, \"Tên sản phẩm\": \"Khẩu trang y tế 4 lớp\", \"Giá\": 40000.0, \"Tồn kho\": 500, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 6, \"Tên sản phẩm\": \"Ibuprofen 200mg\", \"Giá\": 20000.0, \"Tồn kho\": 80, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 7, \"Tên sản phẩm\": \"Kẽm Gluconat 50mg\", \"Giá\": 45000.0, \"Tồn kho\": 150, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 8, \"Tên sản phẩm\": \"Men tiêu hóa Biolactyl\", \"Giá\": 70000.0, \"Tồn kho\": 90, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 9, \"Tên sản phẩm\": \"Máy xông mũi họng mini\", \"Giá\": 350000.0, \"Tồn kho\": 25, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 10, \"Tên sản phẩm\": \"Kem dưỡng ẩm da nhạy cảm\", \"Giá\": 120000.0, \"Tồn kho\": 50, \"Trạng thái\": \"Đang bán\"}, {\"Mã sản phẩm\": 11, \"Tên sản phẩm\": \"Trà ngủ ngon Hoa Cúc\", \"Giá\": 65000.0, \"Tồn kho\": 70, \"Trạng thái\": \"Đang bán\"}]}', 'bot', '2025-08-17 10:45:31');
 
 -- --------------------------------------------------------
 
@@ -1324,7 +1385,12 @@ CREATE TABLE `doctors` (
 
 INSERT INTO `doctors` (`doctor_id`, `user_id`, `specialty_id`, `clinic_id`, `biography`, `created_at`, `updated_at`) VALUES
 (1, 3, 1, 1, 'Bác sĩ Nội khoa với hơn 10 năm kinh nghiệm trong điều trị tiểu đường, huyết áp. Tốt nghiệp Đại học Y Dược TP.HCM.', '2025-05-24 06:23:51', '2025-05-24 13:23:51'),
-(2, 6, 4, 2, 'Bác sĩ Tim mạch từng công tác tại Viện Tim TP.HCM. Có bằng Thạc sĩ Y khoa từ Đại học Paris, Pháp.', '2025-05-24 06:23:51', '2025-05-24 13:23:51');
+(2, 6, 4, 2, 'Bác sĩ Tim mạch từng công tác tại Viện Tim TP.HCM. Có bằng Thạc sĩ Y khoa từ Đại học Paris, Pháp.', '2025-05-24 06:23:51', '2025-05-24 13:23:51'),
+(3, 7, 6, 3, 'Bác sĩ Da liễu với hơn 15 năm kinh nghiệm, chuyên điều trị các bệnh về da liễu và thẩm mỹ da.', '2025-08-17 12:21:18', '2025-08-17 19:21:18'),
+(4, 8, 8, 4, 'Bác sĩ Thần kinh, từng công tác tại Bệnh viện Bạch Mai, có nhiều công trình nghiên cứu về động kinh.', '2025-08-17 12:21:18', '2025-08-17 19:21:18'),
+(5, 9, 5, 3, 'Bác sĩ Nhi khoa, nhiều năm làm việc trong chăm sóc sức khỏe trẻ em tại TP.HCM.', '2025-08-17 12:21:18', '2025-08-17 19:21:18'),
+(6, 10, 2, 2, 'Bác sĩ Ngoại khoa với 20 năm kinh nghiệm phẫu thuật tổng quát, từng học tập tại Nhật Bản.', '2025-08-17 12:21:18', '2025-08-17 19:21:18'),
+(7, 11, 4, 5, 'Bác sĩ Tim mạch, chuyên về tăng huyết áp và bệnh mạch vành, tham gia nhiều hội nghị quốc tế.', '2025-08-17 12:21:18', '2025-08-17 19:21:18');
 
 -- --------------------------------------------------------
 
@@ -1382,7 +1448,17 @@ INSERT INTO `doctor_schedules` (`schedule_id`, `doctor_id`, `clinic_id`, `day_of
 (9, 2, 2, 4, '14:00:00', '17:00:00', 0, '2025-05-24 06:25:08', '2025-07-21 13:41:12'),
 (10, 2, 2, 5, '09:00:00', '12:00:00', 0, '2025-05-24 06:25:08', '2025-07-21 13:41:12'),
 (11, 1, NULL, 6, '08:00:00', '12:00:00', 1, '2025-07-20 16:42:29', '2025-07-20 23:42:29'),
-(12, 2, NULL, 7, '09:00:00', '12:00:00', 1, '2025-07-21 06:41:34', '2025-07-21 13:41:34');
+(12, 2, NULL, 7, '09:00:00', '12:00:00', 1, '2025-07-21 06:41:34', '2025-07-21 13:41:34'),
+(23, 3, 3, 1, '08:00:00', '12:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(24, 3, 3, 5, '13:00:00', '17:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(25, 4, 4, 3, '08:30:00', '12:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(26, 4, 4, 6, '14:00:00', '18:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(27, 5, 3, 4, '09:00:00', '12:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(28, 5, 3, 7, '08:00:00', '11:30:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(29, 6, 2, 2, '13:00:00', '17:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(30, 6, 2, 5, '08:00:00', '12:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(31, 7, 5, 3, '09:00:00', '12:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20'),
+(32, 7, 5, 6, '13:30:00', '17:00:00', 1, '2025-08-17 12:26:20', '2025-08-17 19:26:20');
 
 -- --------------------------------------------------------
 
@@ -1471,7 +1547,8 @@ INSERT INTO `health_predictions` (`prediction_id`, `user_id`, `record_id`, `chat
 (70, 4, 70, NULL, '2025-07-12 10:56:49', 0.85, '{\"symptoms\": [], \"predicted_diseases\": [\"Huyết áp thấp\", \"Rối loạn nhịp tim\", \"Căng thẳng hoặc lo âu\"]}'),
 (71, 4, 71, NULL, '2025-07-15 10:45:11', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}'),
 (77, 4, 77, NULL, '2025-07-23 15:18:50', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Mất nước hoặc thiếu dinh dưỡng\", \"Huyết áp thấp\"]}'),
-(78, 2, 78, NULL, '2025-08-05 05:59:54', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Mất nước hoặc thiếu dinh dưỡng\", \"Căng thẳng hoặc lo âu\", \"Huyết áp thấp\"]}');
+(78, 2, 78, NULL, '2025-08-05 05:59:54', 0.9, '{\"symptoms\": [\"Đau đầu\", \"Chóng mặt\", \"Buồn nôn\"], \"predicted_diseases\": [\"Mất nước hoặc thiếu dinh dưỡng\", \"Căng thẳng hoặc lo âu\", \"Huyết áp thấp\"]}'),
+(80, 2, 80, NULL, '2025-08-12 13:55:29', 0.9, '{\"symptoms\": [\"Đau đầu\"], \"predicted_diseases\": [\"Căng thẳng hoặc lo âu\", \"Thiếu nước\", \"Thiếu ngủ\"]}');
 
 -- --------------------------------------------------------
 
@@ -1573,7 +1650,9 @@ INSERT INTO `health_records` (`record_id`, `user_id`, `record_date`, `weight`, `
 (75, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu', '2025-07-23 15:11:17', '2025-07-23 22:11:17'),
 (76, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-23 15:13:11', '2025-07-23 22:13:11'),
 (77, 4, '2025-07-23', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-07-23 15:18:50', '2025-07-23 22:18:50'),
-(78, 2, '2025-08-05', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-08-05 05:59:54', '2025-08-05 12:59:54');
+(78, 2, '2025-08-05', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu, Chóng mặt, Buồn nôn', '2025-08-05 05:59:54', '2025-08-05 12:59:54'),
+(79, 2, '2025-08-12', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu', '2025-08-12 13:31:04', '2025-08-12 20:31:04'),
+(80, 2, '2025-08-12', NULL, NULL, NULL, 'Triệu chứng ghi nhận: Đau đầu', '2025-08-12 13:55:29', '2025-08-12 20:55:29');
 
 -- --------------------------------------------------------
 
@@ -1868,7 +1947,10 @@ INSERT INTO `prediction_diseases` (`id`, `prediction_id`, `disease_id`, `disease
 (226, 77, -1, 'Huyết áp thấp', 0.8, 'Tình trạng này có thể gây cảm giác chóng mặt nhẹ khi bạn thay đổi tư thế đột ngột.', 'Thử ngồi nghỉ và uống nước từ từ để cảm thấy ổn hơn nha.'),
 (227, 78, -1, 'Mất nước hoặc thiếu dinh dưỡng', 0.85, 'Tình trạng cơ thể không được cung cấp đủ nước hoặc dinh dưỡng có thể gây ra cảm giác chóng mặt và mệt mỏi.', 'Uống đủ nước và ăn uống đầy đủ sẽ giúp cải thiện.'),
 (228, 78, -1, 'Căng thẳng hoặc lo âu', 0.9, 'Áp lực từ công việc hoặc cuộc sống có thể gây ra cảm giác đau đầu và buồn nôn.', 'Nghỉ ngơi và thư giãn là cách tốt để giảm bớt triệu chứng.'),
-(229, 78, -1, 'Huyết áp thấp', 0.6, 'Huyết áp thấp có thể dẫn đến cảm giác chóng mặt khi thay đổi tư thế.', 'Ngồi nghỉ và uống nước từ từ có thể giúp bạn cảm thấy khá hơn.');
+(229, 78, -1, 'Huyết áp thấp', 0.6, 'Huyết áp thấp có thể dẫn đến cảm giác chóng mặt khi thay đổi tư thế.', 'Ngồi nghỉ và uống nước từ từ có thể giúp bạn cảm thấy khá hơn.'),
+(233, 80, -1, 'Căng thẳng hoặc lo âu', 0.9, 'Cảm giác áp lực có thể gây ra triệu chứng đau đầu.', 'Nghỉ ngơi, hít thở sâu và thư giãn.'),
+(234, 80, -1, 'Thiếu nước', 0.85, 'Thiếu nước có thể dẫn đến cảm giác đau đầu.', 'Uống đủ nước trong suốt cả ngày.'),
+(235, 80, -1, 'Thiếu ngủ', 0.9, 'Thiếu ngủ là nguyên nhân phổ biến gây đau đầu.', 'Cố gắng ngủ đủ giấc và đi ngủ sớm hơn.');
 
 -- --------------------------------------------------------
 
@@ -1950,17 +2032,37 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `category_id`, `name`, `description`, `price`, `stock`, `is_medicine`, `image_url`, `created_at`, `updated_at`, `is_active`, `discount_amount`) VALUES
-(1, 1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 1, 'https://i.pinimg.com/736x/63/72/7c/63727c4fe25f05abee1f32debe73e5ca.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:15', 1, 10000),
-(2, 1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 1, 'https://example.com/images/amoxicillin.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:21', 1, 10000),
-(3, 2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 1, 'https://example.com/images/vitaminC.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:23', 1, 10000),
-(4, 3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 0, 'https://example.com/images/blood_pressure_monitor.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:25', 1, 10000),
-(5, 4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 0, 'https://example.com/images/face_mask.jpg', '2025-05-28 07:02:02', '2025-07-20 13:19:27', 1, 10000),
-(6, 1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 1, 'assets/images/products/product_1752991945_687c88c9aba5a.png', '2025-07-04 12:55:40', '2025-07-20 13:19:30', 1, 10000),
-(7, 2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 1, 'https://example.com/images/zinc.jpg', '2025-07-04 12:55:40', '2025-07-20 13:19:31', 1, 10000),
-(8, 2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 1, 'https://example.com/images/probiotic.jpg', '2025-07-04 12:55:40', '2025-07-20 13:19:33', 1, 10000),
-(9, 3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 0, 'https://example.com/images/nebulizer.jpg', '2025-07-04 12:55:40', '2025-07-20 13:19:35', 1, 10000),
-(10, 5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 0, 'https://example.com/images/moisturizer.jpg', '2025-07-04 12:55:40', '2025-07-20 13:19:36', 1, 10000),
-(11, 6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 0, 'https://i.pinimg.com/736x/d7/22/35/d72235c87cfe02dfcdc92c89d46096c0.jpg', '2025-07-04 12:55:40', '2025-07-21 13:37:48', 1, 10000);
+(1, 1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 1, 'assets/images/products/paracetamol.jpg', '2025-05-28 07:02:02', '2025-08-17 17:52:02', 1, 10000),
+(2, 1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 1, 'assets/images/products/amoxicillin.jpg', '2025-05-28 07:02:02', '2025-08-17 18:06:44', 1, 10000),
+(3, 2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 1, 'assets/images/products/Vitamin-C.jpg', '2025-05-28 07:02:02', '2025-08-17 18:07:31', 1, 10000),
+(4, 3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 0, 'assets/images/products/MayDoHuyetAp.jpg', '2025-05-28 07:02:02', '2025-08-17 18:00:06', 1, 10000),
+(5, 4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 0, 'assets/images/products/KhauTrang.jpg', '2025-05-28 07:02:02', '2025-08-17 18:09:21', 1, 10000),
+(6, 1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 1, 'assets/images/products/Ibuprofen_200mg.jpg', '2025-07-04 12:55:40', '2025-08-17 18:10:52', 1, 10000),
+(7, 2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 1, 'assets/images/products/Gluconat_50mg.jpg', '2025-07-04 12:55:40', '2025-08-17 18:12:01', 1, 10000),
+(8, 2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 1, 'assets/images/products/Biolactyl.jpg', '2025-07-04 12:55:40', '2025-08-17 18:12:49', 1, 10000),
+(9, 3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 0, 'assets/images/products/may-xong-mui-hong-mini.jpg', '2025-07-04 12:55:40', '2025-08-17 18:27:47', 1, 10000),
+(10, 5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 0, 'assets/images/products/cetaphil.jpg', '2025-07-04 12:55:40', '2025-08-17 18:28:50', 1, 10000),
+(11, 6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 0, 'assets/images/products/trahoacuc.png', '2025-07-04 12:55:40', '2025-08-17 18:29:49', 1, 10000),
+(12, 1, 'Azithromycin 250mg', 'Kháng sinh nhóm macrolid, điều trị nhiễm khuẩn.', 75000, 40, 0, 'assets/images/products/azithromycin.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(13, 1, 'Loratadine 10mg', 'Thuốc kháng histamin, giảm dị ứng.', 30000, 100, 0, 'assets/images/products/loratadine.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(14, 1, 'Metformin 500mg', 'Điều trị tiểu đường type 2.', 60000, 80, 0, 'assets/images/products/metformin.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(15, 2, 'Omega-3 Fish Oil 1000mg', 'Hỗ trợ tim mạch, não bộ.', 150000, 120, 0, 'assets/images/products/omega3.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(16, 2, 'Canxi + Vitamin D3', 'Tăng cường xương chắc khỏe.', 110000, 90, 0, 'assets/images/products/calcium_d3.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(17, 2, 'Probiotic Kids', 'Men vi sinh hỗ trợ tiêu hóa cho trẻ em.', 95000, 60, 0, 'assets/images/products/probiotic_kids.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(18, 3, 'Nhiệt kế hồng ngoại', 'Đo nhiệt độ nhanh chóng, chính xác.', 250000, 35, 0, 'assets/images/products/thermometer.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(19, 3, 'Máy đo đường huyết', 'Thiết bị theo dõi đường huyết cá nhân.', 800000, 20, 0, 'assets/images/products/glucometer.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(20, 3, 'Ống nghe y tế', 'Dụng cụ nghe tim phổi dành cho bác sĩ.', 180000, 50, 0, 'assets/images/products/stethoscope.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(21, 4, 'Bơm tiêm 5ml vô trùng', 'Đóng gói 100 cái, sử dụng 1 lần.', 120000, 150, 0, 'assets/images/products/syringe.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(22, 4, 'Dung dịch sát khuẩn tay 500ml', 'Chứa 70% cồn, diệt khuẩn hiệu quả.', 45000, 200, 0, 'assets/images/products/hand_sanitizer.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(23, 4, 'Bông gòn y tế 500g', 'Dùng trong sơ cứu, chăm sóc vết thương.', 60000, 100, 0, 'assets/images/products/cotton.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(24, 5, 'Sữa rửa mặt dịu nhẹ', 'Làm sạch bụi bẩn, dịu da.', 95000, 70, 0, 'assets/images/products/cleanser.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(25, 5, 'Kem chống nắng SPF50', 'Bảo vệ da trước tia UV.', 180000, 90, 0, 'assets/images/products/sunscreen.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(26, 5, 'Serum Vitamin E', 'Dưỡng ẩm và chống lão hóa.', 220000, 50, 0, 'assets/images/products/serum_vitaminE.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(27, 6, 'Trà gừng túi lọc', 'Hỗ trợ tiêu hóa, giảm buồn nôn.', 75000, 80, 0, 'assets/images/products/ginger_tea.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(28, 6, 'Enzyme tiêu hóa Papain', 'Hỗ trợ hấp thu dinh dưỡng.', 95000, 60, 0, 'assets/images/products/papain.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(29, 7, 'Sâm Hàn Quốc dạng viên', 'Bổ sung năng lượng, tăng miễn dịch.', 450000, 40, 0, 'assets/images/products/korean_ginseng.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(30, 7, 'Beta Glucan 500mg', 'Tăng sức đề kháng tự nhiên.', 160000, 70, 0, 'assets/images/products/beta_glucan.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0),
+(31, 8, 'Melatonin 3mg', 'Hỗ trợ ngủ ngon, điều chỉnh nhịp sinh học.', 180000, 65, 0, 'assets/images/products/melatonin.jpg', '2025-08-17 12:04:25', '2025-08-17 19:04:25', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -2292,7 +2394,12 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role_id`, `cre
 (2, 'huy', 'hoanhuy12@gmail.com', '123', 1, '2025-05-22 06:49:02', '2025-06-06 06:10:42', 'active'),
 (3, 'dr.hanh', 'doctor@example.com', '123', 2, '2025-05-22 06:49:02', '2025-06-06 06:10:34', 'active'),
 (4, 'vana', 'vana@example.com', '123', 3, '2025-05-22 08:38:06', '2025-06-10 08:28:14', 'active'),
-(6, 'linh', 'linh@gmail.com', '123', 2, '2025-05-24 06:15:12', '2025-06-06 06:10:49', 'active');
+(6, 'linh', 'linh@gmail.com', '123', 2, '2025-05-24 06:15:12', '2025-06-06 06:10:49', 'active'),
+(7, 'dr.huong', 'huong.derma@gmail.com', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-08-17 12:20:49', '2025-08-17 12:20:49', 'active'),
+(8, 'dr.khoa', 'khoa.neuro@gmail.com', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-08-17 12:20:49', '2025-08-17 12:20:49', 'active'),
+(9, 'dr.trang', 'trang.pedia@gmail.com', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-08-17 12:20:49', '2025-08-17 12:20:49', 'active'),
+(10, 'dr.long', 'long.surgery@gmail.com', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-08-17 12:20:49', '2025-08-17 12:20:49', 'active'),
+(11, 'dr.ha', 'ha.cardiology@gmail.com', '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, '2025-08-17 12:20:49', '2025-08-17 12:20:49', 'active');
 
 -- --------------------------------------------------------
 
@@ -2317,11 +2424,16 @@ CREATE TABLE `users_info` (
 --
 
 INSERT INTO `users_info` (`id`, `user_id`, `full_name`, `gender`, `date_of_birth`, `profile_picture`, `created_at`, `updated_at`, `phone`) VALUES
-(1, 1, 'Quản trị viên', 'Nam', '1990-01-01', NULL, '2025-05-22 06:49:55', '2025-07-21 06:09:57', '09777313131'),
-(2, 2, 'Hoàn Huy', 'Nam', '1999-09-09', NULL, '2025-05-22 06:49:55', '2025-05-24 07:07:40', NULL),
-(3, 3, 'John Doe', 'Nam', '2000-12-01', NULL, '2025-05-22 06:49:55', '2025-05-22 06:49:55', NULL),
-(4, 4, 'Nguyễn Văn A', 'Nam', '1995-08-15', NULL, '2025-05-22 08:39:27', '2025-05-22 08:39:27', NULL),
-(5, 6, 'Dr.Linh', 'Nữ', '1995-08-15', NULL, '2025-05-24 06:17:47', '2025-07-20 13:22:15', '');
+(1, 1, 'Quản trị viên', 'Nam', '1990-01-01', 'assets\\images\\', '2025-05-22 06:49:55', '2025-08-17 12:38:56', '09777313131'),
+(2, 2, 'Hoàn Huy', 'Nam', '1999-09-09', '', '2025-05-22 06:49:55', '2025-08-17 12:38:50', NULL),
+(3, 3, 'John Doe', 'Nam', '2000-12-01', 'assets\\images\\doctocs\\doe.jpg', '2025-05-22 06:49:55', '2025-08-17 12:39:30', NULL),
+(4, 4, 'Nguyễn Văn A', 'Nam', '1995-08-15', 'assets\\images\\', '2025-05-22 08:39:27', '2025-08-17 12:39:34', NULL),
+(5, 6, 'Dr.Linh', 'Nữ', '1995-08-15', 'assets\\images\\doctocs\\linh.jpg', '2025-05-24 06:17:47', '2025-08-17 12:38:22', ''),
+(6, 7, 'BS. Nguyễn Thị Hương', 'Nữ', '1980-05-12', 'assets\\images\\doctocs\\bs-nguyen-thi-huong.png', '2025-08-17 12:21:03', '2025-08-17 12:36:07', '0912345678'),
+(7, 8, 'BS. Trần Văn Khoa', 'Nam', '1978-09-20', 'assets\\images\\doctocs\\vankhoa.jpg', '2025-08-17 12:21:03', '2025-08-17 12:40:25', '0987654321'),
+(8, 9, 'BS. Lê Thị Trang', 'Nữ', '1985-11-03', 'assets\\images\\doctocs\\lethitrang.jpg', '2025-08-17 12:21:03', '2025-08-17 12:34:17', '0901122334'),
+(9, 10, 'BS. Phạm Văn Long', 'Nam', '1975-02-18', 'assets\\images\\doctocs\\vanlong.jpg', '2025-08-17 12:21:03', '2025-08-17 12:40:58', '0933445566'),
+(10, 11, 'BS. Đỗ Thị Hà', 'Nữ', '1982-07-25', 'assets\\images\\doctocs\\thiha.jpg', '2025-08-17 12:21:03', '2025-08-17 12:41:24', '0977554433');
 
 -- --------------------------------------------------------
 
@@ -2417,7 +2529,8 @@ INSERT INTO `user_symptom_history` (`id`, `user_id`, `symptom_id`, `record_date`
 (188, 4, 3, '2025-07-23', 'Người dùng có cảm giác buồn nôn nhẹ.'),
 (189, 2, 1, '2025-08-05', 'Người dùng bị đau đầu kéo dài khoảng 5-10 phút sau khi ngồi dậy.'),
 (190, 2, 19, '2025-08-05', 'Người dùng cảm thấy chóng mặt tự nhiên, xảy ra khi chưa ăn gì vào buổi sáng.'),
-(191, 2, 3, '2025-08-05', 'Người dùng có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.');
+(191, 2, 3, '2025-08-05', 'Người dùng có cảm giác buồn nôn nhẹ khi ngửi thấy một mùi gì đó.'),
+(193, 2, 1, '2025-08-12', 'Người dùng báo cáo bị đau đầu ngay sau khi ngủ dậy.');
 
 --
 -- Indexes for dumped tables
@@ -2806,7 +2919,7 @@ ALTER TABLE `chatbot_knowledge_base`
 -- AUTO_INCREMENT for table `chat_logs`
 --
 ALTER TABLE `chat_logs`
-  MODIFY `chat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1946;
+  MODIFY `chat_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2006;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -2824,7 +2937,7 @@ ALTER TABLE `diseases`
 -- AUTO_INCREMENT for table `doctors`
 --
 ALTER TABLE `doctors`
-  MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `doctor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `doctor_off_days`
@@ -2836,7 +2949,7 @@ ALTER TABLE `doctor_off_days`
 -- AUTO_INCREMENT for table `doctor_schedules`
 --
 ALTER TABLE `doctor_schedules`
-  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `email_logs`
@@ -2854,13 +2967,13 @@ ALTER TABLE `guest_users`
 -- AUTO_INCREMENT for table `health_predictions`
 --
 ALTER TABLE `health_predictions`
-  MODIFY `prediction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `prediction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT for table `health_records`
 --
 ALTER TABLE `health_records`
-  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
+  MODIFY `record_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT for table `medical_categories`
@@ -2914,7 +3027,7 @@ ALTER TABLE `payments`
 -- AUTO_INCREMENT for table `prediction_diseases`
 --
 ALTER TABLE `prediction_diseases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=230;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=236;
 
 --
 -- AUTO_INCREMENT for table `prescriptions`
@@ -2932,7 +3045,7 @@ ALTER TABLE `prescription_products`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `product_categories`
@@ -2998,13 +3111,13 @@ ALTER TABLE `symptoms`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `users_info`
 --
 ALTER TABLE `users_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `user_addresses`
@@ -3022,7 +3135,7 @@ ALTER TABLE `user_notifications`
 -- AUTO_INCREMENT for table `user_symptom_history`
 --
 ALTER TABLE `user_symptom_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=192;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=194;
 
 --
 -- Constraints for dumped tables

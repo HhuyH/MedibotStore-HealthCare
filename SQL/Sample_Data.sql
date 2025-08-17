@@ -21,6 +21,25 @@ VALUES
  '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC',--id 6
  2, NOW()), 
 
+-- Thêm vài tài khoản cho bác sĩ
+INSERT INTO users (username, email, password, role_id, created_at)
+VALUES
+('dr.huong', 'huong.derma@gmail.com',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, NOW()), -- id 7
+
+('dr.khoa', 'khoa.neuro@gmail.com',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, NOW()), -- id 8
+
+('dr.trang', 'trang.pedia@gmail.com',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, NOW()), -- id 9
+
+('dr.long', 'long.surgery@gmail.com',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, NOW()), -- id 10
+
+('dr.ha', 'ha.cardiology@gmail.com',
+ '$2b$12$KIX9W96S6PvuYcM1vHtrKuu6LSDuCMUCylKBD8eEkF2ZQDfMBzJwC', 2, NOW()); -- id 11
+
+
 ----------------------------------------------GUEST_USERS----------------------------------------------------------------------------------------------------------------
 INSERT INTO guest_users (full_name, phone, email)
 VALUES
@@ -36,6 +55,15 @@ VALUES
 (3, 'Dr.Hand', 'nữ', '2000-12-01', '0888888888');
 (4, 'Nguyễn Văn A', 'Nam', '1995-08-15', '0901234567');
 (6, 'Dr.Linh', 'Nữ', '1995-08-15', '0123466789');
+
+INSERT INTO users_info (user_id, full_name, gender, date_of_birth, phone)
+VALUES
+(7, 'BS. Nguyễn Thị Hương', 'Nữ', '1980-05-12', '0912345678'),
+(8, 'BS. Trần Văn Khoa', 'Nam', '1978-09-20', '0987654321'),
+(9, 'BS. Lê Thị Trang', 'Nữ', '1985-11-03', '0901122334'),
+(10, 'BS. Phạm Văn Long', 'Nam', '1975-02-18', '0933445566'),
+(11, 'BS. Đỗ Thị Hà', 'Nữ', '1982-07-25', '0977554433');
+
 
 ----------------------------------------------USERS_ADDRESSES----------------------------------------------------------------------------------------------------------------
 INSERT INTO user_addresses (
@@ -365,20 +393,59 @@ VALUES
 (3, 1, 1, 'Bác sĩ Nội khoa với hơn 10 năm kinh nghiệm trong điều trị tiểu đường, huyết áp. Tốt nghiệp Đại học Y Dược TP.HCM.'),
 (6, 4, 2, 'Bác sĩ Tim mạch từng công tác tại Viện Tim TP.HCM. Có bằng Thạc sĩ Y khoa từ Đại học Paris, Pháp.');
 
+INSERT INTO doctors (user_id, specialty_id, clinic_id, biography)
+VALUES
+(7, 6, 3, 'Bác sĩ Da liễu với hơn 15 năm kinh nghiệm, chuyên điều trị các bệnh về da liễu và thẩm mỹ da.'),
+(8, 8, 4, 'Bác sĩ Thần kinh, từng công tác tại Bệnh viện Bạch Mai, có nhiều công trình nghiên cứu về động kinh.'),
+(9, 5, 3, 'Bác sĩ Nhi khoa, nhiều năm làm việc trong chăm sóc sức khỏe trẻ em tại TP.HCM.'),
+(10, 2, 2, 'Bác sĩ Ngoại khoa với 20 năm kinh nghiệm phẫu thuật tổng quát, từng học tập tại Nhật Bản.'),
+(11, 4, 5, 'Bác sĩ Tim mạch, chuyên về tăng huyết áp và bệnh mạch vành, tham gia nhiều hội nghị quốc tế.');
+
+
 ---------------------------------------------------------------------------------Lịch làm việc bác sĩ---------------------------------------------------------------------------------------------------------------------
 -- Lịch bác sĩ Nội khoa (doctor_id = 1) tại phòng khám 1
 INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
 VALUES
-(1, 1, 'Monday', '08:00:00', '12:00:00'),
-(1, 1, 'Wednesday', '08:00:00', '12:00:00'),
-(1, 1, 'Friday', '13:30:00', '17:30:00');
+(1, 1, '1', '08:00:00', '12:00:00'),
+(1, 1, '4', '08:00:00', '12:00:00'),
+(1, 1, '6', '13:30:00', '17:30:00');
 
 -- Lịch bác sĩ Tim mạch (doctor_id = 2) tại phòng khám 2
 INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
 VALUES
-(2, 2, 'Tuesday', '09:00:00', '12:00:00'),
-(2, 2, 'Thursday', '14:00:00', '18:00:00'),
-(2, 2, 'Saturday', '08:30:00', '11:30:00');
+(2, 2, '3', '09:00:00', '12:00:00'),
+(2, 2, '5', '14:00:00', '18:00:00'),
+(2, 2, '7', '08:30:00', '11:30:00');
+
+-- BS. Hương - Da liễu tại Victoria Healthcare
+INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
+VALUES
+(3, 3, '1', '08:00:00', '12:00:00'),
+(3, 3, '5', '13:00:00', '17:00:00');
+
+-- BS. Khoa - Thần kinh tại BV Đại học Y Dược
+INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
+VALUES
+(4, 4, '3', '08:30:00', '12:00:00'),
+(4, 4, '6', '14:00:00', '18:00:00');
+
+-- BS. Trang - Nhi khoa tại Victoria Healthcare
+INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
+VALUES
+(5, 3, '4', '09:00:00', '12:00:00'),
+(5, 3, '7', '08:00:00', '11:30:00');
+
+-- BS. Long - Ngoại khoa tại Chợ Rẫy
+INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
+VALUES
+(6, 2, '2', '13:00:00', '17:00:00'),
+(6, 2, '5', '08:00:00', '12:00:00');
+
+-- BS. Hà - Tim mạch tại Phòng khám Pasteur
+INSERT INTO doctor_schedules (doctor_id, clinic_id, day_of_week, start_time, end_time)
+VALUES
+(7, 5, '3', '09:00:00', '12:00:00'),
+(7, 5, '6', '13:30:00', '17:00:00');
 
 ---------------------------------------------------------------------------------Đặt lịch khám---------------------------------------------------------------------------------------------------------------------
 
@@ -452,24 +519,64 @@ INSERT INTO product_categories (name, description) VALUES
 --📦 products: Danh sách sản phẩm
 INSERT INTO products (category_id, name, description, price, stock, image_url)
 VALUES
-(1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 'https://example.com/images/paracetamol.jpg'),
-(1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 'https://example.com/images/amoxicillin.jpg'),
-(2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 'https://example.com/images/vitaminC.jpg'),
-(3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 'https://example.com/images/blood_pressure_monitor.jpg'),
-(4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 'https://example.com/images/face_mask.jpg');
+(1, 'Paracetamol 500mg', 'Thuốc hạ sốt, giảm đau thường dùng.', 15000, 100, 'assets/images/products/paracetamol.jpg'),
+(1, 'Amoxicillin 500mg', 'Kháng sinh phổ rộng nhóm penicillin.', 28000, 60, 'assets/images/products/amoxicillin.jpg'),
+(2, 'Vitamin C 1000mg', 'Hỗ trợ tăng cường đề kháng.', 50000, 200, 'assets/images/products/vitaminC.jpg'),
+(3, 'Máy đo huyết áp điện tử', 'Thiết bị đo huyết áp tại nhà.', 650000, 15, 'assets/images/products/blood_pressure_monitor.jpg'),
+(4, 'Khẩu trang y tế 4 lớp', 'Hộp 50 cái, đạt chuẩn kháng khuẩn.', 40000, 500, 'assets/images/products/face_mask.jpg');
 -- Thuốc và thực phẩm chức năng
 INSERT INTO products (category_id, name, description, price, stock, image_url)
 VALUES
-(1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 'https://example.com/images/ibuprofen.jpg'),
-(2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 'https://example.com/images/zinc.jpg'),
-(2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 'https://example.com/images/probiotic.jpg'),
-(3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 'https://example.com/images/nebulizer.jpg'),
-(5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 'https://example.com/images/moisturizer.jpg'),
-(6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 'https://example.com/images/chamomile_tea.jpg');
+(1, 'Ibuprofen 200mg', 'Thuốc giảm đau, kháng viêm, hạ sốt.', 20000, 80, 'assets/images/products/ibuprofen.jpg'),
+(2, 'Kẽm Gluconat 50mg', 'Hỗ trợ miễn dịch, chống viêm nhiễm.', 45000, 150, 'assets/images/products/zinc.jpg'),
+(2, 'Men tiêu hóa Biolactyl', 'Giúp cân bằng hệ vi sinh đường ruột.', 70000, 90, 'assets/images/products/probiotic.jpg'),
+(3, 'Máy xông mũi họng mini', 'Hỗ trợ điều trị viêm mũi, cảm cúm tại nhà.', 350000, 25, 'assets/images/products/nebulizer.jpg'),
+(5, 'Kem dưỡng ẩm da nhạy cảm', 'Phục hồi và giữ ẩm cho da khô, kích ứng.', 120000, 50, 'assets/images/products/moisturizer.jpg'),
+(6, 'Trà ngủ ngon Hoa Cúc', 'Giúp thư giãn, cải thiện giấc ngủ tự nhiên.', 65000, 70, 'assets/images/products/chamomile_tea.jpg');
 
 UPDATE products SET is_medicine = TRUE WHERE product_id IN (1, 2, 6, 7, 8, 3);
 
-------------------------------------------------------------💊 medicines: Thông tin chi tiết thuốc (chỉ áp dụng với sản phẩm là thuốc)------------------------------------------------------------------------------------
+-- Bổ sung 19 sản phẩm mới
+INSERT INTO products (category_id, name, description, price, stock, image_url)
+VALUES
+-- Thuốc điều trị
+(1, 'Azithromycin 250mg', 'Kháng sinh nhóm macrolid, điều trị nhiễm khuẩn.', 75000, 40, 'assets/images/products/azithromycin.jpg'),
+(1, 'Loratadine 10mg', 'Thuốc kháng histamin, giảm dị ứng.', 30000, 100, 'assets/images/products/loratadine.jpg'),
+(1, 'Metformin 500mg', 'Điều trị tiểu đường type 2.', 60000, 80, 'assets/images/products/metformin.jpg'),
+
+-- Thực phẩm chức năng
+(2, 'Omega-3 Fish Oil 1000mg', 'Hỗ trợ tim mạch, não bộ.', 150000, 120, 'assets/images/products/omega3.jpg'),
+(2, 'Canxi + Vitamin D3', 'Tăng cường xương chắc khỏe.', 110000, 90, 'assets/images/products/calcium_d3.jpg'),
+(2, 'Probiotic Kids', 'Men vi sinh hỗ trợ tiêu hóa cho trẻ em.', 95000, 60, 'assets/images/products/probiotic_kids.jpg'),
+
+-- Thiết bị y tế
+(3, 'Nhiệt kế hồng ngoại', 'Đo nhiệt độ nhanh chóng, chính xác.', 250000, 35, 'assets/images/products/thermometer.jpg'),
+(3, 'Máy đo đường huyết', 'Thiết bị theo dõi đường huyết cá nhân.', 800000, 20, 'assets/images/products/glucometer.jpg'),
+(3, 'Ống nghe y tế', 'Dụng cụ nghe tim phổi dành cho bác sĩ.', 180000, 50, 'assets/images/products/stethoscope.jpg'),
+
+-- Vật tư tiêu hao
+(4, 'Bơm tiêm 5ml vô trùng', 'Đóng gói 100 cái, sử dụng 1 lần.', 120000, 150, 'assets/images/products/syringe.jpg'),
+(4, 'Dung dịch sát khuẩn tay 500ml', 'Chứa 70% cồn, diệt khuẩn hiệu quả.', 45000, 200, 'assets/images/products/hand_sanitizer.jpg'),
+(4, 'Bông gòn y tế 500g', 'Dùng trong sơ cứu, chăm sóc vết thương.', 60000, 100, 'assets/images/products/cotton.jpg'),
+
+-- Chăm sóc da
+(5, 'Sữa rửa mặt dịu nhẹ', 'Làm sạch bụi bẩn, dịu da.', 95000, 70, 'assets/images/products/cleanser.jpg'),
+(5, 'Kem chống nắng SPF50', 'Bảo vệ da trước tia UV.', 180000, 90, 'assets/images/products/sunscreen.jpg'),
+(5, 'Serum Vitamin E', 'Dưỡng ẩm và chống lão hóa.', 220000, 50, 'assets/images/products/serum_vitaminE.jpg'),
+
+-- Tiêu hóa
+(6, 'Trà gừng túi lọc', 'Hỗ trợ tiêu hóa, giảm buồn nôn.', 75000, 80, 'assets/images/products/ginger_tea.jpg'),
+(6, 'Enzyme tiêu hóa Papain', 'Hỗ trợ hấp thu dinh dưỡng.', 95000, 60, 'assets/images/products/papain.jpg'),
+
+-- Miễn dịch
+(7, 'Sâm Hàn Quốc dạng viên', 'Bổ sung năng lượng, tăng miễn dịch.', 450000, 40, 'assets/images/products/korean_ginseng.jpg'),
+(7, 'Beta Glucan 500mg', 'Tăng sức đề kháng tự nhiên.', 160000, 70, 'assets/images/products/beta_glucan.jpg'),
+
+-- Giấc ngủ & thư giãn
+(8, 'Melatonin 3mg', 'Hỗ trợ ngủ ngon, điều chỉnh nhịp sinh học.', 180000, 65, 'assets/images/products/melatonin.jpg');
+
+
+------------------------------------------------------------medicines: Thông tin chi tiết thuốc (chỉ áp dụng với sản phẩm là thuốc)------------------------------------------------------------------------------------
 INSERT INTO medicines (
     product_id, active_ingredient, dosage_form, unit, medicine_type, usage_instructions, side_effects, contraindications
 ) VALUES
@@ -540,53 +647,6 @@ VALUES
 (3, 3, 4, 'Khá ổn để tăng sức đề kháng. Đóng gói đẹp.');
 
 ----------------------------------------------------------------3. Chatbot AI-------------------------------------------------------------------------------
-
-INSERT INTO chatbot_knowledge_base (intent, question, answer, category)
-VALUES
--- Hành chính
-('ask_working_hours', 'Bệnh viện làm việc vào thời gian nào?', 'Bệnh viện làm việc từ 7h00 đến 17h00 từ thứ 2 đến thứ 7.', 'Thông tin chung'),
-('ask_contact_info', 'Tôi có thể liên hệ bệnh viện qua số điện thoại nào?', 'Bạn có thể gọi đến số 1900-1234 để được hỗ trợ.', 'Thông tin chung'),
-('ask_location', 'Địa chỉ bệnh viện là gì?', 'Bệnh viện nằm tại số 123 Đường Sức Khỏe, Quận 10, TP.HCM.', 'Thông tin chung'),
-('ask_services', 'Bệnh viện có những dịch vụ gì?', 'Chúng tôi cung cấp các dịch vụ khám bệnh, xét nghiệm, chẩn đoán hình ảnh và điều trị nội trú.', 'Thông tin chung'),
-
--- Y tế / chuyên môn
-('symptom_analysis', 'Tôi bị sốt, mệt mỏi và ho, có thể là bệnh gì?', 
- 'Triệu chứng như vậy có thể do cảm lạnh, viêm họng, hoặc dị ứng thời tiết gây ra. Bạn nên nghỉ ngơi, uống nhiều nước và theo dõi kỹ. Nếu không đỡ thì đi khám nha.', 
- 'Triệu chứng chung'),
-
-('symptom_analysis', 'Tôi bị đau đầu và chóng mặt, có thể là bệnh gì?', 
- 'Đau đầu và chóng mặt có thể do căng thẳng, thiếu ngủ, hoặc các vấn đề về huyết áp. Nếu cảm thấy nghiêm trọng, bạn nên đi khám để được kiểm tra kỹ hơn.', 
- 'Triệu chứng chung'),
-
-('symptom_analysis', 'Tôi bị khó thở và tức ngực, có thể là bệnh gì?', 
- 'Khó thở và tức ngực có thể liên quan đến nhiều bệnh như hen suyễn, viêm phổi hoặc các bệnh tim mạch. Bạn nên đi khám để được chẩn đoán chính xác.', 
- 'Triệu chứng chung'),
-
-('symptom_analysis', 'Tôi bị ngứa da và phát ban, có thể là do bệnh gì?', 
- 'Ngứa da và phát ban có thể do dị ứng, viêm da cơ địa hoặc nhiễm nấm da. Nên tránh tiếp xúc với các chất gây kích ứng và đi khám nếu triệu chứng kéo dài.', 
- 'Triệu chứng chung'),
-
-('symptom_analysis', 'Tôi bị buồn nôn và chán ăn, có thể do bệnh gì?', 
- 'Buồn nôn và chán ăn có thể là dấu hiệu của nhiều vấn đề như rối loạn tiêu hóa, stress hoặc nhiễm trùng nhẹ. Nếu triệu chứng kéo dài, bạn nên đến bác sĩ để kiểm tra.', 
- 'Triệu chứng chung');
-('disease_info', 'Bệnh tiểu đường có những triệu chứng gì?', 'Các triệu chứng bao gồm khát nước nhiều, đi tiểu thường xuyên, mệt mỏi và giảm cân không rõ nguyên nhân.', 'Thông tin bệnh'),
-('medicine_usage', 'Tôi nên uống thuốc hạ sốt như thế nào?', 'Bạn nên uống thuốc theo chỉ định bác sĩ. Thông thường, thuốc hạ sốt được dùng khi nhiệt độ trên 38.5°C.', 'Hướng dẫn dùng thuốc'),
-('disease_info', 'Bệnh tiểu đường có những triệu chứng gì?', 'Các triệu chứng bao gồm khát nước nhiều, đi tiểu thường xuyên, mệt mỏi và giảm cân không rõ nguyên nhân.', 'Thông tin bệnh'),
-('medicine_usage', 'Tôi nên uống thuốc hạ sốt như thế nào?', 'Bạn nên uống thuốc theo chỉ định bác sĩ. Thông thường, thuốc hạ sốt được dùng khi nhiệt độ trên 38.5°C.', 'Hướng dẫn dùng thuốc'),
-
--- Hỗ trợ kỹ thuật
-('account_help', 'Tôi quên mật khẩu đăng nhập thì phải làm sao?', 'Bạn có thể sử dụng chức năng "Quên mật khẩu" trên trang đăng nhập để đặt lại mật khẩu.', 'Hỗ trợ tài khoản'),
-('app_issue', 'Ứng dụng bị lỗi khi tôi mở lên, phải làm sao?', 'Bạn hãy thử khởi động lại ứng dụng hoặc cập nhật lên phiên bản mới nhất. Nếu vẫn gặp lỗi, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ kỹ thuật'),
-('payment_issue', 'Tôi không thể thanh toán đơn thuốc, phải làm sao?', 'Bạn hãy kiểm tra lại thông tin thẻ hoặc tài khoản ngân hàng. Nếu vẫn không thanh toán được, vui lòng liên hệ bộ phận hỗ trợ.', 'Hỗ trợ thanh toán');
-
--- Có thể sẽ có thây đổi nên chưa dùng
--- Đặt lịch hẹn
--- ('booking_procedure', 'Làm sao để đặt lịch khám?', 'Bạn có thể đặt lịch khám trực tuyến qua website hoặc gọi tổng đài 1900-1234.', 'Đặt lịch'),
--- ('booking_available_slots', 'Tôi muốn biết lịch khám của bác sĩ A vào tuần tới?', 'Bạn có thể kiểm tra lịch khám trên trang web hoặc ứng dụng của bệnh viện.', 'Đặt lịch'),
--- ('booking_cancellation', 'Tôi muốn huỷ lịch hẹn đã đặt thì làm sao?', 'Bạn có thể huỷ lịch hẹn trong tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
--- ('booking_confirmation', 'Tôi đã đặt lịch khám nhưng chưa nhận được xác nhận, phải làm sao?', 'Bạn có thể kiểm tra trong mục "Lịch sử đặt lịch" hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
--- ('reschedule_booking', 'Tôi muốn thay đổi lịch hẹn đã đặt thì làm sao?', 'Bạn có thể thay đổi lịch hẹn qua tài khoản cá nhân hoặc gọi đến tổng đài.', 'Đặt lịch'),
--- ('cancel_booking', 'Tôi muốn huỷ lịch hẹn thì làm sao?', 'Bạn có thể huỷ lịch qua tài khoản cá nhân hoặc liên hệ tổng đài để được hỗ trợ.', 'Đặt lịch'),
 
 ----------------------------------------------------------------5. Dịch vụ y tế-------------------------------------------------------------------------------
 

@@ -100,9 +100,13 @@ def extract_symptoms_gpt(user_message, recent_messages, stored_symptoms_name=Non
             name_to_symptom[normalize_text(alias)] = s
 
     if recent_assistant_messages:
-        assistant_context = " ".join(recent_assistant_messages[-2:])
+        assistant_context = " ".join(
+            msg if isinstance(msg, str) else msg.get("content", "")
+            for msg in recent_assistant_messages[-2:]
+        )
     else:
         assistant_context = "..."
+
 
     prompt = f"""
         You are a smart and careful medical assistant.
