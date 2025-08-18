@@ -280,7 +280,7 @@ async def chat_stream(msg: Message = Body(...)):
                 updated_session_data = session_data
                 user_id_for_summary = session_data.get("current_summary_user_id")
 
-                # 1️⃣ Nếu chưa có user_id thì cố gắng extract từ câu hỏi
+                # 1 Nếu chưa có user_id thì cố gắng extract từ câu hỏi
                 if not user_id_for_summary:
                     info = resolve_user_id_from_message(msg.message)
                     if info and info.get("user_id"):
@@ -291,14 +291,14 @@ async def chat_stream(msg: Message = Body(...)):
                         if info and info.get("ambiguous"):
                             match_type = info.get("matched_by")
                             if match_type == "phone_suffix":
-                                message = "⚠️ Có nhiều người có số đuôi điện thoại giống nhau. Bạn có thể cho mình đầy đủ số điện thoại được không?"
+                                message = "Có nhiều người có số đuôi điện thoại giống nhau. Bạn có thể cho mình đầy đủ số điện thoại được không?"
                             else:
                                 hint = {
                                     "name": "nhiều người trùng tên",
                                     "phone": "nhiều người có số giống nhau",
                                     "email": "nhiều người có email giống nhau"
                                 }.get(match_type, "nhiều người trùng thông tin")
-                                message = f"⚠️ Có {hint}. Bạn có thể cung cấp thêm email hoặc số điện thoại để xác định rõ hơn không?"
+                                message = f"Có {hint}. Bạn có thể cung cấp thêm email hoặc số điện thoại để xác định rõ hơn không?"
                         else:
                             message = "Bạn có thể cho mình biết thông tin người mà bạn muộn kiểm tra không?"
 
@@ -307,12 +307,11 @@ async def chat_stream(msg: Message = Body(...)):
 
                         return
 
-                # 2️⃣ Cố gắng trích ngày nếu có
+                # 2 Cố gắng trích ngày nếu có
                 for_date = extract_date_from_text(msg.message)
 
-                result = generate_patient_summary(user_id_for_summary, for_date=for_date)
-                markdown = result["markdown"]
-                summary_data = result["summary_data"]
+                temp_result  = generate_patient_summary(user_id_for_summary, for_date=for_date)
+                summary_data = temp_result["summary_data"]
 
                 # Nếu không có ngày cụ thể, GPT quyết định có cần hỏi không
                 if not for_date:
@@ -321,7 +320,7 @@ async def chat_stream(msg: Message = Body(...)):
                     message = gpt_result.get("message", "Mình sẽ hiển thị thông tin gần nhất nha.")
 
                     if action == "ask_for_date" or action == "ask_for_user_info":
-                        # ✅ Lưu lại cả message hỏi ngày/user info
+                        # Lưu lại cả message hỏi ngày/user info
                         await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, message)
                         save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
                         save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=message, sender='bot')
@@ -331,17 +330,20 @@ async def chat_stream(msg: Message = Body(...)):
                             await asyncio.sleep(0.03)
                         yield "data: [DONE]\n\n"
                         return
-                                # 3️⃣ Gọi hàm sinh tổng hợp hồ sơ
+                else:
+                    action = "show_latest"
+                
+                result = generate_patient_summary(user_id_for_summary, for_date=for_date, action=action)
+                markdown = result["markdown"]
 
                 final_bot_message = markdown
 
                 await update_chat_history_in_session(msg.user_id, session_data, msg.session_id, msg.message, final_bot_message)
                 
-                # ✅ Lưu log hội thoại
+                # Lưu log hội thoại
                 save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=msg.message, sender='user')
                 chat_id = save_chat_log(user_id=msg.user_id, guest_id=None, intent=intent, message=final_bot_message, sender='bot')
 
-                # 4️⃣ Hiển thị toàn bộ markdown
                 yield f"data: {json.dumps({'natural_text': markdown})}\n\n"
                 yield "data: [DONE]\n\n"
                 return

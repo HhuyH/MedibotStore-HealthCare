@@ -9,7 +9,7 @@ from config.config import DB_CONFIG
 from datetime import datetime, timedelta
 from utils.text_utils import normalize_text
 
-def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
+def generate_patient_summary(user_id: int, for_date: str = None, action: str = "show_latest") -> dict:
     conn = pymysql.connect(**DB_CONFIG)
     symptom_rows = []
     prediction_rows = []
@@ -17,7 +17,7 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
 
     try:
         with conn.cursor() as cursor:
-            # 1️⃣ Load triệu chứng
+            # 1. Load triệu chứng (giữ nguyên)
             values = [user_id]
             date_filter = ""
             if for_date:
@@ -40,29 +40,57 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
             """, tuple(values))
             symptom_rows = cursor.fetchall()
 
-            # 2️⃣ Load dự đoán bệnh
-            pred_query = """
-                SELECT p.prediction_date, d.disease_name_raw, d.confidence, d.disease_summary, d.disease_care
-                FROM health_predictions p
-                JOIN prediction_diseases d ON p.prediction_id = d.prediction_id
-                WHERE p.user_id = %s
-            """
-            
-            pred_params = [user_id]
-            if date_obj:
-                pred_query += " AND DATE(p.prediction_date) = %s"
-                pred_params.append(date_obj)
-            pred_query += " ORDER BY p.prediction_date DESC"
-            cursor.execute(pred_query, tuple(pred_params))
-            prediction_rows = cursor.fetchall()
+            # 2. Load dự đoán bệnh
+            if action == "show_latest":
+                cursor.execute("""
+                    SELECT prediction_id, prediction_date
+                    FROM health_predictions
+                    WHERE user_id = %s
+                    ORDER BY prediction_date DESC
+                    LIMIT 1
+                """, (user_id,))
+                latest_pred = cursor.fetchone()
 
-            if prediction_rows:
-                prediction_date = prediction_rows[0][0].strftime("%d/%m/%Y")
+                if latest_pred:
+                    latest_id, latest_date = latest_pred
+                    cursor.execute("""
+                        SELECT %s AS prediction_date, d.disease_name_raw, d.confidence, d.disease_summary, d.disease_care
+                        FROM prediction_diseases d
+                        WHERE d.prediction_id = %s
+                    """, (latest_date, latest_id))
+                    prediction_rows = cursor.fetchall()
+                    prediction_date = latest_date.strftime("%d/%m/%Y")
+
+            elif action == "show_all":
+                cursor.execute("""
+                    SELECT p.prediction_date, d.disease_name_raw, d.confidence, d.disease_summary, d.disease_care
+                    FROM health_predictions p
+                    JOIN prediction_diseases d ON p.prediction_id = d.prediction_id
+                    WHERE p.user_id = %s
+                    ORDER BY p.prediction_date DESC
+                """, (user_id,))
+                prediction_rows = cursor.fetchall()
+
+                if prediction_rows:
+                    prediction_date = prediction_rows[0][0].strftime("%d/%m/%Y")
+
+            elif action == "ask_for_date" and date_obj:
+                cursor.execute("""
+                    SELECT p.prediction_date, d.disease_name_raw, d.confidence, d.disease_summary, d.disease_care
+                    FROM health_predictions p
+                    JOIN prediction_diseases d ON p.prediction_id = d.prediction_id
+                    WHERE p.user_id = %s AND DATE(p.prediction_date) = %s
+                    ORDER BY p.prediction_date DESC
+                """, (user_id, date_obj))
+                prediction_rows = cursor.fetchall()
+
+                if prediction_rows:
+                    prediction_date = prediction_rows[0][0].strftime("%d/%m/%Y")
 
     finally:
         conn.close()
 
-    # ✍️ Chuẩn bị dữ liệu cho prompt
+    # Chuẩn bị dữ liệu cho prompt
     symptom_lines = []
     for name, date, note in symptom_rows:
         line = f"- {name} ({date.strftime('%d/%m/%Y')})"
@@ -77,12 +105,12 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
         name_text = name.title() if name else "Không rõ"
         summary_text = summary.strip() if summary else "Không có mô tả."
         
-        disease_block = f"{icon} <strong>{name_text}</strong><br>— {summary_text}"
+        disease_block = f"{icon} <strong>{name_text}</strong> {summary_text}"
         if care:
-            disease_block += f"<br>→ Gợi ý: {care.strip()}"
+            disease_block += f" Gợi ý: {care.strip()}"
         disease_lines.append(disease_block)
 
-    # 💡 Prompt yêu cầu HTML đẹp
+    # Prompt yêu cầu HTML đẹp
     gpt_prompt = f"""
         You are a medical assistant helping summarize a patient's clinical history for a Vietnamese doctor.
 
@@ -101,7 +129,6 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
 
         Formatting requirements (HTML output):
         - Use <strong> to highlight each symptom name and disease name.
-        - Use <br> for line breaks.
         - Use emoji to indicate AI confidence:
             • 🔴 for high confidence
             • 🟠 for moderate confidence
@@ -112,9 +139,13 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
             • Include notes if available.
 
             2. A set of blocks describing AI-predicted diseases:  
-            • Each block starts with emoji + <strong>disease name</strong> + <br>  
+            • Each block starts with emoji + <strong>disease name</strong>
             • Then a concise clinical description of the disease in Vietnamese  
             • If available, continue with care advice in Vietnamese.
+            • After each AI-predicted disease, include a risk assessment based on AI prediction (e.g., “Khả năng mắc bệnh X: 80%”).  
+            • Provide a short, professional clinical comment to support the doctor’s decision-making.  
+            • Do not include general lifestyle advice; focus on clinical guidance.
+
 
         Additional style rules:
         - Do not use symbols like "--" or "→".
@@ -126,6 +157,9 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
         Final output:
         - One HTML block in Vietnamese
         - Well-structured, readable by doctors
+
+        Do not include general lifestyle advice, hydration tips, or informal comments. Focus on clinical data and AI risk assessment for the doctor.
+
     """
 
     try:
@@ -138,7 +172,7 @@ def generate_patient_summary(user_id: int, for_date: str = None) -> dict:
 
         summary_html = re.sub(r"^```html|```$", "", summary_html).strip()
 
-        # print("🧪 GPT raw output:\n", reply.choices[0].message.content)
+        # print(" GPT raw output:\n", reply.choices[0].message.content)
     except Exception as e:
         summary_html = "⚠️ Không thể tạo tóm tắt. GPT gặp lỗi hoặc dữ liệu không đủ."
 
@@ -229,7 +263,7 @@ def gpt_decide_patient_summary_action(user_message: str, summary_data: dict) -> 
         }
 
 # Hàm này sẽ:
-# - Dựa vào nội dung bác sĩ hỏi và dữ liệu hồ sơ bệnh nhân,
+# Dựa vào nội dung bác sĩ hỏi và dữ liệu hồ sơ bệnh nhân,
 def patient_summary_action(user_message: str, summary_data: dict) -> dict:
     normalized_msg = normalize_text(user_message)
     symptom_count = summary_data.get("symptom_count", 0)
