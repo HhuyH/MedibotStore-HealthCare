@@ -34,7 +34,9 @@ def run_sql_query(query: str):
         return {"status": "success", "data": data}
     except Exception as e:
         # Nếu lỗi, trả về status error và message
-        return {"status": "error", "error": str(e)}
+        return {"status": "error"}
+    
+        # return {"status": "error", "error": str(e)}
     finally:
         # Đóng kết nối an toàn
         conn.close()

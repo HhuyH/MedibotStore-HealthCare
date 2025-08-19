@@ -17,6 +17,7 @@
 - is_active (BOOLEAN): product active status  
 - created_at (TIMESTAMP): creation timestamp  
 - updated_at (DATETIME): last update timestamp  
+- discount_amount(DECIMAL): Discount amout of product
 
 27. medicines
 - product_id (INT, PK, FK): primary key, foreign key to `products.product_id`

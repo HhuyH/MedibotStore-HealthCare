@@ -139,13 +139,15 @@ Then generate a SQL SELECT query for that case.
 
 3. When generating SQL:
 
-   - ❌ NEVER use `SELECT *`.
+   
 
    - ✅ Always list the exact column names in the SELECT statement.
 
    - ❌ Do NOT include the columns `created_at`, `updated_at`, or `image` unless the user explicitly requests them.
 
    - ❌ Do NOT include columns like `password`, `password_hash`, or any sensitive credentials.
+   
+   
 
    - ✅ When querying the table `health_predictions`, remember:
      - There is no column called `record_date`. Use `prediction_date` instead.
