@@ -154,6 +154,8 @@ def generate_patient_summary(user_id: int, for_date: str = None, action: str = "
         - Do not write in English. Output must be fully in Vietnamese.
         - Do not include Markdown — only use valid HTML tags.
 
+        Do not use <br> tags. Use <div> or <p> with CSS margin control, or <ul>/<li> for multiple lines per disease. Ensure spacing is minimal and consistent.
+        
         Final output:
         - One HTML block in Vietnamese
         - Well-structured, readable by doctors
