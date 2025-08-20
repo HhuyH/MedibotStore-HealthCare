@@ -139,8 +139,8 @@ async def chat_stream(msg: Message = Body(...)):
 
         stored_symptoms = await get_symptoms_from_session(session_id=msg.session_id, user_id=msg.user_id)
 
-       # Thực thi lần lượt từng bước đã được định nghĩa trong pipeline
-# Cấu trúc này cho phép chatbot mở rộng tính năng dễ dàng bằng cách thêm step mới
+        # Thực thi lần lượt từng bước đã được định nghĩa trong pipeline
+        # Cấu trúc này cho phép chatbot mở rộng tính năng dễ dàng bằng cách thêm step mới
         for step in pipeline:
             # --- Step 1: Chat tự nhiên ---
             if step == "chat":
@@ -159,6 +159,7 @@ async def chat_stream(msg: Message = Body(...)):
                 # Xây dựng system message gửi đến API GPT
                 system_message_dict = build_system_message(
                     intent,
+                    role,
                     symptoms,
                     recent_user_messages=recent_user_messages,
                     recent_assistant_messages=recent_assistant_messages,
@@ -651,6 +652,14 @@ def save_chat_log(user_id=None, guest_id=None, intent=None, message=None, sender
             return cursor.lastrowid  # 👉 trả về chat_id vừa insert
     finally:
         conn.close()
+
+
+
+
+
+
+
+
 
 async def not_use():
             # # --- Step 2: GPT điều phối health_talk ---

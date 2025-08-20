@@ -112,7 +112,12 @@ async def detect_intent(
         🛡️ CONTEXTUAL OVERRIDE RULES (high priority)
 
         DO NOT change the intent in the following cases:
+        
+        0. If the user **keeps repeating the same type of sentence** (e.g., asking the same question again and again, or restating information without adding new meaning),  
+        → then treat it as **exit from the previous flow** and classify the intent as `general_chat`.
 
+        ❗ This prevents the bot from getting stuck in a previous intent when the user is just repeating or spamming.
+        
         1. If `last_intent` == `booking_request`, and the user's message:
 
         - Provides a **name** (e.g., "Tôi tên là An")
@@ -141,8 +146,6 @@ async def detect_intent(
         🚫 NEVER change to `user_profile`, `general`, or `sql_query` in such cases.
 
         ⚠️ If uncertain or ambiguous, default to previous intent and do NOT switch context.
-
-
 
         🚫 INTENT GUARDRAIL: DO NOT MISCLASSIFY
 
@@ -425,6 +428,7 @@ def get_sql_prompt_for_intent(intent: str) -> str:
 # kết hợp medical prompt và SQL prompt có chèn schema phù hợp.
 def build_system_message(
     intent: str,
+    role: str,
     symptoms: list[str] = None,
     recent_user_messages: list[str] = None,
     recent_assistant_messages: list[str] = None,
@@ -435,6 +439,7 @@ def build_system_message(
     # ✅ Đổi tên cho đúng ngữ nghĩa
     system_part = build_system_prompt(
         intent,
+        role,
         recent_user_messages=recent_user_messages,
         recent_assistant_messages=recent_assistant_messages,
         fallback_reason=fallback_reason
