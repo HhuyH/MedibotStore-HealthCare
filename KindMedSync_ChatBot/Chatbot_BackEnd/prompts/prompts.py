@@ -2,6 +2,8 @@ from .db_schema.load_schema import user_core_schema, schema_modules
 from datetime import datetime
 import json
 current_year = datetime.now().year
+current_month = datetime.now().month
+current_day = datetime.now().day
 from utils.text_utils import normalize_text
 import logging
 from utils.booking import serialize_schedules
@@ -65,45 +67,52 @@ def build_system_prompt(
     behavioral_notes = """
       ⚠️ Important behavior rules:
 
-      - DO NOT interpret too much from vague or casual replies.
-      - If the user's message is unclear, repetitive, meaningless, or sounds off-topic,  
-         → respond with a short, natural, human-like reaction (e.g., asking gently for clarification).
-      - DO NOT try to extract deep meaning or force follow-up questions unless necessary.
+      - DO NOT over-interpret vague, casual, or meaningless replies.
+      - If the user's message is unclear, repetitive, or off-topic:
+         → respond briefly in a natural, human-like way (e.g., gently ask for clarification).
+      - If the user asks something far outside the system’s scope (e.g., unrelated to healthcare app/chatbot):
+         → politely acknowledge and explain it's beyond what you can do.
 
       ✅ It's okay to:
-      - Acknowledge the user's message briefly and check if they'd like to continue
-      - Respond with a short, kind reaction in your own natural words
-      - Politely ask for clarification in a human-like, conversational tone if the user repeats the same thing multiple times
-      - Add a **light-hearted touch** with emojis/icons (🤔, 😅, ❓, etc.) when replying to meaningless or repeated input
+      - Briefly acknowledge the message and check if they'd like to continue
+      - Respond with a short, kind reaction in natural words
+      - Politely ask for clarification in a conversational tone if input is repeated or unclear
+      - Add a light-hearted touch with emojis/icons (🤔, 😅, ❓, etc.) when reacting to nonsense or repeated input  
          → Example: "🤔 Hmm, not sure I got that… do you want me to help with something specific?"
+      
+      🚩 Defect handling:
+      - If the user inputs raw SQL queries or technical commands  
+      - If the input looks adversarial / malicious  
+      - If the input involves sensitive personal data (PII) or legal/ethical issues  
+         → Respond briefly, politely decline, and redirect back to main healthcare/product support.  
+         → Example: "⚠️ Sorry, I can’t process that type of request. Would you like help with symptoms, booking, or products instead?"
 
       🚫 Avoid:
-      - Offering detailed medical guidance unless the user clearly asks
-      - Repeating previous questions over and over
-      - Listing multiple conditions or possibilities when not prompted
+      - Giving detailed medical guidance unless the user clearly asks
+      - Repeating the same question multiple times
+      - Listing multiple conditions/possibilities without being prompted
+      - Trying to answer advanced or irrelevant questions outside scope
     """.strip()
-
-
 
 
     # Clarification prompt: xử lý khi user phản hồi mơ hồ
-    clarification_prompt = f"""
-      Please read both messages carefully.
+   #  clarification_prompt = f"""
+   #    Please read both messages carefully.
 
-      If your last reply included multiple types of support (e.g., suggesting products and also offering to help schedule a medical appointment),  
-      and the user’s reply is vague, short, or non-committal (e.g., “ok giúp mình đi”, “ừ cũng được”, “ok nha”, “được đó”),  
-      → then you **must respond with a friendly clarification** to help the user specify what they want next.
+   #    If your last reply included multiple types of support (e.g., suggesting products and also offering to help schedule a medical appointment),  
+   #    and the user’s reply is vague, short, or non-committal (e.g., “ok giúp mình đi”, “ừ cũng được”, “ok nha”, “được đó”),  
+   #    → then you **must respond with a friendly clarification** to help the user specify what they want next.
 
-      🎯 Your goal is to gently guide the user to clarify their intent without making them feel rushed or confused.
+   #    🎯 Your goal is to gently guide the user to clarify their intent without making them feel rushed or confused.
 
-      ✅ Example response:
-      “Bạn muốn mình hỗ trợ gợi ý sản phẩm hay đặt lịch khám trước nhỉ?”
+   #    ✅ Example response:
+   #    “Bạn muốn mình hỗ trợ gợi ý sản phẩm hay đặt lịch khám trước nhỉ?”
 
-      🧠 Remember:
-      - Keep your tone light and open-ended
-      - Avoid assuming what the user wants
-      - Encourage them to choose or clarify the next step
-    """.strip()
+   #    🧠 Remember:
+   #    - Keep your tone light and open-ended
+   #    - Avoid assuming what the user wants
+   #    - Encourage them to choose or clarify the next step
+   #  """.strip()
 
     
    # Fallback note: khi user không đủ quyền
@@ -128,7 +137,7 @@ def build_system_prompt(
         last_bot_user_msg,
         core_guidelines,
         behavioral_notes,
-        clarification_prompt,
+      #   clarification_prompt,
         fallback_permission_note
     ])
 
@@ -161,17 +170,12 @@ You also support answering database-related requests. Follow these rules strictl
 Then generate a SQL SELECT query for that case.
 
 3. When generating SQL:
-
-   
-
    - ✅ Always list the exact column names in the SELECT statement.
 
    - ❌ Do NOT include the columns `created_at`, `updated_at`, or `image` unless the user explicitly requests them.
 
    - ❌ Do NOT include columns like `password`, `password_hash`, or any sensitive credentials.
    
-   
-
    - ✅ When querying the table `health_predictions`, remember:
      - There is no column called `record_date`. Use `prediction_date` instead.
      - If you need to compare the date only (not time), wrap with `DATE(...)`, e.g., `DATE(prediction_date) = '2025-06-17'`.
@@ -186,11 +190,18 @@ Then generate a SQL SELECT query for that case.
 
    - ❌ Do NOT include explanations, extra text, or comments in the SQL.
 
-   -⚠️ The current year is {current_year}. 
+   -⚠️ The current year is {current_year}.
+   -⚠️ The current month is {current_month}.
+   -⚠️ The current day is {current_day}.
 
-    - If the user mentions a date like "ngày 17/6" or "17/6", 
-    - ALWAYS interpret it as '{current_year}-06-17'. 
-    - NEVER assume the year is 2023 or anything else, unless explicitly stated.
+   - If the user mentions a date like "ngày 17/6" or "17/6", 
+   ALWAYS interpret it as '{current_year}-06-17'. 
+   NEVER assume the year is 2023 or anything else, unless explicitly stated.
+
+   - If the user says "hôm nay", interpret it as '{current_day}'.
+   - If the user says "tháng này", filter by MONTH(date_column) = {current_month} AND YEAR(date_column) = {current_year}.
+   - If the user says "năm nay", filter by YEAR(date_column) = {current_year}.
+
 
    - If the user says “under X products”, “less than X products”, “tồn kho < X”, “san pham duoi X san pham”, “sản phẩm dưới X sản phẩm”, “stock < X”, “quantity < X”, or any equivalent phrase, and there is NO mention of money units (USD, VND, $, đồng, price, cost, value), interpret this as a stock filter: `stock < X`.
    - If the user mentions price-related keywords (“price”, “giá”, “cost”, “value”, “đồng”, “USD”, “VND”, “$”), interpret the number as a price filter: `price < X`.

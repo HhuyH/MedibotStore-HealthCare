@@ -465,7 +465,8 @@ async def chat_stream(msg: Message = Body(...)):
                     # Nếu lỗi parse JSON → thông báo lỗi và kết thúc
                     sql_query = None
                     logger.warning(f"Lỗi phân tích JSON: {e}")
-                    yield f"data: {json.dumps({'natural_text': 'Không thể xử lý câu hỏi SQL từ tin nhắn vừa rồi.'})}\n\n"
+                    # yield f"data: {json.dumps({'natural_text': 'Không thể xử lý câu hỏi SQL từ tin nhắn vừa rồi.'})}\n\n"
+                    yield f"data: {json.dumps({'natural_text': f'{buffer_clean}'})}\n\n"
                     yield "data: [DONE]\n\n"
                     return
 
