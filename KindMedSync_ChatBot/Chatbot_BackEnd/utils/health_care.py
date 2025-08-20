@@ -85,7 +85,7 @@ async def health_talk(
     # Step 2: Lấy related symptom + câu hỏi followup
     inputs = await decide_KMS_prompt_inputs(session_id=session_id, user_id=user_id)
 
-    # ✅ In log triệu chứng đã hỏi follow-up
+    # In log triệu chứng đã hỏi follow-up
     asked = await get_followed_up_symptom_ids(session_id=session_id, user_id=user_id)
     logger.info("📎 Follow-up IDs từ session: %s", asked)
 
@@ -102,7 +102,6 @@ async def health_talk(
     #     "had_conclusion:", had_conclusion
     # )
 
-
     # Step 3: Xây prompt tổng hợp
     prompt = build_KMS_prompt(
         SYMPTOM_LIST=get_symptom_list(),
@@ -117,7 +116,7 @@ async def health_talk(
     )
 
 
-    # 🔒 Đánh dấu đã hỏi related symptom (chỉ 1 lần duy nhất)
+    # Đánh dấu đã hỏi related symptom (chỉ 1 lần duy nhất)
     if inputs.get("related_symptom_names"):
         await mark_related_symptom_asked(session_id=session_id, user_id=user_id)
         session_data = await get_session_data(user_id=user_id, session_id=session_id)
@@ -145,7 +144,6 @@ async def health_talk(
         }, ensure_ascii=False))
         await save_session_data(user_id=user_id, session_id=session_id, data=session_data)
 
-
     message = parsed.get("message", fallback_message or "Xin lỗi, mình chưa hiểu rõ lắm...")
 
     # Step 5: Điều phối logic từ parsed JSON
@@ -160,7 +158,7 @@ async def health_talk(
     if action == "diagnosis":
         session_data["had_conclusion"] = True
 
-    # 🔄 Nếu người dùng nói thêm về triệu chứng cũ → ghi chú lại vào user_symptom_history
+    # Nếu người dùng nói thêm về triệu chứng cũ → ghi chú lại vào user_symptom_history
     updated_symptom = parsed.get("updated_symptom")
     diagnosed_today = session_context.get("diagnosed_today", False) if session_context else False
     logger.info(f"⚙️ diagnosed_today = {diagnosed_today}")
@@ -187,13 +185,12 @@ async def health_talk(
         session_data = await get_session_data(user_id=user_id, session_id=session_id)
         # logger.info("✅ Session sau khi đánh dấu follow-up:\n%s", json.dumps(session_data, indent=2, ensure_ascii=False))
 
-
     end = parsed.get("end", False)
 
     # Nếu không có chẩn đoán trước đó trong ngày thì sẽ tạo note dựa theo triệu chứng
     # nếu đã chẩn đoán thì sẽ không tạo note mới
     if not diagnosed_today:
-        # 📋 Tạo note
+        # Tạo note
         # Step 1: lấy note cũ từ session
         existing_notes = session_data.get("symptom_notes_list", [])
 
@@ -271,7 +268,6 @@ async def health_talk(
 
             return  # dừng tại đây không cần yield tiếp nữa
 
-
     # Step 6: Stream message từng đoạn ra ngoài
     for chunk in stream_gpt_tokens(message):
         yield chunk 
@@ -286,7 +282,7 @@ async def decide_KMS_prompt_inputs(session_id: str, user_id: int):
     next_symptom = await get_next_symptom_to_followup(session_id, user_id, stored_symptoms)
 
     symptoms_to_ask = [next_symptom["name"]] if next_symptom else []
-    related_symptom_names = None  # ✅ Khởi tạo mặc định
+    related_symptom_names = None  # Khởi tạo mặc định
 
     logger.info("📭 symptoms_to_ask: %s", symptoms_to_ask)
 
@@ -325,7 +321,7 @@ async def get_next_symptom_to_followup(session_id: str, user_id: int, stored_sym
 
     return None
 
-# Lấy những câu hỏi liên quan tới triệu chứng từ DB
+# Lấy những câu hỏi liên quan tới triệu chứng từ DB (không dùng nữa)
 async def get_followup_question_fromDB(symptom_ids: list[int], user_id: int, session_id: str = None) -> dict | None:
     if not symptom_ids:
         return None

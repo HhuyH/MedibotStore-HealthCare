@@ -209,9 +209,12 @@ async def detect_intent(
         - If "{should_suggest_product}" = true`, then classify as `"suggest_product"`.
 
         - If should_suggest_product = false:
-            - If the message sounds like a general wellness request (e.g., “có cách nào cải thiện?”, “làm sao để đỡ hơn?”, “ăn gì tốt cho da?”), classify as "health_advice"
-            - If the message explicitly asks for product suggestions (e.g., “có sản phẩm nào?”, “cho mình xem sản phẩm”, “thuốc nào hỗ trợ?”), classify as "suggest_product"
-            
+            - If the message explicitly mentions or asks about products, medicines, supplements, or treatments 
+            (e.g., "có sản phẩm nào", "cho mình xem sản phẩm", "thuốc nào hỗ trợ", 
+            "bạn có sản phẩm cải thiện mất ngủ không?"), classify as **suggest_product**.
+            - Else if the message only asks about general wellness, lifestyle, diet, or natural ways to improve 
+            (e.g., "có cách nào cải thiện?", "làm sao để đỡ hơn?", "ăn gì tốt cho da?"), classify as **health_advice**.
+
         - If the message is a data/admin request like “lấy danh sách sản phẩm”, “xem toàn bộ thuốc”, “liệt kê các gói dịch vụ” → classify as `"sql_query"`- If `should_suggest_product = false` but the user message sounds like they are asking for help with products (e.g., “có thuốc nào không?”, “cho mình xem thử sản phẩm hỗ trợ”, “gợi ý sản phẩm giúp mình với”), then also classify as `"suggest_product"`.
 
         - Typical phrases that may indicate product interest include:
