@@ -20,6 +20,21 @@ CREATE TABLE roles (
 	description TEXT										  -- 'Mô tả vai trò nếu cần',
 );
 
+-- Bảng patients: Thông tin dành riêng cho bệnh nhân
+CREATE TABLE patients (
+    patient_id INT AUTO_INCREMENT PRIMARY KEY,        -- Khóa chính
+    user_id INT NOT NULL UNIQUE,                      -- Liên kết với users
+    medical_record_number VARCHAR(50) UNIQUE,         -- Mã hồ sơ bệnh án
+    insurance_number VARCHAR(50),                     -- Số bảo hiểm y tế
+    emergency_contact VARCHAR(100),                   -- Người liên hệ khẩn cấp
+    medical_history TEXT,                             -- Tiền sử bệnh (nếu cần)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+
 -- Cho này nên cho vào trước vài role 
 -- khi đăng ký tài khoản bất kỳ tài khoản nào cũng sẽ có role là patient
 -- sau đó admin sễ set role cho bác sĩ or admin mới nếu cần
@@ -245,8 +260,6 @@ CREATE TABLE doctor_schedules (
 -- Bảng appointments: Lịch hẹn khám bệnh cho người dùng đã có tài khoản
 CREATE TABLE appointments (
     appointment_id INT AUTO_INCREMENT PRIMARY KEY,        -- Khóa chính
-    user_id INT,                                 -- Liên kết đến bảng users
-    -- guest_id INT,
     doctor_id INT NOT NULL,                               -- Liên kết đến bảng doctors
     clinic_id INT,                                        -- Liên kết đến bảng clinics (phòng khám)
     appointment_time DATETIME NOT NULL,                   -- Thời gian đặt lịch
@@ -255,11 +268,22 @@ CREATE TABLE appointments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP             -- Thời gian cập nhật thông báo (nếu bị chỉnh sửa)
         ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (guest_id) REFERENCES guest_users(guest_id),
+    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
     FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id),
     FOREIGN KEY (clinic_id) REFERENCES clinics(clinic_id)
 );
+
+-- Bảng booking_tickets: Phiếu hẹn khám bệnh
+CREATE TABLE booking_tickets (
+    ticket_id INT AUTO_INCREMENT PRIMARY KEY,      -- Khóa chính
+    appointment_id INT NOT NULL,                   -- Liên kết đến bảng appointments
+    ticket_code VARCHAR(50) UNIQUE NOT NULL,       -- Mã phiếu (in trên giấy/email)
+    issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Ngày tạo phiếu
+    status VARCHAR(50) DEFAULT 'active',           -- Trạng thái phiếu: active, used, canceled
+    
+    FOREIGN KEY (appointment_id) REFERENCES appointments(appointment_id) ON DELETE CASCADE
+);
+
 
 -----------------Phần mở rộng... Bảng prescriptions: Đơn thuốc sau khi khám
 CREATE TABLE prescriptions (
