@@ -1,8 +1,8 @@
-# KindMedSync – HealthCare Platform
+# HealthCare Platform
 
 ## Giới thiệu
 
-**KindMedSync** là một hệ thống hỗ trợ y tế thông minh, gồm:
+**Medibot Store** là một hệ thống hỗ trợ y tế thông minh, gồm:
 
 * **Chatbot AI**: Phỏng đoán ban đầu về bệnh dựa trên triệu chứng, giúp người dùng quyết định có cần đi khám hay không. Chatbot sử dụng **FastAPI + GPT API** để xử lý hội thoại ngôn ngữ tự nhiên.
 * **Website Quản lý**: Giao diện web cho phép bệnh nhân, bác sĩ và quản trị viên dễ dàng quản lý thông tin, đặt lịch hẹn, và tương tác với chatbot.
@@ -37,7 +37,7 @@ KindMedSync-HealthCare/
   • Chatbot hội thoại tự nhiên.
   • API RESTful cho frontend.
 
-Chi tiết: [Chatbot\_BackEnd](./Chatbot_BackEnd/README.md)
+Chi tiết: [Chatbot\_BackEnd](./KindMedSync_ChatBot/Chatbot_BackEnd/README.md)
 
 ---
 
@@ -49,7 +49,7 @@ Chi tiết: [Chatbot\_BackEnd](./Chatbot_BackEnd/README.md)
   • Đặt lịch hẹn khám.
   • Tích hợp chatbot AI vào giao diện web.
 
-Chi tiết: [Website](./Website/README.md)
+Chi tiết: [Website](./KindMedSync_ChatBot/Website/README.md)
 
 ---
 
@@ -66,8 +66,8 @@ cd KindMedSync-HealthCare
 
 Xem hướng dẫn chi tiết trong từng thư mục:
 
-* [Chatbot\_BackEnd](./Chatbot_BackEnd/README.md)
-* [Web\_FrontEnd](./Web_FrontEnd/README.md)
+* [Chatbot\_BackEnd](./KindMedSync_ChatBot/Chatbot_BackEnd/README.md)
+* [Website](./KindMedSync_ChatBot/Website/README.md)
 
 ---
 
