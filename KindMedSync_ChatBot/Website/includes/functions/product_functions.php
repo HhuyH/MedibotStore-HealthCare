@@ -1,5 +1,62 @@
 <?php
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/format_helpers.php';
+
+/**
+ * Get product image URL with proper fallback
+ * @param string $image_url Image URL from database
+ * @return string Final image URL to use
+ */
+function getProductImageUrl($image_url) {
+    // Check if image_url is empty or null
+    if (empty($image_url)) {
+        return '../assets/images/default-product.jpg';
+    }
+    
+    // If it's an external URL (http/https), return as is
+    if (strpos($image_url, 'http') === 0) {
+        return $image_url;
+    }
+    
+    // If it's a local path and doesn't start with ../
+    if (strpos($image_url, '../') !== 0) {
+        return '../' . $image_url;
+    }
+    
+    // If already has ../ prefix, return as is
+    return $image_url;
+}
+
+/**
+ * Tính giá giảm và phần trăm giảm giá dựa trên discount_amount
+ * @param float $original_price Giá gốc
+ * @param float|null $discount_amount Số tiền giảm giá
+ * @return array Thông tin giảm giá [discount_price, discount_percent, saved_amount, saved_percent]
+ */
+function calculateProductDiscount($original_price, $discount_amount) {
+    if (empty($discount_amount) || $discount_amount <= 0) {
+        return [
+            'discount_price' => null,
+            'discount_percent' => 0,
+            'saved_amount' => 0,
+            'saved_percent' => 0
+        ];
+    }
+
+    $discount_price = max(0, $original_price - $discount_amount);
+    $discount_percent = round(($discount_amount / $original_price) * 100);
+    
+    // Tính % còn lại sau khi giảm giá
+    $remaining_percent = round(($discount_price / $original_price) * 100);
+    $saved_percent = 100 - $remaining_percent;
+
+    return [
+        'discount_price' => $discount_price,
+        'discount_percent' => $discount_percent,
+        'saved_amount' => $discount_amount,
+        'saved_percent' => $saved_percent
+    ];
+}
 
 /**
  * Lấy danh sách danh mục sản phẩm
@@ -40,7 +97,7 @@ function getFeaturedProducts($limit = 8) {
             FROM products p
             LEFT JOIN product_categories pc ON p.category_id = pc.category_id
             LEFT JOIN product_reviews pr ON p.product_id = pr.product_id
-            LEFT JOIN medicines m ON p.product_id = m.medicine_id
+            LEFT JOIN medicines m ON p.product_id = m.product_id
             WHERE p.is_active = TRUE
             GROUP BY p.product_id
             ORDER BY avg_rating DESC, review_count DESC
@@ -53,17 +110,18 @@ function getFeaturedProducts($limit = 8) {
     
     $products = [];
     while ($row = $result->fetch_assoc()) {
-        // Tính giá khuyến mãi (giả sử giảm 10% cho sản phẩm có rating cao)
-        $row['discount_percent'] = $row['avg_rating'] >= 4.5 ? 10 : 0;
-        $row['discount_price'] = $row['discount_percent'] > 0 
-            ? $row['price'] * (1 - $row['discount_percent']/100) 
-            : null;
+        // Calculate discount based on discount_amount
+        $discount_info = calculateProductDiscount($row['price'], $row['discount_amount']);
+        $row['discount_percent'] = $discount_info['discount_percent'];
+        $row['discount_price'] = $discount_info['discount_price'];
+        $row['saved_amount'] = $discount_info['saved_amount'];
+        $row['saved_percent'] = $discount_info['saved_percent'];
             
-        // Format lại rating
-        $row['avg_rating'] = number_format($row['avg_rating'], 1);
+        // Format rating
+        $row['avg_rating'] = number_format((float)$row['avg_rating'], 1);
         
-        // Xử lý ảnh sản phẩm
-        $row['display_image'] = $row['image_url'] ?: '/assets/images/product-placeholder.jpg';
+        // Handle product image
+        $row['display_image'] = getProductImageUrl($row['image_url']);
         
         $products[] = $row;
     }
@@ -101,7 +159,7 @@ function getFilteredProducts($min_price = 0, $max_price = PHP_FLOAT_MAX, $sort =
             FROM products p
             LEFT JOIN product_categories pc ON p.category_id = pc.category_id
             LEFT JOIN product_reviews pr ON p.product_id = pr.product_id
-            LEFT JOIN medicines m ON p.product_id = m.medicine_id
+            LEFT JOIN medicines m ON p.product_id = m.product_id
             WHERE p.is_active = TRUE AND p.price BETWEEN ? AND ?";
     
     // Add category filter if specified
@@ -114,10 +172,10 @@ function getFilteredProducts($min_price = 0, $max_price = PHP_FLOAT_MAX, $sort =
     // Add sorting
     switch ($sort) {
         case 'price_asc':
-            $sql .= " ORDER BY p.price ASC";
+            $sql .= " ORDER BY CASE WHEN p.discount_amount > 0 THEN p.price - p.discount_amount ELSE p.price END ASC";
             break;
         case 'price_desc':
-            $sql .= " ORDER BY p.price DESC";
+            $sql .= " ORDER BY CASE WHEN p.discount_amount > 0 THEN p.price - p.discount_amount ELSE p.price END DESC";
             break;
         case 'name_asc':
             $sql .= " ORDER BY p.name ASC";
@@ -139,7 +197,7 @@ function getFilteredProducts($min_price = 0, $max_price = PHP_FLOAT_MAX, $sort =
     $stmt = $conn->prepare($sql);
     
     if ($category_id) {
-        $stmt->bind_param("ddiiii", $min_price, $max_price, $category_id, $per_page, $offset);
+        $stmt->bind_param("ddiii", $min_price, $max_price, $category_id, $per_page, $offset);
     } else {
         $stmt->bind_param("ddii", $min_price, $max_price, $per_page, $offset);
     }
@@ -149,17 +207,18 @@ function getFilteredProducts($min_price = 0, $max_price = PHP_FLOAT_MAX, $sort =
     
     $products = [];
     while ($row = $result->fetch_assoc()) {
-        // Tính giá khuyến mãi
-        $row['discount_percent'] = $row['avg_rating'] >= 4.5 ? 10 : 0;
-        $row['discount_price'] = $row['discount_percent'] > 0 
-            ? $row['price'] * (1 - $row['discount_percent']/100) 
-            : null;
+        // Calculate discount based on discount_amount
+        $discount_info = calculateProductDiscount($row['price'], $row['discount_amount']);
+        $row['discount_percent'] = $discount_info['discount_percent'];
+        $row['discount_price'] = $discount_info['discount_price'];
+        $row['saved_amount'] = $discount_info['saved_amount'];
+        $row['saved_percent'] = $discount_info['saved_percent'];
             
-        // Format lại rating
-        $row['avg_rating'] = number_format($row['avg_rating'], 1);
+        // Format rating
+        $row['avg_rating'] = number_format((float)$row['avg_rating'], 1);
         
-        // Xử lý ảnh sản phẩm
-        $row['display_image'] = $row['image_url'] ?: '/assets/images/product-placeholder.jpg';
+        // Handle product image
+        $row['display_image'] = getProductImageUrl($row['image_url']);
         
         $products[] = $row;
     }
@@ -199,7 +258,9 @@ function getFilteredProducts($min_price = 0, $max_price = PHP_FLOAT_MAX, $sort =
 function getProductPriceRange() {
     global $conn;
     
-    $sql = "SELECT MIN(price) as min_price, MAX(price) as max_price 
+    $sql = "SELECT 
+                MIN(CASE WHEN discount_amount > 0 THEN price - discount_amount ELSE price END) as min_price,
+                MAX(price) as max_price 
             FROM products 
             WHERE is_active = TRUE";
             
@@ -238,8 +299,17 @@ function getPopularProducts($limit = 3) {
     
     $products = [];
     while ($row = $result->fetch_assoc()) {
-        $row['display_image'] = $row['image_url'] ?: '/assets/images/product-placeholder.jpg';
-        $row['avg_rating'] = number_format($row['avg_rating'], 1);
+        // Calculate discount based on discount_amount
+        $discount_info = calculateProductDiscount($row['price'], $row['discount_amount']);
+        $row['discount_percent'] = $discount_info['discount_percent'];
+        $row['discount_price'] = $discount_info['discount_price'];
+        $row['saved_amount'] = $discount_info['saved_amount'];
+        $row['saved_percent'] = $discount_info['saved_percent'];
+        
+        // Format rating and image
+        $row['avg_rating'] = number_format((float)$row['avg_rating'], 1);
+        $row['display_image'] = !empty($row['image_url']) ? $row['image_url'] : '/assets/images/default-product.jpg';
+        
         $products[] = $row;
     }
     
@@ -248,29 +318,24 @@ function getPopularProducts($limit = 3) {
 
 /**
  * Lấy số lượng sản phẩm trong danh mục
- * @param int $category_id ID của danh mục
+ * @param int $category_id ID danh mục
  * @return int Số lượng sản phẩm
  */
 function getCategoryProductCount($category_id) {
     global $conn;
     
-    $sql = "SELECT COUNT(*) as count 
-            FROM products 
-            WHERE category_id = ? AND is_active = TRUE";
-            
+    $sql = "SELECT COUNT(*) as count FROM products WHERE category_id = ? AND is_active = TRUE";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $category_id);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $row = $result->fetch_assoc();
     
-    return $row['count'];
+    return $stmt->get_result()->fetch_assoc()['count'];
 }
 
 /**
- * Lấy thông tin chi tiết sản phẩm
- * @param int $product_id ID của sản phẩm
- * @return array|null Thông tin sản phẩm hoặc null nếu không tìm thấy
+ * Lấy chi tiết sản phẩm
+ * @param int $product_id ID sản phẩm
+ * @return array|null Thông tin sản phẩm
  */
 function getProductDetails($product_id) {
     global $conn;
@@ -288,7 +353,7 @@ function getProductDetails($product_id) {
             FROM products p
             LEFT JOIN product_categories pc ON p.category_id = pc.category_id
             LEFT JOIN product_reviews pr ON p.product_id = pr.product_id
-            LEFT JOIN medicines m ON p.product_id = m.medicine_id
+            LEFT JOIN medicines m ON p.product_id = m.product_id
             WHERE p.product_id = ? AND p.is_active = TRUE
             GROUP BY p.product_id";
             
@@ -298,17 +363,16 @@ function getProductDetails($product_id) {
     $result = $stmt->get_result();
     
     if ($row = $result->fetch_assoc()) {
-        // Tính giá khuyến mãi
-        $row['discount_percent'] = $row['avg_rating'] >= 4.5 ? 10 : 0;
-        $row['discount_price'] = $row['discount_percent'] > 0 
-            ? $row['price'] * (1 - $row['discount_percent']/100) 
-            : null;
-            
-        // Format lại rating
-        $row['avg_rating'] = number_format($row['avg_rating'], 1);
+        // Calculate discount based on discount_amount
+        $discount_info = calculateProductDiscount($row['price'], $row['discount_amount']);
+        $row['discount_percent'] = $discount_info['discount_percent'];
+        $row['discount_price'] = $discount_info['discount_price'];
+        $row['saved_amount'] = $discount_info['saved_amount'];
+        $row['saved_percent'] = $discount_info['saved_percent'];
         
-        // Xử lý ảnh sản phẩm
-        $row['display_image'] = $row['image_url'] ?: '/assets/images/product-placeholder.jpg';
+        // Format rating and image
+        $row['avg_rating'] = number_format((float)$row['avg_rating'], 1);
+        $row['display_image'] = !empty($row['image_url']) ? $row['image_url'] : '/assets/images/default-product.jpg';
         
         return $row;
     }
@@ -317,14 +381,14 @@ function getProductDetails($product_id) {
 }
 
 /**
- * Lấy đánh giá của sản phẩm
- * @param int $product_id ID của sản phẩm
+ * Lấy đánh giá sản phẩm
+ * @param int $product_id ID sản phẩm
  * @return array Danh sách đánh giá
  */
 function getProductReviews($product_id) {
     global $conn;
     
-    // Kiểm tra xem bảng product_reviews có tồn tại không
+    // Kiểm tra bảng product_reviews có tồn tại không
     $check_table = $conn->query("SHOW TABLES LIKE 'product_reviews'");
     if ($check_table->num_rows == 0) {
         return []; // Trả về mảng rỗng nếu bảng chưa tồn tại
@@ -332,7 +396,7 @@ function getProductReviews($product_id) {
     
     $sql = "SELECT 
                 pr.*,
-                COALESCE(u.name, 'Ẩn danh') as reviewer_name,
+                u.username,
                 u.avatar
             FROM product_reviews pr
             LEFT JOIN users u ON pr.user_id = u.user_id
@@ -341,19 +405,18 @@ function getProductReviews($product_id) {
             
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
-        return []; // Trả về mảng rỗng nếu có lỗi prepare
+        // Log lỗi nếu cần
+        error_log("SQL Error in getProductReviews: " . $conn->error);
+        return [];
     }
     
     $stmt->bind_param("i", $product_id);
     $stmt->execute();
-    $result = $stmt->get_result();
     
     $reviews = [];
+    $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
-        // Xử lý avatar mặc định
-        if (empty($row['avatar'])) {
-            $row['avatar'] = '/assets/images/default-avatar.png';
-        }
+        $row['avatar'] = !empty($row['avatar']) ? $row['avatar'] : '/assets/images/default-avatar.png';
         $reviews[] = $row;
     }
     
@@ -362,9 +425,9 @@ function getProductReviews($product_id) {
 
 /**
  * Lấy sản phẩm liên quan
- * @param int $category_id ID của danh mục
- * @param int $current_product_id ID của sản phẩm hiện tại (để loại trừ)
- * @param int $limit Số lượng sản phẩm muốn lấy
+ * @param int $category_id ID danh mục
+ * @param int $current_product_id ID sản phẩm hiện tại
+ * @param int $limit Số lượng sản phẩm
  * @return array Danh sách sản phẩm
  */
 function getRelatedProducts($category_id, $current_product_id, $limit = 4) {
@@ -386,21 +449,20 @@ function getRelatedProducts($category_id, $current_product_id, $limit = 4) {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("iii", $category_id, $current_product_id, $limit);
     $stmt->execute();
-    $result = $stmt->get_result();
     
     $products = [];
+    $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
-        // Tính giá khuyến mãi
-        $row['discount_percent'] = $row['avg_rating'] >= 4.5 ? 10 : 0;
-        $row['discount_price'] = $row['discount_percent'] > 0 
-            ? $row['price'] * (1 - $row['discount_percent']/100) 
-            : null;
-            
-        // Format lại rating
-        $row['avg_rating'] = number_format($row['avg_rating'], 1);
+        // Calculate discount based on discount_amount
+        $discount_info = calculateProductDiscount($row['price'], $row['discount_amount']);
+        $row['discount_percent'] = $discount_info['discount_percent'];
+        $row['discount_price'] = $discount_info['discount_price'];
+        $row['saved_amount'] = $discount_info['saved_amount'];
+        $row['saved_percent'] = $discount_info['saved_percent'];
         
-        // Xử lý ảnh sản phẩm
-        $row['display_image'] = $row['image_url'] ?: '/assets/images/product-placeholder.jpg';
+        // Format rating and image
+        $row['avg_rating'] = number_format((float)$row['avg_rating'], 1);
+        $row['display_image'] = !empty($row['image_url']) ? $row['image_url'] : '/assets/images/default-product.jpg';
         
         $products[] = $row;
     }
@@ -408,49 +470,25 @@ function getRelatedProducts($category_id, $current_product_id, $limit = 4) {
     return $products;
 }
 
-// Hàm kiểm tra số lượng sản phẩm trong database
+/**
+ * Kiểm tra số lượng sản phẩm trong database
+ * @param mysqli $conn Kết nối database
+ * @return bool True nếu có sản phẩm, false nếu không
+ */
 function checkProductsCount($conn) {
-    $sql = "SELECT COUNT(*) as total FROM products";
-    $result = $conn->query($sql);
-    if ($result) {
+    $result = $conn->query("SELECT COUNT(*) as count FROM products");
         $row = $result->fetch_assoc();
-        return $row['total'];
-    }
-    return 0;
+    return $row['count'] > 0;
 }
 
-// Hàm kiểm tra dữ liệu mẫu
+/**
+ * Kiểm tra dữ liệu mẫu
+ * @param mysqli $conn Kết nối database
+ * @return bool True nếu có dữ liệu mẫu, false nếu không
+ */
 function checkSampleData($conn) {
-    echo "<h3>Thông tin Database:</h3>";
-    
-    // Kiểm tra bảng products
-    $totalProducts = checkProductsCount($conn);
-    echo "Tổng số sản phẩm: " . $totalProducts . "<br>";
-    
-    // Kiểm tra bảng categories
-    $sql = "SELECT COUNT(*) as total FROM categories";
-    $result = $conn->query($sql);
-    $totalCategories = 0;
-    if ($result) {
+    $result = $conn->query("SELECT COUNT(*) as count FROM products WHERE name LIKE '%Sample%'");
         $row = $result->fetch_assoc();
-        $totalCategories = $row['total'];
-    }
-    echo "Tổng số danh mục: " . $totalCategories . "<br>";
-    
-    // Hiển thị một số sản phẩm mẫu
-    if ($totalProducts > 0) {
-        $sql = "SELECT p.*, c.name as category_name 
-                FROM products p 
-                LEFT JOIN categories c ON p.category_id = c.id 
-                LIMIT 5";
-        $result = $conn->query($sql);
-        if ($result && $result->num_rows > 0) {
-            echo "<h4>5 sản phẩm mẫu:</h4>";
-            while ($row = $result->fetch_assoc()) {
-                echo "- " . htmlspecialchars($row['name']) . 
-                     " (Danh mục: " . htmlspecialchars($row['category_name']) . ")<br>";
-            }
-        }
-    }
+    return $row['count'] > 0;
 }
 ?> 

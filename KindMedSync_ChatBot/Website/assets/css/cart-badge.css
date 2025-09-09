@@ -1,0 +1,49 @@
+.cart-count {
+    position: absolute !important;
+    top: -8px !important;
+    right: -8px !important;
+    background: #f44336 !important;
+    color: white !important;
+    border-radius: 12px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border: 2px solid white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    line-height: 1 !important;
+    padding: 0 6px !important;
+    z-index: 999 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Hiệu ứng hover */
+.cart-count:hover {
+    transform: scale(1.1) !important;
+    transition: transform 0.2s ease !important;
+}
+
+/* Hiệu ứng khi số lượng thay đổi */
+@keyframes cartBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.cart-count.updating {
+    animation: cartBounce 0.5s ease !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cart-count {
+        font-size: 0.8rem !important;
+        min-width: 18px !important;
+        height: 18px !important;
+        padding: 0 4px !important;
+        top: -6px !important;
+        right: -6px !important;
+    }
+}

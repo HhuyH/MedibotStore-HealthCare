@@ -1,0 +1,9 @@
+[2025-08-10 07:19:25] [CART] [User: 8] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-10 07:19:25] [CART] [User: 8] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-10 07:19:25] [CART] [User: 8] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 29
+[2025-08-10 07:19:25] [CART] [User: 8] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-10 07:19:25] [CART] [User: 8] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 10 | Quantity: 1 | Details: Cart ID: 29, Unit Price: 110000
+[2025-08-10 07:19:25] [CART] [User: 8] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 29, Cart Count: 1
+[2025-08-10 09:55:33] [CART] [User: AnhHuy (ID: 9)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":1,"product_name":null,"quantity":1}
+[2025-08-10 10:19:29] [CART] [User: thaidang (ID: 10)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":1}
+[2025-08-10 10:19:29] [CART] [User: thaidang (ID: 10)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":1}

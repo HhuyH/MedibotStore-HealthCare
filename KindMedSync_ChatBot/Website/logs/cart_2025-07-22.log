@@ -1,0 +1,16 @@
+[2025-07-22 10:31:52] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-22 10:31:52] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-22 10:31:52] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-22 10:43:59] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-22 10:43:59] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-22 10:43:59] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-22 10:44:04] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-07-22 10:44:04] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 15, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-07-22 10:44:04] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-22 10:44:04] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 95000
+[2025-07-22 10:44:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-22 10:44:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-22 10:44:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-22 11:38:53] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-22 11:38:53] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-22 11:38:53] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000

@@ -1,0 +1,6 @@
+[2025-07-22 10:44:03] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-07-22 10:44:03] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-07-22 10:44:03] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 5
+[2025-07-22 10:44:03] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-07-22 10:44:03] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 11 | Quantity: 1 | Details: Cart ID: 5, Unit Price: 55000
+[2025-07-22 10:44:03] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 5, Cart Count: 2

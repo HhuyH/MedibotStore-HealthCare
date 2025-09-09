@@ -144,6 +144,9 @@
   backdrop-filter: blur(15px);
   overflow: hidden;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #1976d2, #1ec0f7) !important;
+
+
 }
 
 .main-chat-btn::before {
@@ -333,6 +336,9 @@
     rgba(248, 240, 255, 0.97) 60%,
     rgba(240, 255, 248, 0.97) 75%,
     rgba(255, 245, 240, 0.98) 100%);
+  background: linear-gradient(135deg,rgb(81, 151, 220),rgba(73, 179, 214, 0.66)) !important;
+
+
   backdrop-filter: blur(25px);
   border-radius: 24px;
   padding: 20px;
@@ -349,6 +355,7 @@
   transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 1001;
   border: 1px solid rgba(255, 255, 255, 0.4);
+
 }
 
 #floating-chat-widget.open .chat-options {
@@ -357,12 +364,12 @@
   transform: translateY(0) scale(1);
 }
 
-/* Chat Option Item */
+
 .chat-option {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 10px 15px;
   border-radius: 18px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -415,9 +422,9 @@
   backdrop-filter: blur(12px);
 }
 
-.chat-option:hover::before {
+/* .chat-option:hover::before {
   left: 100%;
-}
+} */
 
 .option-icon {
   width: 44px;
@@ -434,6 +441,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
   position: relative;
   overflow: hidden;
+  
 }
 
 .option-icon::before {
@@ -521,19 +529,19 @@
 .option-label {
   font-weight: 600;
   font-size: 15px;
-  color: #334155;
+  color:rgb(0, 0, 0);
   letter-spacing: 0.01em;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
 }
 
-.chat-option:hover .option-icon {
+/* .chat-option:hover .option-icon {
   transform: scale(1.15) rotate(10deg);
   box-shadow: 
     0 10px 30px rgba(0, 0, 0, 0.2),
     0 4px 15px rgba(255, 255, 255, 0.3) inset,
     0 0 0 2px rgba(255, 255, 255, 0.4);
-}
+} */
 
 .chat-option:hover .option-icon::before {
   opacity: 1;

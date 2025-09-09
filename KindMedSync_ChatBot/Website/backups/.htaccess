@@ -1,0 +1,14 @@
+# Deny access to backup files
+<Files "*.sql">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Deny access to all files except from admin
+<RequireAll>
+    Require all denied
+</RequireAll>
+
+# Alternative for older Apache versions
+Order deny,allow
+Deny from all 

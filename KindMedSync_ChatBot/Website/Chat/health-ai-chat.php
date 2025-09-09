@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../includes/config.php';
+require_once '../includes/db.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -81,7 +81,7 @@ $role_display = [
             <!-- Removed duplicate chat controls - now only in header -->
 
             <!-- Inner Header -->
-            <div class="chat-inner-header">
+            <!-- <div class="chat-inner-header">
                 <div class="inner-header-content">
                     <h1 class="chat-title">
                         <i class="fas fa-robot"></i>
@@ -96,7 +96,7 @@ $role_display = [
                         AI đang online - Sẵn sàng hỗ trợ
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Messages Area -->
             <div class="messages-area" id="chat-box">

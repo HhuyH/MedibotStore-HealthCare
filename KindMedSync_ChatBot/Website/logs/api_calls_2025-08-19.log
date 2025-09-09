@@ -1,0 +1,2 @@
+[2025-08-19 07:23:31] [API] [User: 1] [IP: ::1] API_CALL: POST /api/cart.php | Request: {"product_id":6,"quantity":20}
+[2025-08-19 07:23:31] [API] [User: 1] [IP: ::1] API_CALL: POST /api/cart.php | Request: {"product_id":6,"quantity":20} | Response: {"success":true,"message":"\u0110\u00e3 th\u00eam s\u1ea3n ph\u1ea9m v\u00e0o gi\u1ecf h\u00e0ng","cart_count":1}

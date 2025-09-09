@@ -1,0 +1,222 @@
+[2025-08-03 07:03:52] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-08-03 07:03:52] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Máy đo huyết áp điện tử, Price: 650000, Stock: 15
+[2025-08-03 07:03:52] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_CREATED | Product: 4 | Quantity: 1 | Details: New Cart ID: 10
+[2025-08-03 07:03:52] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 4 | Quantity: 1 | Details: Original: 650000, Discount: 10000, Final: 640000
+[2025-08-03 07:03:52] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 4 | Quantity: 1 | Details: Cart ID: 10, Unit Price: 640000
+[2025-08-03 07:03:52] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 10, Cart Count: 1
+[2025-08-03 07:11:11] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 07:11:11] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 07:11:11] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 10
+[2025-08-03 07:11:11] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 07:11:11] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 11 | Quantity: 1 | Details: Cart ID: 10, Unit Price: 55000
+[2025-08-03 07:11:11] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 10, Cart Count: 1
+[2025-08-03 07:11:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-08-03 07:11:17] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Amoxicillin 500mg, Price: 28000, Stock: 60
+[2025-08-03 07:11:17] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 2 | Quantity: 1 | Details: Existing Cart ID: 10
+[2025-08-03 07:11:17] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 2 | Quantity: 1 | Details: Original: 28000, Discount: 10000, Final: 18000
+[2025-08-03 07:11:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 2 | Quantity: 1 | Details: Cart ID: 10, Unit Price: 18000
+[2025-08-03 07:11:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 10, Cart Count: 2
+[2025-08-03 07:11:18] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 3 | Quantity: 1
+[2025-08-03 07:11:18] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 3 | Quantity: 1 | Details: Name: Vitamin C 1000mg, Price: 50000, Stock: 200
+[2025-08-03 07:11:18] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 3 | Quantity: 1 | Details: Existing Cart ID: 10
+[2025-08-03 07:11:18] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 3 | Quantity: 1 | Details: Original: 50000, Discount: 10000, Final: 40000
+[2025-08-03 07:11:18] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 3 | Quantity: 1 | Details: Cart ID: 10, Unit Price: 40000
+[2025-08-03 07:11:18] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 3 | Quantity: 1 | Details: Cart ID: 10, Cart Count: 3
+[2025-08-03 07:11:19] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 07:11:19] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 07:11:19] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 10
+[2025-08-03 07:11:19] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 07:11:19] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 2 | Details: Item ID: 22
+[2025-08-03 07:11:19] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 10, Cart Count: 3
+[2025-08-03 07:11:20] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-08-03 07:11:20] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Máy đo huyết áp điện tử, Price: 650000, Stock: 15
+[2025-08-03 07:11:20] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 4 | Quantity: 1 | Details: Existing Cart ID: 10
+[2025-08-03 07:11:20] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 4 | Quantity: 1 | Details: Original: 650000, Discount: 10000, Final: 640000
+[2025-08-03 07:11:20] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 4 | Quantity: 1 | Details: Cart ID: 10, Unit Price: 640000
+[2025-08-03 07:11:20] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 10, Cart Count: 4
+[2025-08-03 07:11:39] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-08-03 07:11:39] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Amoxicillin 500mg, Price: 28000, Stock: 60
+[2025-08-03 07:11:39] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 2 | Quantity: 1 | Details: Existing Cart ID: 10
+[2025-08-03 07:11:39] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 2 | Quantity: 1 | Details: Original: 28000, Discount: 10000, Final: 18000
+[2025-08-03 07:11:39] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 2 | Quantity: 1 | Details: Cart ID: 10, Unit Price: 18000
+[2025-08-03 07:11:39] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 10, Cart Count: 1
+[2025-08-03 07:38:29] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 07:38:29] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 07:38:29] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_CREATED | Product: 11 | Quantity: 1 | Details: New Cart ID: 11
+[2025-08-03 07:38:29] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 07:38:29] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 55000
+[2025-08-03 07:38:29] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-03 08:18:47] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:18:47] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:18:47] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:18:47] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:18:47] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 110000
+[2025-08-03 08:18:47] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-03 08:18:53] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:18:53] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:18:53] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:18:53] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:18:53] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 2 | Details: Item ID: 28
+[2025-08-03 08:18:53] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-03 08:18:58] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:18:58] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:18:58] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:18:58] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:18:58] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 3 | Details: Item ID: 28
+[2025-08-03 08:18:58] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-03 08:19:14] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:19:14] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:19:14] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:19:14] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:19:14] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 4 | Details: Item ID: 28
+[2025-08-03 08:19:14] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-03 08:25:55] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:25:55] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:25:55] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:25:55] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:25:55] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 5 | Details: Item ID: 28
+[2025-08-03 08:25:55] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-03 08:25:59] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:25:59] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:25:59] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:25:59] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:25:59] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 55000
+[2025-08-03 08:25:59] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 2
+[2025-08-03 08:26:10] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:26:10] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:26:10] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:26:10] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:26:10] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 2 | Details: Item ID: 29
+[2025-08-03 08:26:10] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 2
+[2025-08-03 08:26:56] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-08-03 08:26:56] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Máy đo huyết áp điện tử, Price: 650000, Stock: 15
+[2025-08-03 08:26:56] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 4 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:26:56] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 4 | Quantity: 1 | Details: Original: 650000, Discount: 10000, Final: 640000
+[2025-08-03 08:26:56] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 4 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 640000
+[2025-08-03 08:26:56] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 3
+[2025-08-03 08:28:15] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:28:15] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:28:15] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:28:15] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:28:15] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 3 | Details: Item ID: 29
+[2025-08-03 08:28:15] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 3
+[2025-08-03 08:28:16] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:28:16] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:28:16] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:28:16] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:28:16] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 4 | Details: Item ID: 29
+[2025-08-03 08:28:16] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 3
+[2025-08-03 08:28:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:28:17] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:28:17] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:28:17] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:28:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 6 | Details: Item ID: 28
+[2025-08-03 08:28:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 3
+[2025-08-03 08:28:44] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:28:44] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:28:44] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:28:44] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:28:44] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 5 | Details: Item ID: 29
+[2025-08-03 08:28:44] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 3
+[2025-08-03 08:28:47] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:28:47] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:28:47] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:28:47] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:28:47] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 6 | Details: Item ID: 29
+[2025-08-03 08:28:47] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 3
+[2025-08-03 08:28:50] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 8 | Quantity: 1
+[2025-08-03 08:28:50] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 8 | Quantity: 1 | Details: Name: Men tiêu hóa Biolactyl, Price: 70000, Stock: 90
+[2025-08-03 08:28:50] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 8 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:28:50] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 8 | Quantity: 1 | Details: Original: 70000, Discount: 10000, Final: 60000
+[2025-08-03 08:28:50] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 8 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 60000
+[2025-08-03 08:28:50] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 8 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:29:21] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:29:21] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:29:21] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:29:21] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:29:21] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 7 | Details: Item ID: 29
+[2025-08-03 08:29:21] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:29:34] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:29:34] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:29:34] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:29:34] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:29:34] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 8 | Details: Item ID: 29
+[2025-08-03 08:29:34] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:29:54] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:29:54] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:29:54] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:29:54] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:29:54] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 7 | Details: Item ID: 28
+[2025-08-03 08:29:54] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:30:10] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:30:10] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:30:10] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:30:10] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:30:10] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 9 | Details: Item ID: 29
+[2025-08-03 08:30:10] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:31:31] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:31:31] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:31:31] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:31:31] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:31:31] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 10 | Details: Item ID: 29
+[2025-08-03 08:31:31] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:31:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:31:46] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:31:46] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:31:46] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:31:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 11 | Details: Item ID: 29
+[2025-08-03 08:31:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:31:55] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:31:55] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:31:55] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:31:55] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:31:55] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 12 | Details: Item ID: 29
+[2025-08-03 08:31:55] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:32:03] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 8 | Quantity: 1
+[2025-08-03 08:32:03] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 8 | Quantity: 1 | Details: Name: Men tiêu hóa Biolactyl, Price: 70000, Stock: 90
+[2025-08-03 08:32:03] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 8 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:32:03] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 8 | Quantity: 1 | Details: Original: 70000, Discount: 10000, Final: 60000
+[2025-08-03 08:32:03] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 8 | Quantity: 2 | Details: Item ID: 31
+[2025-08-03 08:32:03] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 8 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:32:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 8 | Quantity: 1
+[2025-08-03 08:32:17] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 8 | Quantity: 1 | Details: Name: Men tiêu hóa Biolactyl, Price: 70000, Stock: 90
+[2025-08-03 08:32:17] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 8 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:32:17] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 8 | Quantity: 1 | Details: Original: 70000, Discount: 10000, Final: 60000
+[2025-08-03 08:32:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 8 | Quantity: 3 | Details: Item ID: 31
+[2025-08-03 08:32:17] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 8 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:32:23] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 8 | Quantity: 1
+[2025-08-03 08:32:23] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 8 | Quantity: 1 | Details: Name: Men tiêu hóa Biolactyl, Price: 70000, Stock: 90
+[2025-08-03 08:32:23] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 8 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:32:23] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 8 | Quantity: 1 | Details: Original: 70000, Discount: 10000, Final: 60000
+[2025-08-03 08:32:23] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 8 | Quantity: 4 | Details: Item ID: 31
+[2025-08-03 08:32:23] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 8 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:32:33] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:32:33] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:32:33] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:32:33] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:32:33] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 8 | Details: Item ID: 28
+[2025-08-03 08:32:33] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:32:42] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:32:42] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:32:42] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:32:42] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:32:42] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 9 | Details: Item ID: 28
+[2025-08-03 08:32:42] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:32:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-03 08:32:46] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-03 08:32:46] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:32:46] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-03 08:32:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 10 | Details: Item ID: 28
+[2025-08-03 08:32:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:35:06] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-03 08:35:06] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 70
+[2025-08-03 08:35:06] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:35:06] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-03 08:35:06] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 2 | Details: Item ID: 29
+[2025-08-03 08:35:06] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 4
+[2025-08-03 08:35:11] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 3 | Quantity: 1
+[2025-08-03 08:35:11] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 3 | Quantity: 1 | Details: Name: Vitamin C 1000mg, Price: 50000, Stock: 200
+[2025-08-03 08:35:11] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 3 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-03 08:35:11] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 3 | Quantity: 1 | Details: Original: 50000, Discount: 10000, Final: 40000
+[2025-08-03 08:35:11] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 3 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 40000
+[2025-08-03 08:35:11] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 3 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 5

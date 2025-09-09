@@ -33,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $query = "
-            SELECT u.user_id, u.username, u.email, u.password, ui.phone, r.role_name, ui.full_name , r.role_id
+                $query = "
+            SELECT u.user_id, u.username, u.email, u.password, ui.phone, u.role_id, r.role_name, ui.full_name 
             FROM users u
             JOIN roles r ON u.role_id = r.role_id
             LEFT JOIN users_info ui ON u.user_id = ui.user_id
@@ -138,7 +138,7 @@ if (isset($_GET['logout'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - QickMed</title>
+    <title>Đăng nhập - MediBot Store</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -212,11 +212,12 @@ if (isset($_GET['logout'])) {
             background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
             color: white;
             text-align: center;
-            padding: 30px 20px;
+            padding: 10px 10px;
             position: relative;
         }
 
         .login-header::before {
+            width: 50%;
             content: '';
             position: absolute;
             top: 0;
@@ -230,8 +231,8 @@ if (isset($_GET['logout'])) {
         }
 
         .brand-icon {
-            width: 80px;
-            height: 80px;
+            width: 40px;
+            height: 40px;
             background: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
             display: flex;
@@ -244,7 +245,7 @@ if (isset($_GET['logout'])) {
         }
 
         .brand-icon i {
-            font-size: 2.5rem;
+            font-size:1.5rem;
             color: white;
         }
 
@@ -733,7 +734,7 @@ if (isset($_GET['logout'])) {
             outline-offset: 2px;
         }
 
-        /* Smooth transitions for better UX */
+        
         * {
             transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
         }
@@ -746,7 +747,7 @@ if (isset($_GET['logout'])) {
                 <div class="brand-icon">
                     <i class="fas fa-stethoscope"></i>
                 </div>
-                <h1>QickMed</h1>
+                <h1>MediBot Store</h1>
                 <p>Hệ thống quản lý phòng khám</p>
             </div>
 
@@ -992,13 +993,16 @@ if (isset($_GET['logout'])) {
                     loginMessage.innerHTML = '<i class="fas fa-check-circle"></i>' + result.message;
                     loginMessage.style.display = 'block';
                     
-                    // Redirect sau 1.5 giây - sử dụng cả role_id và role để chắc chắn
+                    // Trong phần xử lý redirect sau khi đăng nhập thành công:
                     setTimeout(() => {
                         if (u.role === 'admin' || u.role_id == 1) {
                             console.log("Redirecting to admin dashboard...");
                             window.location.href = "admin/dashboard.php";
+                        } else if (u.role === 'doctor' || u.role_id == 2) {
+                            console.log("Redirecting to doctor schedule...");
+                            window.location.href = "doctor/schedule.php";
                         } else {
-                            // Tất cả user khác (doctor, patient) đều về trang chính
+                            // Các user khác về trang chính
                             console.log("Redirecting to index...");
                             window.location.href = "index.php";
                         }

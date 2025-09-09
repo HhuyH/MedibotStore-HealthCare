@@ -1,0 +1,13 @@
+[2025-08-19 07:23:31] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 6 | Quantity: 20
+[2025-08-19 07:23:31] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 6 | Quantity: 20 | Details: Name: Ibuprofen 200mg, Price: 20000, Stock: 79
+[2025-08-19 07:23:31] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_CREATED | Product: 6 | Quantity: 20 | Details: New Cart ID: 34
+[2025-08-19 07:23:31] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 6 | Quantity: 20 | Details: Original: 20000, Discount: 10000, Final: 10000
+[2025-08-19 07:23:31] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 6 | Quantity: 20 | Details: Cart ID: 34, Unit Price: 10000
+[2025-08-19 07:23:31] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 6 | Quantity: 20 | Details: Cart ID: 34, Cart Count: 1
+[2025-08-19 19:13:33] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":6,"product_name":null,"quantity":1}
+[2025-08-19 19:13:33] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":6,"product_name":null,"quantity":1}
+[2025-08-19 19:13:42] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-19 19:13:42] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-19 19:13:47] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-19 19:13:47] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-19 19:13:59] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":7,"product_name":null,"quantity":1}

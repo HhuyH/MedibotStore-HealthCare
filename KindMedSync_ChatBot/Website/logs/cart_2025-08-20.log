@@ -1,0 +1,59 @@
+[2025-08-20 06:41:15] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-20 06:41:15] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 93, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-20 06:41:15] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-20 06:57:45] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-20 06:57:45] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 93, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-20 06:57:45] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-20 06:58:42] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-20 06:58:42] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 93, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-20 06:58:42] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-20 06:58:47] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 06:58:47] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 06:59:06] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 06:59:06] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 06:59:11] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 06:59:11] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 06:59:24] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 06:59:24] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 06:59:28] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 06:59:28] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:00:03] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:00:03] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:00:23] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:00:23] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:00:31] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:00:31] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:00:36] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:00:36] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:00:46] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:00:46] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:01:12] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:01:12] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:01:25] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:01:25] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:01:46] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:01:46] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:01:58] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:01:58] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:02:06] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-20 07:02:06] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-20 07:02:19] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-20 07:02:19] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 94, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-20 07:02:19] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-20 07:27:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 3 cart items for user 1
+[2025-08-20 07:27:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 92, ProductID: 7, Name: 'Kẽm Gluconat 50mg', Price: 45000, UnitPrice: 35000, Qty: 1
+[2025-08-20 07:27:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 91, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-20 07:27:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 90, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-20 07:27:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 108000
+[2025-08-20 07:27:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 3 cart items for user 1
+[2025-08-20 07:27:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 92, ProductID: 7, Name: 'Kẽm Gluconat 50mg', Price: 45000, UnitPrice: 35000, Qty: 1
+[2025-08-20 07:27:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 91, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-20 07:27:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 90, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-20 07:27:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 163000
+[2025-08-20 07:27:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 3 cart items for user 1
+[2025-08-20 07:27:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 92, ProductID: 7, Name: 'Kẽm Gluconat 50mg', Price: 45000, UnitPrice: 35000, Qty: 1
+[2025-08-20 07:27:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 91, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-20 07:27:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 90, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-20 07:27:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 163000
+[2025-08-20 11:01:03] [INFO] [User: 2] [IP: ::1] CART_DEBUG: Found 0 cart items for user 2
+[2025-08-20 11:01:03] [INFO] [User: 2] [IP: ::1] CART_DEBUG: Total calculated: 0

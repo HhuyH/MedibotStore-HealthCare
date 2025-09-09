@@ -1,0 +1,137 @@
+[2025-08-06 08:58:21] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-06 08:58:21] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 69
+[2025-08-06 08:58:21] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-06 08:58:21] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-06 08:58:21] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 55000
+[2025-08-06 08:58:21] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-06 08:58:27] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 11 | Quantity: 1
+[2025-08-06 08:58:27] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 11 | Quantity: 1 | Details: Name: Trà ngủ ngon Hoa Cúc, Price: 65000, Stock: 69
+[2025-08-06 08:58:27] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 11 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-06 08:58:27] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 11 | Quantity: 1 | Details: Original: 65000, Discount: 10000, Final: 55000
+[2025-08-06 08:58:27] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 11 | Quantity: 2 | Details: Item ID: 33
+[2025-08-06 08:58:27] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 11 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-06 09:00:33] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:00:33] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:00:35] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":3,"product_name":null,"quantity":1}
+[2025-08-06 09:00:35] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":3,"product_name":null,"quantity":1}
+[2025-08-06 09:00:49] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:00:49] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:01:01] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-06 09:01:01] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-06 09:01:01] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-06 09:01:01] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-06 09:01:01] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 110000
+[2025-08-06 09:01:01] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 1
+[2025-08-06 09:01:26] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:01:26] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:02:28] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:02:28] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:02:29] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:02:29] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:02:41] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 6 | Quantity: 1
+[2025-08-06 09:02:41] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 6 | Quantity: 1 | Details: Name: Ibuprofen 200mg, Price: 20000, Stock: 80
+[2025-08-06 09:02:41] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_FOUND | Product: 6 | Quantity: 1 | Details: Existing Cart ID: 11
+[2025-08-06 09:02:41] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 6 | Quantity: 1 | Details: Original: 20000, Discount: 10000, Final: 10000
+[2025-08-06 09:02:41] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 6 | Quantity: 1 | Details: Cart ID: 11, Unit Price: 10000
+[2025-08-06 09:02:41] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 6 | Quantity: 1 | Details: Cart ID: 11, Cart Count: 2
+[2025-08-06 09:02:54] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:02:54] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:03:07] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:03:07] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:03:18] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:03:18] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:03:35] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:03:35] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:04:08] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":1}
+[2025-08-06 09:04:08] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":1}
+[2025-08-06 09:04:15] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":1,"product_name":null,"quantity":1}
+[2025-08-06 09:04:24] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":1,"product_name":null,"quantity":1}
+[2025-08-06 09:04:41] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 4) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":4}
+[2025-08-06 09:04:43] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 4) | {"action":"ADD_TO_CART","product_id":5,"product_name":null,"quantity":4}
+[2025-08-06 09:04:44] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 4) | {"action":"ADD_TO_CART","product_id":7,"product_name":null,"quantity":4}
+[2025-08-06 09:04:57] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":1,"product_name":null,"quantity":1}
+[2025-08-06 09:05:24] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":1,"product_name":null,"quantity":1}
+[2025-08-06 09:05:58] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 5) | {"action":"ADD_TO_CART","product_id":6,"product_name":null,"quantity":5}
+[2025-08-06 09:05:58] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 5) | {"action":"ADD_TO_CART","product_id":6,"product_name":null,"quantity":5}
+[2025-08-06 09:06:37] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":1,"product_name":null,"quantity":1}
+[2025-08-06 09:06:57] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:06:57] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:07:05] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:07:05] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:07:06] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":3,"product_name":null,"quantity":1}
+[2025-08-06 09:07:06] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":3,"product_name":null,"quantity":1}
+[2025-08-06 09:08:56] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:08:56] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:10:49] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:11:38] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:11:48] [CART] [User: 6] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 10 | Quantity: 1
+[2025-08-06 09:11:48] [CART] [User: 6] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 10 | Quantity: 1 | Details: Name: Kem dưỡng ẩm da nhạy cảm, Price: 120000, Stock: 50
+[2025-08-06 09:11:48] [CART] [User: 6] [IP: ::1] CART_ACTION: CART_FOUND | Product: 10 | Quantity: 1 | Details: Existing Cart ID: 7
+[2025-08-06 09:11:48] [CART] [User: 6] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 10 | Quantity: 1 | Details: Original: 120000, Discount: 10000, Final: 110000
+[2025-08-06 09:11:48] [CART] [User: 6] [IP: ::1] CART_ACTION: ITEM_UPDATED | Product: 10 | Quantity: 3 | Details: Item ID: 40
+[2025-08-06 09:11:48] [CART] [User: 6] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 10 | Quantity: 1 | Details: Cart ID: 7, Cart Count: 5
+[2025-08-06 09:12:40] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:12:41] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:12:44] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:12:48] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":8,"product_name":null,"quantity":1}
+[2025-08-06 09:12:51] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":8,"product_name":null,"quantity":1}
+[2025-08-06 09:12:52] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":8,"product_name":null,"quantity":1}
+[2025-08-06 09:12:54] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":5,"product_name":null,"quantity":1}
+[2025-08-06 09:13:22] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:13:22] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:14:33] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:14:33] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:14:36] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:15:20] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:15:21] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:15:29] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:15:31] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:15:36] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:15:52] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:17:37] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:17:40] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":8,"product_name":null,"quantity":1}
+[2025-08-06 09:17:41] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":6,"product_name":null,"quantity":1}
+[2025-08-06 09:18:02] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:18:02] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:18:43] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:18:43] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:18:54] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:18:54] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:18:56] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:18:56] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:18:56] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:18:56] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:20:31] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:20:31] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:20:35] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:20:37] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 09:20:57] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":3,"product_name":null,"quantity":1}
+[2025-08-06 09:21:07] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":6,"product_name":null,"quantity":1}
+[2025-08-06 09:21:56] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:21:56] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:22:06] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:22:06] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:22:50] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:22:50] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 09:25:09] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:25:15] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:25:15] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:25:27] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:25:27] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:26:09] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:26:09] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:26:51] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:26:51] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:27:06] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 09:27:06] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 14:46:33] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 14:46:33] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-06 14:46:42] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":10,"product_name":null,"quantity":1}
+[2025-08-06 19:28:12] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 19:28:12] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 19:31:21] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 19:31:21] [CART] [User: Dr.Linh (ID: 6)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 19:45:10] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":1}
+[2025-08-06 19:45:10] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":1}
+[2025-08-06 19:45:13] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}
+[2025-08-06 19:45:13] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":2,"product_name":null,"quantity":1}

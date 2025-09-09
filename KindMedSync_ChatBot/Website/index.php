@@ -1,4 +1,9 @@
 <?php
+// Start session before any output
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once 'includes/db.php';
 require_once 'includes/blog_functions.php';
 
@@ -12,7 +17,7 @@ $categories = get_blog_categories();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Qickmed - Trang Blog Y Khoa</title>
+  <title>MediBot Store - Trang Blog Y Khoa</title>
   <!-- Bootstrap 5 CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Animate.css CDN for animation -->
@@ -22,17 +27,141 @@ $categories = get_blog_categories();
   <!-- SwiperJS CSS for slider -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css"/>
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/team.css">
-  <link rel="stylesheet" href="assets/css/index.css">
+  <!-- Base CSS -->
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/team.css">
+  <link rel="stylesheet" href="./assets/css/index.css">
+  
+  <!-- Fallback Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Fallback font settings */
+    body {
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    /* Fix image paths */
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    
+    /* Ensure icons display */
+    .fas, .far, .fab {
+      font-family: "Font Awesome 6 Free" !important;
+    }
+  </style>
+  
+  <!-- Index Page Header Override -->
+  <style>
+    /* Force mobile layout on index page */
+    @media (max-width: 999.98px) {
+        /* Ensure navigation bar is hidden on mobile for index page */
+        .nav-bar {
+            display: none !important;
+        }
+        
+        /* Force mobile action area layout on index page */
+        .action-area > *:not(.search-toggle-btn):not(.cart-icon) {
+            display: none !important;
+        }
+        
+        .action-area .auth-btn,
+        .action-area .login-btn,
+        .action-area .appointment-btn,
+        .action-area .custom-dropdown,
+        .action-area .user-account {
+            display: none !important;
+        }
+        
+        /* Force mobile toggle visibility */
+        .mobile-toggle {
+            display: flex !important;
+        }
+        
+        /* Ensure mobile side menu works */
+        .mobile-side-menu {
+            display: block !important;
+        }
+        
+        /* Override any hero wrapper interference */
+        .hero-header-wrapper .medical-header {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 999990 !important;
+        }
+        
+        .hero-header-wrapper .main-header-content {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0 0.8rem !important;
+            gap: 0.3rem !important;
+            flex-wrap: nowrap !important;
+            min-height: 55px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+    }
+    
+    /* Medium screens override for index page */
+    @media (min-width: 992px) and (max-width: 999.98px) {
+        .nav-bar {
+            display: none !important;
+        }
+        
+        .action-area > *:not(.search-toggle-btn):not(.cart-icon) {
+            display: none !important;
+        }
+        
+        .mobile-toggle {
+            display: flex !important;
+        }
+    }
+  }
+
+  /* Button styles */
+  .btn-booking:hover,
+  .btn-hotline:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #1e40af;
+    text-decoration: none;
+  }
+
+  .btn-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    color: #fff;
+  }
+
+  .btn-booking .btn-icon,
+  .btn-hotline .btn-icon {
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Override button hover effect */
+  .btn::before {
+    display: none !important;
+  }
+  </style>
 </head>
 <body>
-
+<?php include 'includes/header.php'; ?>
   <!-- Hero Section -->
-  <section class="clinic-hero" style="background: url('/assets/images/main-slider-bg-1-1.png') center/cover no-repeat; min-height: 600px;">
+  <section class="clinic-hero" style="background: url('./assets/images/main-slider-bg-1-1.png') center/cover no-repeat; min-height: 600px;">
     <div class="container position-relative">
       <div class="hero-header-wrapper" style="padding-top:0;margin-top:-50px;">
-        <?php include 'includes/header.php'; ?>
+       
       </div>
       <div class="row align-items-center pt-4 pt-lg-5">
         <div class="col-lg-7 col-12">
@@ -41,7 +170,7 @@ $categories = get_blog_categories();
             Chăm Sóc Sức Khỏe <span class="highlight">Tốt Nhất</span>
             <span class="ms-2 align-middle" style="display:inline-block;vertical-align:middle;">
               <span style="position:relative;display:inline-block;">
-                <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=facearea&w=70&h=42" alt="video" style="width:70px;height:42px;border-radius:18px;object-fit:cover;">
+                <img src="./assets/images/thumbnail-chuyen-gia-scaled.jpg" alt="video" style="width:70px;height:42px;border-radius:18px;object-fit:cover;">
                 <span class="animate__animated animate__pulse animate__infinite" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);">
                   <i class="fas fa-play-circle" style="font-size:1.7rem;color:#1ec0f7;opacity:0.85;"></i>
                 </span>
@@ -49,10 +178,10 @@ $categories = get_blog_categories();
             </span>
           </h1>
           <div class="clinic-hero-desc mb-3 animate__animated animate__fadeInUp animate__delay-1s" style="text-align:left;max-width:470px;font-size:1.08rem;">Với đội ngũ y bác sĩ giàu kinh nghiệm và trang thiết bị hiện đại, chúng tôi cam kết mang đến dịch vụ chăm sóc sức khỏe chất lượng cao nhất cho bạn và gia đình.</div>
-          <a href="#services" class="btn clinic-hero-btn animate__animated animate__fadeInUp animate__delay-2s" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#1976d2 0%,#1ec0f7 100%);font-size:1.08rem;padding:12px 32px;box-shadow:0 2px 8px rgba(33,150,243,0.13);">Xem Tất Cả Dịch Vụ <i class="fas fa-arrow-right"></i></a>
+          <a href="services.php" class="btn clinic-hero-btn animate__animated animate__fadeInUp animate__delay-2s" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(90deg,#1976d2 0%,#1ec0f7 100%);font-size:1.08rem;padding:12px 32px;box-shadow:0 2px 8px rgba(33,150,243,0.13);">Xem Tất Cả Dịch Vụ <i class="fas fa-arrow-right"></i></a>
         </div>
         <div class="col-lg-5 d-none d-lg-block position-relative animate__animated animate__fadeInRight animate__slower" style="min-width:320px;">
-          <img src="/assets/images/default-avatar.png" alt="Doctor" style="max-width:320px;max-height:420px;object-fit:contain;">
+          <img src="./assets/images/default-avatar.png" alt="Doctor" style="max-width:320px;max-height:420px;object-fit:contain;">
           <div style="position:absolute;bottom:18px;left:0;background:#fff;border-radius:15px;box-shadow:0 2px 12px rgba(33,150,243,0.10);padding:12px 22px;display:flex;align-items:center;gap:12px;min-width:170px;">
             <span style="font-size:1.4rem;color:#1ec0f7;"><i class="fas fa-star"></i></span>
             <div>
@@ -74,15 +203,15 @@ $categories = get_blog_categories();
           <div class="col-lg-6">
             <div class="position-relative">
               <div class="rotating-images position-relative" style="height: 400px; border-radius: 1rem; overflow: hidden;">
-                <img src="/assets/images/h_p_1.jpg" alt="Bệnh viện" class="rotating-image active" style="position: absolute; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease;">
-                <img src="/assets/images/h_p_2.jpg" alt="Bệnh viện" class="rotating-image" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease;">
-                <img src="/assets/images/about-hospital.jpg" alt="Bệnh viện" class="rotating-image" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease;">
+                <img src="/assets/images/media.png" alt="Bệnh viện" class="rotating-image active" style="position: absolute; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease;">
+                <img src="/assets/images/thmd_2.png" alt="Bệnh viện" class="rotating-image" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease;">
+                <img src="/assets/images/thmdt_1.png" alt="Bệnh viện" class="rotating-image" style="position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease;">
               </div>
               <div class="position-absolute bottom-0 start-0 translate-middle-y" style="left:24px;bottom:-32px;">
-                <div class="experience-box">
+                <!-- <div class="experience-box">
                   <div class="experience-number">25<span>+</span></div>
                   <div class="experience-text">Năm kinh nghiệm<br>trong lĩnh vực y tế</div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>
@@ -118,9 +247,9 @@ $categories = get_blog_categories();
                 <i class="fa-solid fa-arrow-right ms-2"></i>
               </a>
               <div class="founder-box animate__animated animate__fadeInUp">
-                <img src="/assets/images/founder.jpg" alt="Người sáng lập" class="rounded-circle">
+                <img src="./assets/images/logo_icon.png" alt="Người sáng lập" class="rounded-circle">
                 <div>
-                  <div class="founder-name">Nguyễn Văn A</div>
+                  <div class="founder-name">MediBot Store</div>
                   <div class="founder-title">Đồng sáng lập</div>
                 </div>
               </div>
@@ -251,24 +380,15 @@ $categories = get_blog_categories();
         </div>
 
         <div class="text-center mt-5">
-          <a href="#" class="btn btn-light btn-lg px-5 py-3 rounded-pill" style="font-weight: 600; font-size: 1.1rem; box-shadow: 0 10px 30px rgba(255,255,255,0.2);">
+          <a href="services.php" class="btn btn-light btn-lg px-5 py-3 rounded-pill" style="font-weight: 600; font-size: 1.1rem; box-shadow: 0 10px 30px rgba(255,255,255,0.2);">
             Xem Thêm Dịch Vụ <i class="fa-solid fa-arrow-right ms-2"></i>
           </a>
         </div>
       </div>
 
       <style>
-        .card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 15px 40px rgba(0,0,0,0.15) !important;
-        }
-        
         .service-icon-wrapper {
           transition: all 0.3s ease;
-        }
-        
-        .card:hover .service-icon-wrapper {
-          transform: scale(1.1);
         }
       </style>
     </section>
@@ -553,7 +673,7 @@ $categories = get_blog_categories();
       </div>
     </section>
     <!-- Book An Appointment -->
-    <section id="book" class="py-5 position-relative overflow-hidden">
+    <!-- <section id="book" class="py-5 position-relative overflow-hidden">
       <div class="booking-bg"></div>
       <div class="container position-relative">
         <div class="booking-wrapper text-center">
@@ -570,31 +690,31 @@ $categories = get_blog_categories();
             Đội ngũ chuyên gia của chúng tôi luôn sẵn sàng hỗ trợ bạn!
           </p>
 
-          <!-- <div class="booking-button-group">
-            <a href="/booking.php" class="btn btn-primary btn-booking">
-              <span class="btn-icon">
-                <i class="fas fa-calendar-plus"></i>
-              </span>
-              <span class="btn-text">
-                <strong>Đặt Lịch Ngay</strong>
-                <small>Chỉ mất 2 phút của bạn</small>
-              </span>
-            </a>
+            <div class="booking-button-group">
+              <a href="/book-appointment.php" class="btn btn-outline-primary btn-booking">
+                <span class="btn-icon">
+                  <i class="fas fa-calendar-plus"></i>
+                </span>
+                <span class="btn-text">
+                  <strong>Đặt Lịch Ngay</strong>
+                  <small>Chỉ mất 2 phút của bạn</small>
+                </span>
+              </a>
 
-            <div class="divider">
-              <span>hoặc</span>
+              <div class="divider">
+                <span>hoặc</span>
+              </div>
+
+              <a href="tel:0123456789" class="btn btn-outline-primary btn-hotline">
+                <span class="btn-icon">
+                  <i class="fas fa-phone-alt"></i>
+                </span>
+                <span class="btn-text">
+                  <strong>Gọi Hotline 24/7</strong>
+                  <small>0123 456 789</small>
+                </span>
+              </a>
             </div>
-
-            <a href="tel:0123456789" class="btn btn-outline-primary btn-hotline">
-              <span class="btn-icon">
-                <i class="fas fa-phone-alt"></i>
-              </span>
-              <span class="btn-text">
-                <strong>Gọi Hotline 24/7</strong>
-                <small>0123 456 789</small>
-              </span>
-            </a>
-          </div> -->
 
           <div class="booking-note mt-4">
             <i class="fas fa-clock text-primary me-2"></i>
@@ -602,9 +722,9 @@ $categories = get_blog_categories();
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
     <!-- We Are Skillful Health Care -->
-    <section id="skillful">
+    <!-- <section id="skillful">
       <div class="container">
         <div class="skillful-grid">
           <div class="skillful-content">
@@ -679,7 +799,7 @@ $categories = get_blog_categories();
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
     <!-- FAQ Section -->
     <section id="faqs" class="py-5 position-relative overflow-hidden">
       <div class="faq-bg-pattern"></div>
@@ -737,7 +857,7 @@ $categories = get_blog_categories();
                         </div>
                         <div class="feature-content">
                           <h4>Ứng dụng di động</h4>
-                          <p>Tải app Qickmed để đặt lịch dễ dàng</p>
+                          <p>Tải app MediBot Store để đặt lịch dễ dàng</p>
                         </div>
                       </div>
                     </div>
@@ -752,7 +872,7 @@ $categories = get_blog_categories();
                     <i class="fas fa-clock"></i>
                   </div>
                   <div class="faq-question">
-                    Qickmed có làm việc cuối tuần không?
+                    MediBot Store có làm việc cuối tuần không?
                   </div>
                   <div class="faq-toggle">
                     <i class="fas fa-chevron-down"></i>
@@ -840,10 +960,10 @@ $categories = get_blog_categories();
 
         <!-- AI Chat Section -->
         <div class="ai-chat-section text-center mt-5">
-          <div class="chat-bubble">
+          <!-- <div class="chat-bubble">
             <i class="fas fa-robot"></i>
             <span>Bạn cần hỗ trợ thêm?</span>
-          </div>
+          </div> -->
           <button class="btn btn-primary btn-lg rounded-pill shadow-lg px-5 py-3 ai-chat-btn" id="open-ai-chat">
             <i class="fas fa-comments me-2"></i>
             Tư vấn với AI
@@ -911,8 +1031,7 @@ $categories = get_blog_categories();
     </section>
   </main>
 
-  <!-- Footer -->
-  <?php include 'includes/footer.php'; ?>
+
   
   <!-- Appointment Modal -->
   <?php include 'includes/appointment-modal.php'; ?>
@@ -931,7 +1050,9 @@ $categories = get_blog_categories();
   <script src="assets/js/global-enhancements.js"></script>
   
   <?php include 'includes/floating_chat.php'; ?>
-  
+    <!-- Footer -->
+  <?php include 'includes/footer.php'; ?>
+
   <script src="assets/js/team.js"></script>
   <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -967,28 +1088,107 @@ $categories = get_blog_categories();
     // Initialize AOS animation
     AOS.init();
   });
+document.getElementById('open-ai-chat').addEventListener('click', function () {
+    window.open('/Chat/health-ai-chat.php', '_blank', );
+  });
+
   </script>
 
   <style>
+  /* Fix styles for VPS deployment */
+  :root {
+    --primary-color: #1976d2;
+    --secondary-color: #1ec0f7;
+    --text-color: #333;
+    --light-bg: #f8f9fa;
+    --border-color: #e0e0e0;
+  }
+
+  /* Ensure proper font loading */
+  @font-face {
+    font-family: 'Font Awesome 6 Free';
+    font-display: swap;
+    src: url('./assets/fonts/fa-solid-900.woff2') format('woff2');
+  }
+
+  /* Base styles */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    line-height: 1.6;
+    color: var(--text-color);
+    overflow-x: hidden;
+  }
+
+  /* Image optimizations */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* Animation fixes */
   .rotating-text.active {
     animation: fadeIn 0.5s ease-in;
+    opacity: 1;
+    transform: translateY(0);
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { 
+      opacity: 0; 
+      transform: translateY(10px); 
+    }
+    to { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
   }
 
   .rotating-image {
     transform: scale(1.02);
     transition: transform 0.3s ease, opacity 0.5s ease;
+    backface-visibility: hidden;
   }
 
   .rotating-image.active {
     transform: scale(1);
   }
 
+  /* Fix button styles */
+  .btn {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
 
+  .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: -1;
+  }
+
+  .btn:hover::before {
+    transform: translateX(0);
+  }
+
+  /* Fix card styles */
+  .card {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
   </style>
 </body>
 </html>

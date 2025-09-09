@@ -1,0 +1,40 @@
+[2025-07-23 07:30:42] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-07-23 07:30:42] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 69, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-07-23 07:30:42] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 68, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-07-23 07:30:42] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 54000
+[2025-07-23 07:31:14] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-07-23 07:31:14] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 69, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-07-23 07:31:14] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 68, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-07-23 07:31:14] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 54000
+[2025-07-23 07:31:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-07-23 07:31:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 69, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-07-23 07:31:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 68, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-07-23 07:31:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 54000
+[2025-07-23 07:35:07] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-07-23 07:35:07] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 69, ProductID: 9, Name: 'Băng gạc y tế', Price: 35000, UnitPrice: 31500, Qty: 1
+[2025-07-23 07:35:07] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 68, ProductID: 4, Name: 'Paracetamol 500mg', Price: 25000, UnitPrice: 22500, Qty: 1
+[2025-07-23 07:35:07] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 54000
+[2025-07-23 07:43:15] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-07-23 07:43:15] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-07-23 07:43:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-23 07:43:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 16, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-07-23 07:43:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 640000
+[2025-07-23 07:53:29] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-07-23 07:53:29] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 17, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-07-23 07:53:29] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 640000
+[2025-07-23 11:31:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-07-23 11:31:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-07-23 11:31:27] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-23 11:31:27] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 18, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-07-23 11:31:27] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 640000
+[2025-07-23 11:34:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-07-23 11:34:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 19, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-07-23 11:34:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 18, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-07-23 11:34:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 1335000
+[2025-07-23 13:25:14] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-07-23 13:25:14] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-07-23 13:25:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-23 13:25:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 20, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-07-23 13:25:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 640000
+[2025-07-23 13:27:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-07-23 13:27:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0

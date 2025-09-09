@@ -10,7 +10,18 @@
  */
 if (!function_exists('calculateDiscountPrice')) {
 function calculateDiscountPrice($price, $rating) {
-    $discount_percent = $rating >= 4.5 ? 10 : 0;
+    // Check if auto discount is enabled
+    if (!defined('ENABLE_AUTO_DISCOUNT') || !ENABLE_AUTO_DISCOUNT) {
+        return [
+            'discount_percent' => 0,
+            'discount_price' => null,
+            'original_price' => $price
+        ];
+    }
+    
+    $discount_percent = $rating >= (defined('AUTO_DISCOUNT_MIN_RATING') ? AUTO_DISCOUNT_MIN_RATING : 4.5) 
+        ? (defined('AUTO_DISCOUNT_PERCENT') ? AUTO_DISCOUNT_PERCENT : 10) 
+        : 0;
     $discount_price = $discount_percent > 0 
         ? $price * (1 - $discount_percent/100) 
         : null;

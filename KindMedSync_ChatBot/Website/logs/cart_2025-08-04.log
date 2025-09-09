@@ -1,0 +1,31 @@
+[2025-08-04 14:36:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 5 cart items for user 1
+[2025-08-04 14:36:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 32, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-08-04 14:36:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 31, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 4
+[2025-08-04 14:36:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 30, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-04 14:36:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 3 - ItemID: 29, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-04 14:36:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 4 - ItemID: 28, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 6
+[2025-08-04 14:36:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 1690000
+[2025-08-04 14:36:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 4 cart items for user 1
+[2025-08-04 14:36:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 32, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-08-04 14:36:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 31, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 4
+[2025-08-04 14:36:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 30, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-04 14:36:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 3 - ItemID: 28, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 6
+[2025-08-04 14:36:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 1580000
+[2025-08-04 14:36:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 3 cart items for user 1
+[2025-08-04 14:36:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 31, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 4
+[2025-08-04 14:36:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 30, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-04 14:36:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 28, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 6
+[2025-08-04 14:36:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 1540000
+[2025-08-04 14:36:15] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-04 14:36:15] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 30, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-04 14:36:15] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 28, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 6
+[2025-08-04 14:36:15] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 1300000
+[2025-08-04 14:36:16] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-04 14:36:16] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 28, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 6
+[2025-08-04 14:36:16] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 660000
+[2025-08-04 14:36:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-04 14:36:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-04 14:36:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-04 14:36:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-04 14:36:26] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-04 14:36:26] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0

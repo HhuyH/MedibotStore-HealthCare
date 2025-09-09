@@ -1,0 +1,24 @@
+[2025-07-21 09:00:35] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 1 | Quantity: 1
+[2025-07-21 09:00:35] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 1 | Quantity: 1 | Details: Name: Paracetamol 500mg, Price: 15000, Stock: 1
+[2025-07-21 09:00:35] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_CREATED | Product: 1 | Quantity: 1 | Details: New Cart ID: 2
+[2025-07-21 09:00:35] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 1 | Quantity: 1 | Details: Original: 15000, Discount: 10000, Final: 5000
+[2025-07-21 09:00:35] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 1 | Quantity: 1 | Details: Cart ID: 2, Unit Price: 5000
+[2025-07-21 09:00:35] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 1 | Quantity: 1 | Details: Cart ID: 2, Cart Count: 1
+[2025-07-21 16:32:29] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 2 | Quantity: 1
+[2025-07-21 16:32:29] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 2 | Quantity: 1 | Details: Name: Amoxicillin 500mg, Price: 28000, Stock: 60
+[2025-07-21 16:32:29] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_CREATED | Product: 2 | Quantity: 1 | Details: New Cart ID: 3
+[2025-07-21 16:32:29] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 2 | Quantity: 1 | Details: Original: 28000, Discount: 10000, Final: 18000
+[2025-07-21 16:32:29] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 2 | Quantity: 1 | Details: Cart ID: 3, Unit Price: 18000
+[2025-07-21 16:32:29] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 2 | Quantity: 1 | Details: Cart ID: 3, Cart Count: 1
+[2025-07-21 16:38:36] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 4 | Quantity: 1
+[2025-07-21 16:38:36] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 4 | Quantity: 1 | Details: Name: Máy đo huyết áp điện tử, Price: 650000, Stock: 15
+[2025-07-21 16:38:36] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_CREATED | Product: 4 | Quantity: 1 | Details: New Cart ID: 4
+[2025-07-21 16:38:36] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 4 | Quantity: 1 | Details: Original: 650000, Discount: 10000, Final: 640000
+[2025-07-21 16:38:36] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 4 | Quantity: 1 | Details: Cart ID: 4, Unit Price: 640000
+[2025-07-21 16:38:36] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 4 | Quantity: 1 | Details: Cart ID: 4, Cart Count: 1
+[2025-07-21 16:39:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_START | Product: 3 | Quantity: 1
+[2025-07-21 16:39:46] [CART] [User: 1] [IP: ::1] CART_ACTION: PRODUCT_FOUND | Product: 3 | Quantity: 1 | Details: Name: Vitamin C 1000mg, Price: 50000, Stock: 200
+[2025-07-21 16:39:46] [CART] [User: 1] [IP: ::1] CART_ACTION: CART_CREATED | Product: 3 | Quantity: 1 | Details: New Cart ID: 5
+[2025-07-21 16:39:46] [CART] [User: 1] [IP: ::1] CART_ACTION: PRICE_CALCULATED | Product: 3 | Quantity: 1 | Details: Original: 50000, Discount: 10000, Final: 40000
+[2025-07-21 16:39:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ITEM_ADDED | Product: 3 | Quantity: 1 | Details: Cart ID: 5, Unit Price: 40000
+[2025-07-21 16:39:46] [CART] [User: 1] [IP: ::1] CART_ACTION: ADD_TO_CART_SUCCESS | Product: 3 | Quantity: 1 | Details: Cart ID: 5, Cart Count: 1

@@ -1,0 +1,91 @@
+[2025-08-08 08:30:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-08 08:30:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-08 08:59:34] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-08 08:59:34] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-08 09:26:03] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-08 09:26:03] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 58, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-08 09:26:03] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 110000
+[2025-08-08 10:10:32] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-08 10:10:32] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-08 10:11:16] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-08 10:11:16] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-08 10:12:10] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-08 10:12:10] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-08 10:14:40] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:14:40] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 59, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-08 10:14:40] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 110000
+[2025-08-08 10:16:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:16:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 61, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 2
+[2025-08-08 10:16:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 36000
+[2025-08-08 10:20:27] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 0 cart items for user 6
+[2025-08-08 10:20:27] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-08 10:23:09] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:23:09] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:23:09] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:23:10] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:23:10] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:23:10] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:23:11] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:23:11] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:23:11] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:23:46] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:23:46] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:23:46] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:24:10] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:24:10] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:24:10] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:25:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:25:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:25:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:26:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:26:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:26:51] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:28:55] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:28:55] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:28:55] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:31:02] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:31:02] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:31:02] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:34:16] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:34:16] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:34:16] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 10:40:05] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Found 1 cart items for user 6
+[2025-08-08 10:40:05] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 62, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-08 10:40:05] [INFO] [User: 6] [IP: ::1] CART_DEBUG: Total calculated: 1280000
+[2025-08-08 17:03:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-08 17:03:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 63, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 1
+[2025-08-08 17:03:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 110000
+[2025-08-08 17:05:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-08 17:05:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 63, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 1
+[2025-08-08 17:05:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 110000
+[2025-08-08 17:05:09] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-08 17:05:09] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 64, ProductID: 5, Name: 'Khẩu trang y tế 4 lớp', Price: 40000, UnitPrice: 30000, Qty: 1
+[2025-08-08 17:05:09] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 63, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 1
+[2025-08-08 17:05:09] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 140000
+[2025-08-08 17:07:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 3 cart items for user 1
+[2025-08-08 17:07:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 65, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-08 17:07:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 64, ProductID: 5, Name: 'Khẩu trang y tế 4 lớp', Price: 40000, UnitPrice: 30000, Qty: 1
+[2025-08-08 17:07:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 63, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 1
+[2025-08-08 17:07:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 195000
+[2025-08-08 17:10:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 4 cart items for user 1
+[2025-08-08 17:10:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 66, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 1
+[2025-08-08 17:10:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 65, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-08 17:10:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 64, ProductID: 5, Name: 'Khẩu trang y tế 4 lớp', Price: 40000, UnitPrice: 30000, Qty: 1
+[2025-08-08 17:10:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 3 - ItemID: 63, ProductID: 10, Name: 'Kem dưỡng ẩm da nhạy cảm', Price: 120000, UnitPrice: 110000, Qty: 1
+[2025-08-08 17:10:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 255000
+[2025-08-08 17:10:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 3 cart items for user 1
+[2025-08-08 17:10:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 66, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 1
+[2025-08-08 17:10:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 65, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-08 17:10:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 2 - ItemID: 64, ProductID: 5, Name: 'Khẩu trang y tế 4 lớp', Price: 40000, UnitPrice: 30000, Qty: 1
+[2025-08-08 17:10:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 145000
+[2025-08-08 17:10:45] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-08 17:10:45] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 66, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 1
+[2025-08-08 17:10:45] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 65, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-08 17:10:45] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 115000
+[2025-08-08 17:10:47] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-08 17:10:47] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 66, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 1
+[2025-08-08 17:10:47] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 60000
+[2025-08-08 17:10:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-08 17:10:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-08 19:36:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-08 19:36:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0

@@ -1,0 +1,4 @@
+[2025-08-16 19:32:17] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":1}
+[2025-08-16 19:32:17] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":4,"product_name":null,"quantity":1}
+[2025-08-16 19:32:17] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}
+[2025-08-16 19:32:17] [CART] [User: Quản trị viên (ID: 1)] [IP: ::1] [Page: add.php] 🛒 Added product to cart (Qty: 1) | {"action":"ADD_TO_CART","product_id":11,"product_name":null,"quantity":1}

@@ -11,7 +11,7 @@
       <!-- Logo & Description -->
       <div class="col-lg-4 col-md-6 text-center text-md-start">
         <div class="footer-brand mb-3">
-          <img src="/assets/img/logo-white.png" alt="MediSync Logo" class="footer-logo mb-3">
+          <img src="/assets/images/logo_icon.png" alt="MediSync Logo" class="footer-logo mb-3">
           <p class="footer-description">
             Phòng khám y khoa hiện đại với đội ngũ bác sĩ chuyên nghiệp, 
             mang đến dịch vụ chăm sóc sức khỏe toàn diện và tận tâm.
@@ -25,7 +25,7 @@
         <div class="footer-contact">
           <div class="contact-item mb-2">
             <i class="fas fa-map-marker-alt me-3"></i>
-            <span>123 Đường Sức Khỏe, Quận 1, TP.HCM</span>
+            <span>624 Âu Cơ, Quận Tân Phú, TP.HCM</span>
           </div>
           <div class="contact-item mb-2">
             <i class="fas fa-phone-alt me-3"></i>
@@ -33,7 +33,7 @@
           </div>
           <div class="contact-item mb-2">
             <i class="fas fa-envelope me-3"></i>
-            <a href="mailto:info@qickmed.vn" class="contact-link">info@qickmed.vn</a>
+            <a href="mailto:info@qickmed.vn" class="contact-link">medisyncnoreplybot@gmail.com</a>
           </div>
           <div class="contact-item">
             <i class="fas fa-clock me-3"></i>
@@ -76,7 +76,7 @@
       <div class="row align-items-center">
         <div class="col-md-6 text-center text-md-start">
           <p class="copyright mb-0">
-            &copy; 2024 <span class="brand-name">MediSync</span>. All rights reserved.
+            &copy; 2025 <span class="brand-name">MediBotStore</span>. All rights reserved.
           </p>
         </div>
         <div class="col-md-6 text-center text-md-end">

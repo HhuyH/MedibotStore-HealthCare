@@ -1,0 +1,12 @@
+[2025-08-19 19:13:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-19 19:13:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 89, ProductID: 6, Name: 'Ibuprofen 200mg', Price: 20000, UnitPrice: 10000, Qty: 1
+[2025-08-19 19:13:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 10000
+[2025-08-19 19:13:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-19 19:13:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-19 19:13:43] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-19 19:13:43] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 90, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-19 19:13:43] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-19 19:13:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-19 19:13:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 91, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-19 19:13:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 90, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-19 19:13:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000

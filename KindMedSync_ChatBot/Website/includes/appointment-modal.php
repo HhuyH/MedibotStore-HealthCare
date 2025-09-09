@@ -42,6 +42,21 @@
                             </select>
                         </div>
                     </div>
+                      <!-- Alert area -->
+                      <div id="modalAlert" class="alert d-none" role="alert"></div>
+                      <br>
+                    <!-- Time Slots -->
+                    <div class="time-slots" id="timeSlots">
+                        <div class="time-slot-header">
+                            <div class="time-slot-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span id="timeSlotMessage">Vui lòng chọn bác sĩ và ngày trước</span>
+                            </div>
+                        </div>
+                        <div class="time-slot-grid" id="timeSlotGrid">
+                            <!-- Time slots will be populated here -->
+                        </div>
+                    </div>
 
                     <!-- Reason -->
                     <div class="mb-4">
@@ -54,7 +69,20 @@
                     </div>
 
                     <!-- Alert area -->
-                    <div id="modalAlert" class="alert d-none" role="alert"></div>
+                    <!-- <div id="modalAlert" class="alert d-none" role="alert"></div> -->
+
+                    <!-- Time Slots -->
+                    <!-- <div class="time-slots" id="timeSlots">
+                        <div class="time-slot-header">
+                            <div class="time-slot-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span id="timeSlotMessage">Vui lòng chọn bác sĩ và ngày trước</span>
+                            </div>
+                        </div>
+                        <div class="time-slot-grid" id="timeSlotGrid">
+                           
+                        </div>
+                    </div> -->
                 </form>
             </div>
             
@@ -174,8 +202,9 @@
 
 .modal-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1976d2, #1ec0f7);
     color: white;
-    border-radius: 24px 24px 0 0;
+    /* border-radius: 24px 24px 0 0; */
     border-bottom: none;
     padding: 2rem 2.5rem;
     position: relative;
@@ -384,7 +413,7 @@ body.modal-open {
 
 /* Button styling for header appointment button */
 .auth-btn.appointment-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    background: linear-gradient(135deg, #1976d2, #1ec0f7) !important;
     color: white !important;
     border: none !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
@@ -425,30 +454,169 @@ body.modal-open .medical-header .user-account {
 body.modal-open .medical-header * {
     z-index: 999989 !important;
 }
+
+/* Time Slots Styling */
+.time-slots {
+    border: 1px solid rgba(226, 232, 240, 0.6);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.time-slot-header {
+    padding: 1rem;
+    background: rgba(248, 250, 252, 0.8);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.time-slot-info {
+    display: flex;
+    align-items: center;
+    color: #4a5568;
+    font-size: 0.9rem;
+}
+
+.time-slot-info i {
+    color: #667eea;
+}
+
+.time-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+    padding: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.time-slot {
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.time-slot:not(.disabled):hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateY(-1px);
+}
+
+.time-slot.selected {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+}
+
+.time-slot.disabled {
+    background: #f7fafc;
+    color: #a0aec0;
+    cursor: not-allowed;
+    border-color: #edf2f7;
+}
+
+.time-slot.disabled::after {
+    content: '✕';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+    color: #e53e3e;
+    opacity: 0.5;
+}
+
+.time-slot.booked {
+    background: #fed7d7;
+    border-color: #feb2b2;
+    color: #c53030;
+    cursor: not-allowed;
+}
+
+.time-slot.booked::after {
+    content: 'Đã đặt';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    white-space: nowrap;
+    background: #c53030;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Loading state */
+.time-slot-grid.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(102, 126, 234, 0.2);
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .time-slot-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+    
+    .time-slot {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Set minimum date to today
-    document.getElementById('modalAppointmentDate').min = new Date().toISOString().split('T')[0];
+    const dateInput = document.getElementById('modalAppointmentDate');
+    dateInput.min = new Date().toISOString().split('T')[0];
     
     // Date change handler
-    document.getElementById('modalAppointmentDate').addEventListener('change', function() {
+    dateInput.addEventListener('change', function() {
         const doctorId = document.getElementById('modalDoctorSelect').value;
-        if (doctorId && this.value) {
+        if (!doctorId) {
+            showModalAlert('Vui lòng chọn bác sĩ trước khi chọn ngày', 'danger');
+            this.value = '';
+            return;
+        }
+        if (this.value) {
             loadModalTimeSlots(doctorId, this.value);
+        } else {
+            resetModalTimeSlots();
         }
     });
     
     // Doctor change handler
     document.getElementById('modalDoctorSelect').addEventListener('change', function() {
         const date = document.getElementById('modalAppointmentDate').value;
-        if (this.value && date) {
+        if (this.value) {
+            if (date) {
             loadModalTimeSlots(this.value, date);
+            }
         } else {
-            const timeSelect = document.getElementById('modalTimeSelect');
-            timeSelect.innerHTML = '<option value="">Chọn ngày trước</option>';
-            timeSelect.disabled = true;
+            resetModalTimeSlots();
+            document.getElementById('modalAppointmentDate').value = '';
         }
     });
 });
@@ -503,52 +671,75 @@ let timeSlotsCache = {};
 
 // Load available time slots with caching
 function loadModalTimeSlots(doctorId, date) {
+    const grid = document.getElementById('timeSlotGrid');
+    const message = document.getElementById('timeSlotMessage');
     const timeSelect = document.getElementById('modalTimeSelect');
-    const cacheKey = `${doctorId}-${date}`;
     
-    // Check cache first
-    if (timeSlotsCache[cacheKey]) {
-        populateTimeSlots(timeSlotsCache[cacheKey], timeSelect);
-        return;
-    }
-    
-    timeSelect.innerHTML = '<option value="">Đang tải...</option>';
-    timeSelect.disabled = true;
+    // Show loading
+    grid.innerHTML = '<div class="loading-spinner"></div>';
+    message.innerHTML = 'Đang kiểm tra lịch trống...';
     
     fetch(`/api/get-time-slots.php?doctor_id=${doctorId}&date=${date}`)
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.slots.length > 0) {
-                timeSlotsCache[cacheKey] = data.slots; // Cache the data
-                populateTimeSlots(data.slots, timeSelect);
+            if (data.success) {
+                if (!data.slots || data.slots.length === 0) {
+                    message.innerHTML = data.message || 'Không có lịch trống trong ngày này';
+                    grid.innerHTML = '<div class="time-slot disabled">Không có lịch trống</div>';
+                    timeSelect.value = '';
+                    timeSelect.disabled = true;
+                    return;
+                }
+                
+                message.innerHTML = 'Chọn thời gian phù hợp:';
+                grid.innerHTML = '';
+                
+                // Populate both grid and select
+                timeSelect.innerHTML = '<option value="">-- Chọn giờ --</option>';
+                
+                data.slots.forEach(slot => {
+                    // Add to grid
+                    const slotDiv = document.createElement('div');
+                    slotDiv.className = `time-slot ${slot.booked ? 'booked' : ''}`;
+                    slotDiv.textContent = slot.time;
+                    
+                    if (!slot.booked) {
+                        slotDiv.onclick = function() {
+                            // Remove previous selection
+                            document.querySelectorAll('.time-slot.selected').forEach(s => s.classList.remove('selected'));
+                            // Add selection to clicked slot
+                            this.classList.add('selected');
+                            // Update select element
+                            timeSelect.value = slot.time;
+                        };
+                    }
+                    
+                    grid.appendChild(slotDiv);
+                    
+                    // Add to select
+                    if (!slot.booked) {
+                        const option = document.createElement('option');
+                        option.value = slot.time;
+                        option.textContent = slot.time;
+                        timeSelect.appendChild(option);
+                    }
+                });
+                
+                timeSelect.disabled = false;
             } else {
-                timeSelect.innerHTML = '<option value="">Không có lịch trống</option>';
+                message.innerHTML = 'Có lỗi khi tải lịch';
+                grid.innerHTML = '<div class="time-slot disabled">Lỗi tải dữ liệu</div>';
+                timeSelect.value = '';
                 timeSelect.disabled = true;
             }
         })
         .catch(error => {
-            console.error('Error loading time slots:', error);
-            timeSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+            console.error('Error:', error);
+            message.innerHTML = 'Có lỗi xảy ra';
+            grid.innerHTML = '<div class="time-slot disabled">Lỗi kết nối</div>';
+            timeSelect.value = '';
             timeSelect.disabled = true;
         });
-}
-
-// Populate time slots dropdown
-function populateTimeSlots(slots, selectElement) {
-    selectElement.innerHTML = '<option value="">-- Chọn giờ --</option>';
-    
-    slots.forEach(slot => {
-        const option = document.createElement('option');
-        option.value = slot.time;
-        option.textContent = slot.time;
-        option.disabled = slot.booked;
-        if (slot.booked) {
-            option.textContent += ' (Đã đặt)';
-        }
-        selectElement.appendChild(option);
-    });
-    
-    selectElement.disabled = false;
 }
 
 // Submit booking
@@ -598,9 +789,25 @@ function submitModalBooking() {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            showModalAlert('Đặt lịch thành công! Lịch hẹn đang chờ xác nhận.', 'success');
-            form.reset();
+                            if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Đặt lịch thành công!',
+                                html: `
+                                    <div class="text-start">
+                                        <p>Lịch hẹn của bạn đang chờ xác nhận từ phòng khám.</p>
+                                        <p><i class="fas fa-envelope me-2"></i>Vui lòng kiểm tra email để xem chi tiết lịch hẹn.</p>
+                                        <small class="text-muted">Nếu không thấy email trong hộp thư đến, hãy kiểm tra thư mục spam.</small>
+                                    </div>
+                                `,
+                                showConfirmButton: true,
+                                confirmButtonText: 'Xem lịch hẹn'
+                            }).then((result) => {
+                                if (result.isConfirmed && data.redirect) {
+                                    window.location.href = data.redirect;
+                                }
+                            });
+                            form.reset();
             
             // Auto-close modal after 2 seconds
             setTimeout(() => {
@@ -690,5 +897,17 @@ function openAppointmentModal() {
         
         modal.show();
     }
+}
+
+// Reset time slots
+function resetModalTimeSlots() {
+    const grid = document.getElementById('timeSlotGrid');
+    const message = document.getElementById('timeSlotMessage');
+    const timeSelect = document.getElementById('modalTimeSelect');
+    
+    message.innerHTML = 'Vui lòng chọn bác sĩ và ngày trước';
+    grid.innerHTML = '<div class="time-slot disabled">Chưa chọn ngày</div>';
+    timeSelect.value = '';
+    timeSelect.disabled = true;
 }
 </script> 

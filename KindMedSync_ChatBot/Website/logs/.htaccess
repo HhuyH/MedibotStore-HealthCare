@@ -1,0 +1,23 @@
+# Deny direct access to all files in the logs directory
+# Only allow access through admin panel
+Order Deny,Allow
+Deny from all
+
+# Allow access for specific admin IP addresses (optional)
+# Allow from 127.0.0.1
+# Allow from ::1
+
+# Prevent directory browsing
+Options -Indexes
+
+# Prevent access to log files
+<Files "*.log">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Prevent access to PHP files in logs directory
+<Files "*.php">
+    Order Allow,Deny
+    Deny from all
+</Files> 

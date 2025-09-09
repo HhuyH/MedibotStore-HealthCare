@@ -196,7 +196,7 @@ function performLogout() {
                 logoutBtn.disabled = false;
                 logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt me-2"></i>Đăng xuất';
             }
-            alert('Đăng xuất thất bại: ' + (data.message || 'Lỗi không xác định'));
+            // alert('Đăng xuất thất bại: ' + (data.message || 'Lỗi không xác định'));
         }
     })
     .catch(error => {
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
     user-select: none !important;
 }
 
-.btn::before {
+/* .btn::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -358,10 +358,10 @@ document.addEventListener('DOMContentLoaded', function() {
     width: 0;
     height: 0;
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    border-radius: 10%;
     transform: translate(-50%, -50%);
     transition: width 0.3s, height 0.3s;
-}
+} */
 
 .btn:hover::before {
     width: 300px;

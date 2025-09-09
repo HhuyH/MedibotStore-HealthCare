@@ -1,0 +1,141 @@
+[2025-08-09 07:26:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-09 07:26:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-09 07:26:32] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:26:32] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 67, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-09 07:26:32] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 110000
+[2025-08-09 07:26:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:26:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 67, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:26:36] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 07:26:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:26:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 68, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 2
+[2025-08-09 07:26:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 67, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:26:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 1335000
+[2025-08-09 07:26:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:26:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 68, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-09 07:26:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 67, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:26:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 695000
+[2025-08-09 07:27:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:27:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 68, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-09 07:27:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 67, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:27:22] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 695000
+[2025-08-09 07:27:34] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:27:34] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 68, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-09 07:27:34] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 67, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-09 07:27:34] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 750000
+[2025-08-09 07:27:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:27:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 68, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-09 07:27:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 640000
+[2025-08-09 07:27:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:27:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 69, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 1
+[2025-08-09 07:27:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 68, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-09 07:27:41] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 700000
+[2025-08-09 07:28:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:28:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 69, ProductID: 8, Name: 'Men tiêu hóa Biolactyl', Price: 70000, UnitPrice: 60000, Qty: 1
+[2025-08-09 07:28:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 68, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-09 07:28:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 700000
+[2025-08-09 07:28:56] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:28:56] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 68, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-09 07:28:56] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 640000
+[2025-08-09 07:28:57] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-09 07:28:57] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-09 07:29:05] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:29:05] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:29:05] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 07:29:45] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:29:45] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-09 07:29:45] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 110000
+[2025-08-09 07:29:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:29:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:29:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 07:30:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:30:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 71, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-09 07:30:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000
+[2025-08-09 07:30:20] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:30:20] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 71, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-09 07:30:20] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:20] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000
+[2025-08-09 07:30:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:30:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 71, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-09 07:30:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:21] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000
+[2025-08-09 07:30:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:30:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 71, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-09 07:30:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:31] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000
+[2025-08-09 07:30:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:30:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 71, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-09 07:30:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000
+[2025-08-09 07:30:48] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:30:48] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 71, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-09 07:30:48] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:48] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000
+[2025-08-09 07:30:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:30:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 71, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-09 07:30:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000
+[2025-08-09 07:30:55] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:30:55] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:55] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 07:30:59] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:30:59] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:30:59] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 07:31:01] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:31:01] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 2
+[2025-08-09 07:31:01] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 110000
+[2025-08-09 07:31:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:31:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:31:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 07:31:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 07:31:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 72, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-09 07:31:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 70, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:31:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 73000
+[2025-08-09 07:31:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-09 07:31:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-09 07:32:18] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-09 07:32:18] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-09 07:36:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:36:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 73, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:36:02] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 07:56:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 07:56:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 73, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 07:56:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 08:05:30] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-09 08:05:30] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-09 08:06:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 08:06:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 74, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-09 08:06:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 640000
+[2025-08-09 08:08:43] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-09 08:08:43] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-09 08:08:47] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-09 08:08:47] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-09 08:08:52] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 08:08:52] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 75, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 08:08:52] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 55000
+[2025-08-09 08:10:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-09 08:10:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 76, ProductID: 1, Name: 'Paracetamol 500mg', Price: 15000, UnitPrice: 5000, Qty: 1
+[2025-08-09 08:10:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 75, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-09 08:10:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 60000
+[2025-08-09 08:10:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 08:10:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 76, ProductID: 1, Name: 'Paracetamol 500mg', Price: 15000, UnitPrice: 5000, Qty: 1
+[2025-08-09 08:10:44] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 5000
+[2025-08-09 08:10:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 08:10:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 76, ProductID: 1, Name: 'Paracetamol 500mg', Price: 15000, UnitPrice: 5000, Qty: 1
+[2025-08-09 08:10:46] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 5000
+[2025-08-09 08:20:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 08:20:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 77, ProductID: 1, Name: 'Paracetamol 500mg', Price: 15000, UnitPrice: 5000, Qty: 1
+[2025-08-09 08:20:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 5000
+[2025-08-09 08:26:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-09 08:26:54] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-09 08:27:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 08:27:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 78, ProductID: 1, Name: 'Paracetamol 500mg', Price: 15000, UnitPrice: 5000, Qty: 1
+[2025-08-09 08:27:10] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 5000
+[2025-08-09 08:31:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 08:31:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 79, ProductID: 1, Name: 'Paracetamol 500mg', Price: 15000, UnitPrice: 5000, Qty: 1
+[2025-08-09 08:31:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 5000
+[2025-08-09 08:36:25] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-09 08:36:25] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 80, ProductID: 1, Name: 'Paracetamol 500mg', Price: 15000, UnitPrice: 5000, Qty: 1
+[2025-08-09 08:36:25] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 5000
+[2025-08-09 09:07:45] [INFO] [User: 8] [IP: ::1] CART_DEBUG: Found 0 cart items for user 8
+[2025-08-09 09:07:45] [INFO] [User: 8] [IP: ::1] CART_DEBUG: Total calculated: 0

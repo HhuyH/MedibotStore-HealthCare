@@ -1,0 +1,23 @@
+[2025-08-17 04:21:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-17 04:21:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 86, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-17 04:21:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 85, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-17 04:21:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 695000
+[2025-08-17 04:46:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-17 04:46:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 86, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-17 04:46:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 85, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-17 04:46:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 695000
+[2025-08-17 04:46:23] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-17 04:46:23] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 86, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-17 04:46:23] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 85, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-17 04:46:23] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 695000
+[2025-08-17 04:46:53] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-17 04:46:53] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-17 04:47:00] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-17 04:47:00] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 87, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-17 04:47:00] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 18000
+[2025-08-17 04:52:12] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-17 04:52:12] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 87, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-17 04:52:12] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 18000
+[2025-08-17 04:58:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-08-17 04:58:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 87, ProductID: 2, Name: 'Amoxicillin 500mg', Price: 28000, UnitPrice: 18000, Qty: 1
+[2025-08-17 04:58:24] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 18000

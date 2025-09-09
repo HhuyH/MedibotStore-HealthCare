@@ -1,0 +1,6 @@
+[2025-08-16 19:32:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-08-16 19:32:13] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-16 19:32:18] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 2 cart items for user 1
+[2025-08-16 19:32:18] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 86, ProductID: 11, Name: 'Trà ngủ ngon Hoa Cúc', Price: 65000, UnitPrice: 55000, Qty: 1
+[2025-08-16 19:32:18] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 1 - ItemID: 85, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-16 19:32:18] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 695000

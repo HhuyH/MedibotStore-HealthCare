@@ -245,6 +245,8 @@ function get_blog_posts_count($category_id = null, $search = '') {
  * @return array|null Featured post data or null if no featured post found
  */
 function get_featured_post() {
+    global $conn;
+    
     $sql = "SELECT p.*, 
             c.name as category_name,
             a.name as author_name,
@@ -254,17 +256,13 @@ function get_featured_post() {
             LEFT JOIN blog_authors a ON p.author_id = a.author_id
             WHERE p.status = 'published' 
             AND p.is_featured = 1
-            ORDER BY p.created_at DESC
+            ORDER BY p.published_at DESC
             LIMIT 1";
             
-    $result = query($sql);
+    $result = $conn->query($sql);
     if ($result === false) {
-        error_log("Error in get_featured_post: " . mysqli_error(get_db_connection()));
+        error_log("Error in get_featured_post: " . $conn->error);
         return null;
-    }
-    
-    if ($result instanceof mysqli_stmt) {
-        $result = $result->get_result();
     }
     
     return $result->fetch_assoc();

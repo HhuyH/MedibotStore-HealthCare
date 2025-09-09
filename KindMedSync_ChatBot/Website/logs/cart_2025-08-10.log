@@ -1,0 +1,10 @@
+[2025-08-10 07:19:18] [INFO] [User: 8] [IP: ::1] CART_DEBUG: Found 0 cart items for user 8
+[2025-08-10 07:19:18] [INFO] [User: 8] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-10 07:21:20] [INFO] [User: 8] [IP: ::1] CART_DEBUG: Found 0 cart items for user 8
+[2025-08-10 07:21:20] [INFO] [User: 8] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-08-10 09:55:34] [INFO] [User: 9] [IP: ::1] CART_DEBUG: Found 1 cart items for user 9
+[2025-08-10 09:55:34] [INFO] [User: 9] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 83, ProductID: 1, Name: 'Paracetamol 500mg', Price: 15000, UnitPrice: 5000, Qty: 1
+[2025-08-10 09:55:34] [INFO] [User: 9] [IP: ::1] CART_DEBUG: Total calculated: 5000
+[2025-08-10 10:19:30] [INFO] [User: 10] [IP: ::1] CART_DEBUG: Found 1 cart items for user 10
+[2025-08-10 10:19:30] [INFO] [User: 10] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 84, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-08-10 10:19:30] [INFO] [User: 10] [IP: ::1] CART_DEBUG: Total calculated: 640000

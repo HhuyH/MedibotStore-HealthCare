@@ -1,0 +1,28 @@
+[2025-07-21 09:01:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-07-21 09:01:08] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-07-21 16:38:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-21 16:38:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 13, ProductID: 4, Name: 'Máy đo huyết áp điện tử', Price: 650000, UnitPrice: 640000, Qty: 1
+[2025-07-21 16:38:38] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 640000
+[2025-07-21 16:39:40] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 0 cart items for user 1
+[2025-07-21 16:39:40] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 0
+[2025-07-21 16:39:48] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-21 16:39:48] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-21 16:39:48] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-21 16:40:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-21 16:40:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-21 16:40:49] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-21 16:41:47] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-21 16:41:47] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-21 16:41:47] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-21 16:45:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-21 16:45:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-21 16:45:19] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-21 17:16:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-21 17:16:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-21 17:16:37] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-21 17:55:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-21 17:55:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-21 17:55:17] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
+[2025-07-21 17:56:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Found 1 cart items for user 1
+[2025-07-21 17:56:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Item 0 - ItemID: 14, ProductID: 3, Name: 'Vitamin C 1000mg', Price: 50000, UnitPrice: 40000, Qty: 1
+[2025-07-21 17:56:06] [INFO] [User: 1] [IP: ::1] CART_DEBUG: Total calculated: 40000
