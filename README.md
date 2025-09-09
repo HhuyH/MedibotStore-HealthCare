@@ -18,11 +18,10 @@ Mục tiêu dự án:
 ## Kiến trúc hệ thống
 
 ```
-KindMedSync-HealthCare/
+MedibotStore-HealthCare/
 │── Chatbot_BackEnd/   # FastAPI backend + AI Chatbot (GPT + MySQL)
-│── Web_FrontEnd/      # Giao diện web (HTML/CSS/JS hoặc framework)
-│── docs/              # Tài liệu dự án
-│── README.md          # README tổng quát (file hiện tại)
+│── Website/      # Giao diện web (HTML/CSS/JS hoặc framework)
+│── README.md          # README tổng quát
 ```
 
 ---
@@ -37,7 +36,7 @@ KindMedSync-HealthCare/
   • Chatbot hội thoại tự nhiên.
   • API RESTful cho frontend.
 
-Chi tiết: [Chatbot\_BackEnd](./KindMedSync_ChatBot/Chatbot_BackEnd/README.md)
+Chi tiết: [Chatbot\_BackEnd](./MedibotStore_Source/Chatbot_BackEnd/README.md)
 
 ---
 
@@ -49,7 +48,7 @@ Chi tiết: [Chatbot\_BackEnd](./KindMedSync_ChatBot/Chatbot_BackEnd/README.md)
   • Đặt lịch hẹn khám.
   • Tích hợp chatbot AI vào giao diện web.
 
-Chi tiết: [Website](./KindMedSync_ChatBot/Website/README.md)
+Chi tiết: [Website](./MedibotStore_Source/Website/README.md)
 
 ---
 
@@ -58,16 +57,16 @@ Chi tiết: [Website](./KindMedSync_ChatBot/Website/README.md)
 ### 1️ Clone repo
 
 ```bash
-git clone https://github.com/HhuyH/KindMedSync-HealthCare.git
-cd KindMedSync-HealthCare
+git clone https://github.com/HhuyH/MedibotStore-HealthCare.git
+cd MedibotStore-HealthCare
 ```
 
 ### 2️ Setup backend & frontend
 
 Xem hướng dẫn chi tiết trong từng thư mục:
 
-* [Chatbot\_BackEnd](./KindMedSync_ChatBot/Chatbot_BackEnd/README.md)
-* [Website](./KindMedSync_ChatBot/Website/README.md)
+* [Chatbot\_BackEnd](./MedibotStore_Source/Chatbot_BackEnd/README.md)
+* [Website](./MedibotStore_Source/Website/README.md)
 
 ---
 
@@ -94,6 +93,6 @@ Mình gợi ý format như sau:
 
 ## Nhóm phát triển
 
-* [**Hoàn Huy**](https://github.com/HhuyH) – AI Chatbot, Backend Developer, **Thiết kế SQL**
+* [**Hoàn Huy**](https://github.com/HhuyH) – AI Chatbot, Thiết kế SQL
 * [**Thái Đăng**](https://github.com/TdDangxkus) – Web Frontend & Backend Developer
 * [**Anh Huy**](https://github.com/Sindy0711) – Database Designer (ERD & SQL Diagram)
