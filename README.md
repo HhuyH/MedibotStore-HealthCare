@@ -1,131 +1,99 @@
-Link Website Project : https://github.com/TdDangxkus/KindMedSync-HealthCare
+# KindMedSync – HealthCare Platform
 
-⚠️ This project was formerly named "KMS-HealthCare" for internal academic purposes.  
-It is **not related in any way to KMS Technology Inc.** or any real-world company.
+## Giới thiệu
 
-# Kind Med Sync - AI Health Consultation System (Graduation Project)
+**KindMedSync** là một hệ thống hỗ trợ y tế thông minh, gồm:
 
-> 🎓 This is a university graduation project built for educational and research purposes only.  
-> It is **not affiliated with KMS Technology** or any real-world commercial organization.
+* **Chatbot AI**: Phỏng đoán ban đầu về bệnh dựa trên triệu chứng, giúp người dùng quyết định có cần đi khám hay không. Chatbot sử dụng **FastAPI + GPT API** để xử lý hội thoại ngôn ngữ tự nhiên.
+* **Website Quản lý**: Giao diện web cho phép bệnh nhân, bác sĩ và quản trị viên dễ dàng quản lý thông tin, đặt lịch hẹn, và tương tác với chatbot.
 
----
+Mục tiêu dự án:
 
-## 📌 About the Name
-
-"Kind Med Sync" stands for **Kind Medical Synchronization** – a fictional system name created by our student team.  
-The project was previously named “KMS-HealthCare” as an internal short form.
-
-To avoid brand confusion, we have adopted the full, original naming convention.
-
-
-## 📘 Đây là đồ án tốt nghiệp đại học, hoàn toàn phục vụ cho mục đích học tập.  
-Mọi đề cập trước đây đến chữ “KMS” đều là **tên giả lập (viết tắt của Kind Med Sync)** do nhóm tự nghĩ ra, **không liên quan tới công ty KMS Technology**.
-
-
-
-## 📦 KindMedSync ChatBot – Hệ thống Tư Vấn Sức Khỏe & Đặt Lịch Khám
-
-Đây là mô-đun chính trong đồ án KindMedSync HealthCare, đảm nhiệm vai trò:
-
-* Trò chuyện thông minh với người dùng dựa trên GPT-4.
-* Phân tích triệu chứng sức khỏe, gợi ý chuyên khoa phù hợp.
-* Gợi ý sản phẩm liên quan đến sức khỏe.
-* Hỗ trợ đặt lịch khám thông qua tương tác tự nhiên.
+* Giảm sự do dự và chủ quan của người dân khi gặp triệu chứng.
+* Tăng hiệu quả quản lý bệnh nhân, đơn thuốc, lịch hẹn.
+* Tích hợp công nghệ **AI/ML** trong lĩnh vực y tế.
 
 ---
 
-## 📁 Cấu trúc dự án
+## Kiến trúc hệ thống
 
 ```
-KindMedSync_ChatBot/
-│
-├── Chatbot_BackEnd/       # Toàn bộ code backend chạy bằng FastAPI
-│   ├── main.py            # Điểm khởi chạy FastAPI
-│   ├── models.py          # Model Pydantic
-│   ├── config/            # Cấu hình hệ thống & intent
-│   ├── prompts/           # Prompting cho GPT (chia theo module)
-│   └── ...
-│
-├── Chatbot_FrontEnd/      # Web frontend đơn giản để test chatbot
-│   └── ...
-│
-├── requirements.txt       # Thư viện Python cần thiết
-└── Readme.md              # (File hiện tại)
+KindMedSync-HealthCare/
+│── Chatbot_BackEnd/   # FastAPI backend + AI Chatbot (GPT + MySQL)
+│── Web_FrontEnd/      # Giao diện web (HTML/CSS/JS hoặc framework)
+│── docs/              # Tài liệu dự án
+│── README.md          # README tổng quát (file hiện tại)
 ```
 
 ---
 
-## 🛠️ Cài đặt môi trường
+## Thành phần chính
 
-### 1. Python
+### 1. **Chatbot Backend (AI + API)**
 
-Yêu cầu Python >= 3.10 (khuyên dùng Python 3.12 trở lên)
+* Công nghệ: **FastAPI, GPT API, MySQL**
+* Chức năng:
+  • Phỏng đoán ban đầu từ triệu chứng.
+  • Chatbot hội thoại tự nhiên.
+  • API RESTful cho frontend.
 
-### 2. Redis (Session lưu trữ tạm)
+Chi tiết: [Chatbot\_BackEnd](./Chatbot_BackEnd/README.md)
 
-#### Cài đặt Redis trên Windows:
+---
 
-1. Truy cập: [https://github.com/tporadowski/redis/releases](https://github.com/tporadowski/redis/releases)
-2. Tải bản `.zip` phù hợp và giải nén.
-3. Trong thư mục đó, tạo file `redis.conf` với nội dung sau:
+### 2. **Web Frontend**
 
-```
-save 60 1
-appendonly yes
-appendfsync everysec
-dir ./
-dbfilename dump.rdb
-appendfilename "appendonly.aof"
-```
+* Công nghệ: **HTML/CSS/JS (hoặc framework)**
+* Chức năng:
+  • Quản lý thông tin bệnh nhân, bác sĩ, đơn thuốc.
+  • Đặt lịch hẹn khám.
+  • Tích hợp chatbot AI vào giao diện web.
 
-4. Chạy Redis bằng lệnh sau trong `cmd`:
+Chi tiết: [Website](./Website/README.md)
+
+---
+
+## Cài đặt & Chạy thử
+
+### 1️ Clone repo
 
 ```bash
-redis-server.exe redis.conf
+git clone https://github.com/HhuyH/KindMedSync-HealthCare.git
+cd KindMedSync-HealthCare
 ```
+
+### 2️ Setup backend & frontend
+
+Xem hướng dẫn chi tiết trong từng thư mục:
+
+* [Chatbot\_BackEnd](./Chatbot_BackEnd/README.md)
+* [Web\_FrontEnd](./Web_FrontEnd/README.md)
 
 ---
 
-### 3. Cài đặt thư viện Python
+## Hướng phát triển
 
-Vào thư mục `KindMedSync_ChatBot`, chạy:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 🚀 Chạy hệ thống
-
-Di chuyển vào thư mục `Chatbot_BackEnd` và chạy FastAPI:
-
-```bash
-uvicorn main:app --reload
-```
-
-Truy cập thử tại:
-
-```
-http://localhost:8000
-```
+* Tích hợp **RAG (Retrieval Augmented Generation)** để tăng độ chính xác.
+* Fine-tune mô hình riêng cho dữ liệu y tế Việt Nam.
+* Thêm **Speech-to-Text** để hỗ trợ hội thoại bằng giọng nói.
+* Phát triển ứng dụng di động (Flutter/React Native).
 
 ---
 
-## ✅ Các chức năng chính
+## Nhóm phát triển
 
-* **Health Talk**: Phân tích triệu chứng, hỏi đáp follow-up, đưa ra lời khuyên sức khỏe cơ bản.
-* **Tư vấn sức khỏe**: Dưa theo mong muốn của người dùng mà gợi ý cách có thể cải thiện vấn đề mà người dùng đang gập phải.
-* **Đặt lịch khám**: Tạo lịch khám qua chat, xác nhận đầy đủ thông tin trước khi lưu.
-* **Gợi ý sản phẩm**: Gợi ý thực phẩm chức năng, thiết bị y tế nếu thấy phù hợp.
-* **Báo cáo cho bác sĩ**: Tổng hợp dữ liệu sức khỏe bệnh nhân gửi cho bác sĩ.
-* **Tác vụ dành cho Admin**: Chatbot có thể xử lý yêu cầu đặc biệt từ admin dưới dạng ngôn ngữ tự nhiên (truy vấn sản phẩm, đơn hàng...).
+Rất nên ghi rõ nhóm phát triển trong README tổng, vì điều đó:
+
+* Giúp nhà tuyển dụng/giáo viên dễ dàng nhận biết **vai trò từng người**.
+* Tạo sự minh bạch và chuyên nghiệp khi làm việc nhóm.
+* Khi để kèm link GitHub, mọi người có thể click vào để xem đóng góp.
+
+Mình gợi ý format như sau:
 
 ---
 
-## 🧠 Lưu ý
+## 👨‍💻 Nhóm phát triển
 
-* Toàn bộ logic phân tích triệu chứng và chọn chuyên khoa sử dụng **OpenAI GPT-4 API**.
-* Redis dùng để lưu session tạm giữa các lượt chat, đảm bảo hội thoại mạch lạc.
-* Dữ liệu chẩn đoán, lịch sử cuộc trò chuyện và lịch khám sẽ được lưu vào MySQL.
-
+* [**Hoàn Huy**](https://github.com/HhuyH) – AI Chatbot, Backend Developer, **Thiết kế SQL**
+* [**Thái Đăng**](https://github.com/TdDangxkus) – Web Frontend & Backend Developer
+* [**Anh Huy**](https://github.com/Sindy0711) – Database Designer (ERD & SQL Diagram)
