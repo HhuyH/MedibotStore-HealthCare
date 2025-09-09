@@ -44,7 +44,7 @@ mysql -u root -p medicare < SQL_NOTE.sql
 3. Chạy file **`sample_data.sql`** để thêm dữ liệu mẫu phục vụ test:
 
 ```bash
-mysql -u root -p medicare < sample_data.sql
+mysql -u root -p medicare < Sample_data.sql
 ```
 
 4. Chạy file **`user_role.sql`** để tạo quyền truy cập cho chatbot:
