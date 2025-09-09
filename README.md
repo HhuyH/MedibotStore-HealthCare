@@ -92,7 +92,7 @@ Mình gợi ý format như sau:
 
 ---
 
-## 👨‍💻 Nhóm phát triển
+## Nhóm phát triển
 
 * [**Hoàn Huy**](https://github.com/HhuyH) – AI Chatbot, Backend Developer, **Thiết kế SQL**
 * [**Thái Đăng**](https://github.com/TdDangxkus) – Web Frontend & Backend Developer
