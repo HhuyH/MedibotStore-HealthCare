@@ -55,26 +55,26 @@ KindMedSync_ChatBot/Chatbot_BackEnd/
 
 ## Cài đặt & Chạy thử
 
-### 1️ Clone repo
+### 1️. Clone repo
 
 ```bash
 git clone https://github.com/HhuyH/KindMedSync-HealthCare.git
 cd KindMedSync_ChatBot/Chatbot_BackEnd
 ```
 
-### 2️ Tạo file `.env`
+### 2️. Tạo file `.env`
 
 ```ini
 OPENAI_API_KEY=your_openai_api_key
 ```
 
-### 3️ Cài đặt thư viện
+### 3️. Cài đặt thư viện
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4️ Chạy server
+### 4️. Chạy server
 
 ```bash
 uvicorn main:app --reload
